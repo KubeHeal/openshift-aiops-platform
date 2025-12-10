@@ -2,12 +2,12 @@ name: Helm Chart Validation
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'charts/**'
       - 'values-*.yaml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'charts/**'
       - 'values-*.yaml'
@@ -34,6 +34,24 @@ jobs:
         run: |
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
+
+      - name: Generate values files from templates
+        run: |
+          echo "📝 Generating values files from templates for CI/CD validation..."
+
+          # Check if values files exist (they shouldn't in CI)
+          if [ ! -f values-global.yaml ]; then
+            echo "✅ Copying values-global.yaml from example template"
+            cp values-global.yaml.example values-global.yaml
+          fi
+
+          if [ ! -f values-hub.yaml ]; then
+            echo "✅ Copying values-hub.yaml from example template"
+            cp values-hub.yaml.example values-hub.yaml
+          fi
+
+          echo "✅ Values files ready for Helm validation"
+          ls -lh values-*.yaml
 
       - name: Helm Lint - Hub Chart
         run: |
