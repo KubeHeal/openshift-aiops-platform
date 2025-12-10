@@ -219,8 +219,10 @@ spec:
 - [x] Update `deploy_complete_pattern.yml` to include cluster resources deployment step
 - [x] Configure ArgoCD CR with `sourceNamespaces`
 - [x] Document deployment sequence in playbook comments
+- [x] **Automate hub-gitops ArgoCD controller ClusterRoleBinding** (2025-12-10)
+- [x] **Create comprehensive troubleshooting guide** (2025-12-10)
+- [x] **Update deployment documentation with troubleshooting references** (2025-12-10)
 - [ ] Update ADR-019 to reference new role
-- [ ] Update deployment documentation
 - [ ] Test end-to-end deployment workflow
 - [ ] Update cleanup playbook to remove cluster-scoped resources
 

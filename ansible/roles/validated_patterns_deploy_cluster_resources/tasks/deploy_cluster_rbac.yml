@@ -168,7 +168,40 @@
     - deploy_cluster_rbac | default(true) | bool
     - deploy_eso_rbac | default(true) | bool
 
-- name: Display cluster RBAC deployment status
+# ==============================================================================
+# Hub-GitOps ArgoCD Application Controller RBAC (Namespaced Mode Support)
+# ==============================================================================
+# Grant cluster-admin to hub-gitops ArgoCD application controller
+# This is required because the hub-gitops instance runs in namespaced mode
+# but needs to manage cluster-scoped resources (ClusterRole, ClusterRoleBinding)
+# See ADR-030: Hybrid Management Model for Namespaced ArgoCD Deployments
+# This fixes the error: "ClusterRoleBinding cannot be managed when in namespaced mode"
+
+- name: Deploy hub-gitops ArgoCD Application Controller ClusterRoleBinding
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: hub-gitops-argocd-application-controller-cluster-admin
+        labels:
+          app.kubernetes.io/component: application-controller
+          app.kubernetes.io/instance: hub-gitops
+          app.kubernetes.io/name: argocd-application-controller
+          app.kubernetes.io/part-of: argocd
+          app.kubernetes.io/managed-by: ansible
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: cluster-admin
+      subjects:
+      - kind: ServiceAccount
+        name: hub-gitops-argocd-application-controller
+        namespace: "{{ pattern_namespace }}-hub"
+  when: deploy_cluster_rbac | default(true) | bool
+
+- name: Display cluster RBAC deployment status  # pragma: allowlist secret
   debug:
     msg: |
       ✅ Cluster-scoped RBAC resources deployed:
@@ -176,11 +209,13 @@
       - ClusterRole: self-healing-workbench-cluster
       - ClusterRoleBinding: self-healing-workbench-cluster
       - ClusterRoleBinding: self-healing-workbench-prometheus
-      - ClusterRole: external-secrets-{{ pattern_namespace }} (if ESO enabled)
-      - ClusterRoleBinding: external-secrets-{{ pattern_namespace }} (if ESO enabled)
+      - ClusterRole: external-secrets-{{ pattern_namespace }} (if ESO enabled)  # pragma: allowlist secret
+      - ClusterRoleBinding: external-secrets-{{ pattern_namespace }} (if ESO enabled)  # pragma: allowlist secret
+      - ClusterRoleBinding: hub-gitops-argocd-application-controller-cluster-admin
 
       These allow:
       - Operator: Access to cluster-scoped resources (namespaces, nodes, CRDs)
       - Workbench: Access to cluster-scoped resources for monitoring
       - Workbench: Access to Prometheus metrics via cluster-monitoring-view role
       - External Secrets: Access to secrets and configmaps cluster-wide
+      - Hub-GitOps ArgoCD: Manage cluster-scoped resources from namespaced mode (ADR-030)

@@ -25,6 +25,8 @@ The **OpenShift AI Ops Self-Healing Platform** is a production-ready AIOps solut
 | **[AGENTS.md](AGENTS.md)** | 🤖 **AI Agent Development Guide** (comprehensive reference) |
 | **[docs/adrs/](docs/adrs/)** | 🏛️ Architectural Decision Records (29+ ADRs) |
 | **[DEPLOYMENT.md](DEPLOYMENT.md)** | 🚀 Step-by-step deployment guide |
+| **[docs/guides/TROUBLESHOOTING-GUIDE.md](docs/guides/TROUBLESHOOTING-GUIDE.md)** | 🔧 **Troubleshooting Guide** (common issues and solutions) |
+| **[docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md](docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md)** | 👨‍💻 **Junior Developer Guide** (deployment testing walkthrough) |
 | **[notebooks/README.md](notebooks/README.md)** | 📓 Jupyter notebook workflows |
 
 ## 🚀 Quick Start (5 Minutes)
@@ -349,7 +351,11 @@ oc logs -n self-healing-platform <coordination-engine-pod> --tail=100
 curl http://coordination-engine.self-healing-platform.svc.cluster.local:8080/health
 ```
 
-**More troubleshooting**: See [AGENTS.md § Common Pitfalls](AGENTS.md#common-pitfalls)
+**📖 Complete Troubleshooting Guide**: See [docs/guides/TROUBLESHOOTING-GUIDE.md](docs/guides/TROUBLESHOOTING-GUIDE.md) for comprehensive issue resolution
+
+**Additional Resources**:
+- [Junior Developer Deployment Guide](docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md) - Step-by-step testing walkthrough
+- [AGENTS.md § Common Pitfalls](AGENTS.md#common-pitfalls) - Development-specific issues
 
 ## 📊 Project Status
 
