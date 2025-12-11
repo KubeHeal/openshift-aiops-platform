@@ -1,0 +1,68 @@
+# Validated Patterns - Self-Healing Platform
+# Hub Cluster Configuration
+#
+# ============================================================
+# 📌 REPOSITORY USAGE NOTICE
+# ============================================================
+# This file uses the official repository by default:
+#   https://github.com/tosin2013/openshift-aiops-platform.git
+#
+# ✅ For testing/evaluation: Use the default repo as-is
+# ⚠️  For heavy customization: Fork the repo and update repoURL
+#
+# When to fork:
+#   - Custom notebooks or models
+#   - Modified coordination engine logic
+#   - Organization-specific configurations
+#   - Long-term production deployment
+#
+# To use your fork:
+#   1. Fork: https://github.com/tosin2013/openshift-aiops-platform
+#   2. Update repoURL in clusterGroup.applications.self-healing-platform
+#   3. Update repoURL in values-global.yaml git.repoURL
+# ============================================================
+
+# Main cluster group configuration
+main:
+  clusterGroupName: hub
+  targetSite: hub
+  gitOpsOperator: openshift-gitops
+  namespace: self-healing-platform
+
+# Namespace configuration
+namespace:
+  create: false  # Namespace already exists
+  name: self-healing-platform
+
+# ClusterGroup configuration for hub
+clusterGroup:
+  name: hub
+  isHubCluster: true
+
+  # Namespaces to create
+  namespaces:
+    - name: self-healing-platform
+      labels:
+        openshift.io/cluster-monitoring: "true"
+      annotations:
+        openshift.io/description: "Self-Healing Platform for AIOps automation"
+
+  # ArgoCD Applications to deploy
+  applications:
+    self-healing-platform:
+      name: self-healing-platform
+      namespace: self-healing-platform
+      project: default
+      path: charts/hub
+      repoURL: "https://github.com/tosin2013/openshift-aiops-platform.git"
+      targetRevision: main
+      helm:
+        valueFiles:
+          - /values-global.yaml
+          - /values-hub.yaml
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
