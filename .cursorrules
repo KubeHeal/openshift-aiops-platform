@@ -1,0 +1,207 @@
+# Cursor Rules for OpenShift AI Ops Platform
+
+## Git Commit and Push Rules
+
+### MANDATORY: Pre-Commit Secret Scanning
+
+**Before ANY push to GitHub, ALWAYS run pre-commit hooks to scan for secrets.**
+
+```bash
+# ALWAYS run this before git push
+pre-commit run --all-files
+
+# If any secrets are detected:
+# 1. DO NOT push
+# 2. Remove the secrets
+# 3. Add them to .gitignore or use environment variables
+# 4. Re-run: pre-commit run --all-files
+# 5. Only push when all checks pass
+```
+
+### Pre-Commit Hooks Active
+
+The following security checks run automatically:
+- ✅ `detect-secrets` - Scans for hardcoded secrets, API keys, tokens
+- ✅ `check-added-large-files` - Prevents committing large files (>500KB)
+- ✅ `check-merge-conflict` - Detects unresolved merge conflicts
+- ✅ `trailing-whitespace` - Cleans up trailing whitespace
+- ✅ `end-of-file-fixer` - Ensures files end with newline
+
+### Git Workflow Checklist
+
+Before pushing to GitHub:
+
+1. ✅ **Run pre-commit checks**:
+```bash
+   pre-commit run --all-files
+   ```
+
+2. ✅ **Review changes**:
+```bash
+   git status
+   git diff
+   ```
+
+3. ✅ **Commit with signed-off-by** (DCO):
+```bash
+   git commit -s -m "your message"
+   ```
+
+4. ✅ **Verify no secrets in commits**:
+```bash
+   git log -1 -p  # Review last commit
+```
+
+5. ✅ **Push to GitHub**:
+```bash
+   git push origin main
+   ```
+
+### Secret Detection False Positives
+
+If you get a false positive from `detect-secrets`:
+
+```bash
+# Add inline comment to ignore
+# pragma: allowlist secret
+
+# Or update .secrets.baseline
+detect-secrets scan --baseline .secrets.baseline
+```
+
+### Common Secrets to Avoid
+
+**NEVER commit:**
+- ❌ API keys (AWS, GitHub, OpenShift, etc.)
+- ❌ Passwords or tokens
+- ❌ Private keys (SSH, TLS, etc.)
+- ❌ OAuth client secrets
+- ❌ Database connection strings with credentials
+- ❌ Kubeconfig files with credentials
+
+**Instead use:**
+- ✅ Environment variables
+- ✅ Kubernetes Secrets
+- ✅ External Secrets Operator
+- ✅ HashiCorp Vault
+- ✅ values-secret.yaml (in .gitignore)
+
+### Security Incident Response
+
+If you accidentally push secrets:
+
+1. **IMMEDIATELY** revoke/rotate the exposed credentials
+2. Remove from git history:
+```bash
+   git filter-branch --force --index-filter \
+     "git rm --cached --ignore-unmatch <file-with-secret>" \
+     --prune-empty --tag-name-filter cat -- --all
+```
+3. Force push (after confirming with team):
+```bash
+   git push origin main --force-with-lease
+```
+4. Notify security team
+5. Document in incident log
+
+### Developer Workflow
+
+```bash
+# Standard development workflow with security checks
+
+# 1. Make changes
+vim <file>
+
+# 2. Stage changes
+git add <file>
+
+# 3. Pre-commit runs automatically on commit
+git commit -s -m "feat: add feature"
+# Pre-commit hooks run automatically here
+
+# 4. If hooks fail, fix issues and recommit
+# Edit files to fix issues
+git add <fixed-files>
+git commit -s -m "feat: add feature"
+
+# 5. Before push, run full check
+pre-commit run --all-files
+
+# 6. Push only if all checks pass
+git push origin main
+```
+
+### Automated CI/CD
+
+GitHub Actions automatically runs:
+- Helm chart validation
+- Python tests
+- Notebook validation
+- Security scans
+- Super-linter
+
+If CI fails, the PR cannot be merged.
+
+### Resources
+
+- Pre-commit config: `.pre-commit-config.yaml`
+- Secrets baseline: `.secrets.baseline`
+- Git hooks: `.git/hooks/`
+- CI config: `.github/workflows/`
+
+### Enforcement
+
+**This is NOT optional.** All contributors MUST:
+- Install pre-commit: `pip install pre-commit`
+- Install hooks: `pre-commit install`
+- Run checks before push: `pre-commit run --all-files`
+
+**PRs with secrets will be rejected immediately.**
+
+---
+
+## Additional Development Rules
+
+### Code Style
+
+- Follow PEP 8 for Python
+- Use Black formatter
+- Use isort for imports
+- Keep functions under 50 lines
+- Add docstrings to all public functions
+
+### Documentation
+
+- Update ADRs when making architectural changes
+- Keep README.md synchronized with features
+- Document all environment variables
+- Add examples for new features
+
+### Testing
+
+- Write tests for new features
+- Maintain >80% code coverage
+- Test notebooks before committing
+- Run full test suite before PR
+
+### Commit Messages
+
+Format: `<type>(<scope>): <description>`
+
+Types:
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation
+- `chore`: Maintenance
+- `refactor`: Code restructuring
+- `test`: Tests
+
+Examples:
+- `feat(notebooks): add LSTM anomaly detection`
+- `fix(coordination-engine): resolve race condition`
+- `docs(adr): add ADR-038 for validation strategy`
+
+---
+
+**Made with security in mind 🔒**
+**Last updated: 2025-12-11**
