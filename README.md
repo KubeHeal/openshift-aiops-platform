@@ -138,6 +138,15 @@ oc port-forward self-healing-workbench-0 8888:8888 -n self-healing-platform
 # Open http://localhost:8888
 ```
 
+**Post-Deployment Cleanup (Optional):**
+```bash
+# Clean up extra namespaces created by upstream Validated Patterns defaults
+# These are safe to delete and don't affect your deployment
+oc delete namespace self-healing-platform-example imperative --ignore-not-found=true
+```
+
+> **ℹ️ Note**: The `self-healing-platform-example` and `imperative` namespaces are created by the upstream `clustergroup:0.9.*` chart's default values. See [Issue #5 in the Junior Developer Guide](docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md#issue-5-extra-namespaces-created-upstream-behavior---expected) for details.
+
 ## 🛠️ Development Setup
 
 ### For Contributors

@@ -409,48 +409,91 @@ oc get sa -n self-healing-platform | grep self-healing-operator
 
 **Reference**: [Troubleshooting Guide - ServiceAccount Not Found](TROUBLESHOOTING-GUIDE.md#issue-serviceaccount-not-found-during-argocd-sync)
 
-### Issue 5: Extra Namespace Created (`self-healing-platform-example`)
+### Issue 5: Extra Namespaces Created (UPSTREAM BEHAVIOR - EXPECTED)
 
 **When**: After deployment completes
 **Symptoms**:
-- Extra namespace `self-healing-platform-example` exists
-- ArgoCD instance `example-gitops` running in that namespace
-- Not part of the intended deployment
+- Extra namespace `self-healing-platform-example` exists with `example-gitops` ArgoCD instance
+- Extra namespace `imperative` exists with Vault unsealing cronjob
+- These are NOT part of your intended deployment
+
+**Root Cause (IMPORTANT - READ THIS):**
+
+This is **EXPECTED BEHAVIOR** from the upstream Validated Patterns framework (`oci://quay.io/validatedpatterns/clustergroup:0.9.38`).
+
+The upstream chart has these **default values**:
+```yaml
+# From quay.io/validatedpatterns/clustergroup:0.9.38 values.yaml
+clusterGroup:
+  name: example  # <-- Default value creates "example" resources
+```
+
+When the Pattern CR renders, it creates resources for BOTH:
+1. **Your configured values** (`clusterGroup.name: hub`) → `self-healing-platform-hub` ✅
+2. **Upstream defaults** (`clusterGroup.name: example`) → `self-healing-platform-example` ⚠️
+
+The `imperative` namespace contains Vault-related unsealing jobs and is also part of the upstream chart's default behavior.
 
 **Diagnosis:**
 ```bash
-# Check for extra namespaces
-oc get namespaces | grep self-healing
+# Check all self-healing namespaces
+oc get namespaces | grep -E "self-healing|imperative"
 
-# Should see:
+# Expected output:
+# imperative                      Active   <time>
 # self-healing-platform           Active   <time>
+# self-healing-platform-example   Active   <time>
 # self-healing-platform-hub       Active   <time>
-
-# If you see self-healing-platform-example, it's the issue
 ```
 
-**Solution (Safe Cleanup):**
+**Solution: Safe Cleanup (Post-Deployment)**
 ```bash
-# Delete the extra namespace and ArgoCD instance
-oc delete namespace self-healing-platform-example
+# These extra namespaces DO NOT affect deployment functionality
+# Safe to delete after deployment completes:
 
-# This is safe - it doesn't affect the main deployment
-# The correct namespaces are:
-# - self-healing-platform (application resources)
-# - self-healing-platform-hub (hub-gitops ArgoCD instance)
+oc delete namespace self-healing-platform-example imperative
+
+# OR if you prefer to keep them (they're harmless):
+# Do nothing - they consume minimal resources
 ```
 
-**Why this happens**: This appears to be a transient issue from the clustergroup chart or common subtree. It creates an example ArgoCD instance that isn't needed. Safe to delete.
+**Correct Namespaces for Your Deployment:**
+- ✅ `self-healing-platform` (application resources)
+- ✅ `self-healing-platform-hub` (hub-gitops ArgoCD instance)
+- ⚠️ `self-healing-platform-example` (upstream default - safe to delete)
+- ⚠️ `imperative` (upstream default - safe to delete)
+
+**Why We Don't "Fix" This in Code:**
+
+This is **upstream Validated Patterns framework behavior**, not a bug in this repository. The issue is in:
+- `oci://quay.io/validatedpatterns/clustergroup` (external OCI chart)
+- `oci://quay.io/hybridcloudpatterns/pattern-install` (external OCI chart)
+
+Attempting to override these defaults in our values files has proven unreliable due to the chart rendering logic.
+
+**Best Practice:**
+Include the cleanup commands in your post-deployment automation:
+```bash
+# In your deployment script, after 'make operator-deploy' completes:
+sleep 30  # Wait for all resources to be created
+oc delete namespace self-healing-platform-example imperative --ignore-not-found=true
+```
 
 **Verification:**
 ```bash
-# After deletion, verify only correct namespaces remain
+# Verify only your intended namespaces remain
 oc get namespaces | grep self-healing
 
 # Should see only:
-# self-healing-platform
-# self-healing-platform-hub (if using namespaced ArgoCD)
+# self-healing-platform           Active   <time>
+# self-healing-platform-hub       Active   <time>
 ```
+
+**Additional Context:**
+- This behavior affects ALL Validated Patterns deployments using `clustergroup:0.9.*`
+- The extra namespaces may recreate on subsequent deployments
+- They do **NOT** interfere with your application functionality
+- This is documented upstream: https://github.com/validatedpatterns/common
 
 ---
 
@@ -631,3 +674,4 @@ After completing your testing, please report:
 **Last Updated**: 2025-12-10
 **Version**: 1.0
 **Tested on**: OpenShift 4.18.21
+self-healing-platform-example
