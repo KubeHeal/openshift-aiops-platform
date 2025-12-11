@@ -81,10 +81,322 @@ clusterGroup:
         valueFiles:
           - /values-global.yaml
           - /values-hub.yaml
-          - charts/hub/values-notebooks-validation.yaml
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
         syncOptions:
           - CreateNamespace=true
+# Notebook Validation Configuration
+# Purpose: Configure phased notebook validation via ArgoCD sync waves
+# Integration: Jupyter Notebook Validator Operator + ArgoCD Sync Waves
+# Reference: ADR-029, ADR-030
+# Operator: https://operatorhub.io/operator/jupyter-notebook-validator-operator
+
+notebooks:
+  validation:
+    # Enable notebook validation
+    enabled: true
+
+    # Enable ArgoCD sync waves for sequential execution
+    # Required for full pipeline validation with data/model dependencies
+    enableSyncWaves: true
+
+    # Operator deployment method: "olm" or "helm"
+    # - "olm": Operator installed via OperatorHub/OLM (recommended for production)
+    #          Helm chart only creates NotebookValidationJob CRs
+    # - "helm": Operator deployed by this Helm chart (for development/testing)
+    operatorDeploymentMethod: "olm"
+
+    # Operator image (only used when operatorDeploymentMethod: "helm")
+    operatorImage: "quay.io/takinosh/jupyter-notebook-validator-operator:release-4.18-bdc4fc0"
+
+    # Operator resource configuration (only used when operatorDeploymentMethod: "helm")
+    operatorResources:
+      requests:
+        memory: "128Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+    # Git repository configuration
+    # NOTE: These values should match global.git.repoURL and global.git.revision
+    # Update values-global.yaml when changing clusters or pushing to GitHub
+    git:
+      # Use the same URL as values-global.yaml git.repoURL
+      url: ""  # Will be overridden - see values-global.yaml git.repoURL
+      ref: ""  # Will be overridden - see values-global.yaml git.revision
+      # credentialsSecret: "git-credentials"  # Optional: for private repos
+
+    # =========================================================================
+    # TEKTON BUILD CONFIGURATION
+    # Builds notebook-validator image with ML packages pre-installed
+    # Reference: notebooks/Dockerfile
+    # =========================================================================
+    build:
+      # PVC size for build workspace (pytorch base is ~17GB)
+      pvcSize: "50Gi"
+      # Storage class for build PVC
+      storageClass: "gp3-csi"
+      # Enable automated trigger for builds (webhook/EventListener)
+      autoTrigger: false
+      # Build timeout
+      timeout: "45m"
+
+    # Container images by tier (RHOAI images from redhat-ods-applications ImageStreams)
+    # These images have Papermill pre-installed and are optimized for OpenShift
+    #
+    # NOTE: For full ML validation, use notebook-validator image (tier3) which includes:
+    #   - statsmodels, prophet (time series forecasting)
+    #   - pyod (anomaly detection)
+    #   - xgboost, lightgbm (gradient boosting)
+    #   - seaborn, kserve
+    images:
+      # All tiers now use the notebook-validator image which has ALL ML packages pre-installed
+      # Built by BuildConfig from notebooks/Dockerfile
+      # Includes: statsmodels, prophet, pyod, xgboost, lightgbm, seaborn, kserve
+      tier1: "image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest"
+      tier2: "image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest"
+      tier3: "image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest"
+
+    # Resource configuration by tier
+    resources:
+      tier1:
+        requests:
+          memory: "512Mi"
+          cpu: "500m"
+        limits:
+          memory: "1Gi"
+          cpu: "1000m"
+        timeout: "5m"
+
+      tier2:
+        requests:
+          memory: "2Gi"
+          cpu: "1000m"
+        limits:
+          memory: "4Gi"
+          cpu: "2000m"
+        timeout: "15m"
+
+      tier3:
+        requests:
+          memory: "4Gi"
+          cpu: "2000m"
+        limits:
+          memory: "8Gi"
+          cpu: "4000m"
+        timeout: "45m"
+        gpu:
+          enabled: false
+          count: "1"
+
+    # =========================================================================
+    # SYNC WAVE CONFIGURATION
+    # Notebooks are organized into waves based on data/model dependencies
+    #
+    # Wave 0:  Setup & Platform Validation (MUST run first)
+    # Wave 1:  Data Collection (parallel - metrics, events, logs)
+    # Wave 2:  Feature Engineering (depends on Wave 1)
+    # Wave 3:  Anomaly Detection Models (parallel - depends on Wave 2)
+    # Wave 4:  Ensemble Model (depends on Wave 3)
+    # Wave 5:  Self-Healing Logic (depends on Wave 4)
+    # Wave 6:  Model Serving (depends on Wave 4)
+    # Wave 7:  End-to-End Scenarios (depends on Waves 5-6)
+    # Wave 8:  MCP/Lightspeed Integration (external services)
+    # Wave 9:  Monitoring (depends on all previous)
+    # Wave 10: Advanced Scenarios (final wave)
+    # =========================================================================
+    waves:
+      # Wave 0: Setup & Platform Validation
+      wave0:
+        enabled: true
+        notebooks:
+          - name: "platform-readiness-validation"
+            path: "notebooks/00-setup/00-platform-readiness-validation.ipynb"
+            tier: "tier1"
+          - name: "environment-setup"
+            path: "notebooks/00-setup/environment-setup.ipynb"
+            tier: "tier1"
+
+      # Wave 1: Data Collection (parallel)
+      wave1:
+        enabled: true
+        notebooks:
+          - name: "prometheus-metrics-collection"
+            path: "notebooks/01-data-collection/prometheus-metrics-collection.ipynb"
+            tier: "tier2"
+          - name: "openshift-events-analysis"
+            path: "notebooks/01-data-collection/openshift-events-analysis.ipynb"
+            tier: "tier1"
+          - name: "log-parsing-analysis"
+            path: "notebooks/01-data-collection/log-parsing-analysis.ipynb"
+            tier: "tier2"
+
+      # Wave 2: Feature Engineering
+      wave2:
+        enabled: true
+        notebooks:
+          - name: "feature-store-demo"
+            path: "notebooks/01-data-collection/feature-store-demo.ipynb"
+            tier: "tier2"
+          - name: "synthetic-anomaly-generation"
+            path: "notebooks/01-data-collection/synthetic-anomaly-generation.ipynb"
+            tier: "tier1"
+
+      # Wave 3: Anomaly Detection Models (parallel)
+      wave3:
+        enabled: true
+        notebooks:
+          - name: "isolation-forest-implementation"
+            path: "notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb"
+            tier: "tier2"
+          - name: "time-series-anomaly-detection"
+            path: "notebooks/02-anomaly-detection/02-time-series-anomaly-detection.ipynb"
+            tier: "tier2"
+          - name: "lstm-based-prediction"
+            path: "notebooks/02-anomaly-detection/03-lstm-based-prediction.ipynb"
+            tier: "tier3"
+            gpuRequired: true
+
+      # Wave 4: Ensemble Model
+      wave4:
+        enabled: true
+        notebooks:
+          - name: "ensemble-anomaly-methods"
+            path: "notebooks/02-anomaly-detection/04-ensemble-anomaly-methods.ipynb"
+            tier: "tier3"
+
+      # Wave 5: Self-Healing Logic
+      wave5:
+        enabled: true
+        notebooks:
+          - name: "rule-based-remediation"
+            path: "notebooks/03-self-healing-logic/rule-based-remediation.ipynb"
+            tier: "tier2"
+          - name: "coordination-engine-integration"
+            path: "notebooks/03-self-healing-logic/coordination-engine-integration.ipynb"
+            tier: "tier2"
+          - name: "ai-driven-decision-making"
+            path: "notebooks/03-self-healing-logic/ai-driven-decision-making.ipynb"
+            tier: "tier3"
+          - name: "hybrid-healing-workflows"
+            path: "notebooks/03-self-healing-logic/hybrid-healing-workflows.ipynb"
+            tier: "tier3"
+
+      # Wave 6: Model Serving
+      wave6:
+        enabled: true
+        notebooks:
+          - name: "kserve-model-deployment"
+            path: "notebooks/04-model-serving/kserve-model-deployment.ipynb"
+            tier: "tier3"
+          - name: "model-versioning-mlops"
+            path: "notebooks/04-model-serving/model-versioning-mlops.ipynb"
+            tier: "tier3"
+          - name: "inference-pipeline-setup"
+            path: "notebooks/04-model-serving/inference-pipeline-setup.ipynb"
+            tier: "tier3"
+
+      # Wave 7: End-to-End Scenarios
+      wave7:
+        enabled: true
+        notebooks:
+          - name: "pod-crash-loop-healing"
+            path: "notebooks/05-end-to-end-scenarios/pod-crash-loop-healing.ipynb"
+            tier: "tier2"
+          - name: "network-anomaly-response"
+            path: "notebooks/05-end-to-end-scenarios/network-anomaly-response.ipynb"
+            tier: "tier2"
+          - name: "resource-exhaustion-detection"
+            path: "notebooks/05-end-to-end-scenarios/resource-exhaustion-detection.ipynb"
+            tier: "tier2"
+          - name: "complete-platform-demo"
+            path: "notebooks/05-end-to-end-scenarios/complete-platform-demo.ipynb"
+            tier: "tier3"
+
+      # Wave 8: MCP & Lightspeed Integration
+      wave8:
+        enabled: true
+        notebooks:
+          - name: "mcp-server-integration"
+            path: "notebooks/06-mcp-lightspeed-integration/mcp-server-integration.ipynb"
+            tier: "tier3"
+          - name: "openshift-lightspeed-integration"
+            path: "notebooks/06-mcp-lightspeed-integration/openshift-lightspeed-integration.ipynb"
+            tier: "tier3"
+          - name: "llamastack-integration"
+            path: "notebooks/06-mcp-lightspeed-integration/llamastack-integration.ipynb"
+            tier: "tier3"
+
+      # Wave 9: Monitoring & Operations
+      wave9:
+        enabled: true
+        notebooks:
+          - name: "prometheus-metrics-monitoring"
+            path: "notebooks/07-monitoring-operations/prometheus-metrics-monitoring.ipynb"
+            tier: "tier2"
+          - name: "model-performance-monitoring"
+            path: "notebooks/07-monitoring-operations/model-performance-monitoring.ipynb"
+            tier: "tier3"
+          - name: "healing-success-tracking"
+            path: "notebooks/07-monitoring-operations/healing-success-tracking.ipynb"
+            tier: "tier2"
+
+      # Wave 10: Advanced Scenarios
+      wave10:
+        enabled: true
+        notebooks:
+          - name: "multi-cluster-healing"
+            path: "notebooks/08-advanced-scenarios/multi-cluster-healing-coordination.ipynb"
+            tier: "tier3"
+          - name: "predictive-scaling"
+            path: "notebooks/08-advanced-scenarios/predictive-scaling-capacity-planning.ipynb"
+            tier: "tier3"
+            # Note: Model saved to S3 via model-storage-config secret (PVC mount not supported by CRD)
+          - name: "security-incident-response"
+            path: "notebooks/08-advanced-scenarios/security-incident-response-automation.ipynb"
+            tier: "tier3"
+          - name: "cost-optimization"
+            path: "notebooks/08-advanced-scenarios/cost-optimization-resource-efficiency.ipynb"
+            tier: "tier2"
+
+# ArgoCD Configuration
+argocd:
+  # Sync policy for notebook validation
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+
+  # Resource tracking for sync waves
+  resourceHealthChecks:
+    # Custom health check for NotebookValidationJob
+    - group: mlops.mlops.dev
+      kind: NotebookValidationJob
+      check: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase == "Succeeded" then
+            hs.status = "Healthy"
+            hs.message = "Notebook validation completed successfully"
+          elseif obj.status.phase == "Failed" then
+            hs.status = "Degraded"
+            hs.message = obj.status.message or "Notebook validation failed"
+          elseif obj.status.phase == "Running" then
+            hs.status = "Progressing"
+            hs.message = "Notebook validation in progress"
+          else
+            hs.status = "Progressing"
+            hs.message = "Waiting for validation to start"
+          end
+        else
+          hs.status = "Progressing"
+          hs.message = "Waiting for status"
+        end
+        return hs
