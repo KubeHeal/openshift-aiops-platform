@@ -133,15 +133,16 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ include "self-healing-platform.name" . }}
     app.kubernetes.io/component: notebook-validator
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
 spec:
   lookupPolicy:
     local: true
 
 ---
 # BuildConfig for notebook validator
-# HYBRID APPROACH: RHOAI base image + validation tools (papermill, nbformat, oc CLI)
-# See: ADR-029 - Notebook Validation with RHOAI ImageStreams
+# HYBRID APPROACH: RHOAI PyTorch base + ML packages
+# See: ADR-029, notebooks/Dockerfile
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
@@ -150,37 +151,37 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ include "self-healing-platform.name" . }}
     app.kubernetes.io/component: notebook-validator
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
 spec:
   source:
     type: Git
     git:
       uri: {{ $gitUrl }}
       ref: {{ $gitRef }}
-    contextDir: reference/notebook-validator
+    contextDir: notebooks
     sourceSecret:
       name: {{ .Values.imageBuilds.gitCredentialsSecret }}  # pragma: allowlist secret
   strategy:
     type: Docker
     dockerStrategy:
       dockerfilePath: Dockerfile
-      from:
-        kind: DockerImage
-        name: "image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.1"
+      forcePull: false
   output:
     to:
       kind: ImageStreamTag
       name: notebook-validator:latest
   triggers:
     - type: ConfigChange
-    - type: ImageChange
   runPolicy: Serial
   resources:
     limits:
       cpu: "2"
-      memory: "4Gi"
+      memory: "8Gi"
     requests:
-      cpu: "1"
+      cpu: "500m"
       memory: "2Gi"
+  completionDeadlineSeconds: 3600
 
 # NOTE: MCP Server BuildConfig removed - now deployed as standalone Go project
 # See: ADR-036: Go-Based Standalone MCP Server
