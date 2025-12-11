@@ -47,15 +47,6 @@ imageBuilds:
   gitCredentialsSecret: "git-credentials-source"  # pragma: allowlist secret
   baseImage: "registry.redhat.io/ubi8/python-39:latest"
 
-# Notebook validation configuration
-# Enables BuildConfig for notebook-validator image + wait-for-image Job
-notebooks:
-  validation:
-    enabled: true
-    git:
-      url: "https://github.com/tosin2013/openshift-aiops-platform.git"
-      ref: "main"
-
 # Namespace configuration
 namespace:
   create: false  # Namespace already exists
@@ -90,6 +81,7 @@ clusterGroup:
         valueFiles:
           - /values-global.yaml
           - /values-hub.yaml
+          - /charts/hub/values-notebooks-validation.yaml
       syncPolicy:
         automated:
           prune: true
