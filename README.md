@@ -40,12 +40,19 @@ The **OpenShift AI Ops Self-Healing Platform** is a production-ready AIOps solut
 
 ### Installation
 
+#### Option 1: Fork and Deploy (Recommended for Development)
+
+**⚠️ IMPORTANT**: Always fork the repository first before deploying. This allows you to customize values files and maintain your own deployment configuration.
+
 ```bash
-# 1. Clone the repository
-git clone https://github.com/tosin2013/openshift-aiops-platform.git
+# 1. Fork the repository on GitHub
+# Click "Fork" at https://github.com/tosin2013/openshift-aiops-platform
+
+# 2. Clone YOUR fork
+git clone https://github.com/YOUR-USERNAME/openshift-aiops-platform.git
 cd openshift-aiops-platform
 
-# 2. Configure values files (CRITICAL - Update Git repository URLs)
+# 3. Configure values files (CRITICAL - Update Git repository URLs)
 # Edit values-global.yaml - Update git.repoURL (line 98) to YOUR repository:
 vi values-global.yaml
 # Change: repoURL: "https://gitea-with-admin-gitea.apps.cluster-pvbs6..."
@@ -56,30 +63,72 @@ vi values-hub.yaml
 # Change: repoURL: "https://gitea-with-admin-gitea.apps.cluster-pvbs6..."
 # To:     repoURL: "https://github.com/YOUR-USERNAME/openshift-aiops-platform.git"
 
-# 3. Set your Ansible Hub token
+# 4. Set your Ansible Hub token
 export ANSIBLE_HUB_TOKEN='your-token-here'
 # Or create a token file
 echo 'your-token-here' > token
 
-# 4. Build execution environment (includes all dependencies)
+# 5. Build execution environment (includes all dependencies)
 make build-ee
 
-# 5. Validate cluster prerequisites
+# 6. Validate cluster prerequisites
 make check-prerequisites
 
-# 6. Run Ansible prerequisites (creates secrets, RBAC, namespaces)
+# 7. Run Ansible prerequisites (creates secrets, RBAC, namespaces)
 make operator-deploy-prereqs
 
-# 7. Deploy the platform via Validated Patterns Operator
+# 8. Deploy the platform via Validated Patterns Operator
 make operator-deploy
 
-# 8. Validate deployment
+# 9. Validate deployment
 make argo-healthcheck
 ```
 
-> **💡 Note**: Step 7 (`make operator-deploy`) automatically runs step 6 (`operator-deploy-prereqs`) as a dependency. However, running them separately helps with troubleshooting and understanding the deployment flow.
+> **💡 Note**: Step 8 (`make operator-deploy`) automatically runs step 7 (`operator-deploy-prereqs`) as a dependency. However, running them separately helps with troubleshooting and understanding the deployment flow.
 
-> **⚠️ Critical**: If you skip step 2 (updating repoURL in values files), ArgoCD will try to sync from the example Gitea URL which won't exist on your cluster, causing deployment failures. Always update both `values-global.yaml` and `values-hub.yaml` to point to YOUR repository.
+> **⚠️ Critical**: If you skip step 3 (updating repoURL in values files), ArgoCD will try to sync from the example Gitea URL which won't exist on your cluster, causing deployment failures. Always update both `values-global.yaml` and `values-hub.yaml` to point to YOUR fork's repository URL.
+
+#### Option 2: Deploy with Local Gitea (Air-Gapped/Development)
+
+For air-gapped environments or local development, you can deploy Gitea on your OpenShift cluster and fork the repository there:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/tosin2013/openshift-aiops-platform.git
+cd openshift-aiops-platform
+
+# 2. Deploy Gitea on OpenShift
+make deploy-gitea
+# This deploys Gitea operator and creates a Gitea instance
+
+# 3. Get Gitea URL
+GITEA_URL=$(oc get route gitea -n gitea -o jsonpath='{.spec.host}')
+echo "Gitea URL: https://${GITEA_URL}"
+
+# 4. Fork repository in Gitea
+# - Log into Gitea UI (default: admin / see giteuserpass.md for password)
+# - Create new repository or import from GitHub
+# - Repository name: openshift-aiops-platform
+
+# 5. Update values files to point to Gitea
+vi values-global.yaml
+# Set: repoURL: "https://gitea-with-admin-gitea.apps.<cluster-domain>/<username>/openshift-aiops-platform.git"
+
+vi values-hub.yaml
+# Set: repoURL: "https://gitea-with-admin-gitea.apps.<cluster-domain>/<username>/openshift-aiops-platform.git"
+
+# 6. Set Ansible Hub token
+export ANSIBLE_HUB_TOKEN='your-token-here'
+
+# 7. Build and deploy
+make build-ee
+make check-prerequisites
+make operator-deploy-prereqs
+make operator-deploy
+make argo-healthcheck
+```
+
+> **📖 More info**: See [Gitea Integration Guide](docs/GITEA-INTEGRATION-GUIDE.md) for detailed setup
 
 **🎉 Done!** Your self-healing platform is now running.
 

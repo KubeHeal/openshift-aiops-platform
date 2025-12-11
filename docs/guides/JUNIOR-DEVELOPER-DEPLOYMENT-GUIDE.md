@@ -35,13 +35,40 @@ oc version
 
 ## 🚀 Deployment Steps
 
-### Step 1: Clone the Repository
+### Step 1: Fork and Clone the Repository
 
-Clone the repository to a **new directory** for testing:
+**⚠️ CRITICAL**: Always fork the repository first before testing deployment. This allows you to customize values files and maintain your own test configuration.
+
+#### Option A: Fork from GitHub (Recommended)
 
 ```bash
+# 1. Fork the repository on GitHub
+# Visit: https://github.com/tosin2013/openshift-aiops-platform
+# Click the "Fork" button in the top-right corner
+
+# 2. Clone YOUR fork to a new directory
 cd ~/
-git clone https://gitea-with-admin-gitea.apps.cluster-pvbs6.pvbs6.sandbox3005.opentlc.com/takinosh/openshift-aiops-platform.git openshift-aiops-platform-deployment-testing
+git clone https://github.com/YOUR-USERNAME/openshift-aiops-platform.git openshift-aiops-platform-deployment-testing
+cd openshift-aiops-platform-deployment-testing
+```
+
+#### Option B: Fork in Gitea (For Air-Gapped/Local Testing)
+
+```bash
+# 1. Access Gitea UI
+GITEA_URL=$(oc get route gitea -n gitea -o jsonpath='{.spec.host}' 2>/dev/null)
+echo "Gitea URL: https://${GITEA_URL}"
+
+# 2. Log into Gitea (get credentials from giteuserpass.md or ask instructor)
+
+# 3. Fork the repository in Gitea UI
+# - Navigate to: https://gitea-with-admin-gitea.apps.<cluster-domain>/takinosh/openshift-aiops-platform
+# - Click "Fork" button
+# - Create fork under your username
+
+# 4. Clone YOUR Gitea fork
+cd ~/
+git clone https://gitea-with-admin-gitea.apps.cluster-pvbs6.pvbs6.sandbox3005.opentlc.com/YOUR-USERNAME/openshift-aiops-platform.git openshift-aiops-platform-deployment-testing
 cd openshift-aiops-platform-deployment-testing
 ```
 
@@ -382,6 +409,49 @@ oc get sa -n self-healing-platform | grep self-healing-operator
 
 **Reference**: [Troubleshooting Guide - ServiceAccount Not Found](TROUBLESHOOTING-GUIDE.md#issue-serviceaccount-not-found-during-argocd-sync)
 
+### Issue 5: Extra Namespace Created (`self-healing-platform-example`)
+
+**When**: After deployment completes
+**Symptoms**:
+- Extra namespace `self-healing-platform-example` exists
+- ArgoCD instance `example-gitops` running in that namespace
+- Not part of the intended deployment
+
+**Diagnosis:**
+```bash
+# Check for extra namespaces
+oc get namespaces | grep self-healing
+
+# Should see:
+# self-healing-platform           Active   <time>
+# self-healing-platform-hub       Active   <time>
+
+# If you see self-healing-platform-example, it's the issue
+```
+
+**Solution (Safe Cleanup):**
+```bash
+# Delete the extra namespace and ArgoCD instance
+oc delete namespace self-healing-platform-example
+
+# This is safe - it doesn't affect the main deployment
+# The correct namespaces are:
+# - self-healing-platform (application resources)
+# - self-healing-platform-hub (hub-gitops ArgoCD instance)
+```
+
+**Why this happens**: This appears to be a transient issue from the clustergroup chart or common subtree. It creates an example ArgoCD instance that isn't needed. Safe to delete.
+
+**Verification:**
+```bash
+# After deletion, verify only correct namespaces remain
+oc get namespaces | grep self-healing
+
+# Should see only:
+# self-healing-platform
+# self-healing-platform-hub (if using namespaced ArgoCD)
+```
+
 ---
 
 ## 📊 Validation Checklist
@@ -423,12 +493,19 @@ oc get clusterrolebinding | grep hub-gitops-argocd-application-controller
 - [ ] All pods are Running or Completed
 - [ ] ServiceAccounts exist (self-healing-operator, self-healing-workbench, etc.)
 - [ ] Secrets are synced (ExternalSecrets showing SecretSynced)
+- [ ] **No extra namespaces** (e.g., `self-healing-platform-example`)
 
 ```bash
 oc get namespace self-healing-platform
 oc get pods -n self-healing-platform
 oc get sa -n self-healing-platform
 oc get externalsecrets -n self-healing-platform
+
+# Check for extra namespaces (should only see self-healing-platform and self-healing-platform-hub)
+oc get namespaces | grep self-healing
+
+# If self-healing-platform-example exists, delete it:
+# oc delete namespace self-healing-platform-example
 ```
 
 ### RBAC and Permissions
