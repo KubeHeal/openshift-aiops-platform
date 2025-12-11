@@ -52,7 +52,7 @@ spec:
     - type: ConfigChange
     - type: Generic
       generic:
-        secret: coordination-engine-webhook-secret
+        secret: coordination-engine-webhook-secret  # pragma: allowlist secret
         allowEnv: true
   runPolicy: Serial
   resources:
@@ -112,7 +112,7 @@ spec:
     - type: ConfigChange
     - type: Generic
       generic:
-        secret: model-serving-webhook-secret
+        secret: model-serving-webhook-secret  # pragma: allowlist secret
         allowEnv: true
   runPolicy: Serial
   resources:
@@ -123,62 +123,10 @@ spec:
       cpu: "500m"
       memory: "512Mi"
 
----
-# ImageStream for MCP server
-apiVersion: image.openshift.io/v1
-kind: ImageStream
-metadata:
-  name: mcp-server
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app.kubernetes.io/name: {{ include "self-healing-platform.name" . }}
-    app.kubernetes.io/component: mcp-server
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-spec:
-  lookupPolicy:
-    local: true
-
----
-# BuildConfig for MCP server
-apiVersion: build.openshift.io/v1
-kind: BuildConfig
-metadata:
-  name: mcp-server
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app.kubernetes.io/name: {{ include "self-healing-platform.name" . }}
-    app.kubernetes.io/component: mcp-server
-spec:
-  source:
-    type: Git
-    git:
-      uri: {{ $gitUrl }}
-      ref: {{ $gitRef }}
-    contextDir: src/mcp-server
-    sourceSecret:
-      name: {{ .Values.imageBuilds.gitCredentialsSecret }}
-  strategy:
-    type: Docker
-    dockerStrategy:
-      dockerfilePath: Dockerfile
-  output:
-    to:
-      kind: ImageStreamTag
-      name: mcp-server:latest
-  triggers:
-    - type: ConfigChange
-    - type: Generic
-      generic:
-        secret: mcp-server-webhook-secret
-        allowEnv: true
-  runPolicy: Serial
-  resources:
-    limits:
-      cpu: "1"
-      memory: "1Gi"
-    requests:
-      cpu: "500m"
-      memory: "512Mi"
+# NOTE: MCP Server BuildConfig removed - now deployed as standalone Go project
+# See: ADR-036: Go-Based Standalone MCP Server
+# Repository: openshift-cluster-health-mcp (separate repo)
+# The MCP server is built and deployed independently
 
 {{- end }}{{/* end if $gitUrl */}}
 {{- end }}{{/* end if .Values.imageBuilds.enabled */}}
