@@ -84,6 +84,16 @@ repos:
       - id: end-of-file-fixer
         name: Fix end of files
 
+  # Helm chart linting
+  - repo: local
+    hooks:
+      - id: helm-lint
+        name: Helm lint charts
+        entry: bash -c 'if [ -f values-hub.yaml ] && [ -f values-global.yaml ]; then helm template test /tmp/clustergroup -f values-global.yaml -f values-hub.yaml > /dev/null || exit 1; fi'
+        language: system
+        files: '^(values-hub\.yaml|values-global\.yaml|charts/.*)$'
+        pass_filenames: false
+
 # Configuration for running hooks on push (in addition to commit)
 default_stages: [pre-commit, pre-push]
 
