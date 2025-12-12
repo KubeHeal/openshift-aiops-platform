@@ -9,6 +9,10 @@ metadata:
   annotations:
     notebooks.opendatahub.io/inject-oauth: "true"
     notebooks.opendatahub.io/oauth-logout-url: "https://rhods-dashboard-redhat-ods-applications.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/projects/self-healing-platform"
+    # ArgoCD: Allow manual changes to specific fields without reverting
+    # This enables operators to tune resources, env vars, and image during development
+    argocd.argoproj.io/compare-options: |
+      IgnoreDifferences=/spec/template/spec/containers/0/resources,/spec/template/spec/containers/0/env,/spec/template/spec/containers/0/image
 spec:
   template:
     spec:
@@ -269,15 +273,15 @@ spec:
       - name: oauth-config
         secret:
           defaultMode: 420
-          secretName: self-healing-workbench-oauth-config
+          secretName: self-healing-workbench-oauth-config  # pragma: allowlist secret
       - name: oauth-client
         secret:
           defaultMode: 420
-          secretName: self-healing-workbench-oauth-client
+          secretName: self-healing-workbench-oauth-client  # pragma: allowlist secret
       - name: tls-certificates
         secret:
           defaultMode: 420
-          secretName: self-healing-workbench-tls
+          secretName: self-healing-workbench-tls  # pragma: allowlist secret
 ---
 apiVersion: v1
 kind: ConfigMap
