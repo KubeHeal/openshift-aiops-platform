@@ -376,9 +376,12 @@ coordinationEngine:
     pullPolicy: Always
   replicas: 1
   logLevel: info
-  mlService:
+  kserve:
     enabled: true
-    url: http://aiops-ml-service:8080
+    namespace: self-healing-platform
+    services:
+      anomaly_detector: "anomaly-detector-predictor"
+      predictive_analytics: "predictive-analytics-predictor"
   resources:
     requests:
       cpu: "200m"

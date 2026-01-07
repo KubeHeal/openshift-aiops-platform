@@ -17,6 +17,18 @@ The **OpenShift AI Ops Self-Healing Platform** is a production-ready AIOps solut
 - 📊 **ML-Powered**: Uses Isolation Forest, LSTM models for anomaly detection
 - 🚀 **OpenShift Native**: Built on Red Hat OpenShift AI, KServe, Tekton, ArgoCD
 - 💬 **Natural Language Interface**: Integrates with OpenShift Lightspeed via MCP (Model Context Protocol)
+- 🌐 **Platform Agnostic**: Supports both **vanilla Kubernetes** and **OpenShift** clusters
+
+## 🧠 Deploying Your Own ML Models
+
+This platform follows a **user-deployed model architecture**:
+
+- **✅ You train and deploy** your own ML models via KServe InferenceServices
+- **✅ Platform provides** coordination engine, infrastructure, and integration
+- **✅ Works on both** vanilla Kubernetes (with KServe) and OpenShift (with OpenShift AI)
+- **✅ Full control** over model versions, updates, and lifecycle
+
+See the **[User Model Deployment Guide](docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md)** for complete instructions on deploying models to both vanilla Kubernetes and OpenShift.
 
 ## 📚 Documentation
 
@@ -25,6 +37,7 @@ The **OpenShift AI Ops Self-Healing Platform** is a production-ready AIOps solut
 | **[AGENTS.md](AGENTS.md)** | 🤖 **AI Agent Development Guide** (comprehensive reference) |
 | **[docs/adrs/](docs/adrs/)** | 🏛️ Architectural Decision Records (29+ ADRs) |
 | **[DEPLOYMENT.md](DEPLOYMENT.md)** | 🚀 Step-by-step deployment guide |
+| **[docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md](docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md)** | 🧠 **User Model Deployment Guide** (deploy your own ML models via KServe) |
 | **[docs/guides/TROUBLESHOOTING-GUIDE.md](docs/guides/TROUBLESHOOTING-GUIDE.md)** | 🔧 **Troubleshooting Guide** (common issues and solutions) |
 | **[docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md](docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md)** | 👨‍💻 **Junior Developer Guide** (deployment testing walkthrough) |
 | **[notebooks/README.md](notebooks/README.md)** | 📓 Jupyter notebook workflows |

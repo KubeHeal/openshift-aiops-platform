@@ -46,9 +46,15 @@ spec:
           value: "8080"
         - name: METRICS_PORT
           value: "9090"
-        {{- if .Values.coordinationEngine.mlService.enabled }}
-        - name: ML_SERVICE_URL
-          value: {{ .Values.coordinationEngine.mlService.url | default "http://aiops-ml-service:8080" | quote }}
+        {{- if .Values.coordinationEngine.kserve.enabled }}
+        - name: ENABLE_KSERVE_INTEGRATION
+          value: "true"
+        - name: KSERVE_NAMESPACE
+          value: {{ .Values.coordinationEngine.kserve.namespace | default .Release.Namespace | quote }}
+        - name: KSERVE_ANOMALY_DETECTOR_SERVICE
+          value: {{ .Values.coordinationEngine.kserve.services.anomaly_detector | default "anomaly-detector-predictor" | quote }}
+        - name: KSERVE_PREDICTIVE_ANALYTICS_SERVICE
+          value: {{ .Values.coordinationEngine.kserve.services.predictive_analytics | default "predictive-analytics-predictor" | quote }}
         {{- end }}
         livenessProbe:
           httpGet:
