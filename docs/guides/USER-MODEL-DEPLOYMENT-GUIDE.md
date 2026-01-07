@@ -353,6 +353,186 @@ kubectl exec -it deployment/coordination-engine -n self-healing-platform -- env 
 # KSERVE_PREDICTIVE_ANALYTICS_SERVICE=predictive-analytics-predictor
 ```
 
+## Registering Custom Models with Coordination Engine
+
+Beyond the default `anomaly-detector` and `predictive-analytics` models, you can register **custom domain-specific models** with the coordination engine.
+
+### Use Cases for Custom Models
+
+- **Database Performance**: `postgres-query-anomaly` - Detect abnormal database query patterns
+- **Network Traffic**: `network-traffic-predictor` - Forecast network load
+- **Disk Failure Prediction**: `disk-failure-predictor` - Predict disk failures 24h in advance
+- **Security Threats**: `security-threat-detector` - Detect suspicious API call patterns
+- **Application-Specific**: Any KServe-compatible model for your use case
+
+### Step-by-Step: Register Custom Model
+
+#### 1. Deploy Your KServe InferenceService
+
+```yaml
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: disk-failure-predictor
+  namespace: storage-monitoring
+spec:
+  predictor:
+    model:
+      modelFormat:
+        name: sklearn
+      storageUri: "pvc://model-storage-pvc/disk-failure-predictor/v1"
+      resources:
+        requests:
+          cpu: "500m"
+          memory: "1Gi"
+```
+
+```bash
+kubectl apply -f disk-failure-predictor-inferenceservice.yaml
+```
+
+#### 2. Update values-hub.yaml
+
+Add your model to the coordination engine configuration:
+
+```yaml
+coordinationEngine:
+  kserve:
+    enabled: true
+    namespace: self-healing-platform  # Default namespace
+    models:
+      # Default models
+      - name: anomaly-detector
+        service: anomaly-detector-predictor
+        type: anomaly
+        description: "Isolation Forest anomaly detection"
+
+      - name: predictive-analytics
+        service: predictive-analytics-predictor
+        type: predictive
+        description: "LSTM-based predictive analytics"
+
+      # YOUR CUSTOM MODEL
+      - name: disk-failure-predictor
+        service: disk-failure-predictor-predictor
+        namespace: storage-monitoring  # Override default namespace
+        type: predictive
+        description: "Predicts disk failures using SMART metrics"
+```
+
+#### 3. Redeploy Coordination Engine
+
+**Using Helm**:
+```bash
+helm upgrade self-healing-platform charts/hub \
+  -n self-healing-platform \
+  -f values-hub.yaml
+```
+
+**Using GitOps** (recommended):
+```bash
+git add values-hub.yaml
+git commit -m "feat: register disk-failure-predictor model"
+git push
+# ArgoCD will sync automatically
+```
+
+#### 4. Verify Registration
+
+```bash
+# Check coordination engine logs
+kubectl logs -n self-healing-platform deployment/coordination-engine | grep "disk-failure-predictor"
+
+# Expected: "Registered KServe model: disk-failure-predictor"
+
+# Test model endpoint via coordination engine
+curl -X POST http://coordination-engine.self-healing-platform.svc.cluster.local:8080/api/v1/models/disk-failure-predictor/predict \
+  -H "Content-Type: application/json" \
+  -d '{"instances": [[85.5, 5000, 365]]}'
+```
+
+### Model Configuration Schema
+
+```yaml
+models:
+  - name: string              # Unique model identifier
+    service: string           # KServe InferenceService name (usually <name>-predictor)
+    namespace: string         # Namespace where model is deployed (optional, uses default)
+    type: string              # Model type: "anomaly", "predictive", "classification"
+    description: string       # Human-readable description (optional)
+```
+
+### Multi-Namespace Support
+
+Models can be deployed in different namespaces:
+
+```yaml
+coordinationEngine:
+  kserve:
+    namespace: self-healing-platform  # Default namespace
+    models:
+      - name: anomaly-detector
+        service: anomaly-detector-predictor
+        # Uses default namespace: self-healing-platform
+
+      - name: postgres-anomaly
+        service: postgres-anomaly-predictor
+        namespace: database-monitoring  # Override namespace
+
+      - name: network-predictor
+        service: network-predictor-predictor
+        namespace: network-team  # Override namespace
+```
+
+**Service URL Construction**:
+- Default namespace: `http://{service}.{default-namespace}.svc.cluster.local`
+- Override namespace: `http://{service}.{custom-namespace}.svc.cluster.local`
+
+### Best Practices
+
+1. **Namespace Organization**: Group related models in dedicated namespaces
+   - `storage-monitoring`: Disk/storage models
+   - `database-monitoring`: Database performance models
+   - `network-monitoring`: Network traffic models
+
+2. **Model Naming**: Use descriptive names that indicate purpose
+   - ✅ `disk-failure-predictor`
+   - ✅ `postgres-query-anomaly-detector`
+   - ❌ `model-v2`
+   - ❌ `my-ml-model`
+
+3. **GitOps Workflow**: Always update `values-hub.yaml` via Git
+   - Track model registry changes in version control
+   - Enable peer review of model additions
+   - Automatic rollback if issues occur
+
+4. **Testing**: Test models before registering with coordination engine
+   ```bash
+   # Direct KServe endpoint test
+   kubectl run test-client --rm -it --image=curlimages/curl --restart=Never -- \
+     curl -X POST http://your-model-predictor.namespace.svc.cluster.local/v1/models/your-model:predict \
+     -H "Content-Type: application/json" \
+     -d '{"instances": [[...]]}'
+   ```
+
+### Limitations and Future Enhancements
+
+**Current Limitations** (Phase 1):
+- ⚠️ Requires coordination engine restart to register new models
+- ⚠️ No runtime validation of model URLs
+- ⚠️ Manual configuration via values.yaml
+
+**Future Enhancements** (See ADR-040):
+- 🚀 **Phase 2**: ConfigMap-based registry with hot reload (no restart required)
+- 🚀 **Phase 3**: CRD-based registry with Kubernetes-native validation
+- 🚀 Advanced metadata: triggers, input features, remediation actions
+
+### Reference
+
+For complete architecture and implementation details, see:
+- **ADR-040**: [Extensible KServe Model Registry](../adrs/040-extensible-kserve-model-registry.md)
+- **Coordination Engine Issue**: Dynamic model loading support (see GitHub)
+
 ## Example: Complete Deployment
 
 See the complete notebook example: [`notebooks/04-model-serving/kserve-model-deployment.ipynb`](../../notebooks/04-model-serving/kserve-model-deployment.ipynb)
