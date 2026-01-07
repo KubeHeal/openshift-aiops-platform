@@ -3,66 +3,9 @@
 {{- $gitUrl := .Values.imageBuilds.gitRepository | default .Values.git.repoURL | default .Values.global.git.repoURL | default "" }}
 {{- $gitRef := .Values.imageBuilds.gitRef | default .Values.git.revision | default .Values.global.git.revision | default "main" }}
 {{- if $gitUrl }}
----
-# ImageStream for coordination engine
-apiVersion: image.openshift.io/v1
-kind: ImageStream
-metadata:
-  name: coordination-engine
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app.kubernetes.io/name: {{ include "self-healing-platform.name" . }}
-    app.kubernetes.io/component: coordination-engine
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-spec:
-  lookupPolicy:
-    local: true
-
----
-# BuildConfig for coordination engine
-apiVersion: build.openshift.io/v1
-kind: BuildConfig
-metadata:
-  name: coordination-engine
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app.kubernetes.io/name: {{ include "self-healing-platform.name" . }}
-    app.kubernetes.io/component: coordination-engine
-spec:
-  source:
-    type: Git
-    git:
-      uri: {{ $gitUrl }}
-      ref: {{ $gitRef }}
-    contextDir: src/coordination-engine
-    sourceSecret:
-      name: {{ .Values.imageBuilds.gitCredentialsSecret }}
-  strategy:
-    type: Docker
-    dockerStrategy:
-      dockerfilePath: Dockerfile
-      from:
-        kind: DockerImage
-        name: {{ .Values.imageBuilds.baseImage }}
-  output:
-    to:
-      kind: ImageStreamTag
-      name: coordination-engine:latest
-  triggers:
-    - type: ConfigChange
-    - type: Generic
-      generic:
-        secret: coordination-engine-webhook-secret  # pragma: allowlist secret
-        allowEnv: true
-  runPolicy: Serial
-  resources:
-    limits:
-      cpu: "1"
-      memory: "1Gi"
-    requests:
-      cpu: "500m"
-      memory: "512Mi"
-
+# NOTE: coordination-engine BuildConfig and ImageStream removed
+# See: ADR-038: Go Coordination Engine Migration
+# Now uses pre-built images from Quay: quay.io/takinosh/openshift-coordination-engine:ocp-4.18-latest
 ---
 # ImageStream for model serving
 apiVersion: image.openshift.io/v1
