@@ -1,0 +1,113 @@
+{{- if .Values.mcpServer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-server
+  labels:
+    app.kubernetes.io/component: mcp-server
+    app.kubernetes.io/name: mcp-server
+    app.kubernetes.io/part-of: self-healing-platform
+spec:
+  replicas: {{ .Values.mcpServer.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: mcp-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: mcp-server
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: {{ .Values.mcpServer.serviceAccount.name | default "self-healing-operator" }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532  # nonroot user from distroless
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: mcp-server
+        image: {{ .Values.mcpServer.image.repository | default "quay.io/takinosh/openshift-cluster-health-mcp" }}:{{ .Values.mcpServer.image.tag | default "ocp-4.18-latest" }}
+        imagePullPolicy: {{ .Values.mcpServer.image.pullPolicy | default "Always" }}
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        env:
+        - name: MCP_TRANSPORT
+          value: {{ .Values.mcpServer.transport | default "http" | quote }}
+        - name: MCP_HTTP_HOST
+          value: "0.0.0.0"
+        - name: MCP_HTTP_PORT
+          value: "8080"
+        - name: LOG_LEVEL
+          value: {{ .Values.mcpServer.logLevel | default "info" | quote }}
+        {{- if .Values.mcpServer.coordinationEngine.enabled }}
+        - name: COORDINATION_ENGINE_URL
+          value: {{ .Values.mcpServer.coordinationEngine.url | default "http://coordination-engine:8080" | quote }}
+        {{- end }}
+        {{- if .Values.mcpServer.kserve.enabled }}
+        - name: KSERVE_NAMESPACE
+          value: {{ .Values.mcpServer.kserve.namespace | default .Release.Namespace | quote }}
+        {{- end }}
+        {{- if .Values.mcpServer.prometheus.enabled }}
+        - name: PROMETHEUS_URL
+          value: {{ .Values.mcpServer.prometheus.url | default "https://prometheus-k8s.openshift-monitoring.svc:9091" | quote }}
+        {{- end }}
+        {{- if .Values.mcpServer.cache }}
+        - name: CACHE_TTL_SECONDS
+          value: {{ .Values.mcpServer.cache.ttlSeconds | default 30 | quote }}
+        {{- end }}
+        resources:
+          requests:
+            memory: {{ .Values.mcpServer.resources.requests.memory | default "128Mi" | quote }}
+            cpu: {{ .Values.mcpServer.resources.requests.cpu | default "100m" | quote }}
+          limits:
+            memory: {{ .Values.mcpServer.resources.limits.memory | default "256Mi" | quote }}
+            cpu: {{ .Values.mcpServer.resources.limits.cpu | default "500m" | quote }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 65532
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-server
+  labels:
+    app.kubernetes.io/component: mcp-server
+    app.kubernetes.io/name: mcp-server
+    app.kubernetes.io/part-of: self-healing-platform
+spec:
+  selector:
+    app.kubernetes.io/component: mcp-server
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  type: ClusterIP
+{{- end }}

@@ -3,6 +3,7 @@
 ## Status
 **ACCEPTED** - 2025-12-09
 **IN PROGRESS** - Phase 1.4 completed (2025-12-10)
+**UPDATED** - 2026-01-07 (Integration with Go Coordination Engine per [ADR-038](038-go-coordination-engine-migration.md))
 
 ## Implementation Status
 
@@ -162,13 +163,13 @@ After analyzing the current TypeScript-based MCP server implementation (`src/mcp
 
 ### Integration Points
 
-| Integration | Protocol | Endpoint | Purpose |
-|-------------|----------|----------|---------|
-| **Coordination Engine** | HTTP REST | `http://coordination-engine:8080/api/v1/` | Remediation actions, incident management, workflow orchestration |
-| **KServe Predictive Model** | HTTP REST | `http://predictive-analytics-predictor:8080/v1/models/predictive-analytics:predict` | Anomaly detection, ML-powered analysis |
-| **Prometheus** | HTTP REST | `https://prometheus-k8s.openshift-monitoring.svc:9091/api/v1/query` | Metrics queries, cluster health data |
-| **Kubernetes API** | K8s client-go | In-cluster ServiceAccount | Pods, nodes, events, deployments |
-| **OpenShift Lightspeed** | MCP (HTTP) | Bidirectional MCP protocol | Natural language interface |
+| Integration | Protocol | Endpoint | Purpose | Implementation |
+|-------------|----------|----------|---------|----------------|
+| **Coordination Engine** | HTTP REST | `http://coordination-engine:8080/api/v1/` | Remediation actions, incident management, workflow orchestration | **Go-based** (per [ADR-038](038-go-coordination-engine-migration.md)) |
+| **KServe Predictive Model** | HTTP REST | `http://predictive-analytics-predictor:8080/v1/models/predictive-analytics:predict` | Anomaly detection, ML-powered analysis | Python ML service |
+| **Prometheus** | HTTP REST | `https://prometheus-k8s.openshift-monitoring.svc:9091/api/v1/query` | Metrics queries, cluster health data | OpenShift monitoring |
+| **Kubernetes API** | K8s client-go | In-cluster ServiceAccount | Pods, nodes, events, deployments | Native Go client |
+| **OpenShift Lightspeed** | MCP (HTTP) | Bidirectional MCP protocol | Natural language interface | MCP HTTP transport |
 
 ## Consequences
 
@@ -344,7 +345,8 @@ openshift-cluster-health-mcp/
 ## Related ADRs
 
 - **ADR-014**: [Cluster Health MCP Server for OpenShift Lightspeed Integration](014-openshift-aiops-platform-mcp-server.md) - **SUPERSEDED** by this ADR
-- **ADR-015**: [Service Separation - MCP Server vs REST API](ADR-015-service-separation-mcp-vs-rest-api.md) - **STILL VALID** - Coordination Engine remains REST API layer
+- **ADR-015**: [Service Separation - MCP Server vs REST API](015-service-separation-mcp-vs-rest-api.md) - **STILL VALID** - Coordination Engine remains REST API layer, both now Go-based
+- **ADR-038**: [Migration from Python to Go Coordination Engine](038-go-coordination-engine-migration.md) - **NEW (2026-01-07)** - Coordination Engine now Go-based, optimized Go-to-Go communication
 - **ADR-002**: [Hybrid Deterministic-AI Self-Healing Approach](002-hybrid-self-healing-approach.md) - Integration point for remediation workflows
 - **ADR-004**: [KServe for Model Serving Infrastructure](004-kserve-model-serving.md) - Integration point for ML inference
 

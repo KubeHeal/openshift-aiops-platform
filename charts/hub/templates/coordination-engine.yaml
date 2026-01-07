@@ -4,8 +4,10 @@ metadata:
   name: coordination-engine
   labels:
     app.kubernetes.io/component: coordination-engine
+    app.kubernetes.io/name: coordination-engine
+    app.kubernetes.io/part-of: self-healing-platform
 spec:
-  replicas: 1
+  replicas: {{ .Values.coordinationEngine.replicas | default 1 }}
   selector:
     matchLabels:
       app.kubernetes.io/component: coordination-engine
@@ -15,58 +17,55 @@ spec:
         app.kubernetes.io/component: coordination-engine
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
+        prometheus.io/port: "9090"
         prometheus.io/path: "/metrics"
     spec:
       serviceAccountName: self-healing-operator
       containers:
       - name: coordination-engine
-        image: image-registry.openshift-image-registry.svc:5000/self-healing-platform/coordination-engine:latest
-        imagePullPolicy: Always
+        image: {{ .Values.coordinationEngine.image.repository | default "quay.io/takinosh/openshift-coordination-engine" }}:{{ .Values.coordinationEngine.image.tag | default "ocp-4.18-latest" }}
+        imagePullPolicy: {{ .Values.coordinationEngine.image.pullPolicy | default "Always" }}
         ports:
         - containerPort: 8080
           name: http
           protocol: TCP
-        - containerPort: 8090
+        - containerPort: 9090
           name: metrics
           protocol: TCP
         resources:
           requests:
-            cpu: "200m"
-            memory: "256Mi"
+            cpu: {{ .Values.coordinationEngine.resources.requests.cpu | default "200m" | quote }}
+            memory: {{ .Values.coordinationEngine.resources.requests.memory | default "256Mi" | quote }}
           limits:
-            cpu: "500m"
-            memory: "512Mi"
+            cpu: {{ .Values.coordinationEngine.resources.limits.cpu | default "500m" | quote }}
+            memory: {{ .Values.coordinationEngine.resources.limits.memory | default "512Mi" | quote }}
         env:
         - name: LOG_LEVEL
-          valueFrom:
-            configMapKeyRef:
-              name: platform-config
-              key: LOG_LEVEL
+          value: {{ .Values.coordinationEngine.logLevel | default "info" | quote }}
+        - name: SERVER_PORT
+          value: "8080"
         - name: METRICS_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: platform-config
-              key: METRICS_PORT
+          value: "9090"
+        {{- if .Values.coordinationEngine.mlService.enabled }}
+        - name: ML_SERVICE_URL
+          value: {{ .Values.coordinationEngine.mlService.url | default "http://aiops-ml-service:8080" | quote }}
+        {{- end }}
         livenessProbe:
           httpGet:
             path: /health
             port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
         readinessProbe:
           httpGet:
             path: /health
             port: 8080
           initialDelaySeconds: 5
-          periodSeconds: 5
-        volumeMounts:
-        - name: data-volume
-          mountPath: /opt/app-root/src/data
-      volumes:
-      - name: data-volume
-        persistentVolumeClaim:
-          claimName: {{ printf "self-healing-data-%s" (regexFind "[a-z]+" (.Values.metadata.environment | default "development")) }}
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service

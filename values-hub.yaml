@@ -362,6 +362,66 @@ notebooks:
             path: "notebooks/08-advanced-scenarios/cost-optimization-resource-efficiency.ipynb"
             tier: "tier2"
 
+# ============================================================================
+# GO-BASED SERVICES CONFIGURATION
+# Reference: ADR-038 (Go Coordination Engine), ADR-036 (Go MCP Server)
+# ============================================================================
+
+# Coordination Engine Configuration (Go-based)
+# Reference: https://github.com/tosin2013/openshift-coordination-engine
+coordinationEngine:
+  image:
+    repository: quay.io/takinosh/openshift-coordination-engine
+    tag: ocp-4.18-latest
+    pullPolicy: Always
+  replicas: 1
+  logLevel: info
+  mlService:
+    enabled: true
+    url: http://aiops-ml-service:8080
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+# MCP Server Configuration (Go-based)
+# Reference: https://github.com/tosin2013/openshift-cluster-health-mcp
+mcpServer:
+  enabled: true
+  image:
+    repository: quay.io/takinosh/openshift-cluster-health-mcp
+    tag: 4.18-latest
+    pullPolicy: Always
+  replicas: 1
+  logLevel: info
+  serviceAccount:
+    create: false  # Using existing self-healing-operator SA
+    name: self-healing-operator
+  transport: http
+  coordinationEngine:
+    enabled: true
+    url: http://coordination-engine:8080
+  kserve:
+    enabled: true
+    namespace: self-healing-platform
+  prometheus:
+    enabled: true
+    url: https://prometheus-k8s.openshift-monitoring.svc:9091
+  cache:
+    ttlSeconds: 30
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+  route:
+    enabled: false  # Set to true for external access
+
 # ArgoCD Configuration
 argocd:
   # Sync policy for notebook validation

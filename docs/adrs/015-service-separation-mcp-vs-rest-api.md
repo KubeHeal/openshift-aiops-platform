@@ -2,6 +2,7 @@
 
 ## Status
 **SUPERSEDED** - 2025-12-09 by [ADR-036: Go-Based Standalone MCP Server](036-go-based-standalone-mcp-server.md)
+**UPDATED** - 2026-01-07 (Both MCP server AND Coordination Engine now Go-based per [ADR-038](038-go-coordination-engine-migration.md))
 
 **Previous Status**:
 - ~~ACCEPTED - 2025-10-13~~
@@ -10,7 +11,13 @@
 
 This ADR documented service separation principles for the TypeScript-based MCP server embedded in `openshift-aiops-platform`.
 
-**These concerns are now addressed** in the standalone Go-based MCP server (ADR-036) through:
+**Current Architecture (2026-01-07)**:
+- **MCP Server**: Go-based standalone service (ADR-036)
+- **Coordination Engine**: Go-based standalone service (ADR-038)
+- **Integration**: HTTP REST APIs between services
+- **Benefit**: Optimized Go-to-Go communication with consistent ecosystem
+
+**These concerns are now addressed** through:
 
 1. **Clear Architectural Separation**: MCP server is now a standalone project, Coordination Engine remains separate
 2. **HTTP REST Integration**: MCP server integrates with platform via HTTP REST APIs (no tight coupling)
@@ -27,7 +34,10 @@ This ADR documented service separation principles for the TypeScript-based MCP s
 | Maintenance Clarity | ✅ Separate repositories, clear boundaries |
 | No Mixed Concerns | ✅ No database, no workflow orchestration |
 
-See [ADR-036](036-go-based-standalone-mcp-server.md) and standalone repo ADR-003 (Standalone MCP Server Architecture) for current implementation.
+**See Also**:
+- [ADR-036](036-go-based-standalone-mcp-server.md) - Go-based MCP server architecture
+- [ADR-038](038-go-coordination-engine-migration.md) - Go-based coordination engine migration
+- Standalone repo ADR-003 (MCP Server) and ADR-006 (Integration Architecture)
 
 ---
 
