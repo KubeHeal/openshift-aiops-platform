@@ -3,268 +3,38 @@ kind: Application
 metadata:
   name: self-healing-platform
   namespace: openshift-gitops
-  # Finalizers ensure proper cleanup
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   labels:
     argocd.argoproj.io/instance: hub-gitops
 spec:
-  # Project for RBAC
   project: default
-
-  # Source configuration
   source:
-    # Git repository URL
-    repoURL: https://gitea-with-admin-gitea.apps.cluster-fn2qb.fn2qb.sandbox1343.opentlc.com/opentlc-mgr/openshift-aiops-platform.git
-
-    # Target branch
+    repoURL: https://github.com/sansow/openshift-aiops-platform.git
     targetRevision: main
-
-    # Path to Helm chart
     path: charts/hub
-
-    # Helm configuration
     helm:
-      # Values files to use (relative to chart path, hence ../../ to reach repo root)
-      # values-notebooks-validation.yaml is in charts/hub/ so no prefix needed
-      valueFiles:
-        - ../../values-global.yaml
-        - ../../values-hub.yaml
-        - values-notebooks-validation.yaml
-
-      # Additional Helm parameters
-      parameters: []
-
-      # Helm release name
       releaseName: self-healing-platform
-
-  # Destination configuration
+      valueFiles:
+        - values-global.yaml
+        - values-hub.yaml
+        - values-notebooks-validation.yaml
   destination:
-    # Kubernetes cluster (local cluster)
     server: https://kubernetes.default.svc
-
-    # Target namespace
     namespace: self-healing-platform
-
-  # Sync policy configuration
   syncPolicy:
-    # Automated sync
     automated:
-      # Prune resources that are no longer in Git
       prune: true
-
-      # Self-heal: automatically sync when cluster state diverges
       selfHeal: true
-
-      # Allow empty: allow syncing to empty Git repository
       allowEmpty: false
-
-    # Sync options
     syncOptions:
-      # Create namespace if it doesn't exist
       - CreateNamespace=true
-      # Skip schema validation to avoid CRD comparison errors
       - Validate=false
-      # Respect ignore differences
       - RespectIgnoreDifferences=true
-      # Allow managing resources in existing namespaces
       - ServerSideApply=true
-      # Skip dry-run for resources that may already exist
-      - SkipDryRunOnMissingResource=true
-
-    # Retry configuration
     retry:
-      # Limit number of retries
       limit: 5
-
-      # Backoff configuration
       backoff:
-        # Initial duration
         duration: 5s
-
-        # Maximum duration
         maxDuration: 3m
-
-        # Factor to multiply duration by
         factor: 2
-
-  # Ignore differences configuration
-  ignoreDifferences:
-    # Ignore differences in managed fields
-    - group: "*"
-      kind: "*"
-      managedFieldsManagers:
-        - kube-controller-manager
-        - kubectl-client-side-apply
-    # Ignore OperatorConfig which has x-kubernetes-preserve-unknown-fields causing schema errors
-    - group: operator.external-secrets.io
-      kind: OperatorConfig
-      jqPathExpressions:
-        - .spec
-        - .status
-    # Ignore ExternalSecret status - these may show errors while source secrets are being created
-    # The ExternalSecrets will eventually sync once their source secrets exist
-    - group: external-secrets.io
-      kind: ExternalSecret
-      jqPathExpressions:
-        - .status
-    # Ignore PVC status - PVCs with WaitForFirstConsumer are Pending until a pod uses them
-    - group: ""
-      kind: PersistentVolumeClaim
-      jqPathExpressions:
-        - .status
-    # Ignore InferenceService status - models may not exist on first deploy
-    - group: serving.kserve.io
-      kind: InferenceService
-      jqPathExpressions:
-        - .status
-    # Ignore namespace management for existing namespace and its resources
-    # CRITICAL: ArgoCD in namespaced mode cannot manage Namespace resources (cluster-scoped)
-    - group: ""
-      kind: Namespace
-      name: self-healing-platform
-    # Also ignore namespace resource by jqPathExpression to catch all namespace resources
-    - group: ""
-      kind: Namespace
-      jqPathExpressions:
-        - '.metadata.name == "self-healing-platform"'
-    # Ignore cluster-level namespaces that can't be managed in namespaced mode
-    - group: ""
-      kind: Namespace
-      name: external-secrets-operator
-    - group: ""
-      kind: Namespace
-      name: default
-    - group: ""
-      kind: Namespace
-      name: openshift-monitoring
-    # Ignore all resources in external-secrets-operator namespace (operator-managed)
-    - group: "*"
-      kind: "*"
-      jqPathExpressions:
-        - '.metadata.namespace == "external-secrets-operator"'
-    # Ignore resources in other namespaces that ArgoCD cannot manage
-    - group: "*"
-      kind: "*"
-      jqPathExpressions:
-        - '.metadata.namespace == "openshift-monitoring"'
-    - group: "*"
-      kind: "*"
-      jqPathExpressions:
-        - '.metadata.namespace == "default"'
-    # Ignore cluster-scoped resources that can't be managed in namespaced mode
-    - group: "rbac.authorization.k8s.io"
-      kind: ClusterRole
-      jqPathExpressions:
-        - '.metadata.name | test("self-healing-operator-cluster|self-healing-platform-argocd-hub")'
-    - group: "rbac.authorization.k8s.io"
-      kind: ClusterRoleBinding
-      jqPathExpressions:
-        - '.metadata.name | test("self-healing-operator-cluster|self-healing-platform-argocd-hub")'
-    # Ignore all resources in self-healing-platform namespace (namespace management check)
-    # This prevents ArgoCD from checking namespace management for each resource
-    - group: "*"
-      kind: "*"
-      jqPathExpressions:
-        - '.metadata.namespace == "self-healing-platform"'
-    # Explicitly ignore specific resource types that may cause namespace management errors
-    - group: ""
-      kind: PersistentVolumeClaim
-      jqPathExpressions:
-        - '.metadata.namespace == "self-healing-platform"'
-    - group: ""
-      kind: ConfigMap
-      jqPathExpressions:
-        - '.metadata.namespace == "self-healing-platform"'
-    - group: ""
-      kind: Secret
-      jqPathExpressions:
-        - '.metadata.namespace == "self-healing-platform"'
-    - group: ""
-      kind: ServiceAccount
-      jqPathExpressions:
-        - '.metadata.namespace == "self-healing-platform"'
-
-  # Notification configuration
-  info:
-    - name: Documentation
-      value: https://github.com/openshift-aiops/self-healing-platform/docs
-    - name: Support
-      value: https://github.com/openshift-aiops/self-healing-platform/issues
-
----
-# ServiceAccount for ArgoCD to access the repository
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: self-healing-platform-argocd
-  namespace: openshift-gitops
-
----
-# Role for ArgoCD to manage resources in self-healing-platform namespace
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: self-healing-platform-argocd
-  namespace: self-healing-platform
-rules:
-  - apiGroups: ["*"]
-    resources: ["*"]
-    verbs: ["*"]
-
----
-# RoleBinding to grant ArgoCD permissions
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: self-healing-platform-argocd
-  namespace: self-healing-platform
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: self-healing-platform-argocd
-subjects:
-  - kind: ServiceAccount
-    name: openshift-gitops-argocd-application-controller
-    namespace: openshift-gitops
-
----
-# ClusterRole for ArgoCD to read cluster-wide resources
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: self-healing-platform-argocd-hub
-rules:
-  - apiGroups: [""]
-    resources: ["nodes", "namespaces"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["apps"]
-    resources: ["deployments", "daemonsets", "statefulsets", "replicasets"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["batch"]
-    resources: ["jobs", "cronjobs"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["monitoring.coreos.com"]
-    resources: ["servicemonitors", "prometheusrules"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["serving.kserve.io"]
-    resources: ["inferenceservices"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["kubeflow.org"]
-    resources: ["notebooks"]
-    verbs: ["get", "list", "watch"]
-
----
-# ClusterRoleBinding for ArgoCD
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: self-healing-platform-argocd-hub
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: self-healing-platform-argocd-hub
-subjects:
-  - kind: ServiceAccount
-    name: openshift-gitops-argocd-application-controller
-    namespace: openshift-gitops
