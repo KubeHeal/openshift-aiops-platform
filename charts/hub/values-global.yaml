@@ -1,0 +1,392 @@
+# Validated Patterns Global Configuration
+# Self-Healing Platform Pattern
+# Generated: 2025-10-16
+
+# Global pattern configuration
+global:
+  # Pattern name - must match directory name
+  pattern: self-healing-platform
+
+  # Pattern version
+  version: "1.0.0"
+
+  # Cluster domain (will be auto-detected if not set)
+  clusterDomain: ""
+
+  # Analytics UUID for tracking (optional)
+  analyticsUUID: ""
+
+# Main pattern configuration
+main:
+  # Enable multisource configuration (uses external Helm charts)
+  multiSourceConfig:
+    enabled: true
+    # Cluster group chart version (0.9.* for multisource)
+    clusterGroupChartVersion: 0.9.*
+
+  # Cluster group name (hub cluster)
+  clusterGroupName: hub
+
+  # Target site for multi-cluster deployments
+  targetSite: hub
+
+  # OpenShift GitOps (ArgoCD) configuration
+  gitOpsOperator: openshift-gitops
+
+  # Namespace for pattern deployment
+  namespace: self-healing-platform
+
+  # Enable/disable components
+  components:
+    # OpenShift AI (RHODS)
+    openshift-ai: true
+
+    # GPU Operator
+    gpu-operator: true
+
+    # OpenShift Serverless
+    serverless: true
+
+    # Service Mesh
+    service-mesh: false
+
+    # OpenShift Pipelines
+    pipelines: true
+
+    # Advanced Cluster Management
+    acm: false
+
+# Operator deployments configuration
+# Note: Operators are managed in values-hub.yaml via clusterGroup.subscriptions
+# Most operators are already installed on the cluster and don't need management here
+
+# Secret management configuration
+secrets:
+  # Secret backend: vault, sealed-secrets, or external-secrets
+  backend: external-secrets
+
+  # External Secrets Operator configuration
+  externalSecrets:
+    # Enable External Secrets Operator
+    enabled: true
+
+    # Service account for ESO
+    serviceAccount:
+      name: external-secrets-sa
+
+    # SecretStore configuration
+    secretStore:
+      name: kubernetes-secret-store
+      kind: SecretStore
+
+    # CA Provider configuration for secure Kubernetes API communication
+    caProvider:
+      enabled: true
+      type: ConfigMap
+      name: kube-root-ca.crt
+      key: ca.crt
+
+    # Refresh interval for syncing secrets
+    refreshInterval: 1h
+
+# Git repository configuration
+# IMPORTANT: Update these values when deploying to a different cluster or pushing to GitHub
+git:
+  # Git repository URL - SINGLE SOURCE OF TRUTH
+  # ⚠️ IMPORTANT: Replace this with YOUR repository URL (GitHub, Gitea, GitLab, etc.)
+  # For Gitea (development): https://gitea-with-admin-gitea.apps.<cluster-domain>/<org>/<repo>.git
+  # For GitHub (production): https://github.com/<org>/<repo>.git
+  repoURL: "https://github.com/sansow/openshift-aiops-platform.git"
+
+  # Git branch/revision to deploy from
+  revision: "main"
+
+  # Git credentials (will be overridden by values-secret.yaml)
+  credentials:
+    # Gitea/GitHub username
+    username: "user1"
+    # Gitea/GitHub password or token
+    password: "changeme"
+    # Secret name for credentials (created by ESO or manually)
+    secretName: "git-credentials"
+
+# Object Store Configuration (S3/NooBaa)
+objectStore:
+  # Enable object store integration (ODF is available)
+  enabled: true
+
+  # S3 endpoint URL (auto-detected from NooBaa if not provided)
+  endpoint: "https://s3.openshift-storage.svc:443"
+
+  # S3 access key (will be set from values-secret.yaml)
+  accessKey: "admin"
+
+  # S3 secret key (will be set from values-secret.yaml)
+  secretKey: "changeme"
+
+  # S3 bucket names
+  buckets:
+    models: "model-storage"
+    trainingData: "training-data"
+    inferenceResults: "inference-results"
+
+  # AWS region
+  region: "us-east-1"
+
+  # SSL verification
+  sslVerify: false
+
+  # Vault configuration (fallback)
+  vault:
+    # Vault server address
+    address: ""
+
+    # Vault namespace (if using Vault Enterprise)
+    namespace: ""
+
+    # Vault authentication method: kubernetes, jwt, or userpass
+    authMethod: kubernetes
+
+    # Vault role for Kubernetes auth
+    role: self-healing-platform
+
+    # Vault path for secrets
+    secretPath: secret/data/self-healing-platform
+
+# Storage configuration
+storage:
+  # Storage class for persistent volumes
+  storageClass: ""  # Will use default if not specified
+
+  # Data volume size
+  dataVolumeSize: 5Gi
+
+  # Models volume size
+  modelsVolumeSize: 10Gi
+
+  # Logs volume size
+  logsVolumeSize: 5Gi
+
+# Networking configuration
+networking:
+  # Enable network policies
+  networkPolicies: true
+
+  # Ingress configuration
+  ingress:
+    enabled: true
+    className: openshift
+
+    # Ingress domain (will be auto-detected if not set)
+    domain: ""
+
+    # TLS configuration
+    tls:
+      enabled: true
+      issuer: letsencrypt-prod
+
+# Monitoring and observability
+monitoring:
+  # Enable Prometheus monitoring
+  prometheus: true
+
+  # Enable Grafana dashboards
+  grafana: true
+
+  # Retention period for metrics
+  retention: 15d
+
+  # Scrape interval
+  scrapeInterval: 30s
+
+# Logging configuration
+logging:
+  # Enable centralized logging
+  enabled: true
+
+  # Log level: debug, info, warn, error
+  level: info
+
+  # Log retention
+  retention: 7d
+
+# Application configuration
+application:
+  # Coordination engine configuration
+  coordinationEngine:
+    replicas: 1
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "250m"
+      limits:
+        memory: "1Gi"
+        cpu: "500m"
+
+  # Self-healing workbench configuration
+  workbench:
+    replicas: 1
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "2Gi"
+        cpu: "1000m"
+
+  # Model serving configuration
+  modelServing:
+    enabled: true
+    replicas: 1
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "1000m"
+      limits:
+        memory: "4Gi"
+        cpu: "2000m"
+
+    # sklearn runtime configuration
+    sklearn:
+      image: kserve/sklearnserver:latest
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "100m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+
+    # tensorflow runtime configuration
+    tensorflow:
+      image: kserve/tfserving:latest
+      resources:
+        requests:
+          memory: "512Mi"
+          cpu: "200m"
+        limits:
+          memory: "1Gi"
+          cpu: "1000m"
+
+# Development environment specific settings
+development:
+  # Enable debug logging
+  debug: false
+
+  # Enable development features
+  devFeatures: true
+
+  # Image pull policy
+  imagePullPolicy: IfNotPresent
+
+  # Replicas for development
+  replicas: 1
+
+# Production environment specific settings
+production:
+  # Enable debug logging
+  debug: false
+
+  # Enable production features
+  prodFeatures: true
+
+  # Image pull policy
+  imagePullPolicy: Always
+
+  # Replicas for production
+  replicas: 3
+
+  # High availability
+  ha: true
+
+  # Pod disruption budgets
+  podDisruptionBudgets: true
+
+# Tekton Pipelines configuration
+tekton:
+  # Enable Tekton pipelines
+  enabled: true
+
+  # Tekton namespace
+  namespace: openshift-pipelines
+
+  # S3 Configuration Pipeline
+  s3ConfigurationPipeline:
+    enabled: true
+    timeout: "300"
+
+# GitOps configuration
+gitOps:
+  # ArgoCD namespace
+  namespace: openshift-gitops
+
+  # ArgoCD server URL (will be auto-detected if not set)
+  serverUrl: ""
+
+  # Sync policy
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+
+  # Retry policy
+  retry:
+    limit: 5
+    backoff:
+      duration: 5s
+      factor: 2
+      maxDuration: 3m
+
+# Compliance and security
+compliance:
+  # Enable RBAC
+  rbac: true
+
+  # Enable network policies
+  networkPolicies: true
+
+  # Enable pod security policies
+  podSecurityPolicies: true
+
+  # Enable audit logging
+  auditLogging: true
+
+  # Security context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 1000
+
+# Feature flags
+features:
+  # Enable experimental features
+  experimental: false
+
+  # Enable beta features
+  beta: false
+
+  # Enable AI/ML features
+  aiml: true
+
+  # Enable edge deployment
+  edge: false
+
+# Metadata
+metadata:
+  # Owner/team
+  owner: "platform-team"
+
+  # Environment
+  environment: "development"
+
+  # Cost center (for billing)
+  costCenter: ""
+
+  # Tags for resource organization
+  tags:
+    project: "self-healing-platform"
+    managed-by: "validated-patterns"
+    version: "1.0.0"
