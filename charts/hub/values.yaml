@@ -189,6 +189,21 @@ coordinationEngine:
     COORDINATION_ENGINE_PORT: "8080"
     MODEL_SERVING_TIMEOUT: "30s"
 
+  # KServe InferenceService integration
+  kserve:
+    enabled: true
+    namespace: self-healing-platform
+    services:
+      anomaly-detector:
+        url: "http://anomaly-detector-predictor-default.self-healing-platform.svc.cluster.local"
+        modelFormat: sklearn
+        healthPath: "/v1/models/anomaly-detector"
+      predictive-analytics:
+        url: "http://predictive-analytics-predictor-default.self-healing-platform.svc.cluster.local"
+        modelFormat: sklearn
+        healthPath: "/v1/models/predictive-analytics"
+    timeout: "30s"
+
 # Object Store configuration (OpenShift Data Foundation / NooBaa)
 objectStore:
   # Enable object store integration
@@ -248,32 +263,6 @@ modelServing:
       limits:
         memory: "1Gi"
         cpu: "1000m"
-
-  # Models to deploy
-  models:
-    - name: anomaly-detector
-      framework: sklearn
-      storageUri: "s3://model-storage/anomaly-detector/"
-      replicas: 1
-      resources:
-        requests:
-          cpu: 500m
-          memory: 1Gi
-        limits:
-          cpu: 2
-          memory: 4Gi
-
-    - name: predictive-analytics
-      framework: tensorflow
-      storageUri: "s3://model-storage/predictive-analytics/"
-      replicas: 1
-      resources:
-        requests:
-          cpu: 1
-          memory: 2Gi
-        limits:
-          cpu: 2
-          memory: 4Gi
 
 # AI/ML Workbench configuration
 workbench:

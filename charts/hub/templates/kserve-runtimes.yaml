@@ -229,9 +229,21 @@ spec:
         memory: {{ .Values.modelServing.sklearn.resources.limits.memory | default "512Mi" }}
         cpu: {{ .Values.modelServing.sklearn.resources.limits.cpu | default "500m" }}
 
+    # Volume mount for PVC-based model storage
+    volumeMounts:
+    - name: model-storage
+      mountPath: /mnt/models
+      readOnly: true
+
     # Environment variables
     env:
     - name: LOG_LEVEL
       value: "INFO"
+
+  # Volume definition for PVC
+  volumes:
+  - name: model-storage
+    persistentVolumeClaim:
+      claimName: model-storage-pvc
 
 {{- end }}
