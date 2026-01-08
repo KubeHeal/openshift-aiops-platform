@@ -46,7 +46,8 @@ RUN OC_ENV="/_extras/optional/oc-install.env" ; \
       echo "==> Installing oc/kubectl from tarball" && \
       echo "    OC_VERSION=$OC_VERSION" && \
       echo "    OC_URL=$OC_URL" && \
-      URL="${OC_URL:-https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux.tar.gz}" && \
+      DEFAULT_URL="https://mirror.openshift.com/pub/openshift-v4/clients/ocp" && \
+      URL="${OC_URL:-${DEFAULT_URL}/${OC_VERSION}/openshift-client-linux.tar.gz}" && \
       echo "    Final URL=$URL" && \
       ($PKGMGR -y remove curl-minimal || true) && \
       ($PKGMGR -y install curl tar || true) && \
@@ -116,11 +117,23 @@ RUN $PYCMD -m pip install --no-cache-dir bindep pyyaml packaging
 # Patch assemble script to filter openshift-clients (ansible-builder overwrites our custom script)
 # This must run AFTER scripts are copied but BEFORE assemble is executed
 # Filter compile_packages in assemble script
-RUN sed -i '/compile_packages=$(bindep -b compile || true)/a\        # Filter out packages we satisfy via non-RPM methods\n        compile_packages=$(echo "$compile_packages" | sed '\''/^openshift-clients$/d'\'' | tr '\''\\n'\'' '\'' '\'' | sed '\''s/^[[:space:]]*//;s/[[:space:]]*$//'\'')' /output/scripts/assemble || true
+RUN sed -i '/compile_packages=$(bindep -b compile || true)/a\
+    # Filter out packages we satisfy via non-RPM methods\n\
+    compile_packages=$(echo "$compile_packages" | sed '\''/^openshift-clients$/d'\'' | \
+    tr '\''\\n'\'' '\'' '\'' | sed '\''s/^[[:space:]]*//;s/[[:space:]]*$//'\'')\
+    ' /output/scripts/assemble || true
 # Patch assemble script to filter openshift-clients from bindep/run.txt AFTER introspect regenerates it
 # Filter after install_bindep function writes to /output/bindep/run.txt (after line 29 in function)
-RUN sed -i '/bindep -l newline | sort >> \/output\/bindep\/run.txt/a\        # Filter openshift-clients added by collections\n        if [ -f /output/bindep/run.txt ]; then sed -i '\''/^openshift-clients$/d'\'' /output/bindep/run.txt || true; fi' /output/scripts/assemble || true
-RUN sed -i '/bindep -l newline -b epel | sort >> \/output\/bindep\/epel.txt/a\        # Filter openshift-clients from epel.txt\n        if [ -f /output/bindep/epel.txt ]; then sed -i '\''/^openshift-clients$/d'\'' /output/bindep/epel.txt || true; fi' /output/scripts/assemble || true
+RUN sed -i '/bindep -l newline | sort >> \/output\/bindep\/run.txt/a\
+    # Filter openshift-clients added by collections\n\
+    if [ -f /output/bindep/run.txt ]; then \
+    sed -i '\''/^openshift-clients$/d'\'' /output/bindep/run.txt || true; fi\
+    ' /output/scripts/assemble || true
+RUN sed -i '/bindep -l newline -b epel | sort >> \/output\/bindep\/epel.txt/a\
+    # Filter openshift-clients from epel.txt\n\
+    if [ -f /output/bindep/epel.txt ]; then \
+    sed -i '\''/^openshift-clients$/d'\'' /output/bindep/epel.txt || true; fi\
+    ' /output/scripts/assemble || true
 
 COPY --from=galaxy /usr/share/ansible /usr/share/ansible
 
