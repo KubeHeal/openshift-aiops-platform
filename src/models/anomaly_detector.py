@@ -13,6 +13,7 @@ from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
+from sklearn.pipeline import Pipeline
 import logging
 
 # Configure logging
@@ -168,20 +169,40 @@ class AnomalyDetector:
 
         return results
 
-    def save_model(self, model_path: str, scaler_path: str):
-        """Save trained model and scaler"""
+    def save_model(self, model_path: str, scaler_path: Optional[str] = None):
+        """
+        Save trained model as sklearn Pipeline (KServe compatible).
+
+        Args:
+            model_path: Path to save pipeline file (single .pkl file)
+            scaler_path: DEPRECATED - kept for backwards compatibility, ignored
+
+        Note:
+            This method creates a Pipeline combining scaler + model and saves
+            as a single .pkl file, compatible with KServe sklearn runtime.
+        """
         if not self.is_trained:
             raise ValueError("Model must be trained before saving")
 
-        joblib.dump(self.model, model_path)
-        joblib.dump(self.scaler, scaler_path)
+        # Create pipeline if not already one
+        if isinstance(self.model, Pipeline):
+            pipeline = self.model
+        else:
+            pipeline = Pipeline([
+                ('scaler', self.scaler),
+                ('model', self.model)
+            ])
+
+        # Save single pipeline file (KServe compatible)
+        joblib.dump(pipeline, model_path)
 
         # Save metadata
         metadata = {
             'feature_names': self.feature_names,
             'contamination': self.contamination,
             'random_state': self.random_state,
-            'is_trained': self.is_trained
+            'is_trained': self.is_trained,
+            'format': 'pipeline'  # Indicate this is a pipeline format
         }
 
         metadata_path = model_path.replace('.pkl', '_metadata.json')
@@ -189,14 +210,41 @@ class AnomalyDetector:
         with open(metadata_path, 'w') as f:
             json.dump(metadata, f, indent=2)
 
-        logger.info(f"Model saved to {model_path}")
-        logger.info(f"Scaler saved to {scaler_path}")
-        logger.info(f"Metadata saved to {metadata_path}")
+        logger.info(f"✅ Pipeline saved to {model_path}")
+        logger.info(f"   Single .pkl file (scaler + model combined)")
+        logger.info(f"   KServe compatible - no 'multiple files' error")
+        logger.info(f"   Metadata saved to {metadata_path}")
 
-    def load_model(self, model_path: str, scaler_path: str):
-        """Load trained model and scaler"""
-        self.model = joblib.load(model_path)
-        self.scaler = joblib.load(scaler_path)
+    def load_model(self, model_path: str, scaler_path: Optional[str] = None):
+        """
+        Load trained model (supports both Pipeline and legacy separate files).
+
+        Args:
+            model_path: Path to pipeline file or model file
+            scaler_path: DEPRECATED - Path to scaler file (for backwards compatibility)
+
+        Note:
+            This method supports both:
+            1. New format: Single pipeline file (KServe compatible)
+            2. Legacy format: Separate model + scaler files
+        """
+        loaded_model = joblib.load(model_path)
+
+        # Check if this is a pipeline or separate model
+        if isinstance(loaded_model, Pipeline):
+            # New format: Pipeline with scaler + model
+            self.model = loaded_model
+            # Extract scaler from pipeline for backwards compatibility
+            if 'scaler' in loaded_model.named_steps:
+                self.scaler = loaded_model.named_steps['scaler']
+            logger.info(f"✅ Pipeline loaded from {model_path}")
+        else:
+            # Legacy format: Separate model and scaler
+            self.model = loaded_model
+            if scaler_path and os.path.exists(scaler_path):
+                self.scaler = joblib.load(scaler_path)
+                logger.info(f"   Scaler loaded from {scaler_path}")
+            logger.info(f"   Model loaded from {model_path}")
 
         # Load metadata
         metadata_path = model_path.replace('.pkl', '_metadata.json')
@@ -210,8 +258,8 @@ class AnomalyDetector:
             self.random_state = metadata.get('random_state', 42)
             self.is_trained = metadata.get('is_trained', True)
 
-        logger.info(f"Model loaded from {model_path}")
-        logger.info(f"Scaler loaded from {scaler_path}")
+        self.is_trained = True
+        logger.info(f"Model loaded successfully")
 
 def generate_sample_data(n_samples: int = 1000) -> pd.DataFrame:
     """
