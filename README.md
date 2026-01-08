@@ -82,6 +82,7 @@ export ANSIBLE_HUB_TOKEN='your-token-here'
 echo 'your-token-here' > token
 
 # 5. Build execution environment (includes all dependencies)
+make token
 make build-ee
 
 # 6. Validate cluster prerequisites
