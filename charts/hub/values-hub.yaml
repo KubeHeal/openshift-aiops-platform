@@ -1,0 +1,49 @@
+
+# MCP Server Configuration (Complete)
+mcpServer:
+  enabled: true
+  replicas: 1
+  image:
+    repository: quay.io/takinosh/openshift-cluster-health-mcp
+    tag: 4.18-latest
+    pullPolicy: Always
+  transport: http
+  logLevel: info
+  serviceAccount:
+    name: self-healing-operator
+  coordinationEngine:
+    enabled: true
+    url: "http://coordination-engine.self-healing-platform.svc.cluster.local:8080"
+  kserve:
+    enabled: true
+    namespace: self-healing-platform
+  prometheus:
+    enabled: true
+    url: "https://prometheus-k8s.openshift-monitoring.svc:9091"
+  cache:
+    ttlSeconds: 30
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+  route:
+    enabled: true
+    host: ""
+  service:
+    type: ClusterIP
+    port: 8080
+
+# Coordination Engine Configuration
+coordinationEngine:
+  enabled: false
+  mlService:
+    enabled: true
+    url: "http://coordination-engine.self-healing-platform.svc.cluster.local:8080"
+  prometheus:
+    enabled: true
+    url: "https://prometheus-k8s.openshift-monitoring.svc:9091"
+  openshift:
+    enabled: true
