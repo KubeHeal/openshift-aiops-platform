@@ -229,11 +229,9 @@ spec:
         memory: {{ .Values.modelServing.sklearn.resources.limits.memory | default "512Mi" }}
         cpu: {{ .Values.modelServing.sklearn.resources.limits.cpu | default "500m" }}
 
-    # Volume mount for PVC-based model storage
-    volumeMounts:
-    - name: model-storage
-      mountPath: /mnt/models
-      readOnly: true
+    # NOTE: volumeMounts removed - KServe automatically mounts from InferenceService storageUri
+    # The InferenceService spec uses: storageUri: "pvc://model-storage-pvc/model-name"
+    # KServe will create the mount automatically using the volume definition below
 
     # Environment variables
     env:
