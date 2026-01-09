@@ -86,22 +86,98 @@ oc create secret generic rhelai-api-key \
   --from-literal=apitoken='YOUR_RHELAI_TOKEN'
 ```
 
-### 3. Apply OLSConfig
+### 3. Create OLSConfig
 
-Choose the configuration file for your LLM provider and apply it to integrate the MCP server with OpenShift Lightspeed:
+Create an OLSConfig resource to integrate the MCP server with OpenShift Lightspeed. This configuration is **manually customized** based on your LLM provider.
+
+**IMPORTANT**: See the [official Red Hat OpenShift Lightspeed documentation](https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/1.0/html/configure/ols-configuring-openshift-lightspeed) for complete provider configuration details.
+
+#### OLSConfig Structure
+
+The OLSConfig supports multiple LLM providers. Choose the configuration that matches your provider:
+
+```yaml
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  name: cluster  # MUST be 'cluster' (cluster-scoped singleton)
+spec:
+  # Enable MCP Server integration
+  featureGates:
+    - MCPServer
+
+  # LLM Provider configuration (choose one or configure multiple)
+  llm:
+    providers:
+      # OpenAI (GPT-4, GPT-4o)
+      - name: openai
+        type: openai
+        url: "https://api.openai.com/v1"
+        credentialsSecretRef:
+          name: openai-api-key
+        models:
+          - name: gpt-4o-mini      # Recommended for cost/performance
+          - name: gpt-4o           # For complex reasoning
+
+      # Google Gemini (OpenAI-compatible endpoint)
+      - name: google
+        type: openai
+        url: "https://generativelanguage.googleapis.com/v1beta/openai"
+        credentialsSecretRef:
+          name: google-api-key
+        models:
+          - name: gemini-1.5-pro
+          - name: gemini-1.5-flash
+
+      # IBM BAM (Granite models)
+      - name: bam
+        type: bam
+        url: "https://bam-api.res.ibm.com"
+        credentialsSecretRef:
+          name: bam-api-key
+        models:
+          - name: granite-13b-chat-v2  # Open source option
+
+      # Azure OpenAI
+      - name: azure
+        type: azure_openai
+        url: "https://YOUR_RESOURCE.openai.azure.com"
+        credentialsSecretRef:
+          name: azure-openai-key
+        models:
+          - name: gpt-4o
+
+  # MCP Server configuration (integrates with self-healing platform)
+  mcpServers:
+    - name: cluster-health
+      streamableHTTP:
+        url: http://mcp-server.self-healing-platform.svc:8080/mcp
+        timeout: 30
+        enableSSE: false
+
+  # OLS deployment configuration
+  ols:
+    defaultModel: gpt-4o-mini     # Choose your default model
+    defaultProvider: openai        # Choose your default provider
+    deployment:
+      replicas: 1
+    conversationCache:
+      type: postgres               # REQUIRED: Only 'postgres' is supported
+      redis:
+        maxMemory: "2000mb"
+        maxMemoryPolicy: "allkeys-lru"
+
+  # Console plugin configuration
+  console:
+    enabled: true
+```
+
+**Apply your customized configuration:**
 
 ```bash
-# OpenAI GPT-4
-oc apply -f k8s/mcp-server/overlays/development/olsconfig-openai.yaml
-
-# Google Gemini (recommended for experimental Gemini 3)
-oc apply -f k8s/mcp-server/overlays/development/olsconfig-google.yaml
-
-# Anthropic Claude
-oc apply -f k8s/mcp-server/overlays/development/olsconfig-anthropic.yaml
-
-# Red Hat AI vLLM
-oc apply -f k8s/mcp-server/overlays/development/olsconfig-rhelai-vllm.yaml
+# Save the above YAML to a file (e.g., olsconfig.yaml) with your provider details
+# Then apply it:
+oc apply -f olsconfig.yaml
 ```
 
 **Verify configuration:**
