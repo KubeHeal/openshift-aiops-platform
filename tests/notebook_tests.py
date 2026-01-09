@@ -58,18 +58,6 @@ class NotebookTester:
                     {"variable": "model", "type": "object", "has_method": "predict"}
                 ]
             },
-            "03-self-healing-logic/coordination-engine-integration.ipynb": {
-                "timeout": 300,
-                "parameters": {
-                    "TEST_MODE": True,
-                    "MOCK_COORDINATION_ENGINE": True
-                },
-                "expected_outputs": ["integration_status", "test_results"],
-                "data_validations": [
-                    {"variable": "integration_status", "type": "dict", "required_keys": ["status", "timestamp"]},
-                    {"variable": "test_results", "type": "dict", "required_keys": ["health_check", "anomaly_submission"]}
-                ]
-            },
             "01-data-collection/openshift-events-analysis.ipynb": {
                 "timeout": 300,
                 "parameters": {

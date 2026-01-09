@@ -21,11 +21,63 @@ PVC_MODEL_PATH = Path("/mnt/models")  # Shared PVC mount (primary)
 LOCAL_MODEL_PATH = Path("/opt/app-root/src/models")  # Local workbench storage (legacy)
 
 
+def validate_kserve_model_structure(model_dir: Path, model_name: str) -> bool:
+    """
+    Validate that model directory structure is KServe-compatible.
+
+    KServe Requirements:
+    - Only ONE .pkl file per model directory
+    - File must be named 'model.pkl' (recommended)
+    - Directory path: /mnt/models/{model-name}/
+
+    Args:
+        model_dir: Path to model directory
+        model_name: Name of the model
+
+    Returns:
+        True if valid, raises exception if invalid
+
+    Raises:
+        FileNotFoundError: If model directory doesn't exist or no .pkl files found
+        RuntimeError: If multiple .pkl files found (KServe incompatible)
+
+    Example:
+        >>> model_dir = Path("/mnt/models/anomaly-detector")
+        >>> validate_kserve_model_structure(model_dir, "anomaly-detector")
+        ✅ KServe validation passed: /mnt/models/anomaly-detector/model.pkl
+    """
+    # Check directory exists
+    if not model_dir.exists():
+        raise FileNotFoundError(f"Model directory not found: {model_dir}")
+
+    # Find all .pkl files
+    pkl_files = list(model_dir.glob('*.pkl'))
+
+    if len(pkl_files) == 0:
+        raise FileNotFoundError(
+            f"No .pkl files found in {model_dir}. "
+            f"KServe requires exactly ONE .pkl file."
+        )
+
+    if len(pkl_files) > 1:
+        raise RuntimeError(
+            f"KServe ERROR: Found {len(pkl_files)} .pkl files in {model_dir}. "
+            f"KServe sklearn server requires EXACTLY ONE .pkl file per model.\n"
+            f"Files found: {[f.name for f in pkl_files]}\n"
+            f"Solution: Combine multiple models into a single wrapper class or Pipeline."
+        )
+
+    logger.info(f"✅ KServe validation passed: {pkl_files[0]}")
+    return True
+
+
 def save_model_to_pvc(
     model: Any,
     model_name: str,
     metadata: Optional[Dict[str, Any]] = None,
-    overwrite: bool = False
+    overwrite: bool = False,
+    validate_kserve: bool = True,
+    use_subdirectory: bool = True
 ) -> str:
     """
     Save trained model to shared PVC storage for KServe deployment.
@@ -36,25 +88,33 @@ def save_model_to_pvc(
     - Persisted across workbench restarts
 
     Args:
-        model: Trained sklearn/torch/tensorflow model
-        model_name: Name of model (used as filename: {model_name}.pkl)
+        model: Trained sklearn/torch/tensorflow model (Pipeline recommended)
+        model_name: Name of model (e.g., "anomaly-detector")
         metadata: Optional metadata dictionary to save alongside model
         overwrite: If True, overwrite existing model
+        validate_kserve: If True, validate KServe compatibility after save (default: True)
+        use_subdirectory: If True, use /mnt/models/{model_name}/model.pkl structure (default: True, KServe recommended)
 
     Returns:
         Path to saved model file
 
     Example:
-        >>> from sklearn.ensemble import RandomForestClassifier
-        >>> model = RandomForestClassifier()
-        >>> model.fit(X_train, y_train)
-        >>> model_path = save_model_to_pvc(model, "anomaly-detector")
+        >>> from sklearn.pipeline import Pipeline
+        >>> from sklearn.preprocessing import RobustScaler
+        >>> from sklearn.ensemble import IsolationForest
+        >>> pipeline = Pipeline([
+        ...     ('scaler', RobustScaler()),
+        ...     ('model', IsolationForest())
+        ... ])
+        >>> pipeline.fit(X_train, y_train)
+        >>> model_path = save_model_to_pvc(pipeline, "anomaly-detector")
         >>> print(f"Model saved: {model_path}")
-        Model saved: /mnt/models/anomaly-detector.pkl
+        ✅ Model saved to PVC: /mnt/models/anomaly-detector/model.pkl
+        ✅ KServe validation passed
 
     KServe Deployment:
         Once saved, deploy to KServe with:
-        storageUri: "pvc://model-storage-pvc/anomaly-detector.pkl"
+        storageUri: "pvc://model-storage-pvc/anomaly-detector"
     """
     if not PVC_MODEL_PATH.exists():
         raise RuntimeError(
@@ -62,7 +122,14 @@ def save_model_to_pvc(
             "Ensure workbench pod has model-storage PVC mounted."
         )
 
-    model_file = PVC_MODEL_PATH / f"{model_name}.pkl"
+    # Use KServe-compatible subdirectory structure
+    if use_subdirectory:
+        model_dir = PVC_MODEL_PATH / model_name
+        model_dir.mkdir(parents=True, exist_ok=True)
+        model_file = model_dir / 'model.pkl'
+    else:
+        # Legacy flat structure
+        model_file = PVC_MODEL_PATH / f"{model_name}.pkl"
 
     if model_file.exists() and not overwrite:
         raise FileExistsError(
@@ -77,11 +144,19 @@ def save_model_to_pvc(
 
     # Save metadata if provided
     if metadata:
-        metadata_file = PVC_MODEL_PATH / f"{model_name}_metadata.json"
+        metadata_file = model_file.parent / f"{model_name}_metadata.json"
         import json
         with open(metadata_file, 'w') as f:
             json.dump(metadata, f, indent=2, default=str)
         logger.info(f"   Metadata: {metadata_file}")
+
+    # Validate KServe compatibility
+    if validate_kserve and use_subdirectory:
+        try:
+            validate_kserve_model_structure(model_file.parent, model_name)
+        except Exception as e:
+            logger.error(f"❌ KServe validation failed: {e}")
+            raise
 
     return str(model_file)
 

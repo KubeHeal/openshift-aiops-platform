@@ -1,10 +1,13 @@
 # ADR-033: Coordination Engine RBAC Permissions
 
-**Status**: PROPOSED
+**Status**: DEPRECATED (Python coordination engine removed - see ADR-038)
 **Date**: 2025-10-17
+**Deprecated**: 2026-01-09
 **Renumbered From**: Originally ADR-025 (renumbered 2025-11-19 to standardize naming)
 **Author**: Platform Team
-**Relates to**: ADR-001, ADR-008, ADR-012
+**Relates to**: ADR-001, ADR-008, ADR-012, ADR-038
+
+> **Note**: This ADR is specific to the Python-based coordination engine which has been replaced by the Go-based engine from https://github.com/tosin2013/openshift-coordination-engine. This document is retained for historical reference only.
 
 ## Problem Statement
 

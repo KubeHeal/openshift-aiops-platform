@@ -183,27 +183,6 @@ class TestNotebooks:
         assert result["success"], f"Notebook execution failed: {result['error']}"
         assert result["execution_time"] < 600, f"Execution took too long: {result['execution_time']}s"  # Longer timeout for ML
 
-    @pytest.mark.self_healing
-    def test_coordination_engine_integration(self, temp_output_dir):
-        """Test coordination engine integration notebook"""
-        notebook_path = NOTEBOOKS_DIR / "03-self-healing-logic" / "coordination-engine-integration.ipynb"
-        output_path = Path(temp_output_dir) / "test_coordination_engine.ipynb"
-
-        if not notebook_path.exists():
-            pytest.skip(f"Notebook not found: {notebook_path}")
-
-        result = self.execute_notebook(
-            notebook_path,
-            output_path,
-            parameters={
-                "TEST_MODE": True,
-                "MOCK_COORDINATION_ENGINE": True
-            }
-        )
-
-        assert result["success"], f"Notebook execution failed: {result['error']}"
-        assert result["execution_time"] < TEST_TIMEOUT, f"Execution took too long: {result['execution_time']}s"
-
 class TestNotebookDataValidation:
     """
     Additional tests for data validation and quality checks

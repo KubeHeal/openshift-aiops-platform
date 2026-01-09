@@ -28,30 +28,6 @@ commonAnnotations:
 
 # Staging-specific patches
 patches:
-  # Coordination Engine - staging configuration
-  - target:
-      kind: Deployment
-      name: coordination-engine
-    patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 2
-      - op: add
-        path: /spec/template/spec/containers/0/env/-
-        value:
-          name: ENVIRONMENT
-          value: staging
-      - op: add
-        path: /spec/template/spec/containers/0/env/-
-        value:
-          name: LOG_LEVEL
-          value: INFO
-      - op: add
-        path: /spec/template/spec/containers/0/env/-
-        value:
-          name: METRICS_ENABLED
-          value: "true"
-
   # AI/ML Workbench - staging configuration
   - target:
       kind: Deployment
@@ -107,17 +83,12 @@ configMapGenerator:
 
 # Staging-specific images (use stable tags, not latest)
 images:
-  - name: coordination-engine
-    newName: registry.redhat.io/ubi8/python-39
-    newTag: "1-158"  # Stable tag for staging
   - name: jupyter-workbench
     newName: quay.io/opendatahub/workbench-images
     newTag: jupyter-datascience-c9s-py311_2024a_20240301
 
 # Staging replicas configuration
 replicas:
-  - name: coordination-engine
-    count: 2  # High availability for staging
   - name: ai-ml-workbench
     count: 1  # Single instance for staging
 

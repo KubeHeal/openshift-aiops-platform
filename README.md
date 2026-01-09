@@ -17,6 +17,18 @@ The **OpenShift AI Ops Self-Healing Platform** is a production-ready AIOps solut
 - 📊 **ML-Powered**: Uses Isolation Forest, LSTM models for anomaly detection
 - 🚀 **OpenShift Native**: Built on Red Hat OpenShift AI, KServe, Tekton, ArgoCD
 - 💬 **Natural Language Interface**: Integrates with OpenShift Lightspeed via MCP (Model Context Protocol)
+- 🌐 **Platform Agnostic**: Supports both **vanilla Kubernetes** and **OpenShift** clusters
+
+## 🧠 Deploying Your Own ML Models
+
+This platform follows a **user-deployed model architecture**:
+
+- **✅ You train and deploy** your own ML models via KServe InferenceServices
+- **✅ Platform provides** coordination engine, infrastructure, and integration
+- **✅ Works on both** vanilla Kubernetes (with KServe) and OpenShift (with OpenShift AI)
+- **✅ Full control** over model versions, updates, and lifecycle
+
+See the **[User Model Deployment Guide](docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md)** for complete instructions on deploying models to both vanilla Kubernetes and OpenShift.
 
 ## 📚 Documentation
 
@@ -25,6 +37,7 @@ The **OpenShift AI Ops Self-Healing Platform** is a production-ready AIOps solut
 | **[AGENTS.md](AGENTS.md)** | 🤖 **AI Agent Development Guide** (comprehensive reference) |
 | **[docs/adrs/](docs/adrs/)** | 🏛️ Architectural Decision Records (29+ ADRs) |
 | **[DEPLOYMENT.md](DEPLOYMENT.md)** | 🚀 Step-by-step deployment guide |
+| **[docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md](docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md)** | 🧠 **User Model Deployment Guide** (deploy your own ML models via KServe) |
 | **[docs/guides/TROUBLESHOOTING-GUIDE.md](docs/guides/TROUBLESHOOTING-GUIDE.md)** | 🔧 **Troubleshooting Guide** (common issues and solutions) |
 | **[docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md](docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md)** | 👨‍💻 **Junior Developer Guide** (deployment testing walkthrough) |
 | **[notebooks/README.md](notebooks/README.md)** | 📓 Jupyter notebook workflows |
@@ -69,6 +82,7 @@ export ANSIBLE_HUB_TOKEN='your-token-here'
 echo 'your-token-here' > token
 
 # 5. Build execution environment (includes all dependencies)
+make token
 make build-ee
 
 # 6. Validate cluster prerequisites
@@ -174,10 +188,6 @@ pre-commit install
 ### Testing
 
 ```bash
-# Unit tests (Python)
-cd src/coordination-engine
-pytest
-
 # Notebook validation
 cd notebooks
 jupyter nbconvert --to notebook --execute 00-setup/00-platform-readiness-validation.ipynb
@@ -221,8 +231,7 @@ openshift-aiops-platform/
 │   ├── 03-self-healing-logic/  # Integration
 │   ├── 04-model-serving/       # KServe deployment
 │   └── 05-end-to-end-scenarios/# Complete use cases
-├── src/                        # Source code
-│   └── coordination-engine/    # Python Flask REST API
+├── src/                        # Source code (models, utilities)
 ├── tekton/                     # CI/CD pipelines (26 validation checks)
 ├── tests/                      # Test suites
 ├── Makefile                    # Main build/deploy/test targets
@@ -274,7 +283,7 @@ We welcome contributions! Here's how you can help:
 1. 🐛 **Report Bugs**: [Open an issue](https://github.com/tosin2013/openshift-aiops-platform/issues/new)
 2. 💡 **Suggest Features**: [Feature request](https://github.com/tosin2013/openshift-aiops-platform/issues/new)
 3. 📝 **Improve Docs**: Fix typos, add examples, clarify instructions
-4. 🧪 **Add Tests**: Expand test coverage for notebooks, coordination engine
+4. 🧪 **Add Tests**: Expand test coverage for notebooks and models
 5. 🚀 **Submit PRs**: Fix bugs, add features, improve performance
 
 ### Contribution Guidelines
@@ -294,7 +303,7 @@ We welcome contributions! Here's how you can help:
 
 Examples:
 feat(notebooks): add LSTM autoencoder anomaly detection
-fix(coordination-engine): resolve conflict resolution race condition
+fix(kserve): resolve model loading race condition
 docs(adr): add ADR-038 for deployment validation strategy
 chore(ci): update GitHub Actions to v4
 ```
@@ -353,10 +362,6 @@ We use GitHub Actions for continuous integration:
 # Pre-commit checks (runs all linters)
 pre-commit run --all-files
 
-# Python unit tests (coordination engine)
-cd src/coordination-engine
-pytest tests/
-
 # Notebook validation (executes notebooks)
 cd notebooks
 jupyter nbconvert --to notebook --execute \
@@ -399,14 +404,16 @@ oc describe notebook self-healing-workbench -n self-healing-platform
 **Issue: Coordination engine not responding**
 
 ```bash
-# Check pod status
-oc get pods -n self-healing-platform | grep coordination-engine
+# Check pod status (Go-based coordination engine from external repo)
+oc get pods -n self-healing-platform -l app.kubernetes.io/component=coordination-engine
 
 # View logs
-oc logs -n self-healing-platform <coordination-engine-pod> --tail=100
+oc logs -n self-healing-platform -l app.kubernetes.io/component=coordination-engine --tail=100
 
 # Test health endpoint
 curl http://coordination-engine.self-healing-platform.svc.cluster.local:8080/health
+
+# Note: Coordination engine is from https://github.com/tosin2013/openshift-coordination-engine
 ```
 
 **📖 Complete Troubleshooting Guide**: See [docs/guides/TROUBLESHOOTING-GUIDE.md](docs/guides/TROUBLESHOOTING-GUIDE.md) for comprehensive issue resolution

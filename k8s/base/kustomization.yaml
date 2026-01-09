@@ -21,7 +21,6 @@ resources:
   - storage.yaml
   - monitoring.yaml
   - grafana-dashboards.yaml
-  - coordination-engine.yaml
   - ai-ml-workbench.yaml
   - model-serving.yaml
 
@@ -60,14 +59,9 @@ patches:
 
 # Images to use (can be overridden in overlays)
 images:
-  - name: coordination-engine
-    newName: registry.redhat.io/ubi8/python-39
-    newTag: latest
   - name: jupyter-workbench
     newName: quay.io/opendatahub/workbench-images
     newTag: jupyter-datascience-c9s-py311_2023c_latest
 
 # Replicas (can be overridden in overlays)
-replicas:
-  - name: coordination-engine
-    count: 1
+replicas: []

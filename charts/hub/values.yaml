@@ -153,42 +153,6 @@ nodeConfig:
         value: "true"
         effect: NoSchedule
 
-# Coordination Engine configuration
-coordinationEngine:
-  # Enable coordination engine
-  enabled: true
-
-  # Deployment name
-  name: coordination-engine
-
-  # Replica count
-  replicas: 1
-
-  # Image configuration
-  image:
-    repository: registry.redhat.io/ubi8/python-39
-    tag: latest
-    pullPolicy: IfNotPresent
-
-  # Resource requests and limits
-  resources:
-    requests:
-      cpu: 500m
-      memory: 1Gi
-    limits:
-      cpu: 2
-      memory: 4Gi
-
-  # Port configuration
-  port: 8080
-
-  # Environment variables
-  env:
-    LOG_LEVEL: INFO
-    METRICS_PORT: "8090"
-    COORDINATION_ENGINE_PORT: "8080"
-    MODEL_SERVING_TIMEOUT: "30s"
-
 # Object Store configuration (OpenShift Data Foundation / NooBaa)
 objectStore:
   # Enable object store integration
@@ -248,32 +212,6 @@ modelServing:
       limits:
         memory: "1Gi"
         cpu: "1000m"
-
-  # Models to deploy
-  models:
-    - name: anomaly-detector
-      framework: sklearn
-      storageUri: "s3://model-storage/anomaly-detector/"
-      replicas: 1
-      resources:
-        requests:
-          cpu: 500m
-          memory: 1Gi
-        limits:
-          cpu: 2
-          memory: 4Gi
-
-    - name: predictive-analytics
-      framework: tensorflow
-      storageUri: "s3://model-storage/predictive-analytics/"
-      replicas: 1
-      resources:
-        requests:
-          cpu: 1
-          memory: 2Gi
-        limits:
-          cpu: 2
-          memory: 4Gi
 
 # AI/ML Workbench configuration
 workbench:

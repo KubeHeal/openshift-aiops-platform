@@ -24,24 +24,6 @@ commonAnnotations:
 
 # Resource patches for production
 patches:
-  # Increase resource requirements for production
-  - target:
-      kind: Deployment
-      name: coordination-engine
-    patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/resources/requests/cpu
-        value: "500m"
-      - op: replace
-        path: /spec/template/spec/containers/0/resources/requests/memory
-        value: "512Mi"
-      - op: replace
-        path: /spec/template/spec/containers/0/resources/limits/cpu
-        value: "1"
-      - op: replace
-        path: /spec/template/spec/containers/0/resources/limits/memory
-        value: "1Gi"
-
   # Production storage with high-performance classes
   - target:
       kind: PersistentVolumeClaim
@@ -145,17 +127,12 @@ secretGenerator:
 
 # Production images with specific versions (no latest tags)
 images:
-  - name: coordination-engine
-    newName: registry.redhat.io/ubi8/python-39
-    newTag: "1-158"  # Specific version for production
   - name: jupyter-workbench
     newName: quay.io/opendatahub/workbench-images
     newTag: jupyter-datascience-c9s-py311_2024a_20240301
 
 # Production replicas (high availability)
-replicas:
-  - name: coordination-engine
-    count: 3
+replicas: []
 
 # Additional production resources (commented out until files are created)
 # resources:

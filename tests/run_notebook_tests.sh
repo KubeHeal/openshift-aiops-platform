@@ -182,7 +182,6 @@ run_all_tests() {
         "$NOTEBOOKS_DIR/01-data-collection/log-parsing-analysis.ipynb"
         "$NOTEBOOKS_DIR/01-data-collection/feature-store-demo.ipynb"
         "$NOTEBOOKS_DIR/02-anomaly-detection/isolation-forest-implementation.ipynb"
-        "$NOTEBOOKS_DIR/03-self-healing-logic/coordination-engine-integration.ipynb"
     )
 
     # Filter for specific notebook if requested

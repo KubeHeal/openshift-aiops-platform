@@ -42,7 +42,7 @@ except ImportError:
     NoCredentialsError = Exception
 
 # Constants
-COORDINATION_ENGINE_URL = "http://coordination-engine.self-healing-platform.svc.cluster.local:8080"
+COORDINATION_ENGINE_URL = "http://coordination-engine:8080"
 MCP_SERVER_URL = "http://cluster-health-mcp-server.self-healing-platform.svc.cluster.local:3000"
 PROMETHEUS_URL = "https://prometheus-k8s.openshift-monitoring.svc.cluster.local:9091"
 THANOS_URL = "https://thanos-querier.openshift-monitoring.svc.cluster.local:9091"
@@ -369,12 +369,94 @@ def validate_coordination_engine_metrics() -> Dict[str, Any]:
         )
 
 
+def validate_coordination_engine_kserve_proxy() -> Dict[str, Any]:
+    """
+    Validate coordination engine KServe proxy is working.
+
+    Tests /api/v1/models endpoint to verify:
+    1. KServe integration is enabled
+    2. Coordination engine can proxy to KServe InferenceServices
+    3. At least one model is registered
+
+    Returns:
+        Check result dictionary with status and details
+    """
+    url = f"{COORDINATION_ENGINE_URL}/api/v1/models"
+    success, status_code, details, elapsed_ms = _http_get_with_retry(url)
+
+    if success and status_code == 200:
+        try:
+            # Parse JSON response to check for models
+            import json
+            response_data = json.loads(details)
+            models = response_data.get('models', [])
+            model_count = len(models)
+
+            if model_count > 0:
+                return _create_check_result(
+                    category=CATEGORY_PLATFORM,
+                    component="Coordination Engine",
+                    check_name="KServe Proxy",
+                    status="PASSED",
+                    details=f"KServe proxy accessible - {model_count} model(s) registered: {', '.join(models)}",
+                    url=url,
+                    response_time_ms=elapsed_ms
+                )
+            else:
+                return _create_check_result(
+                    category=CATEGORY_PLATFORM,
+                    component="Coordination Engine",
+                    check_name="KServe Proxy",
+                    status="WARNING",
+                    details="KServe proxy accessible but no models registered",
+                    url=url,
+                    response_time_ms=elapsed_ms,
+                    remediation="Deploy KServe InferenceServices and register in values-hub.yaml"
+                )
+        except Exception as e:
+            return _create_check_result(
+                category=CATEGORY_PLATFORM,
+                component="Coordination Engine",
+                check_name="KServe Proxy",
+                status="WARNING",
+                details=f"KServe proxy response invalid: {str(e)}",
+                url=url,
+                remediation="Check coordination engine logs for KServe integration errors"
+            )
+    else:
+        return _create_check_result(
+            category=CATEGORY_PLATFORM,
+            component="Coordination Engine",
+            check_name="KServe Proxy",
+            status="WARNING",
+            details=details if details else "KServe proxy endpoint not accessible",
+            url=url,
+            remediation="Verify ENABLE_KSERVE_INTEGRATION=true in coordination engine deployment"
+        )
+
+
 def validate_model_serving() -> List[Dict[str, Any]]:
     """Validate KServe InferenceServices"""
     checks = []
 
-    # Check if InferenceServices exist via oc command
-    models = ["anomaly-detector", "predictive-analytics"]
+    # Get registered models from coordination engine dynamically
+    try:
+        import requests
+        response = requests.get(f"{COORDINATION_ENGINE_URL}/api/v1/models", timeout=10)
+        if response.status_code == 200:
+            models = response.json().get('models', [])
+            if not models:
+                # Fallback to default if no models registered
+                models = ["anomaly-detector", "predictive-analytics"]
+                logger.warning("No models registered in coordination engine - using defaults")
+        else:
+            # Fallback to default if endpoint fails
+            models = ["anomaly-detector", "predictive-analytics"]
+            logger.warning("Could not fetch models from coordination engine - using defaults")
+    except Exception as e:
+        # Fallback to default on error
+        models = ["anomaly-detector", "predictive-analytics"]
+        logger.warning(f"Error fetching models: {e} - using defaults")
 
     for model_name in models:
         success, output = _run_oc_command([
