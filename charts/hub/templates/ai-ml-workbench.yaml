@@ -9,10 +9,13 @@ metadata:
   annotations:
     notebooks.opendatahub.io/inject-oauth: "true"
     notebooks.opendatahub.io/oauth-logout-url: "https://rhods-dashboard-redhat-ods-applications.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/projects/self-healing-platform"
+    # ArgoCD: Prevent auto-deletion and recreation of workbench pod
+    # This preserves user work sessions and prevents interruptions during development
+    argocd.argoproj.io/sync-options: "Prune=false,Replace=false"
     # ArgoCD: Allow manual changes to specific fields without reverting
     # This enables operators to tune resources, env vars, and image during development
     argocd.argoproj.io/compare-options: |
-      IgnoreDifferences=/spec/template/spec/containers/0/resources,/spec/template/spec/containers/0/env,/spec/template/spec/containers/0/image
+      IgnoreDifferences=/spec/template/spec/containers/0/resources,/spec/template/spec/containers/0/env,/spec/template/spec/containers/0/image,/spec/template/spec/volumes
 spec:
   template:
     spec:
