@@ -116,8 +116,9 @@ spec:
         credentialsSecretRef:
           name: openai-api-key
         models:
-          - name: gpt-4o-mini      # Recommended for cost/performance
-          - name: gpt-4o           # For complex reasoning
+          - name: gpt-5.2-codex    #  Target for complex tasks
+          - name: gpt-5-mini       #  Target for default
+          - name: gpt-4o           #  Legacy
 
       # Google Gemini (OpenAI-compatible endpoint)
       - name: google
@@ -126,8 +127,8 @@ spec:
         credentialsSecretRef:
           name: google-api-key
         models:
-          - name: gemini-1.5-pro
-          - name: gemini-1.5-flash
+          - name: gemini-3-pro-preview  #  Multimodal & Reasoning
+          - name: gemini-2.5-flash      #  High speed / Low cost
 
       # IBM BAM (Granite models)
       - name: bam
@@ -136,7 +137,8 @@ spec:
         credentialsSecretRef:
           name: bam-api-key
         models:
-          - name: granite-13b-chat-v2  # Open source option
+          - name: ibm/granite-4-h-small  #  Enterprise Workhorse
+          - name: ibm/granite-4-h-tiny   #  Edge/Low-Latency
 
       # Azure OpenAI
       - name: azure
@@ -145,7 +147,9 @@ spec:
         credentialsSecretRef:
           name: azure-openai-key
         models:
-          - name: gpt-4o
+          - name: gpt-5            #  Requires matching deployment
+          - name: gpt-5-mini       #  High efficiency
+          - name: gpt-4.1          # [16] Stable baseline
 
   # MCP Server configuration (integrates with self-healing platform)
   mcpServers:
