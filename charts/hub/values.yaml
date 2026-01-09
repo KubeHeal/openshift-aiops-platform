@@ -318,6 +318,51 @@ mcpServer:
   serviceAccount:
     create: false  # Use existing self-healing-operator ServiceAccount
     name: self-healing-operator
+  coordinationEngine:
+    enabled: true
+    url: "http://coordination-engine:8080"
+  kserve:
+    enabled: true
+    namespace: self-healing-platform
+  prometheus:
+    enabled: true
+    url: "https://prometheus-k8s.openshift-monitoring.svc:9091"
+
+# Coordination Engine Configuration
+coordinationEngine:
+  enabled: true
+  replicas: 1
+
+  # Image configuration
+  image:
+    repository: quay.io/takinosh/openshift-coordination-engine
+    tag: "ocp-4.18-latest"
+    pullPolicy: Always
+
+  # Logging level
+  logLevel: info
+
+  # KServe Integration (ADR-039)
+  kserve:
+    enabled: true
+    namespace: self-healing-platform
+    anomalyDetectorService: anomaly-detector-predictor
+    predictiveAnalyticsService: predictive-analytics-predictor
+    timeout: "10s"
+
+  # ArgoCD Integration
+  argocd:
+    enabled: true
+    url: "https://openshift-gitops-server.openshift-gitops.svc:443"
+
+  # Resource limits
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "200m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
 
 # Feature flags
 features:

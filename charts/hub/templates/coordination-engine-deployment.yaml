@@ -1,0 +1,119 @@
+{{- if .Values.coordinationEngine.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coordination-engine
+  labels:
+    app.kubernetes.io/component: coordination-engine
+    app.kubernetes.io/name: coordination-engine
+    app.kubernetes.io/part-of: self-healing-platform
+spec:
+  replicas: {{ .Values.coordinationEngine.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: coordination-engine
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: coordination-engine
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: {{ .Values.rbac.serviceAccountName | default "self-healing-operator" }}
+      securityContext:
+        runAsNonRoot: true
+        # Let OpenShift assign UID/GID from allowed range (no hardcoded values)
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: coordination-engine
+        image: {{ .Values.coordinationEngine.image.repository | default "quay.io/takinosh/openshift-coordination-engine" }}:{{ .Values.coordinationEngine.image.tag | default "ocp-4.18-latest" }}
+        imagePullPolicy: {{ .Values.coordinationEngine.image.pullPolicy | default "Always" }}
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: PORT
+          value: "8080"
+        - name: METRICS_PORT
+          value: "9090"
+        - name: LOG_LEVEL
+          value: {{ .Values.coordinationEngine.logLevel | default "info" | quote }}
+        - name: NAMESPACE
+          value: {{ .Release.Namespace | quote }}
+        {{- if .Values.coordinationEngine.kserve.enabled }}
+        - name: ENABLE_KSERVE_INTEGRATION
+          value: "true"
+        - name: KSERVE_NAMESPACE
+          value: {{ .Values.coordinationEngine.kserve.namespace | default .Release.Namespace | quote }}
+        - name: KSERVE_ANOMALY_DETECTOR_SERVICE
+          value: {{ .Values.coordinationEngine.kserve.anomalyDetectorService | default "anomaly-detector-predictor" | quote }}
+        - name: KSERVE_PREDICTIVE_ANALYTICS_SERVICE
+          value: {{ .Values.coordinationEngine.kserve.predictiveAnalyticsService | default "predictive-analytics-predictor" | quote }}
+        - name: KSERVE_TIMEOUT
+          value: {{ .Values.coordinationEngine.kserve.timeout | default "10s" | quote }}
+        {{- end }}
+        {{- if .Values.coordinationEngine.argocd.enabled }}
+        - name: ARGOCD_API_URL
+          value: {{ .Values.coordinationEngine.argocd.url | default "https://openshift-gitops-server.openshift-gitops.svc:443" | quote }}
+        {{- end }}
+        resources:
+          requests:
+            memory: {{ .Values.coordinationEngine.resources.requests.memory | default "256Mi" | quote }}
+            cpu: {{ .Values.coordinationEngine.resources.requests.cpu | default "200m" | quote }}
+          limits:
+            memory: {{ .Values.coordinationEngine.resources.limits.memory | default "512Mi" | quote }}
+            cpu: {{ .Values.coordinationEngine.resources.limits.cpu | default "500m" | quote }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 15
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          # Let OpenShift assign UID from allowed range
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coordination-engine
+  labels:
+    app.kubernetes.io/component: coordination-engine
+    app.kubernetes.io/name: coordination-engine
+    app.kubernetes.io/part-of: self-healing-platform
+spec:
+  selector:
+    app.kubernetes.io/component: coordination-engine
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+  type: ClusterIP
+{{- end }}
