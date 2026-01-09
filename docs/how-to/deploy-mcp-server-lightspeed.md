@@ -157,7 +157,7 @@ spec:
       streamableHTTP:
         url: http://mcp-server.self-healing-platform.svc:8080/mcp
         timeout: 30
-        enableSSE: false
+        enableSSE: true
 
   # OLS deployment configuration
   ols:
