@@ -52,6 +52,8 @@ spec:
           value: "true"
         - name: KSERVE_NAMESPACE
           value: {{ .Values.coordinationEngine.kserve.namespace | default .Release.Namespace | quote }}
+        - name: KSERVE_PREDICTOR_PORT
+          value: {{ .Values.coordinationEngine.kserve.predictorPort | default "8080" | quote }}
         - name: KSERVE_ANOMALY_DETECTOR_SERVICE
           value: {{ .Values.coordinationEngine.kserve.anomalyDetectorService | default "anomaly-detector-predictor" | quote }}
         - name: KSERVE_PREDICTIVE_ANALYTICS_SERVICE
