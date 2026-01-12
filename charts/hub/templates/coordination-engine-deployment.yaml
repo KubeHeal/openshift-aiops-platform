@@ -61,6 +61,10 @@ spec:
         - name: KSERVE_TIMEOUT
           value: {{ .Values.coordinationEngine.kserve.timeout | default "10s" | quote }}
         {{- end }}
+        {{- if .Values.coordinationEngine.prometheus.enabled }}
+        - name: PROMETHEUS_URL
+          value: {{ .Values.coordinationEngine.prometheus.url | default "https://prometheus-k8s.openshift-monitoring.svc:9091" | quote }}
+        {{- end }}
         {{- if .Values.coordinationEngine.argocd.enabled }}
         - name: ARGOCD_API_URL
           value: {{ .Values.coordinationEngine.argocd.url | default "https://openshift-gitops-server.openshift-gitops.svc:443" | quote }}
