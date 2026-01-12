@@ -315,18 +315,56 @@ networking:
 # MCP Server Configuration
 mcpServer:
   enabled: true
+  replicas: 1
+
+  # Image configuration
+  image:
+    repository: quay.io/takinosh/openshift-cluster-health-mcp
+    tag: "ocp-4.18-latest"
+    pullPolicy: Always
+
+  # Service account
   serviceAccount:
     create: false  # Use existing self-healing-operator ServiceAccount
     name: self-healing-operator
+
+  # Route configuration
+  route:
+    enabled: false  # Disable external route by default
+
+  # Transport protocol
+  transport: http
+
+  # Logging level
+  logLevel: info
+
+  # Coordination Engine integration
   coordinationEngine:
     enabled: true
     url: "http://coordination-engine:8080"
+
+  # KServe integration
   kserve:
     enabled: true
     namespace: self-healing-platform
+
+  # Prometheus integration
   prometheus:
     enabled: true
     url: "https://prometheus-k8s.openshift-monitoring.svc:9091"
+
+  # Cache configuration
+  cache:
+    ttlSeconds: 30
+
+  # Resource limits
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
 
 # Coordination Engine Configuration
 coordinationEngine:
