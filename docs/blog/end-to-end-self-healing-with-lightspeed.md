@@ -65,17 +65,7 @@ Everything looks healthy!
 
 ## Part 2: Deploy a Sample Application
 
-Let's deploy a simple Flask app so we have something to interact with.
-
-**You type:**
-```
-Help me deploy a sample Flask application
-```
-
-**Lightspeed responds:**
-```
-I can help! Here's a simple Flask deployment. Run this in your terminal:
-```
+Let's deploy a simple Flask app that we'll use throughout the rest of this guide. Run this command in your terminal:
 
 ```bash
 oc apply -f - <<EOF
@@ -118,7 +108,9 @@ spec:
 EOF
 ```
 
-### Check the Pods
+Wait about 30 seconds for the pods to start, then let's use Lightspeed to verify the deployment.
+
+### Check the Pods with Lightspeed
 
 **You type:**
 ```
