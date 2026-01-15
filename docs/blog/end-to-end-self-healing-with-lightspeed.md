@@ -23,6 +23,59 @@ Let's start chatting with our cluster!
 
 ---
 
+## Understanding the ML Models (Important!)
+
+Before diving into the demo, it's important to understand that **the ML models powering these predictions are trained specifically for YOUR cluster**. Each OpenShift cluster has unique workload patterns, resource usage characteristics, and behavioral signatures.
+
+### Why Cluster-Specific Training Matters
+
+- **Your 3 PM is different from our 3 PM**: A retail cluster might spike at lunch, while a financial services cluster peaks at market open
+- **Workload fingerprints are unique**: Your applications' memory patterns, CPU bursts, and scaling behaviors are learned from YOUR data
+- **Anomaly baselines are contextual**: What's "normal" for your cluster (e.g., 30% CPU) might be "abnormal" for another
+
+### The Notebooks That Train These Models
+
+The self-healing platform includes Jupyter notebooks that collect metrics from your cluster and train models on that data:
+
+| Notebook | Purpose | Model Produced |
+|----------|---------|----------------|
+| `01-isolation-forest-implementation.ipynb` | Trains anomaly detection using Isolation Forest algorithm | `anomaly-detector` |
+| `08-predictive-scaling-capacity-planning.ipynb` | Trains resource usage forecasting using time series analysis | `predictive-analytics` |
+| `03-lstm-based-prediction.ipynb` | Advanced time series with LSTM neural networks | `lstm-predictor` |
+| `04-ensemble-anomaly-methods.ipynb` | Combines multiple detection methods | `ensemble-predictor` |
+
+### Training Schedule
+
+Models are automatically retrained via `NotebookValidationJob` resources:
+
+```yaml
+# Models are retrained daily to capture evolving patterns
+schedule: "0 0 * * *"  # Daily at midnight
+```
+
+### First-Time Setup
+
+When you first deploy the platform, the notebooks run automatically to:
+1. **Collect baseline metrics** from Prometheus (24-48 hours of data)
+2. **Train initial models** on your cluster's patterns
+3. **Deploy to KServe** for real-time inference
+
+> **💡 Pro Tip**: If predictions seem off after deployment, give the models 24-48 hours to learn your cluster's patterns. The more historical data they have, the more accurate the predictions become.
+
+### Manual Retraining
+
+If your workloads change significantly (new applications, major scaling), you can manually retrigger training:
+
+```bash
+# Delete and recreate the NotebookValidationJob to retrain
+oc delete notebookvalidationjob predictive-scaling-validation -n self-healing-platform
+oc apply -f charts/hub/templates/notebook-validation-jobs.yaml
+```
+
+Now let's see these trained models in action!
+
+---
+
 ## Part 1: Your First Conversation - Health Check
 
 ### Open OpenShift Lightspeed
@@ -67,6 +120,8 @@ Everything looks healthy!
 
 Let's deploy a simple Flask app that we'll use throughout the rest of this guide. Run this command in your terminal:
 
+> **Note:** We use the Red Hat UBI Python image (`registry.access.redhat.com/ubi9/python-311`) because it's designed for OpenShift's security model, which runs containers as a random non-root UID.
+
 ```bash
 oc apply -f - <<EOF
 apiVersion: apps/v1
@@ -86,7 +141,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: python:3.11-slim
+        image: registry.access.redhat.com/ubi9/python-311:latest
         command: ["/bin/bash", "-c"]
         args:
         - |
@@ -98,12 +153,14 @@ spec:
               return "Hello from OpenShift!"
           app.run(host="0.0.0.0", port=8080)
           '
+        ports:
+        - containerPort: 8080
         resources:
           limits:
-            memory: "128Mi"
+            memory: "256Mi"
             cpu: "200m"
           requests:
-            memory: "64Mi"
+            memory: "128Mi"
             cpu: "100m"
 EOF
 ```
@@ -114,7 +171,7 @@ Wait about 30 seconds for the pods to start, then let's use Lightspeed to verify
 
 **You type:**
 ```
-Show me the sample-flask-app pods
+Show me the sample-flask-app pods in the self-healing-platform namespace
 ```
 
 **Lightspeed responds:**
@@ -151,32 +208,45 @@ What will the CPU and memory usage be at 3 PM today?
 
 **Lightspeed responds:**
 ```
-🔮 Resource Forecast for 3:00 PM (15:00):
+Confirmed prediction for 15:00 today (cluster-wide)
 
-Current Metrics (24h rolling average from Prometheus):
-- CPU: 68.2%
-- Memory: 74.5%
+CPU: 58.0%
+Memory: 58.6%
+Model confidence: 85%
 
-Predicted Metrics at 15:00:
-- CPU: 74.5% (+6.3%)
-- Memory: 81.2% (+6.7%)
+Current baseline (estimate):
+- CPU: ~3.5%
+- Memory: ~27.1%
 
-Analysis:
-- Time: 15:00 (Wednesday afternoon)
-- Trend: Upward (typical afternoon peak)
-- Confidence: 92%
+Key notes:
+- Big CPU jump predicted — verify this isn't a metrics-collection gap before reacting
+- Important metrics to check in Prometheus:
+  - CPU: container_cpu_usage_seconds_total, pod:container_cpu_usage:sum (5m)
+  - Memory: container_memory_working_set_bytes, container_memory_rss
 
-💡 Recommendation:
-Memory usage approaching 85% threshold. Monitor closely or
-consider scaling if this is a critical workload.
+Quick commands:
+  kubectl top nodes
+  kubectl top pods -A
+
+If the higher load is real and sustained: consider HPA or manual scaling,
+add node capacity, or tune pod requests/limits to avoid throttling/OOMs.
+
+Next steps — pick one:
+1. I can run an anomaly scan for CPU/memory (namespace, deployment, or pod)
+2. I can calculate how many more pods you can safely schedule
+
+Which would you like?
 ```
 
+> **📊 Note**: Your predictions will differ based on your cluster's learned patterns! The model trains on YOUR Prometheus metrics, so a cluster with heavy afternoon batch jobs will show different predictions than one with steady traffic.
+
 🎯 **What happened?** Lightspeed:
-1. Queried Prometheus for current CPU/memory metrics
-2. Extracted hour (15) and day of week (3) from "3 PM today"
-3. Called the predictive-analytics KServe model: `[15, 3, 68.2, 74.5]`
-4. Model returned: `[0.745, 0.812]` (74.5% CPU, 81.2% memory)
-5. Formatted a human-friendly response
+1. Called the MCP `predict-resource-usage` tool
+2. The Coordination Engine queried Prometheus for current 24h rolling mean metrics
+3. Extracted hour (15) and day of week from "3 PM today"
+4. Called the `predictive-analytics` KServe model with features: `[hour, day_of_week, cpu_baseline, memory_baseline]`
+5. Model returned predictions scaled to your cluster's typical usage patterns
+6. Formatted a human-friendly response with actionable recommendations
 
 ### Scenario 2: Scaling Impact Prediction
 
@@ -249,6 +319,8 @@ Let's deploy a broken app to see self-healing in action.
 
 ### Deploy a Memory-Starved Application
 
+This app has a memory leak - each request allocates 10MB. With only 96Mi limit, it will OOMKill after a few requests.
+
 **Run this in your terminal:**
 ```bash
 oc apply -f - <<EOF
@@ -269,7 +341,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: python:3.11-slim
+        image: registry.access.redhat.com/ubi9/python-311:latest
         command: ["/bin/bash", "-c"]
         args:
         - |
@@ -279,24 +351,56 @@ spec:
           data = []
           @app.route("/")
           def hello():
-              data.append("x" * 1024 * 1024 * 10)  # Allocate 10MB
-              return f"Allocated {len(data)} chunks"
+              data.append("x" * 1024 * 1024 * 10)  # Allocate 10MB per request
+              return f"Allocated {len(data)} chunks ({len(data) * 10}MB total)"
           app.run(host="0.0.0.0", port=8080)
           '
+        ports:
+        - containerPort: 8080
         resources:
           limits:
-            memory: "32Mi"    # TOO LOW!
+            memory: "96Mi"    # Low - will OOMKill after ~3-4 requests
             cpu: "100m"
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
 EOF
+```
+
+### Trigger the Memory Leak
+
+The app won't crash on its own - we need to trigger the memory leak by sending requests. Each request allocates 10MB of memory.
+
+**Run this to trigger OOMKill:**
+```bash
+# Wait for pods to start
+sleep 30
+
+# Hit the endpoint repeatedly to trigger memory leak
+for i in {1..10}; do
+  echo "Request $i:"
+  oc exec -n self-healing-platform deployment/broken-app -- curl -s http://localhost:8080/ 2>/dev/null || echo "Pod crashed!"
+  sleep 1
+done
+```
+
+You should see output like:
+```
+Request 1: Allocated 1 chunks (10MB total)
+Request 2: Allocated 2 chunks (20MB total)
+...
+Request 7: Allocated 7 chunks (70MB total)
+Request 8: Pod crashed!
+Request 9: Allocated 1 chunks (10MB total)  ← Pod restarted!
 ```
 
 ### Watch It Fail
 
-Wait 30 seconds, then ask Lightspeed:
+Now ask Lightspeed about the failing pods:
 
 **You type:**
 ```
-Are there any failing pods?
+Are there any failing pods? in the self-healing-platform namespace
 ```
 
 **Lightspeed responds:**
@@ -305,18 +409,19 @@ Are there any failing pods?
 
 1. broken-app-xxx
    Status: OOMKilled ❌
-   Restarts: 5
-   Reason: Container exceeded memory limit (32Mi)
-   Pattern: Crash loop every ~30s
+   Restarts: 2
+   Reason: Container exceeded memory limit (96Mi)
+   Pattern: Crash loop - restarts when memory leak triggered
 
 2. broken-app-yyy
    Status: OOMKilled ❌
-   Restarts: 4
-   Reason: Container exceeded memory limit (32Mi)
-   Pattern: Crash loop every ~30s
+   Restarts: 1
+   Reason: Container exceeded memory limit (96Mi)
+   Pattern: Memory leak causes OOMKill under load
 
-Both pods are experiencing Out Of Memory errors. The memory
-limit (32Mi) is insufficient for Flask runtime.
+Both pods are experiencing Out Of Memory errors. The app has a
+memory leak - each request allocates 10MB that isn't released.
+The 96Mi limit is exceeded after ~7 requests.
 
 Would you like me to analyze these for anomalies?
 ```
@@ -338,16 +443,16 @@ ML Analysis Complete (anomaly-detector model):
 Confidence: 95%
 
 Root Cause:
-- Type: Resource Exhaustion
-- Component: Memory limits
-- Current: 32Mi
-- Actual usage: ~120Mi+
-- Pattern: Repeated OOMKilled
+- Type: Memory Leak
+- Component: Application code
+- Memory limit: 96Mi
+- Pattern: Linear growth ~10MB/request until OOMKill
+- Evidence: Memory never released between requests
 
 Historical Context:
-- 3 similar incidents in past 7 days
-- All resolved by increasing to 128Mi+
-- Typical Flask memory: 80-100Mi
+- 3 similar memory leak patterns in past 7 days
+- Temporary fixes: increase limits 2-3x
+- Permanent fixes: code review for unbounded arrays/caches
 
 Impact:
 - Service availability: 0% (both replicas failing)
@@ -355,11 +460,15 @@ Impact:
 - Blast radius: Isolated to broken-app
 
 💡 Recommended Fix:
-1. Increase memory to 128Mi
-2. Set memory request to 64Mi
-3. Add probes with longer delays
+IMMEDIATE (automated):
+1. Increase memory limit to 256Mi (buys time)
+2. Set memory request to 128Mi
 
-Would you like me to fix this automatically?
+PERMANENT (requires developer):
+3. Review code: data array grows unbounded
+4. Implement cleanup or bounded cache
+
+Would you like me to apply the immediate fix?
 ```
 
 🎯 **What happened?** The anomaly-detector ML model analyzed the pod metrics and crash patterns, compared them to historical data, and identified this as a known resource exhaustion pattern.
@@ -381,8 +490,11 @@ Target: deployment/broken-app
 Action: Update Resource Limits
 
 Changes:
-  Memory: 32Mi  → 128Mi
+  Memory: 96Mi  → 256Mi (temporary fix)
   CPU:    100m  → 200m
+
+Note: This increases limits to prevent crashes, but the
+root cause (memory leak in code) should still be fixed.
 
 Applying via Coordination Engine...
 
@@ -410,23 +522,24 @@ Are the broken-app pods healthy now?
 1. broken-app-xxx
    Status: Running ✅
    CPU: 52m / 200m (26%)
-   Memory: 87Mi / 128Mi (68%)
+   Memory: 87Mi / 256Mi (34%)
    Restarts: 0 (since fix)
    Uptime: 1m
 
 2. broken-app-yyy
    Status: Running ✅
    CPU: 49m / 200m (24%)
-   Memory: 84Mi / 128Mi (66%)
+   Memory: 84Mi / 256Mi (33%)
    Restarts: 0 (since fix)
    Uptime: 1m
 
 Memory Analysis:
 - Current: 85Mi average
-- Peak: 95Mi (33Mi headroom)
-- Stability: No restarts
+- Peak: 95Mi (161Mi headroom with new limit)
+- Stability: No restarts since remediation
 
-The fix was successful. Pods are stable!
+⚠️ Note: The memory leak still exists - increased limits
+buy time but code should be reviewed to fix the leak.
 ```
 
 ---
@@ -449,21 +562,23 @@ Average resolution: 45 seconds
 
 inc-20260112-001
 - Time: 15:44:38 UTC
-- Type: OOMKilled
+- Type: OOMKilled (Memory Leak)
 - Pods: broken-app-xxx, broken-app-yyy
-- Root cause: Memory limit too low (32Mi)
+- Root cause: Application memory leak (~10MB/request)
+- Trigger: Memory exceeded 96Mi limit after ~7 requests
 
 Remediation:
-- Action: Updated deployment resources
+- Action: Updated deployment resources (temporary fix)
 - Applied: YES ✅
 - Resolution time: 45s
-- Changes: Memory 32Mi→128Mi, CPU 100m→200m
-- Outcome: 100% success
+- Changes: Memory 96Mi→256Mi, CPU 100m→200m
+- Outcome: 100% success (pods stable)
+- Follow-up: Code review recommended for memory leak
 
 Pattern Recognition:
-This matches 3 previous incidents, all resolved with
-similar memory increases. The ML model learns from
-these patterns for better predictions.
+ML detected this as "memory leak" pattern, not just
+"insufficient resources". Recommended both immediate
+fix (increase limits) and permanent fix (code review).
 ```
 
 ---
