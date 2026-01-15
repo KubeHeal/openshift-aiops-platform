@@ -15,7 +15,7 @@ This guide walks you through deploying an **AI-powered Self-Healing Platform** o
 - Production-ready patterns for enterprise environments
 
 **Technologies Used:**
-- Red Hat OpenShift 4.14+
+- Red Hat OpenShift 4.18+
 - OpenShift AI (RHOAI) / Open Data Hub
 - Prometheus & Alertmanager
 - Helm, ArgoCD, Ansible
@@ -399,7 +399,7 @@ openshift-aiops-platform/
 ### Cluster Requirements
 
 ```yaml
-OpenShift Version: 4.14+
+OpenShift Version: 4.18+
 Nodes:
   - Control Plane: 3x (m5.xlarge or equivalent)
   - Workers: 3x (m5.2xlarge or equivalent)
@@ -431,7 +431,7 @@ ClusterRoles needed:
 
 ```bash
 # Local machine
-oc version    # 4.14+
+oc version    # 4.18+
 helm version  # 3.12+
 ansible --version  # 2.14+
 python --version   # 3.11+
@@ -1000,4 +1000,4 @@ argocd app rollback self-healing-operator
 ---
 
 *Last Updated: January 2026*
-*Author: Platform Engineering Team*
+*Author: Sangeetha Bhaskaran , OpenShift Specialist Architect*
