@@ -257,7 +257,7 @@ gh issue create --title "Enhance Prometheus Client" \
 ## Related Documentation
 
 - **Implementation Plan**: [`docs/implementation-plan-prediction-features.md`](../implementation-plan-prediction-features.md)
-- **Blog Post**: [`docs/blog/end-to-end-self-healing-with-lightspeed.md`](../blog/end-to-end-self-healing-with-lightspeed.md)
+- **Blog Post**: [`docs/blog/16-end-to-end-self-healing-with-lightspeed.md`](../blog/16-end-to-end-self-healing-with-lightspeed.md)
 - **ADR-036**: Go-Based MCP Server
 - **ADR-038**: Go Coordination Engine Migration
 

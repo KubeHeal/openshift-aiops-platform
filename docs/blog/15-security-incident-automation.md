@@ -179,7 +179,7 @@ You've implemented security automation:
 
 You've completed the blog series! Explore:
 
-1. **All Blogs**: Review [BLOG-SERIES-PROPOSAL.md](BLOG-SERIES-PROPOSAL.md) for the complete index
+1. **All Blogs**: See the `docs/blog/` directory for the complete blog series (Blogs 1-16)
 2. **Contribute**: Help improve the platform and documentation
 3. **Deploy**: Use the platform in your own clusters
 
