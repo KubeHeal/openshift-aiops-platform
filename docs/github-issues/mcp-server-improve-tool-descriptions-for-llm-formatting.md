@@ -8,6 +8,7 @@ The MCP server tool descriptions should be enhanced to guide LLMs (like OpenShif
 **Type**: Enhancement
 **Priority**: Medium
 **Labels**: `enhancement`, `ux`, `mcp-tools`, `llm-prompting`
+**Status**: ✅ **IMPLEMENTED** (commit `c39302f`)
 
 ---
 
@@ -182,12 +183,12 @@ The prediction shows normal resource levels. No immediate action needed.
 
 ## Acceptance Criteria
 
-- [ ] `predict-resource-usage` description updated with response interpretation guide
-- [ ] `analyze-anomalies` description updated with presentation guidelines
-- [ ] `calculate-pod-capacity` description updated with default assumptions
-- [ ] Tool descriptions include field-by-field interpretation
-- [ ] Lightspeed presents predictions vs. current baselines clearly
-- [ ] No more "0.0% (odd)" warnings when data is valid
+- [x] `predict-resource-usage` description updated with response interpretation guide
+- [x] `analyze-anomalies` description updated with presentation guidelines
+- [x] `calculate-pod-capacity` description updated with default assumptions
+- [x] Tool descriptions include field-by-field interpretation
+- [x] Lightspeed presents predictions vs. current baselines clearly
+- [x] No more "0.0% (odd)" warnings when data is valid (after coordination engine fix)
 
 ---
 
