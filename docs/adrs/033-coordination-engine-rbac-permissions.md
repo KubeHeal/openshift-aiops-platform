@@ -209,8 +209,9 @@ curl http://localhost:8080/health
 ## Related ADRs
 
 - **ADR-001**: Kubernetes-Native Architecture
-- **ADR-008**: Security and RBAC Strategy
+- **ADR-008**: Security and RBAC Strategy - ⚠️ DEPRECATED
 - **ADR-012**: Notebook Architecture for End-to-End Workflows
+- **ADR-038**: [Go Coordination Engine Migration](038-go-coordination-engine-migration.md) - **Supersedes this ADR** (Python engine replaced)
 
 ## Testing Strategy
 

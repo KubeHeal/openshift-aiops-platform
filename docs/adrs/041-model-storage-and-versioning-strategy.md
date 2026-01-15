@@ -1,4 +1,4 @@
-# ADR-031: Model Storage and Versioning Strategy
+# ADR-041: Model Storage and Versioning Strategy
 
 ## Status
 **ACCEPTED** - 2025-12-09
@@ -192,6 +192,9 @@ curl -X POST http://predictive-analytics-predictor:8080/v1/models/predictive-ana
 - [ADR-004: KServe for Model Serving Infrastructure](004-kserve-model-serving.md)
 - [ADR-012: Notebook Architecture for End-to-End Workflows](012-notebook-architecture-for-end-to-end-workflows.md)
 - [ADR-010: OpenShift Data Foundation as Storage Infrastructure](010-openshift-data-foundation-requirement.md)
+- [ADR-037: MLOps Workflow for Model Training, Versioning, and Deployment](037-mlops-workflow-strategy.md)
+- [ADR-039: User-Deployed KServe Models](039-user-deployed-kserve-models.md)
+- [ADR-040: Extensible KServe Model Registry](040-extensible-kserve-model-registry.md)
 
 ## References
 

@@ -17,8 +17,8 @@ This directory contains Architecture Decision Records for the Self-Healing Platf
 | [ADR-009](009-bootstrap-deployment-automation.md) | Bootstrap Deployment Automation Architecture | Accepted | 2025-01-09 | |
 | [ADR-010](010-openshift-data-foundation-requirement.md) | OpenShift Data Foundation as Storage Infrastructure Requirement | Accepted | 2025-10-13 | |
 | [ADR-011](011-self-healing-workbench-base-image.md) | Self-Healing Workbench Base Image Selection | Accepted | 2025-10-13 | |
-| [ADR-012](012-notebook-architecture-for-end-to-end-workflows.md) | Notebook Architecture for End-to-End Self-Healing Workflows | Proposed | 2025-10-13 | |
-| [ADR-013](013-data-collection-and-preprocessing-workflows.md) | Data Collection and Preprocessing Workflows for Self-Healing Platform | Proposed | 2025-10-13 | |
+| [ADR-012](012-notebook-architecture-for-end-to-end-workflows.md) | Notebook Architecture for End-to-End Self-Healing Workflows | **Implemented** | 2025-10-13 | Status updated 2026-01-15 |
+| [ADR-013](013-data-collection-and-preprocessing-workflows.md) | Data Collection and Preprocessing Workflows for Self-Healing Platform | **Implemented** | 2025-10-13 | Status updated 2026-01-15 |
 | [ADR-014](014-openshift-aiops-platform-mcp-server.md) | Cluster Health MCP Server for OpenShift Lightspeed Integration | ⚠️ **SUPERSEDED** | 2025-10-13 | Superseded by ADR-036 (Go-based standalone) |
 | [ADR-015](015-service-separation-mcp-vs-rest-api.md) | Service Separation - MCP Server vs REST API | ⚠️ **SUPERSEDED** | 2025-10-15 | Superseded by ADR-036 (standalone architecture) |
 | [ADR-016](016-openshift-lightspeed-olsconfig-integration.md) | OpenShift Lightspeed OLSConfig Integration | Proposed | 2025-10-15 | |
@@ -38,11 +38,16 @@ This directory contains Architecture Decision Records for the Self-Healing Platf
 | [ADR-030](030-hybrid-management-model-namespaced-argocd.md) | Hybrid Management Model for Namespaced ArgoCD Deployments | Accepted | 2025-11-06 | |
 | [ADR-031](031-dockerfile-strategy-for-notebook-validation.md) | Dockerfile Strategy for Notebook Validation | Accepted | 2025-11-19 | Single shared Dockerfile |
 | [ADR-032](032-infrastructure-validation-notebook.md) | Infrastructure Validation Notebook for User Readiness | Implemented | 2025-11-04 | Tier 1 validation |
-| [ADR-033](033-coordination-engine-rbac-permissions.md) | Coordination Engine RBAC Permissions | Proposed | 2025-10-17 | Renumbered from 025 |
+| [ADR-033](033-coordination-engine-rbac-permissions.md) | Coordination Engine RBAC Permissions | ⚠️ **DEPRECATED** | 2025-10-17 | Superseded by ADR-038 (Go coordination engine) |
 | [ADR-034](034-rhods-notebook-routing.md) | RHODS Notebook Routing Configuration | Accepted | 2025-10-17 | Direct hostname access |
 | [ADR-035](035-storage-strategy.md) | Storage Strategy for Self-Healing Platform | Accepted | 2025-10-17 | gp3-csi selection |
 | [ADR-036](036-go-based-standalone-mcp-server.md) | Go-Based Standalone MCP Server for OpenShift Cluster Health | **IN PROGRESS** (Phase 1.4) | 2025-12-09 | **Supersedes ADR-014 & ADR-015**, standalone repo, 2 tools operational |
 || [ADR-037](037-mlops-workflow-strategy.md) | MLOps Workflow for Model Training, Versioning, and Deployment | Accepted | 2025-12-10 | **Supersedes ADR-008**, clarifies actual MLOps architecture |
+| [ADR-038](038-go-coordination-engine-migration.md) | Go Coordination Engine Migration | Accepted | 2026-01-07 | Python → Go migration, deployment-aware remediation |
+| [ADR-039](039-user-deployed-kserve-models.md) | User-Deployed KServe Models | Accepted | 2026-01-07 | Platform-agnostic ML integration |
+| [ADR-040](040-extensible-kserve-model-registry.md) | Extensible KServe Model Registry | Accepted | 2026-01-07 | Custom model registration via values.yaml |
+| [ADR-041](041-model-storage-and-versioning-strategy.md) | Model Storage and Versioning Strategy | Accepted | 2025-12-09 | One directory per InferenceService |
+| [ADR-042](042-argocd-deployment-lessons-learned.md) | ArgoCD Deployment Lessons Learned | Accepted | 2025-11-28 | Deployment patterns and best practices |
 
 ### Meta-Documents
 
@@ -63,8 +68,8 @@ This directory contains Architecture Decision Records for the Self-Healing Platf
 ### Platform Foundation (001-010)
 Core platform decisions including OpenShift selection, hybrid architecture, AI/ML platform, and storage.
 
-### ML/AI Workflows (011-013)
-Notebook architecture, workbench configuration, and data workflows.
+### ML/AI Workflows (011-013, 037-041)
+Notebook architecture, workbench configuration, data workflows, MLOps, and model management.
 
 ### Integration & Services (014-018)
 MCP server, OpenShift Lightspeed, and service integration patterns.
@@ -75,13 +80,35 @@ Validated Patterns framework, deployment automation, CI/CD, secrets management, 
 ### Validation & Testing (021, 029, 032)
 Deployment validation (Tekton), notebook validation (Operator), and infrastructure validation.
 
-### Storage & Configuration (025, 033-035)
-Object storage, RBAC, routing, and storage strategies.
+### Storage & Configuration (025, 033-035, 041)
+Object storage, RBAC, routing, storage strategies, and model versioning.
+
+### Coordination & Integration (038-040)
+Coordination engine architecture, KServe integration, and model registry.
+
+### Deployment & Lessons (042)
+ArgoCD deployment patterns and best practices.
 
 ### Advanced Features (031)
 Custom image building strategies and Docker configuration.
 
 ## Recent Changes
+
+### 2026-01-07: Go Coordination Engine and KServe Integration
+
+**Major Architectural Changes**:
+- **ADR-038** created and accepted: Go Coordination Engine Migration (Python → Go)
+- **ADR-039** created and accepted: User-Deployed KServe Models (Platform-agnostic ML integration)
+- **ADR-040** created and accepted: Extensible KServe Model Registry (Custom model registration)
+
+**Status Updates**:
+- **ADR-012**: PROPOSED → **IMPLEMENTED** (notebooks complete, blog posts published)
+- **ADR-013**: PROPOSED → **IMPLEMENTED** (data collection workflows operational)
+- **ADR-033**: PROPOSED → **DEPRECATED** (superseded by ADR-038 Go coordination engine)
+
+**Renumbering**:
+- **ADR-031 (model-storage)** → **ADR-041** (resolved duplicate with dockerfile-strategy)
+- **ADR-031 (deployment-lessons)** → **ADR-042** (resolved duplicate, standardized naming)
 
 ### 2025-12-10: MCP Server Migration to Standalone Go Project
 
@@ -169,7 +196,7 @@ We use the [MADR (Markdown Architectural Decision Records)](https://adr.github.i
 
 When creating new ADRs:
 
-1. **Use the next available number** in the sequence (currently: ADR-037)
+1. **Use the next available number** in the sequence (currently: ADR-042, next: ADR-043)
 2. **Follow the MADR template** format (see above)
 3. **Include clear context**, decision, and consequences
 4. **Update this README.md** index with your new ADR
@@ -201,6 +228,6 @@ This README is maintained by the Architecture Team and should be updated wheneve
 - ADRs are superseded or deprecated
 - Major platform versions change
 
-**Last Updated**: 2025-11-19
+**Last Updated**: 2026-01-15
 **Maintained By**: Architecture Team
 **Review Frequency**: Monthly or when ADRs change
