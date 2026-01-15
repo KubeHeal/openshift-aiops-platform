@@ -219,12 +219,14 @@ for pod in crash_loop_pods:
 
 The platform's anomaly detector can identify crash loops before they become critical.
 
+> **💡 Architecture Note**: Your Python notebooks call the **Go-based Coordination Engine** via REST API. The Coordination Engine then proxies to KServe models. You don't need to write Go code!
+
 ### Call Anomaly Detection API
 
 ```python
 from coordination_engine_client import get_client
 
-client = get_client()
+client = get_client()  # Python client → Go Coordination Engine → KServe models
 
 # Collect metrics for the crashing pod
 pod_metrics = {

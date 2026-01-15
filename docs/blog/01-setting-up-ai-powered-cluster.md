@@ -37,6 +37,57 @@ Before starting, ensure you have:
 
 ---
 
+## Platform Architecture Overview
+
+Before we begin, it's important to understand the platform's architecture and the languages used:
+
+### Language Separation
+
+The platform uses **two languages** for different purposes:
+
+| Component | Language | Purpose |
+|-----------|----------|---------|
+| **Jupyter Notebooks** | Python | ML model training, data analysis, experimentation |
+| **Coordination Engine** | Go | Production orchestration, remediation, KServe proxy |
+| **MCP Server** | Go | OpenShift Lightspeed integration, cluster tooling |
+| **KServe Models** | Python (sklearn/PyTorch) | ML inference (served by KServe runtime) |
+
+### How They Work Together
+
+```
+┌─────────────────────┐
+│  Jupyter Notebooks │  ← Python (you write this)
+│  (Python)           │
+└──────────┬──────────┘
+           │ HTTP REST API
+           ▼
+┌─────────────────────┐     ┌─────────────────────┐
+│ Coordination Engine │────▶│   KServe Models     │
+│ (Go Service)        │     │ (Python models)     │
+└──────────┬──────────┘     └─────────────────────┘
+           │
+           ▼
+┌─────────────────────┐
+│   MCP Server        │
+│ (Go Service)        │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ OpenShift Lightspeed│
+└─────────────────────┘
+```
+
+**Key Points:**
+- ✅ **You write Python** in notebooks for ML/data science
+- ✅ **Go services handle** production orchestration and integration
+- ✅ **Python notebooks call Go services** via REST APIs (no Go code needed!)
+- ✅ **KServe serves Python models** (sklearn, PyTorch, TensorFlow) in production
+
+This separation allows Python's rich ML ecosystem while Go handles Kubernetes integration and performance.
+
+---
+
 ## Step 1: Access the Self-Healing Workbench
 
 The platform provides a Jupyter workbench pre-configured with all necessary tools and libraries.
@@ -132,9 +183,17 @@ KServe is the model serving infrastructure that powers the platform's ML predict
 ```
 ┌─────────────┐     ┌──────────────────────┐     ┌─────────────────────┐
 │  Notebook   │────▶│ Coordination Engine  │────▶│ KServe Inference    │
-│  (You!)     │     │ /api/v1/detect       │     │ Services            │
+│  (Python)   │     │ (Go Service)         │     │ Services            │
+│             │     │ /api/v1/detect       │     │                     │
 └─────────────┘     └──────────────────────┘     └─────────────────────┘
 ```
+
+> **💡 Language Note**: The notebooks you'll work with are **Python** (for ML/data science), but they interact with production services written in **Go**:
+> - **Coordination Engine**: Go service (orchestrates remediation, proxies to KServe)
+> - **MCP Server**: Go service (connects Lightspeed to cluster tools)
+> - **Notebooks**: Python (train models, analyze data, call Go services via REST APIs)
+> 
+> This separation allows Python for ML workflows while Go handles production performance and Kubernetes integration.
 
 **Key Benefits:**
 - ✅ Central orchestration for all ML models
@@ -144,12 +203,12 @@ KServe is the model serving infrastructure that powers the platform's ML predict
 
 ### Discover Available Models
 
-The notebook shows you how to:
+The notebook shows you how to use Python to call the Go-based Coordination Engine via its REST API:
 
-1. **Connect to Coordination Engine**:
+1. **Connect to Coordination Engine** (Python client calling Go service):
    ```python
    from coordination_engine_client import get_client
-   client = get_client()
+   client = get_client()  # Connects to http://coordination-engine:8080 (Go service)
    ```
 
 2. **List Available Models**:

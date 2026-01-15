@@ -246,6 +246,8 @@ def get_fallback_action(anomaly):
 
 ## Step 4: Execute with Monitoring
 
+> **💡 Architecture Note**: The Coordination Engine is a **Go service**. Your Python notebooks call it via REST API to execute remediations.
+
 ### Execute High-Confidence Actions
 
 ```python
@@ -259,7 +261,7 @@ def execute_ai_remediation(anomaly, decision):
     """
     from coordination_engine_client import get_client
     
-    client = get_client()
+    client = get_client()  # Python client → Go Coordination Engine service
     
     # Create incident
     incident = client.create_incident({

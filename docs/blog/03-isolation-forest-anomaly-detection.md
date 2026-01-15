@@ -266,6 +266,13 @@ with open('/opt/app-root/src/models/anomaly-detector/metadata.json', 'w') as f:
 
 ## Step 5: Deploy to KServe
 
+> **💡 Architecture Note**: The notebooks are **Python** (for ML training), but they interact with:
+> - **KServe**: Model serving infrastructure (handles sklearn, PyTorch, TensorFlow models)
+> - **Coordination Engine**: Go service that orchestrates model calls and remediation
+> - **MCP Server**: Go service that connects OpenShift Lightspeed to the platform
+> 
+> Your Python notebooks call these Go services via REST APIs. You don't need to write Go code to use the platform!
+
 ### Create InferenceService
 
 The model is automatically deployed via the platform's GitOps workflow. To manually deploy:
@@ -287,10 +294,12 @@ spec:
 
 ### Test the Model
 
+The Python client calls the Go-based Coordination Engine via HTTP:
+
 ```python
 from coordination_engine_client import get_client
 
-client = get_client()
+client = get_client()  # Connects to Go service at http://coordination-engine:8080
 
 # Test prediction
 response = client.detect_anomaly(

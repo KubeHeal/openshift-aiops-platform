@@ -204,12 +204,14 @@ print(f"   Confidence: {memory_trend['confidence']:.2f}")
 
 Use the predictive analytics model to forecast future memory usage.
 
+> **💡 Architecture Note**: Your Python notebooks call the **Go-based Coordination Engine** via REST API. The Coordination Engine orchestrates predictions and remediation. You don't need to write Go code!
+
 ### Call Predictive Model
 
 ```python
 from coordination_engine_client import get_client
 
-client = get_client()
+client = get_client()  # Python client → Go Coordination Engine → KServe models
 
 # Get current memory baseline
 current_memory = metrics['memory_usage'].iloc[-1]

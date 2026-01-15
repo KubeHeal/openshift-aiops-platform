@@ -279,12 +279,14 @@ def update_image(deployment_name, namespace, new_image):
 
 ## Step 4: Execute via Coordination Engine
 
+> **💡 Architecture Note**: The Coordination Engine is a **Go service** that orchestrates remediation. Your Python notebooks call it via REST API—you don't need to write Go code!
+
 ### Trigger Remediation
 
 ```python
 from coordination_engine_client import get_client
 
-client = get_client()
+client = get_client()  # Python client calling Go service at http://coordination-engine:8080
 
 def execute_remediation(anomaly, rule):
     """

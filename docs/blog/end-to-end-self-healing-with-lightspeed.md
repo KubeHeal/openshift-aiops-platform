@@ -15,9 +15,11 @@ This is now possible with OpenShift Lightspeed connected to our self-healing pla
 
 **What's already deployed:**
 - ✅ OpenShift Lightspeed (AI assistant)
-- ✅ MCP Server (connects Lightspeed to cluster tools)
-- ✅ Coordination Engine (orchestrates remediation)
+- ✅ MCP Server (Go service - connects Lightspeed to cluster tools)
+- ✅ Coordination Engine (Go service - orchestrates remediation)
 - ✅ KServe ML Models (anomaly detection + capacity forecasting)
+
+> **💡 Architecture Note**: The MCP Server and Coordination Engine are **Go services** for production performance and Kubernetes integration. The notebooks you'll see are **Python** (for ML/data science), and they call these Go services via REST APIs. You don't need to write Go code to use the platform!
 
 Let's start chatting with our cluster!
 
