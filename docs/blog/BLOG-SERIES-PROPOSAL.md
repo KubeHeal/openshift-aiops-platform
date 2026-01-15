@@ -6,7 +6,9 @@
 
 ## Overview
 
-This document proposes **12 blog posts** organized into a learning journey, based on the 32 notebooks in the platform. Each blog is designed to be standalone but builds on previous knowledge when read in sequence.
+This document describes **15 blog posts** organized into a learning journey, based on the 32 notebooks in the platform. Each blog is designed to be standalone but builds on previous knowledge when read in sequence.
+
+**Status**: ✅ **All 15 blogs completed!** See links below.
 
 **Target Audiences:**
 - 🎯 **Platform Users**: SREs, DevOps engineers who want to use the platform
@@ -19,7 +21,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ### 🚀 Series 1: Getting Started (Beginner)
 
-#### Blog 1: "Setting Up Your AI-Powered OpenShift Cluster"
+#### Blog 1: "Setting Up Your AI-Powered OpenShift Cluster" ✅
+**Status**: [Completed](01-setting-up-ai-powered-cluster.md)
+
 **Based on:** `00-setup/` notebooks
 - `00-platform-readiness-validation.ipynb`
 - `01-kserve-model-onboarding.ipynb`
@@ -35,7 +39,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ---
 
-#### Blog 2: "Collecting the Data That Powers AI Ops"
+#### Blog 2: "Collecting the Data That Powers AI Ops" ✅
+**Status**: [Completed](02-collecting-data-for-aiops.md)
+
 **Based on:** `01-data-collection/` notebooks
 - `prometheus-metrics-collection.ipynb`
 - `openshift-events-analysis.ipynb`
@@ -56,7 +62,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ### 🔍 Series 2: Anomaly Detection (Intermediate)
 
-#### Blog 3: "Your First Anomaly Detector: Isolation Forest"
+#### Blog 3: "Your First Anomaly Detector: Isolation Forest" ✅
+**Status**: [Completed](03-isolation-forest-anomaly-detection.md)
+
 **Based on:** `02-anomaly-detection/01-isolation-forest-implementation.ipynb`
 
 **What readers will learn:**
@@ -70,7 +78,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ---
 
-#### Blog 4: "Time Series Anomaly Detection for Kubernetes"
+#### Blog 4: "Time Series Anomaly Detection for Kubernetes" ✅
+**Status**: [Completed](04-time-series-anomaly-detection.md)
+
 **Based on:** `02-anomaly-detection/02-time-series-anomaly-detection.ipynb`
 
 **What readers will learn:**
@@ -83,7 +93,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ---
 
-#### Blog 5: "Deep Learning for Cluster Anomalies: LSTM Networks"
+#### Blog 5: "Deep Learning for Cluster Anomalies: LSTM Networks" ✅
+**Status**: [Completed](05-lstm-deep-learning-anomalies.md)
+
 **Based on:** `02-anomaly-detection/03-lstm-based-prediction.ipynb`
 
 **What readers will learn:**
@@ -96,7 +108,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ---
 
-#### Blog 6: "Ensemble Methods: Combining Multiple Detectors"
+#### Blog 6: "Ensemble Methods: Combining Multiple Detectors" ✅
+**Status**: [Completed](06-ensemble-anomaly-methods.md)
+
 **Based on:** `02-anomaly-detection/04-ensemble-anomaly-methods.ipynb`
 
 **What readers will learn:**
@@ -111,7 +125,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ### 🔧 Series 3: Self-Healing Logic (Intermediate-Advanced)
 
-#### Blog 7: "Building Rule-Based Remediation Workflows"
+#### Blog 7: "Building Rule-Based Remediation Workflows" ✅
+**Status**: [Completed](07-rule-based-remediation.md)
+
 **Based on:** `03-self-healing-logic/rule-based-remediation.ipynb`
 
 **What readers will learn:**
@@ -124,7 +140,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ---
 
-#### Blog 8: "AI-Driven Decision Making for Complex Incidents"
+#### Blog 8: "AI-Driven Decision Making for Complex Incidents" ✅
+**Status**: [Completed](08-ai-driven-decision-making.md)
+
 **Based on:** 
 - `03-self-healing-logic/ai-driven-decision-making.ipynb`
 - `03-self-healing-logic/hybrid-healing-workflows.ipynb`
@@ -141,7 +159,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ### 🚢 Series 4: Production Deployment (Advanced)
 
-#### Blog 9: "Deploying ML Models with KServe on OpenShift"
+#### Blog 9: "Deploying ML Models with KServe on OpenShift" ✅
+**Status**: [Completed](09-deploying-models-kserve.md)
+
 **Based on:** `04-model-serving/` notebooks
 - `kserve-model-deployment.ipynb`
 - `inference-pipeline-setup.ipynb`
@@ -160,7 +180,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ### 🎭 Series 5: Real-World Scenarios (Hands-On)
 
-#### Blog 10: "Scenario: Detecting and Healing Pod Crash Loops"
+#### Blog 10: "Scenario: Detecting and Healing Pod Crash Loops" ✅
+**Status**: [Completed](10-scenario-pod-crash-loops.md)
+
 **Based on:** `05-end-to-end-scenarios/pod-crash-loop-healing.ipynb`
 
 **What readers will learn:**
@@ -173,7 +195,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ---
 
-#### Blog 11: "Scenario: Handling Memory Exhaustion and OOM Kills"
+#### Blog 11: "Scenario: Handling Memory Exhaustion and OOM Kills" ✅
+**Status**: [Completed](11-scenario-memory-exhaustion.md)
+
 **Based on:** `05-end-to-end-scenarios/resource-exhaustion-detection.ipynb`
 
 **What readers will learn:**
@@ -188,8 +212,10 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ### 💬 Series 6: Lightspeed Integration (User-Facing)
 
-#### Blog 12: "Chatting with Your Cluster: Self-Healing with Lightspeed"
-**Based on:** `06-mcp-lightspeed-integration/` notebooks + existing blog
+#### Blog 12: "Chatting with Your Cluster: Self-Healing with Lightspeed" ✅
+**Status**: [Completed](end-to-end-self-healing-with-lightspeed.md)
+
+**Based on:** `06-mcp-lightspeed-integration/` notebooks
 - `mcp-server-integration.ipynb`
 - `openshift-lightspeed-integration.ipynb`
 - `end-to-end-troubleshooting-workflow.ipynb`
@@ -207,7 +233,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ## Bonus Blog Posts (For Contributors)
 
-### Blog 13: "Monitoring Your Self-Healing Platform"
+### Blog 13: "Monitoring Your Self-Healing Platform" ✅
+**Status**: [Completed](13-monitoring-self-healing-platform.md)
+
 **Based on:** `07-monitoring-operations/` notebooks
 - `prometheus-metrics-monitoring.ipynb`
 - `model-performance-monitoring.ipynb`
@@ -217,7 +245,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ---
 
-### Blog 14: "Advanced: Predictive Scaling and Cost Optimization"
+### Blog 14: "Advanced: Predictive Scaling and Cost Optimization" ✅
+**Status**: [Completed](14-predictive-scaling-cost-optimization.md)
+
 **Based on:** `08-advanced-scenarios/` notebooks
 - `predictive-scaling-capacity-planning.ipynb`
 - `cost-optimization-resource-efficiency.ipynb`
@@ -226,7 +256,9 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ---
 
-### Blog 15: "Advanced: Security Incident Response Automation"
+### Blog 15: "Advanced: Security Incident Response Automation" ✅
+**Status**: [Completed](15-security-incident-automation.md)
+
 **Based on:** `08-advanced-scenarios/security-incident-response-automation.ipynb`
 
 **Focus:** Automating security responses, compliance automation
@@ -235,23 +267,23 @@ This document proposes **12 blog posts** organized into a learning journey, base
 
 ## Blog Series Summary
 
-| # | Blog Title | Level | Notebooks | Est. Read Time |
-|---|------------|-------|-----------|----------------|
-| 1 | Setting Up Your AI-Powered Cluster | Beginner | 3 | 15 min |
-| 2 | Collecting Data That Powers AI Ops | Beginner | 5 | 20 min |
-| 3 | Your First Anomaly Detector | Intermediate | 1 | 25 min |
-| 4 | Time Series Anomaly Detection | Intermediate | 1 | 20 min |
-| 5 | Deep Learning with LSTM | Advanced | 1 | 30 min |
-| 6 | Ensemble Methods | Advanced | 1 | 25 min |
-| 7 | Rule-Based Remediation | Intermediate | 1 | 20 min |
-| 8 | AI-Driven Decision Making | Advanced | 2 | 30 min |
-| 9 | Deploying Models with KServe | Advanced | 3 | 35 min |
-| 10 | Scenario: Pod Crash Loops | Hands-On | 1 | 25 min |
-| 11 | Scenario: Memory Exhaustion | Hands-On | 1 | 25 min |
-| 12 | Chatting with Lightspeed | User-Facing | 4 | 30 min |
-| 13 | Monitoring the Platform | Contributor | 3 | 20 min |
-| 14 | Predictive Scaling & Cost | Advanced | 2 | 30 min |
-| 15 | Security Automation | Advanced | 1 | 25 min |
+| # | Blog Title | Level | Notebooks | Est. Read Time | Status |
+|---|------------|-------|-----------|----------------|--------|
+| 1 | [Setting Up Your AI-Powered Cluster](01-setting-up-ai-powered-cluster.md) | Beginner | 3 | 15 min | ✅ |
+| 2 | [Collecting Data That Powers AI Ops](02-collecting-data-for-aiops.md) | Beginner | 5 | 20 min | ✅ |
+| 3 | [Your First Anomaly Detector](03-isolation-forest-anomaly-detection.md) | Intermediate | 1 | 25 min | ✅ |
+| 4 | [Time Series Anomaly Detection](04-time-series-anomaly-detection.md) | Intermediate | 1 | 20 min | ✅ |
+| 5 | [Deep Learning with LSTM](05-lstm-deep-learning-anomalies.md) | Advanced | 1 | 30 min | ✅ |
+| 6 | [Ensemble Methods](06-ensemble-anomaly-methods.md) | Advanced | 1 | 25 min | ✅ |
+| 7 | [Rule-Based Remediation](07-rule-based-remediation.md) | Intermediate | 1 | 20 min | ✅ |
+| 8 | [AI-Driven Decision Making](08-ai-driven-decision-making.md) | Advanced | 2 | 30 min | ✅ |
+| 9 | [Deploying Models with KServe](09-deploying-models-kserve.md) | Advanced | 3 | 35 min | ✅ |
+| 10 | [Scenario: Pod Crash Loops](10-scenario-pod-crash-loops.md) | Hands-On | 1 | 25 min | ✅ |
+| 11 | [Scenario: Memory Exhaustion](11-scenario-memory-exhaustion.md) | Hands-On | 1 | 25 min | ✅ |
+| 12 | [Chatting with Lightspeed](end-to-end-self-healing-with-lightspeed.md) | User-Facing | 4 | 30 min | ✅ |
+| 13 | [Monitoring the Platform](13-monitoring-self-healing-platform.md) | Contributor | 3 | 20 min | ✅ |
+| 14 | [Predictive Scaling & Cost](14-predictive-scaling-cost-optimization.md) | Advanced | 2 | 30 min | ✅ |
+| 15 | [Security Automation](15-security-incident-automation.md) | Advanced | 1 | 25 min | ✅ |
 
 **Total: 15 blog posts covering 32 notebooks**
 
@@ -341,16 +373,17 @@ Track for each blog:
 
 ## Get Involved!
 
-Want to help write these blogs? Here's how:
+**All 15 blogs are now complete!** However, we welcome contributions to improve them:
 
-1. **Pick a blog** from the list above
-2. **Run the notebooks** yourself to understand them
-3. **Draft the blog** using the template
-4. **Submit a PR** to `docs/blog/`
-5. **Get reviewed** by maintainers
+1. **Found an issue?** Open a GitHub issue with label `blog-feedback`
+2. **Want to improve a blog?** Submit a PR to `docs/blog/[blog-name].md`
+3. **Have a new scenario?** Propose a new blog post via issue
+
+Each blog includes a "Found an Issue?" section with instructions for reporting problems or contributing fixes.
 
 Questions? Open an issue with the label `blog-series`!
 
 ---
 
-*Last updated: 2026-01-15*
+*Last updated: 2026-01-15*  
+*Status: All 15 blogs completed! ✅*
