@@ -40,9 +40,11 @@ clusterRbacManagedExternally: true
 namespacedRbacManagedExternally: true
 
 # Image builds configuration
+# Default: Main repository URL
+# To use your fork, update gitRepository below:
 imageBuilds:
   enabled: true
-  gitRepository: "https://github.com/sansow/openshift-aiops-platform.git"
+  gitRepository: "https://github.com/tosin2013/openshift-aiops-platform.git"
   gitRef: "main"
   gitCredentialsSecret: "git-credentials-source"  # pragma: allowlist secret
   baseImage: "registry.redhat.io/ubi8/python-39:latest"
@@ -75,7 +77,10 @@ clusterGroup:
       namespace: self-healing-platform
       project: default
       path: charts/hub
-      repoURL: "https://github.com/sansow/openshift-aiops-platform.git"
+      # Default: Main repository URL
+      # To use your fork, uncomment and update the line below:
+      # repoURL: "https://github.com/YOUR-USERNAME/openshift-aiops-platform.git"
+      repoURL: "https://github.com/tosin2013/openshift-aiops-platform.git"
       targetRevision: main
       helm:
         valueFiles:
@@ -365,7 +370,7 @@ notebooks:
 # ============================================================================
 
 # Coordination Engine Configuration (Go-based)
-# Reference: https://github.com/sansow/openshift-coordination-engine
+# Reference: https://github.com/tosin2013/openshift-coordination-engine
 coordinationEngine:
   image:
     repository: quay.io/takinosh/openshift-coordination-engine
@@ -388,7 +393,7 @@ coordinationEngine:
       memory: "512Mi"
 
 # MCP Server Configuration (Go-based)
-# Reference: https://github.com/sansow/openshift-cluster-health-mcp
+# Reference: https://github.com/tosin2013/openshift-cluster-health-mcp
 mcpServer:
   enabled: true
   image:
