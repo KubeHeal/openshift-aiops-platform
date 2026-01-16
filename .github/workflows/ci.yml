@@ -1,12 +1,14 @@
 name: CI/CD Pipeline
 
-# Note: MCP Server has been moved to a standalone Go-based repository
-# See: https://github.com/tosin2013/openshift-cluster-health-mcp
-# This workflow now focuses on:
-# - Coordination Engine (Python/Flask)
-# - Jupyter Notebooks (Python/ML)
-# - Helm Charts
-# - Documentation
+# Note: Both MCP Server and Coordination Engine have been moved to standalone Go repositories
+# - MCP Server: https://github.com/tosin2013/openshift-cluster-health-mcp
+# - Coordination Engine: https://github.com/tosin2013/openshift-coordination-engine
+#
+# This workflow focuses on:
+# - ML Model Servers (Python/KServe in src/models/)
+# - Jupyter Notebooks (Python/ML workloads)
+# - Helm Charts (deployment manifests)
+# - Documentation and examples
 
 on:
   push:
@@ -18,41 +20,6 @@ env:
   PYTHON_VERSION: '3.11'
 
 jobs:
-  lint-and-test-coordination-engine:
-    name: Coordination Engine - Lint & Test
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: Install dependencies
-      working-directory: src/coordination-engine
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install flake8 pytest pytest-cov bandit
-
-    - name: Run linting
-      working-directory: src/coordination-engine
-      run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-
-    - name: Run security scan
-      working-directory: src/coordination-engine
-      run: bandit -r . -f json -o bandit-report.json || true
-
-    - name: Run tests
-      working-directory: src/coordination-engine
-      run: |
-        # Run pytest with coverage
-        # Note: Comprehensive tests are being developed (see tests/test_basic.py)
-        pytest tests/ --cov=. --cov-report=xml -v || echo "⚠️  Some tests skipped"
-
   test-notebooks:
     name: Notebooks - Comprehensive Testing
     runs-on: ubuntu-latest
@@ -124,30 +91,6 @@ jobs:
           echo "❌ Test report not generated" >> $GITHUB_STEP_SUMMARY
         fi
 
-  security-scan-python:
-    name: Python Security Scan
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: Run Bandit security scan (Coordination Engine)
-      working-directory: src/coordination-engine
-      run: |
-        pip install bandit
-        bandit -r . -f json -o bandit-report.json || true
-
-    - name: Check for vulnerabilities in Python dependencies
-      run: |
-        pip install safety
-        safety check --file=src/coordination-engine/requirements.txt --json || true
-
   helm-lint:
     name: Helm Chart Lint
     runs-on: ubuntu-latest
@@ -169,7 +112,7 @@ jobs:
   deploy-dev:
     name: Deploy to Development
     runs-on: ubuntu-latest
-    needs: [lint-and-test-coordination-engine, test-notebooks, helm-lint]
+    needs: [test-notebooks, helm-lint]
     if: github.ref == 'refs/heads/main'
 
     steps:
@@ -186,18 +129,18 @@ jobs:
   notify:
     name: Notify Results
     runs-on: ubuntu-latest
-    needs: [lint-and-test-coordination-engine, test-notebooks, security-scan-python, helm-lint]
+    needs: [test-notebooks, helm-lint]
     if: always()
 
     steps:
     - name: Notify success
-      if: ${{ needs.lint-and-test-coordination-engine.result == 'success' && needs.test-notebooks.result == 'success' }}
+      if: ${{ needs.test-notebooks.result == 'success' && needs.helm-lint.result == 'success' }}
       run: |
         echo "✅ All checks passed successfully!"
         echo "🎉 Ready for deployment"
 
     - name: Notify failure
-      if: ${{ needs.lint-and-test-coordination-engine.result == 'failure' || needs.test-notebooks.result == 'failure' }}
+      if: ${{ needs.test-notebooks.result == 'failure' || needs.helm-lint.result == 'failure' }}
       run: |
         echo "❌ Some checks failed"
         echo "🔧 Please review and fix issues before merging"
