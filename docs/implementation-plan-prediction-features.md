@@ -579,7 +579,7 @@ This is **partially true** - Lightspeed will try to answer, but won't have time-
 
 ### Platform Repository (`openshift-aiops-platform`)
 **Modified files**:
-- `docs/blog/end-to-end-self-healing-with-lightspeed.md` (update Part 3)
+- `docs/blog/16-end-to-end-self-healing-with-lightspeed.md` (update Part 3)
 - `charts/hub/values.yaml` (new MCP server image tag)
 - `charts/hub/templates/coordination-engine-deployment.yaml` (new image tag)
 

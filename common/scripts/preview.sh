@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # DISCLAIMER
-# 
+#
 # - Parsing of applications needs to be more clever.
-# - There is currently not a mechanism to actually preview against multiple clusters 
+# - There is currently not a mechanism to actually preview against multiple clusters
 # (i.e. a hub and a remote). All previews will be done against the current.
 # - Make output can be included in the YAML.
 

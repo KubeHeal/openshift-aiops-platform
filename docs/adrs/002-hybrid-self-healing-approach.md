@@ -170,6 +170,7 @@ response = requests.post(
 - [ADR-001: OpenShift 4.18+ as Foundation Platform](001-openshift-platform-selection.md)
 - [ADR-003: Red Hat OpenShift AI for ML Platform](003-openshift-ai-ml-platform.md)
 - [ADR-005: Machine Config Operator for Node-Level Automation](005-machine-config-operator-automation.md)
+- [ADR-038: Go Coordination Engine Migration](038-go-coordination-engine-migration.md) - Coordination engine implementation
 
 ## References
 

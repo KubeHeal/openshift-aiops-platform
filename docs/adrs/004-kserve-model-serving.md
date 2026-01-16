@@ -192,9 +192,11 @@ class AnomalyDetectorModel(kserve.Model):
 ## Related ADRs
 
 - [ADR-003: Red Hat OpenShift AI for ML Platform](003-openshift-ai-ml-platform.md)
-- [ADR-008: Kubeflow Pipelines for MLOps Automation](008-kubeflow-pipelines-mlops.md)
+- [ADR-008: Kubeflow Pipelines for MLOps Automation](008-kubeflow-pipelines-mlops.md) - ⚠️ DEPRECATED
 - [ADR-007: Prometheus-Based Monitoring and Data Collection](007-prometheus-monitoring-integration.md)
 - [ADR-021: Tekton Pipeline for Post-Deployment Validation](021-tekton-pipeline-deployment-validation.md)
+- [ADR-039: User-Deployed KServe Models](039-user-deployed-kserve-models.md) - Platform-agnostic ML integration
+- [ADR-040: Extensible KServe Model Registry](040-extensible-kserve-model-registry.md) - Custom model registration
 
 ## References
 

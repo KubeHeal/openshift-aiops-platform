@@ -1,10 +1,7 @@
-# ADR-031: ArgoCD Deployment Lessons Learned
+# ADR-042: ArgoCD Deployment Lessons Learned
 
 ## Status
-Accepted
-
-## Date
-2025-11-28
+**ACCEPTED** - 2025-11-28
 
 ## Context
 
@@ -284,9 +281,13 @@ Document and implement fallback chains:
 - Additional complexity in Ansible roles
 - Wait-for-image Jobs add deployment time (but prevent failures)
 
+## Related ADRs
+
+- [ADR-024: External Secrets for Model Storage](024-external-secrets-model-storage.md)
+- [ADR-029: Jupyter Notebook Validator Operator](029-jupyter-notebook-validator-operator.md)
+- [ADR-030: Hybrid Management Model for Namespaced ArgoCD Deployments](030-hybrid-management-model-namespaced-argocd.md)
+- [ADR-027: CI/CD Pipeline Automation with Tekton and ArgoCD](027-cicd-pipeline-automation.md)
+
 ## References
 
-- ADR-024: External Secrets for Model Storage
-- ADR-029: Notebook Validation Strategy
-- ADR-030: ArgoCD Sync Wave Configuration
 - ArgoCD Resource Health Checks: https://argo-cd.readthedocs.io/en/stable/operator-manual/health/
