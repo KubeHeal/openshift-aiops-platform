@@ -45,17 +45,17 @@ import pandas as pd
 def collect_model_metrics(model_name, time_range='7d'):
     """
     Collect model performance metrics from Prometheus.
-    
+
     Args:
         model_name: Model name
         time_range: Time range for metrics
-    
+
     Returns:
         DataFrame with performance metrics
     """
     # Query Prometheus for prediction accuracy
     # (Assuming you're tracking accuracy via metrics)
-    
+
     metrics = {
         'timestamp': pd.date_range(end=datetime.now(), periods=168, freq='1H'),
         'accuracy': np.random.uniform(0.85, 0.95, 168),  # Example
@@ -64,7 +64,7 @@ def collect_model_metrics(model_name, time_range='7d'):
         'f1_score': np.random.uniform(0.82, 0.92, 168),
         'prediction_count': np.random.randint(100, 1000, 168)
     }
-    
+
     return pd.DataFrame(metrics)
 ```
 
@@ -76,28 +76,28 @@ from scipy import stats
 def detect_model_drift(metrics_df, baseline_period=24):
     """
     Detect if model performance has degraded.
-    
+
     Args:
         metrics_df: DataFrame with performance metrics
         baseline_period: Hours to use as baseline
-    
+
     Returns:
         Drift detection result
     """
     # Baseline: first N hours
     baseline = metrics_df['accuracy'].iloc[:baseline_period]
-    
+
     # Current: last N hours
     current = metrics_df['accuracy'].iloc[-baseline_period:]
-    
+
     # Statistical test
     t_stat, p_value = stats.ttest_ind(baseline, current)
-    
+
     # Calculate degradation
     degradation = baseline.mean() - current.mean()
-    
+
     drift_detected = p_value < 0.05 and degradation > 0.05
-    
+
     return {
         'drift_detected': drift_detected,
         'degradation': degradation,
@@ -118,21 +118,21 @@ def track_healing_success():
     """Track success rate of remediation actions"""
     # Load remediation outcomes
     outcomes = pd.read_json('/opt/app-root/src/data/processed/remediation_outcomes.jsonl', lines=True)
-    
+
     # Calculate success rate by action type
     success_by_action = outcomes.groupby('action_type').agg({
         'success': ['mean', 'count']
     })
-    
+
     print("📊 Healing Success Rates:")
     print(success_by_action)
-    
+
     # Identify low-success actions
     low_success = success_by_action[success_by_action[('success', 'mean')] < 0.7]
-    
+
     if len(low_success) > 0:
         print(f"\n⚠️ Low success actions: {low_success.index.tolist()}")
-    
+
     return success_by_action
 ```
 
@@ -146,7 +146,7 @@ def track_healing_success():
 def trigger_retraining(model_name, drift_result):
     """
     Trigger model retraining if drift detected.
-    
+
     Args:
         model_name: Model name
         drift_result: Drift detection result
@@ -154,17 +154,17 @@ def trigger_retraining(model_name, drift_result):
     if drift_result['drift_detected']:
         print(f"⚠️ Model drift detected for {model_name}")
         print(f"   Degradation: {drift_result['degradation']:.3f}")
-        
+
         # Trigger NotebookValidationJob
         subprocess.run([
             'oc', 'delete', 'notebookvalidationjob',
             f'{model_name}-validation',
             '-n', 'self-healing-platform'
         ])
-        
+
         # Recreate to trigger retraining
         # ... (recreate NotebookValidationJob)
-        
+
         print(f"✅ Retraining triggered for {model_name}")
 ```
 

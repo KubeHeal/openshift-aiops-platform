@@ -145,9 +145,9 @@ plt.figure(figsize=(14, 6))
 plt.plot(train.index[-48:], train['cpu_usage'][-48:], label='Historical')
 plt.plot(test.index[:24], test['cpu_usage'][:24], label='Actual', color='green')
 plt.plot(test.index[:24], forecast, label='Forecast', color='red')
-plt.fill_between(test.index[:24], 
-                 forecast_ci.iloc[:, 0], 
-                 forecast_ci.iloc[:, 1], 
+plt.fill_between(test.index[:24],
+                 forecast_ci.iloc[:, 0],
+                 forecast_ci.iloc[:, 1],
                  alpha=0.2, color='red', label='95% Confidence')
 plt.xlabel('Time')
 plt.ylabel('CPU Usage (%)')
@@ -235,25 +235,25 @@ Anomalies are detected when actual values deviate significantly from forecasts.
 def detect_anomalies_via_forecast(actual, forecast, forecast_std, threshold=2.0):
     """
     Detect anomalies when actual deviates from forecast by more than threshold standard deviations.
-    
+
     Args:
         actual: Actual values
         forecast: Forecasted values
         forecast_std: Standard deviation of forecast errors
         threshold: Number of standard deviations for anomaly threshold
-    
+
     Returns:
         Boolean array indicating anomalies
     """
     # Calculate forecast error
     errors = actual - forecast
-    
+
     # Calculate z-scores
     z_scores = errors / forecast_std
-    
+
     # Anomalies are points beyond threshold
     anomalies = np.abs(z_scores) > threshold
-    
+
     return anomalies, z_scores
 ```
 
@@ -284,7 +284,7 @@ print(f"🔍 ARIMA detected {anomalies_arima.sum()} anomalies")
 prophet_forecast_test = forecast_prophet[train_size:train_size+len(test)]
 
 # Prophet provides uncertainty intervals
-forecast_std_prophet = (prophet_forecast_test['yhat_upper'] - 
+forecast_std_prophet = (prophet_forecast_test['yhat_upper'] -
                         prophet_forecast_test['yhat_lower']) / 4  # Approximate std
 
 # Detect anomalies
@@ -307,7 +307,7 @@ plt.figure(figsize=(14, 8))
 plt.subplot(2, 1, 1)
 plt.plot(test.index, test['cpu_usage'], label='Actual', color='blue')
 plt.plot(test.index, arima_forecast, label='ARIMA Forecast', color='red')
-plt.scatter(test.index[anomalies_arima], 
+plt.scatter(test.index[anomalies_arima],
            test['cpu_usage'].values[anomalies_arima],
            color='red', s=100, marker='x', label='Anomalies', zorder=5)
 plt.xlabel('Time')

@@ -48,10 +48,10 @@ from sklearn.preprocessing import StandardScaler
 def train_demand_forecaster(historical_data):
     """
     Train model to forecast resource demand.
-    
+
     Args:
         historical_data: DataFrame with historical CPU/memory usage
-    
+
     Returns:
         Trained forecasting model
     """
@@ -60,21 +60,21 @@ def train_demand_forecaster(historical_data):
     historical_data['day_of_week'] = historical_data['timestamp'].dt.dayofweek
     historical_data['cpu_rolling_mean'] = historical_data['cpu_usage'].rolling(24).mean()
     historical_data['memory_rolling_mean'] = historical_data['memory_usage'].rolling(24).mean()
-    
+
     # Features
     X = historical_data[['hour', 'day_of_week', 'cpu_rolling_mean', 'memory_rolling_mean']]
     y = historical_data[['cpu_usage', 'memory_usage']]  # Multi-output
-    
+
     # Train model
     from sklearn.multioutput import MultiOutputRegressor
-    
+
     model = Pipeline([
         ('scaler', StandardScaler()),
         ('regressor', MultiOutputRegressor(RandomForestRegressor(n_estimators=100)))
     ])
-    
+
     model.fit(X, y)
-    
+
     return model
 ```
 
@@ -84,35 +84,35 @@ def train_demand_forecaster(historical_data):
 def forecast_demand(model, current_metrics, hours_ahead=24):
     """
     Forecast resource demand for next N hours.
-    
+
     Args:
         model: Trained forecasting model
         current_metrics: Current CPU/memory usage
         hours_ahead: Hours to forecast
-    
+
     Returns:
         Forecast DataFrame
     """
     forecasts = []
-    
+
     for hour in range(hours_ahead):
         future_time = datetime.now() + timedelta(hours=hour)
-        
+
         features = pd.DataFrame([{
             'hour': future_time.hour,
             'day_of_week': future_time.weekday(),
             'cpu_rolling_mean': current_metrics['cpu'],
             'memory_rolling_mean': current_metrics['memory']
         }])
-        
+
         prediction = model.predict(features)[0]
-        
+
         forecasts.append({
             'timestamp': future_time,
             'predicted_cpu': prediction[0],
             'predicted_memory': prediction[1]
         })
-    
+
     return pd.DataFrame(forecasts)
 ```
 
@@ -126,7 +126,7 @@ def forecast_demand(model, current_metrics, hours_ahead=24):
 def predictive_scale(deployment_name, namespace, forecast_df, threshold=0.80):
     """
     Scale deployment proactively based on forecast.
-    
+
     Args:
         deployment_name: Deployment name
         namespace: Kubernetes namespace
@@ -136,15 +136,15 @@ def predictive_scale(deployment_name, namespace, forecast_df, threshold=0.80):
     # Check if forecast exceeds threshold
     max_cpu = forecast_df['predicted_cpu'].max()
     max_memory = forecast_df['predicted_memory'].max()
-    
+
     if max_cpu > threshold or max_memory > threshold:
         # Calculate required replicas
         current_replicas = get_current_replicas(deployment_name, namespace)
         required_replicas = int(np.ceil(current_replicas * (max(max_cpu, max_memory) / threshold)))
-        
+
         # Scale proactively
         scale_deployment(deployment_name, namespace, required_replicas)
-        
+
         print(f"✅ Proactive scaling: {current_replicas} → {required_replicas} replicas")
         print(f"   Reason: Forecasted {max_cpu:.1%} CPU, {max_memory:.1%} memory")
 ```
@@ -159,28 +159,28 @@ def predictive_scale(deployment_name, namespace, forecast_df, threshold=0.80):
 def optimize_resource_allocation(namespace):
     """
     Optimize resource requests/limits based on actual usage.
-    
+
     Args:
         namespace: Kubernetes namespace
     """
     # Get actual usage vs requests
     pods = get_pod_metrics(namespace)
-    
+
     for pod in pods:
         cpu_usage = pod['cpu_usage']
         cpu_request = pod['cpu_request']
         memory_usage = pod['memory_usage']
         memory_request = pod['memory_request']
-        
+
         # Calculate utilization
         cpu_util = cpu_usage / cpu_request if cpu_request > 0 else 0
         memory_util = memory_usage / memory_request if memory_request > 0 else 0
-        
+
         # Recommend optimization
         if cpu_util < 0.5:  # Using <50% of request
             recommended_cpu = cpu_request * 0.7  # Reduce by 30%
             print(f"💡 {pod['name']}: Reduce CPU request {cpu_request} → {recommended_cpu}")
-        
+
         if memory_util < 0.5:
             recommended_memory = memory_request * 0.7
             print(f"💡 {pod['name']}: Reduce memory request {memory_request} → {recommended_memory}")

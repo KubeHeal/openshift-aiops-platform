@@ -270,7 +270,7 @@ with open('/opt/app-root/src/models/anomaly-detector/metadata.json', 'w') as f:
 > - **KServe**: Model serving infrastructure (handles sklearn, PyTorch, TensorFlow models)
 > - **Coordination Engine**: Go service that orchestrates model calls and remediation
 > - **MCP Server**: Go service that connects OpenShift Lightspeed to the platform
-> 
+>
 > Your Python notebooks call these Go services via REST APIs. You don't need to write Go code to use the platform!
 
 ### Create InferenceService

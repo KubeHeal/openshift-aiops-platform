@@ -192,7 +192,7 @@ KServe is the model serving infrastructure that powers the platform's ML predict
 > - **Coordination Engine**: Go service (orchestrates remediation, proxies to KServe)
 > - **MCP Server**: Go service (connects Lightspeed to cluster tools)
 > - **Notebooks**: Python (train models, analyze data, call Go services via REST APIs)
-> 
+>
 > This separation allows Python for ML workflows while Go handles production performance and Kubernetes integration.
 
 **Key Benefits:**
@@ -317,7 +317,7 @@ Now that your cluster is validated, you're ready to:
 
 ## Related Resources
 
-- **Notebooks**: 
+- **Notebooks**:
   - `notebooks/00-setup/00-platform-readiness-validation.ipynb`
   - `notebooks/00-setup/01-kserve-model-onboarding.ipynb`
   - `notebooks/00-setup/environment-setup.ipynb`

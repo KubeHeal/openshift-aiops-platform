@@ -86,24 +86,24 @@ from sklearn.preprocessing import StandardScaler
 def create_sequences(data, sequence_length=60):
     """
     Create sequences from time series data.
-    
+
     Args:
         data: DataFrame with metrics
         sequence_length: Number of time steps per sequence
-    
+
     Returns:
         X: Sequences of shape (samples, sequence_length, features)
         y: Next value (for supervised) or reconstruction target
     """
     sequences = []
     targets = []
-    
+
     for i in range(len(data) - sequence_length):
         seq = data.iloc[i:i+sequence_length].values
         target = data.iloc[i+sequence_length].values
         sequences.append(seq)
         targets.append(target)
-    
+
     return np.array(sequences), np.array(targets)
 
 # Load metrics
@@ -135,52 +135,52 @@ import torch.nn as nn
 class LSTMAutoencoder(nn.Module):
     """
     LSTM Autoencoder for anomaly detection.
-    
+
     Architecture:
     - Encoder: LSTM layers compress input
     - Decoder: LSTM layers reconstruct output
     """
     def __init__(self, input_dim, hidden_dim=64, num_layers=2):
         super(LSTMAutoencoder, self).__init__()
-        
+
         # Encoder
         self.encoder = nn.LSTM(
-            input_dim, 
-            hidden_dim, 
-            num_layers, 
+            input_dim,
+            hidden_dim,
+            num_layers,
             batch_first=True
         )
-        
+
         # Latent representation
         self.latent_dim = hidden_dim
-        
+
         # Decoder
         self.decoder = nn.LSTM(
-            hidden_dim, 
-            hidden_dim, 
-            num_layers, 
+            hidden_dim,
+            hidden_dim,
+            num_layers,
             batch_first=True
         )
-        
+
         # Output layer
         self.output_layer = nn.Linear(hidden_dim, input_dim)
-    
+
     def forward(self, x):
         # Encode
         encoded, (hidden, cell) = self.encoder(x)
-        
+
         # Use last hidden state as latent representation
         latent = hidden[-1]  # Last layer's hidden state
-        
+
         # Repeat latent for decoder input
         decoder_input = latent.unsqueeze(1).repeat(1, x.size(1), 1)
-        
+
         # Decode
         decoded, _ = self.decoder(decoder_input)
-        
+
         # Output
         output = self.output_layer(decoded)
-        
+
         return output, latent
 ```
 
@@ -245,24 +245,24 @@ model.train()
 
 for epoch in range(num_epochs):
     total_loss = 0
-    
+
     for batch_x, batch_y in train_loader:
         optimizer.zero_grad()
-        
+
         # Forward pass
         reconstructed, latent = model(batch_x)
-        
+
         # Calculate reconstruction error
         loss = criterion(reconstructed, batch_y)
-        
+
         # Backward pass
         loss.backward()
         optimizer.step()
-        
+
         total_loss += loss.item()
-    
+
     avg_loss = total_loss / len(train_loader)
-    
+
     if (epoch + 1) % 10 == 0:
         print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
@@ -282,7 +282,7 @@ reconstruction_errors = []
 with torch.no_grad():
     for batch_x, batch_y in test_loader:
         reconstructed, _ = model(batch_x)
-        
+
         # Calculate MSE for each sample
         mse = torch.mean((reconstructed - batch_y) ** 2, dim=(1, 2))
         reconstruction_errors.extend(mse.cpu().numpy())
@@ -322,7 +322,7 @@ import matplotlib.pyplot as plt
 plt.figure(figsize=(14, 6))
 plt.plot(reconstruction_errors, label='Reconstruction Error', alpha=0.7)
 plt.axhline(y=threshold, color='red', linestyle='--', label='Threshold')
-plt.scatter(np.where(anomalies)[0], 
+plt.scatter(np.where(anomalies)[0],
            reconstruction_errors[anomalies],
            color='red', s=50, marker='x', label='Anomalies', zorder=5)
 plt.xlabel('Sample')

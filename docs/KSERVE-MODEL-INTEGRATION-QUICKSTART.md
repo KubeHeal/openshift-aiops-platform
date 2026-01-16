@@ -265,5 +265,3 @@ notebooks/00-setup/01-kserve-model-onboarding.ipynb
 - [ADR-040: Extensible KServe Model Registry](./adrs/040-extensible-kserve-model-registry.md)
 - [Coordination Engine Repository](https://github.com/tosin2013/openshift-coordination-engine)
 - [KServe v1 Protocol](https://kserve.github.io/website/latest/modelserving/data_plane/v1_protocol/)
-
-

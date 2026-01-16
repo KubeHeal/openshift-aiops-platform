@@ -121,12 +121,12 @@ print(f"✅ Model trained: {accuracy:.3f} accuracy")
 def recommend_action(anomaly, model, confidence_threshold=0.75):
     """
     Recommend remediation action using ML model.
-    
+
     Args:
         anomaly: Detected anomaly
         model: Trained recommendation model
         confidence_threshold: Minimum confidence for recommendation
-    
+
     Returns:
         Recommended action with confidence score
     """
@@ -141,15 +141,15 @@ def recommend_action(anomaly, model, confidence_threshold=0.75):
         'hour_of_day': datetime.now().hour,
         'day_of_week': datetime.now().weekday()
     }])
-    
+
     # Get prediction probabilities
     probabilities = model.predict_proba(features)[0]
     predicted_class = model.predict(features)[0]
     confidence = probabilities.max()
-    
+
     # Decode action
     action = le_action.inverse_transform([predicted_class])[0]
-    
+
     if confidence >= confidence_threshold:
         return {
             'action': action,
@@ -178,16 +178,16 @@ HIGH_CONFIDENCE_THRESHOLD = 0.90  # High confidence threshold
 def make_decision(anomaly, recommendation):
     """
     Make remediation decision based on confidence.
-    
+
     Args:
         anomaly: Detected anomaly
         recommendation: ML recommendation
-    
+
     Returns:
         Decision with reasoning
     """
     confidence = recommendation['confidence']
-    
+
     if confidence >= HIGH_CONFIDENCE_THRESHOLD:
         # High confidence: Execute immediately
         return {
@@ -222,21 +222,21 @@ def make_decision(anomaly, recommendation):
 def get_fallback_action(anomaly):
     """
     Get fallback action when ML confidence is low.
-    
+
     Args:
         anomaly: Detected anomaly
-    
+
     Returns:
         Safe fallback action
     """
     # Conservative fallback: restart pod (safest action)
     if anomaly['type'] == 'crash_loop':
         return 'restart_pod'
-    
+
     # Scale up (usually safe)
     elif anomaly['type'] == 'resource_exhaustion':
         return 'scale_up'
-    
+
     # Default: escalate to human
     else:
         return 'escalate_to_human'
@@ -254,15 +254,15 @@ def get_fallback_action(anomaly):
 def execute_ai_remediation(anomaly, decision):
     """
     Execute AI-recommended remediation.
-    
+
     Args:
         anomaly: Detected anomaly
         decision: Decision from make_decision()
     """
     from coordination_engine_client import get_client
-    
+
     client = get_client()  # Python client → Go Coordination Engine service
-    
+
     # Create incident
     incident = client.create_incident({
         'title': f"AI-Detected: {anomaly['type']}",
@@ -271,7 +271,7 @@ def execute_ai_remediation(anomaly, decision):
         'source': 'ai-driven',
         'confidence': decision.get('confidence', 0.0)
     })
-    
+
     # Trigger remediation
     remediation = client.trigger_remediation({
         'incident_id': incident.incident_id,
@@ -281,7 +281,7 @@ def execute_ai_remediation(anomaly, decision):
         'confidence': decision.get('confidence', 0.0),
         'dry_run': decision.get('requires_approval', False)
     })
-    
+
     return remediation
 ```
 
@@ -295,7 +295,7 @@ def execute_ai_remediation(anomaly, decision):
 def track_decision_outcome(anomaly, decision, action_id, success):
     """
     Track decision outcome for model improvement.
-    
+
     Args:
         anomaly: Original anomaly
         decision: Decision made
@@ -315,12 +315,12 @@ def track_decision_outcome(anomaly, decision, action_id, success):
             'anomaly_type': anomaly['type']
         }
     }
-    
+
     # Save for retraining
     outcomes_file = '/opt/app-root/src/data/processed/ai_decisions.jsonl'
     with open(outcomes_file, 'a') as f:
         f.write(json.dumps(outcome) + '\n')
-    
+
     print(f"📊 Decision tracked: {decision['action']} - {'Success' if success else 'Failed'}")
 ```
 
@@ -331,19 +331,19 @@ def retrain_recommendation_model():
     """Retrain model with new outcomes"""
     # Load all outcomes
     outcomes = pd.read_json('/opt/app-root/src/data/processed/ai_decisions.jsonl', lines=True)
-    
+
     # Filter successful
     successful = outcomes[outcomes['success'] == True]
-    
+
     # Retrain
     X = successful[['cpu_usage', 'memory_usage', 'anomaly_type', 'severity']]
     y = successful['recommended_action']
-    
+
     model.fit(X, y)
-    
+
     # Save updated model
     joblib.dump(model, '/opt/app-root/src/models/action_recommender.pkl')
-    
+
     print("✅ Model retrained with latest outcomes")
 ```
 
@@ -388,7 +388,7 @@ def hybrid_remediation(anomaly):
     """Try rules first, fall back to AI"""
     # Try rule-based first
     matching_rules = evaluate_rules(anomaly, REMEDIATION_RULES)
-    
+
     if matching_rules:
         # Use rule (deterministic, fast)
         return execute_remediation(anomaly, matching_rules[0])

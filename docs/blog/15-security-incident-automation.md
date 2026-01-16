@@ -44,24 +44,24 @@ Before starting, ensure you have:
 def detect_security_incidents(namespace, time_range='1h'):
     """
     Detect security incidents from cluster events.
-    
+
     Args:
         namespace: Kubernetes namespace
         time_range: Time range to analyze
-    
+
     Returns:
         List of detected security incidents
     """
     from kubernetes import client, config
-    
+
     config.load_incluster_config()
     v1 = client.CoreV1Api()
-    
+
     incidents = []
-    
+
     # Get recent events
     events = v1.list_namespaced_event(namespace)
-    
+
     # Security event patterns
     security_patterns = {
         'unauthorized_access': ['Forbidden', 'Unauthorized', 'Access denied'],
@@ -70,7 +70,7 @@ def detect_security_incidents(namespace, time_range='1h'):
         'network_breach': ['network policy', 'connection refused', 'firewall'],
         'image_vulnerability': ['vulnerability', 'CVE', 'security scan failed']
     }
-    
+
     for event in events.items:
         for incident_type, patterns in security_patterns.items():
             if any(pattern.lower() in event.message.lower() for pattern in patterns):
@@ -81,7 +81,7 @@ def detect_security_incidents(namespace, time_range='1h'):
                     'timestamp': event.last_timestamp,
                     'involved_object': event.involved_object.name
                 })
-    
+
     return incidents
 ```
 
@@ -95,22 +95,22 @@ def detect_security_incidents(namespace, time_range='1h'):
 def contain_security_incident(incident):
     """
     Automatically contain security incident.
-    
+
     Args:
         incident: Detected security incident
     """
     if incident['type'] == 'unauthorized_access':
         # Revoke RBAC permissions
         revoke_rbac_access(incident['involved_object'])
-    
+
     elif incident['type'] == 'network_breach':
         # Apply network policy to isolate pod
         apply_network_policy(incident['involved_object'], 'deny-all')
-    
+
     elif incident['type'] == 'privilege_escalation':
         # Delete pod to prevent further access
         delete_pod(incident['involved_object'])
-    
+
     print(f"🔒 Contained security incident: {incident['type']}")
 ```
 
@@ -124,22 +124,22 @@ def contain_security_incident(incident):
 def handle_security_incident(incident):
     """
     Execute automated security incident response.
-    
+
     Args:
         incident: Detected security incident
     """
     # 1. Contain
     contain_security_incident(incident)
-    
+
     # 2. Investigate
     investigation = investigate_incident(incident)
-    
+
     # 3. Remediate
     remediation = remediate_incident(incident, investigation)
-    
+
     # 4. Report
     generate_incident_report(incident, investigation, remediation)
-    
+
     return {
         'contained': True,
         'investigated': True,

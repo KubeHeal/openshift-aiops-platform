@@ -98,42 +98,42 @@ The notebook implements automatic detection:
 def detect_crash_loops(namespace, restart_threshold=3):
     """
     Detect pods in crash loop by checking restart count.
-    
+
     Args:
         namespace: Kubernetes namespace
         restart_threshold: Restart count threshold (default: 3)
-    
+
     Returns:
         List of pods in crash loop
     """
     from kubernetes import client, config
-    
+
     config.load_incluster_config()
     v1 = client.CoreV1Api()
-    
+
     crash_loop_pods = []
-    
+
     # Get all pods in namespace
     pods = v1.list_namespaced_pod(namespace)
-    
+
     for pod in pods.items:
         # Check restart count
         if pod.status.container_statuses:
             restart_count = pod.status.container_statuses[0].restart_count
-            
+
             # Check if in CrashLoopBackOff
-            if (restart_count >= restart_threshold or 
+            if (restart_count >= restart_threshold or
                 pod.status.phase == 'Failed' or
-                any(condition.reason == 'CrashLoopBackOff' 
+                any(condition.reason == 'CrashLoopBackOff'
                     for condition in pod.status.conditions)):
-                
+
                 crash_loop_pods.append({
                     'name': pod.metadata.name,
                     'namespace': pod.metadata.namespace,
                     'restart_count': restart_count,
                     'status': pod.status.phase
                 })
-    
+
     return crash_loop_pods
 ```
 
@@ -159,27 +159,27 @@ Once a crash loop is detected, analyze logs to identify the root cause.
 def analyze_pod_logs(pod_name, namespace, lines=50):
     """
     Analyze pod logs to identify root cause.
-    
+
     Args:
         pod_name: Pod name
         namespace: Kubernetes namespace
         lines: Number of log lines to analyze
-    
+
     Returns:
         Log analysis result with detected error patterns
     """
     from kubernetes import client, config
-    
+
     config.load_incluster_config()
     v1 = client.CoreV1Api()
-    
+
     # Get pod logs
     logs = v1.read_namespaced_pod_log(
-        pod_name, 
+        pod_name,
         namespace,
         tail_lines=lines
     )
-    
+
     # Error patterns to detect
     error_patterns = {
         'OOMKilled': r'(OOMKilled|Out of memory|MemoryError)',
@@ -189,12 +189,12 @@ def analyze_pod_logs(pod_name, namespace, lines=50):
         'DatabaseError': r'(Connection refused|database.*error|DB.*unavailable)',
         'PermissionError': r'(Permission denied|Access denied|Forbidden)',
     }
-    
+
     detected_errors = []
     for error_type, pattern in error_patterns.items():
         if re.search(pattern, logs, re.IGNORECASE):
             detected_errors.append(error_type)
-    
+
     return {
         'pod_name': pod_name,
         'detected_errors': detected_errors if detected_errors else ['Unknown'],
@@ -271,10 +271,10 @@ The notebook demonstrates different remediation actions:
 def restart_pod(pod_name, namespace):
     """Delete pod to trigger restart"""
     from kubernetes import client, config
-    
+
     config.load_incluster_config()
     v1 = client.CoreV1Api()
-    
+
     v1.delete_namespaced_pod(pod_name, namespace)
     print(f"✅ Restarted pod: {pod_name}")
 ```
@@ -285,17 +285,17 @@ def restart_pod(pod_name, namespace):
 def scale_deployment(deployment_name, namespace, replicas):
     """Scale deployment to replace failing pods"""
     from kubernetes import client, config
-    
+
     config.load_incluster_config()
     apps_v1 = client.AppsV1Api()
-    
+
     # Get current deployment
     deployment = apps_v1.read_namespaced_deployment(deployment_name, namespace)
-    
+
     # Scale down then up to force pod recreation
     deployment.spec.replicas = replicas
     apps_v1.patch_namespaced_deployment(deployment_name, namespace, deployment)
-    
+
     print(f"✅ Scaled {deployment_name} to {replicas} replicas")
 ```
 
@@ -305,19 +305,19 @@ def scale_deployment(deployment_name, namespace, replicas):
 def update_configmap(configmap_name, namespace, updates):
     """Update ConfigMap if configuration error detected"""
     from kubernetes import client, config
-    
+
     config.load_incluster_config()
     v1 = client.CoreV1Api()
-    
+
     # Get ConfigMap
     cm = v1.read_namespaced_config_map(configmap_name, namespace)
-    
+
     # Update data
     cm.data.update(updates)
-    
+
     # Apply update
     v1.patch_namespaced_config_map(configmap_name, namespace, cm)
-    
+
     print(f"✅ Updated ConfigMap: {configmap_name}")
 ```
 
@@ -355,24 +355,24 @@ import time
 def verify_healing(pod_name, namespace, timeout=300):
     """Monitor pod until it's healthy or timeout"""
     from kubernetes import client, config
-    
+
     config.load_incluster_config()
     v1 = client.CoreV1Api()
-    
+
     start_time = time.time()
-    
+
     while time.time() - start_time < timeout:
         pod = v1.read_namespaced_pod(pod_name, namespace)
-        
+
         if pod.status.phase == 'Running':
             # Check if container is ready
             if pod.status.container_statuses:
                 if pod.status.container_statuses[0].ready:
                     print(f"✅ Pod {pod_name} is healthy!")
                     return True
-        
+
         time.sleep(5)
-    
+
     print(f"⚠️ Pod {pod_name} did not recover within {timeout}s")
     return False
 ```
@@ -385,10 +385,10 @@ healing_results = []
 for pod in crash_loop_pods:
     # Execute remediation
     restart_pod(pod['name'], pod['namespace'])
-    
+
     # Wait and verify
     recovered = verify_healing(pod['name'], pod['namespace'])
-    
+
     healing_results.append({
         'pod': pod['name'],
         'recovered': recovered,

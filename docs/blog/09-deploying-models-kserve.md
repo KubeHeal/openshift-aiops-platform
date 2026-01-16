@@ -159,7 +159,7 @@ spec:
 """
 
 # Apply to cluster
-subprocess.run(['oc', 'apply', '-f', '-'], 
+subprocess.run(['oc', 'apply', '-f', '-'],
                input=inferenceservice_yaml.encode(),
                check=True)
 
@@ -178,23 +178,23 @@ import time
 def wait_for_ready(name, namespace, timeout=300):
     """Wait for InferenceService to be ready"""
     import subprocess
-    
+
     start_time = time.time()
     while time.time() - start_time < timeout:
         result = subprocess.run(
             ['oc', 'get', 'inferenceservice', name, '-n', namespace, '-o', 'json'],
             capture_output=True, text=True
         )
-        
+
         if result.returncode == 0:
             import json
             data = json.loads(result.stdout)
             if data.get('status', {}).get('conditions', [{}])[-1].get('status') == 'True':
                 print(f"✅ {name} is ready")
                 return True
-        
+
         time.sleep(5)
-    
+
     return False
 
 wait_for_ready('anomaly-detector', 'self-healing-platform')
@@ -267,7 +267,7 @@ spec:
 def deploy_model_version(model_name, version, model_path):
     """
     Deploy new model version.
-    
+
     Args:
         model_name: Model name
         version: Version string (e.g., '1.1.0')
@@ -275,15 +275,15 @@ def deploy_model_version(model_name, version, model_path):
     """
     # Create versioned InferenceService
     isvc_name = f"{model_name}-v{version.replace('.', '-')}"
-    
+
     # Copy model to versioned path
     versioned_path = f'/mnt/models/{model_name}/v{version}'
     os.makedirs(versioned_path, exist_ok=True)
     shutil.copy(model_path, f'{versioned_path}/model.pkl')
-    
+
     # Create InferenceService
     # ... (YAML creation and apply)
-    
+
     print(f"✅ Deployed {model_name} version {version}")
 ```
 

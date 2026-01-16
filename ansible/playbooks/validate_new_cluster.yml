@@ -8,7 +8,7 @@
 
 - name: Validate New Cluster for Self-Healing Platform Deployment
   hosts: localhost
-  gather_facts: yes
+  gather_facts: true
 
   vars:
     # Pattern configuration
@@ -109,15 +109,13 @@
 
         - name: Record GPU validation result
           set_fact:
-            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'GPU Nodes', 'status': 'PASSED', 'details': gpu_nodes.resources | length | string + ' GPU node(s) found'}]}) }}"
-            validation_results: "{{ validation_results | combine({'checks_passed': validation_results.checks_passed + 1}) }}"
+            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'GPU Nodes', 'status': 'PASSED', 'details': gpu_nodes.resources | length | string + ' GPU node(s) found'}], 'checks_passed': validation_results.checks_passed + 1}) }}"
           when: gpu_check is succeeded
 
       rescue:
         - name: Record GPU validation failure
           set_fact:
-            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'GPU Nodes', 'status': 'FAILED', 'details': 'Insufficient GPU nodes'}]}) }}"
-            validation_results: "{{ validation_results | combine({'checks_failed': validation_results.checks_failed + 1}) }}"
+            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'GPU Nodes', 'status': 'FAILED', 'details': 'Insufficient GPU nodes'}], 'checks_failed': validation_results.checks_failed + 1}) }}"
 
     # ============================================================
     # Storage Class Validation
@@ -141,15 +139,13 @@
 
         - name: Record storage validation result
           set_fact:
-            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Storage Classes', 'status': 'PASSED', 'details': 'All required storage classes available'}]}) }}"
-            validation_results: "{{ validation_results | combine({'checks_passed': validation_results.checks_passed + 1}) }}"
+            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Storage Classes', 'status': 'PASSED', 'details': 'All required storage classes available'}], 'checks_passed': validation_results.checks_passed + 1}) }}"
           when: storage_check is succeeded
 
       rescue:
         - name: Record storage validation failure
           set_fact:
-            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Storage Classes', 'status': 'FAILED', 'details': 'Missing required storage classes'}]}) }}"
-            validation_results: "{{ validation_results | combine({'checks_failed': validation_results.checks_failed + 1}) }}"
+            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Storage Classes', 'status': 'FAILED', 'details': 'Missing required storage classes'}], 'checks_failed': validation_results.checks_failed + 1}) }}"
 
     # ============================================================
     # Values Files Validation
@@ -195,14 +191,12 @@
 
         - name: Record values files validation result
           set_fact:
-            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Values Files', 'status': 'PASSED', 'details': 'All values files exist'}]}) }}"
-            validation_results: "{{ validation_results | combine({'checks_passed': validation_results.checks_passed + 1}) }}"
+            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Values Files', 'status': 'PASSED', 'details': 'All values files exist'}], 'checks_passed': validation_results.checks_passed + 1}) }}"
 
       rescue:
         - name: Record values files validation failure
           set_fact:
-            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Values Files', 'status': 'FAILED', 'details': 'Missing values files'}]}) }}"
-            validation_results: "{{ validation_results | combine({'checks_failed': validation_results.checks_failed + 1}) }}"
+            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Values Files', 'status': 'FAILED', 'details': 'Missing values files'}], 'checks_failed': validation_results.checks_failed + 1}) }}"
 
     # ============================================================
     # Git Repository Accessibility
@@ -225,21 +219,19 @@
             url: "{{ git_repo_url | regex_replace('\\.git$', '') }}"
             method: GET
             status_code: [200, 301, 302, 401, 403]
-            validate_certs: no
+            validate_certs: false
           register: git_http_check
           when: git_repo_url is match('^https?://')
-          ignore_errors: yes
+          ignore_errors: true
 
         - name: Record Git accessibility result
           set_fact:
-            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Git Repository', 'status': 'WARNING', 'details': 'Git repository accessibility check performed (may require authentication)'}]}) }}"
-            validation_results: "{{ validation_results | combine({'checks_warnings': validation_results.checks_warnings + 1}) }}"
+            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Git Repository', 'status': 'WARNING', 'details': 'Git repository accessibility check performed (may require authentication)'}], 'checks_warnings': validation_results.checks_warnings + 1}) }}"
 
       rescue:
         - name: Record Git accessibility warning
           set_fact:
-            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Git Repository', 'status': 'WARNING', 'details': 'Could not verify git repository accessibility'}]}) }}"
-            validation_results: "{{ validation_results | combine({'checks_warnings': validation_results.checks_warnings + 1}) }}"
+            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Git Repository', 'status': 'WARNING', 'details': 'Could not verify git repository accessibility'}], 'checks_warnings': validation_results.checks_warnings + 1}) }}"
 
     # ============================================================
     # Network Connectivity Checks
@@ -253,7 +245,7 @@
             method: HEAD
             status_code: [200, 301, 302]
           register: quay_check
-          ignore_errors: yes
+          ignore_errors: true
 
         - name: Test connectivity to Validated Patterns OCI registry
           ansible.builtin.uri:
@@ -261,12 +253,11 @@
             method: HEAD
             status_code: [200, 301, 302]
           register: patterns_registry_check
-          ignore_errors: yes
+          ignore_errors: true
 
         - name: Record network connectivity result
           set_fact:
-            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Network Connectivity', 'status': 'PASSED', 'details': 'External registries accessible'}]}) }}"
-            validation_results: "{{ validation_results | combine({'checks_passed': validation_results.checks_passed + 1}) }}"
+            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Network Connectivity', 'status': 'PASSED', 'details': 'External registries accessible'}], 'checks_passed': validation_results.checks_passed + 1}) }}"
           when:
             - quay_check is succeeded
             - patterns_registry_check is succeeded
@@ -274,8 +265,7 @@
       rescue:
         - name: Record network connectivity warning
           set_fact:
-            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Network Connectivity', 'status': 'WARNING', 'details': 'Some external registries may not be accessible (OK for air-gapped)'}]}) }}"
-            validation_results: "{{ validation_results | combine({'checks_warnings': validation_results.checks_warnings + 1}) }}"
+            validation_results: "{{ validation_results | combine({'checks': validation_results.checks + [{'name': 'Network Connectivity', 'status': 'WARNING', 'details': 'Some external registries may not be accessible (OK for air-gapped)'}], 'checks_warnings': validation_results.checks_warnings + 1}) }}"
 
     # ============================================================
     # Generate Validation Report

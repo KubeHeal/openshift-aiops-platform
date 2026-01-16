@@ -138,25 +138,25 @@ REMEDIATION_RULES = [
 def evaluate_rules(anomaly, rules):
     """
     Evaluate which rules match an anomaly.
-    
+
     Args:
         anomaly: Detected anomaly with metrics
         rules: List of remediation rules
-    
+
     Returns:
         List of matching rules sorted by priority
     """
     matching_rules = []
-    
+
     for rule in rules:
         condition = rule['condition']
-        
+
         # Check if condition matches
         if condition['metric'] in anomaly['metrics']:
             value = anomaly['metrics'][condition['metric']]
             threshold = condition['threshold']
             operator = condition['operator']
-            
+
             # Evaluate condition
             if operator == '>':
                 matches = value > threshold
@@ -168,13 +168,13 @@ def evaluate_rules(anomaly, rules):
                 matches = value == threshold
             else:
                 matches = False
-            
+
             if matches:
                 matching_rules.append(rule)
-    
+
     # Sort by priority (lower number = higher priority)
     matching_rules.sort(key=lambda r: r['priority'])
-    
+
     return matching_rules
 ```
 
@@ -184,24 +184,24 @@ def evaluate_rules(anomaly, rules):
 def check_rate_limit(rule, action_history):
     """
     Check if rule has exceeded rate limit.
-    
+
     Args:
         rule: Remediation rule
         action_history: List of past actions
-    
+
     Returns:
         True if action allowed, False if rate limited
     """
     if 'max_actions_per_hour' not in rule:
         return True  # No rate limit
-    
+
     # Count actions in last hour
     one_hour_ago = datetime.now() - timedelta(hours=1)
     recent_actions = [
         a for a in action_history
         if a['rule'] == rule['name'] and a['timestamp'] > one_hour_ago
     ]
-    
+
     return len(recent_actions) < rule['max_actions_per_hour']
 ```
 
@@ -217,7 +217,7 @@ from kubernetes import client, config
 def scale_deployment(deployment_name, namespace, factor, direction='up'):
     """
     Scale deployment up or down.
-    
+
     Args:
         deployment_name: Deployment name
         namespace: Kubernetes namespace
@@ -226,21 +226,21 @@ def scale_deployment(deployment_name, namespace, factor, direction='up'):
     """
     config.load_incluster_config()
     apps_v1 = client.AppsV1Api()
-    
+
     # Get current deployment
     deployment = apps_v1.read_namespaced_deployment(deployment_name, namespace)
     current_replicas = deployment.spec.replicas
-    
+
     # Calculate new replica count
     if direction == 'up':
         new_replicas = int(np.ceil(current_replicas * factor))
     else:
         new_replicas = int(np.floor(current_replicas / factor))
-    
+
     # Update deployment
     deployment.spec.replicas = new_replicas
     apps_v1.patch_namespaced_deployment(deployment_name, namespace, deployment)
-    
+
     print(f"✅ Scaled {deployment_name} from {current_replicas} to {new_replicas} replicas")
     return new_replicas
 ```
@@ -252,7 +252,7 @@ def restart_pod(pod_name, namespace):
     """Delete pod to trigger restart"""
     config.load_incluster_config()
     v1 = client.CoreV1Api()
-    
+
     v1.delete_namespaced_pod(pod_name, namespace)
     print(f"✅ Restarted pod: {pod_name}")
 ```
@@ -264,13 +264,13 @@ def update_image(deployment_name, namespace, new_image):
     """Update container image in deployment"""
     config.load_incluster_config()
     apps_v1 = client.AppsV1Api()
-    
+
     deployment = apps_v1.read_namespaced_deployment(deployment_name, namespace)
-    
+
     # Update image
     for container in deployment.spec.template.spec.containers:
         container.image = new_image
-    
+
     apps_v1.patch_namespaced_deployment(deployment_name, namespace, deployment)
     print(f"✅ Updated image for {deployment_name}")
 ```
@@ -291,7 +291,7 @@ client = get_client()  # Python client calling Go service at http://coordination
 def execute_remediation(anomaly, rule):
     """
     Execute remediation action via Coordination Engine.
-    
+
     Args:
         anomaly: Detected anomaly
         rule: Matching remediation rule
@@ -307,7 +307,7 @@ def execute_remediation(anomaly, rule):
             'metric': rule['condition']['metric']
         }
     })
-    
+
     # Trigger remediation
     remediation = client.trigger_remediation({
         'incident_id': incident.incident_id,
@@ -317,7 +317,7 @@ def execute_remediation(anomaly, rule):
         'parameters': rule['action'],
         'priority': rule['priority']
     })
-    
+
     return remediation
 ```
 
@@ -331,28 +331,28 @@ def execute_remediation(anomaly, rule):
 def validate_remediation(anomaly, rule, action_id, timeout=300):
     """
     Validate that remediation was successful.
-    
+
     Args:
         anomaly: Original anomaly
         rule: Remediation rule
         action_id: Action ID from Coordination Engine
         timeout: Maximum time to wait (seconds)
-    
+
     Returns:
         True if remediation successful, False otherwise
     """
     import time
-    
+
     start_time = time.time()
-    
+
     while time.time() - start_time < timeout:
         # Check if metric improved
         current_metrics = get_current_metrics(anomaly['target'], anomaly['namespace'])
-        
+
         metric_name = rule['condition']['metric']
         current_value = current_metrics[metric_name]
         threshold = rule['condition']['threshold']
-        
+
         # Check if condition resolved
         if rule['condition']['operator'] == '>':
             resolved = current_value < threshold * 0.9  # 10% below threshold
@@ -360,13 +360,13 @@ def validate_remediation(anomaly, rule, action_id, timeout=300):
             resolved = current_value < threshold
         else:
             resolved = False
-        
+
         if resolved:
             print(f"✅ Remediation successful: {metric_name} reduced to {current_value:.2f}")
             return True
-        
+
         time.sleep(10)  # Check every 10 seconds
-    
+
     print(f"⚠️ Remediation did not resolve within {timeout}s")
     return False
 ```
@@ -381,7 +381,7 @@ def validate_remediation(anomaly, rule, action_id, timeout=300):
 def track_remediation(anomaly, rule, action_id, success):
     """
     Track remediation outcome for learning.
-    
+
     Args:
         anomaly: Original anomaly
         rule: Remediation rule
@@ -399,12 +399,12 @@ def track_remediation(anomaly, rule, action_id, success):
         'metrics_before': anomaly['metrics'],
         'metrics_after': get_current_metrics(anomaly['target'], anomaly['namespace'])
     }
-    
+
     # Save to persistent storage
     outcomes_file = '/opt/app-root/src/data/processed/remediation_outcomes.jsonl'
     with open(outcomes_file, 'a') as f:
         f.write(json.dumps(outcome) + '\n')
-    
+
     print(f"📊 Remediation tracked: {rule['name']} - {'Success' if success else 'Failed'}")
 ```
 

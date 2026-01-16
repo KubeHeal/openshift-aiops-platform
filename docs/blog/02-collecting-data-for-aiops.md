@@ -96,23 +96,23 @@ import pandas as pd
 def query_prometheus(query, start_time, end_time, step='30s'):
     """Query Prometheus for time-series data"""
     url = 'https://prometheus-k8s.openshift-monitoring.svc.cluster.local:9091/api/v1/query_range'
-    
+
     params = {
         'query': query,
         'start': start_time.timestamp(),
         'end': end_time.timestamp(),
         'step': step
     }
-    
+
     response = requests.get(url, params=params, verify=False)
     data = response.json()
-    
+
     # Convert to pandas DataFrame
-    df = pd.DataFrame(data['data']['result'][0]['values'], 
+    df = pd.DataFrame(data['data']['result'][0]['values'],
                       columns=['timestamp', 'value'])
     df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
     df['value'] = pd.to_numeric(df['value'])
-    
+
     return df
 ```
 
@@ -220,7 +220,7 @@ def parse_log_errors(logs):
         'connection_error': r'ConnectionError: (.+)',
         'oom': r'OOMKilled|OutOfMemory'
     }
-    
+
     errors = []
     for line in logs:
         for error_type, pattern in error_patterns.items():
@@ -231,7 +231,7 @@ def parse_log_errors(logs):
                     'message': match.group(1) if match.groups() else line,
                     'timestamp': extract_timestamp(line)
                 })
-    
+
     return pd.DataFrame(errors)
 ```
 
@@ -307,13 +307,13 @@ def generate_cpu_spike(base_cpu=0.3, spike_magnitude=0.8, duration=30):
     normal_data = np.random.normal(base_cpu, 0.05, 100)
     spike_start = 50
     spike_data = np.random.normal(spike_magnitude, 0.1, duration)
-    
+
     data = np.concatenate([
         normal_data[:spike_start],
         spike_data,
         normal_data[spike_start:]
     ])
-    
+
     return data
 ```
 
@@ -361,7 +361,7 @@ Now that you understand data collection, you're ready to:
 
 ## Related Resources
 
-- **Notebooks**: 
+- **Notebooks**:
   - `notebooks/01-data-collection/prometheus-metrics-collection.ipynb`
   - `notebooks/01-data-collection/openshift-events-analysis.ipynb`
   - `notebooks/01-data-collection/log-parsing-analysis.ipynb`

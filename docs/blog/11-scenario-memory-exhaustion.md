@@ -104,38 +104,38 @@ The notebook implements comprehensive resource tracking:
 def collect_resource_metrics(namespace, hours=24):
     """
     Collect resource metrics from Prometheus.
-    
+
     Args:
         namespace: Kubernetes namespace
         hours: Historical data window
-    
+
     Returns:
         Resource metrics dataframe with CPU, memory, disk usage
     """
     import requests
     import pandas as pd
-    
+
     # Query Prometheus for memory usage
     query = f'''
         sum(container_memory_working_set_bytes{{namespace="{namespace}"}})
         by (pod)
-        / 
+        /
         sum(container_spec_memory_limit_bytes{{namespace="{namespace}"}})
         by (pod)
         * 100
     '''
-    
+
     # Execute Prometheus query
     response = requests.get(
         'https://prometheus-k8s.openshift-monitoring.svc.cluster.local:9091/api/v1/query',
         params={'query': query},
         verify=False
     )
-    
+
     # Parse and return metrics
     data = response.json()
     # ... process into DataFrame
-    
+
     return metrics_df
 ```
 
@@ -153,26 +153,26 @@ from scipy import stats
 def detect_memory_trend(metrics_df, threshold=85):
     """
     Detect if memory usage is trending toward exhaustion.
-    
+
     Args:
         metrics_df: DataFrame with memory_usage column
         threshold: Memory threshold percentage
-    
+
     Returns:
         Trend analysis with prediction
     """
     # Calculate trend using linear regression
     x = np.arange(len(metrics_df))
     y = metrics_df['memory_usage'].values
-    
+
     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
-    
+
     # Predict when threshold will be reached
     if slope > 0:  # Increasing trend
         hours_to_threshold = (threshold - intercept) / slope
     else:
         hours_to_threshold = float('inf')
-    
+
     return {
         'trend': 'increasing' if slope > 0 else 'stable',
         'slope': slope,
@@ -257,7 +257,7 @@ from kubernetes import client, config
 def scale_deployment_proactively(deployment_name, namespace, target_replicas):
     """
     Scale deployment to prevent memory exhaustion.
-    
+
     Args:
         deployment_name: Deployment name
         namespace: Kubernetes namespace
@@ -265,16 +265,16 @@ def scale_deployment_proactively(deployment_name, namespace, target_replicas):
     """
     config.load_incluster_config()
     apps_v1 = client.AppsV1Api()
-    
+
     # Get current deployment
     deployment = apps_v1.read_namespaced_deployment(deployment_name, namespace)
     current_replicas = deployment.spec.replicas
-    
+
     if target_replicas > current_replicas:
         # Scale up
         deployment.spec.replicas = target_replicas
         apps_v1.patch_namespaced_deployment(deployment_name, namespace, deployment)
-        
+
         print(f"✅ Scaled {deployment_name} from {current_replicas} to {target_replicas} replicas")
         return True
     else:
@@ -288,19 +288,19 @@ def scale_deployment_proactively(deployment_name, namespace, target_replicas):
 def calculate_required_replicas(current_usage, target_usage=70):
     """
     Calculate how many replicas needed to bring usage below target.
-    
+
     Args:
         current_usage: Current memory usage percentage
         target_usage: Target usage after scaling
-    
+
     Returns:
         Required number of replicas
     """
     current_replicas = 2  # Get from deployment
-    
+
     # Simple calculation: scale proportionally
     required_replicas = int(np.ceil(current_replicas * (current_usage / target_usage)))
-    
+
     return max(required_replicas, current_replicas + 1)  # At least scale up by 1
 ```
 
@@ -345,36 +345,36 @@ If scaling isn't sufficient, optimize resource requests and limits.
 def analyze_resource_allocation(namespace):
     """
     Analyze if resource requests/limits are optimal.
-    
+
     Args:
         namespace: Kubernetes namespace
-    
+
     Returns:
         Optimization recommendations
     """
     from kubernetes import client, config
-    
+
     config.load_incluster_config()
     v1 = client.CoreV1Api()
     apps_v1 = client.AppsV1Api()
-    
+
     # Get deployments
     deployments = apps_v1.list_namespaced_deployment(namespace)
-    
+
     recommendations = []
-    
+
     for deployment in deployments.items:
         # Get pod template
         containers = deployment.spec.template.spec.containers
-        
+
         for container in containers:
             limits = container.resources.limits
             requests = container.resources.requests
-            
+
             # Check if limits are too tight
             if limits and 'memory' in limits:
                 limit_mb = parse_memory(limits['memory'])
-                
+
                 # If pods are hitting limits frequently, recommend increase
                 if limit_mb < 512:  # Less than 512Mi
                     recommendations.append({
@@ -384,7 +384,7 @@ def analyze_resource_allocation(namespace):
                         'recommended_limit': '512Mi',
                         'reason': 'Frequent OOM kills detected'
                     })
-    
+
     return recommendations
 ```
 
@@ -394,7 +394,7 @@ def analyze_resource_allocation(namespace):
 def update_resource_limits(deployment_name, namespace, container_name, new_limit):
     """
     Update resource limits for a container.
-    
+
     Args:
         deployment_name: Deployment name
         namespace: Kubernetes namespace
@@ -402,13 +402,13 @@ def update_resource_limits(deployment_name, namespace, container_name, new_limit
         new_limit: New memory limit (e.g., '512Mi')
     """
     from kubernetes import client, config
-    
+
     config.load_incluster_config()
     apps_v1 = client.AppsV1Api()
-    
+
     # Get deployment
     deployment = apps_v1.read_namespaced_deployment(deployment_name, namespace)
-    
+
     # Update container limits
     for container in deployment.spec.template.spec.containers:
         if container.name == container_name:
@@ -416,13 +416,13 @@ def update_resource_limits(deployment_name, namespace, container_name, new_limit
                 container.resources = client.V1ResourceRequirements()
             if not container.resources.limits:
                 container.resources.limits = {}
-            
+
             container.resources.limits['memory'] = new_limit
             break
-    
+
     # Apply update
     apps_v1.patch_namespaced_deployment(deployment_name, namespace, deployment)
-    
+
     print(f"✅ Updated {container_name} memory limit to {new_limit}")
 ```
 
@@ -440,29 +440,29 @@ import time
 def verify_memory_reduction(namespace, deployment_name, timeout=600):
     """
     Monitor memory usage after scaling to verify reduction.
-    
+
     Args:
         namespace: Kubernetes namespace
         deployment_name: Deployment name
         timeout: Maximum time to wait (seconds)
-    
+
     Returns:
         True if memory reduced, False otherwise
     """
     start_time = time.time()
     baseline_memory = collect_resource_metrics(namespace, hours=1)['memory_usage'].iloc[-1]
-    
+
     while time.time() - start_time < timeout:
         current_metrics = collect_resource_metrics(namespace, hours=1)
         current_memory = current_metrics['memory_usage'].iloc[-1]
-        
+
         # Check if memory reduced by at least 10%
         if current_memory < baseline_memory * 0.9:
             print(f"✅ Memory reduced from {baseline_memory:.1f}% to {current_memory:.1f}%")
             return True
-        
+
         time.sleep(30)  # Check every 30 seconds
-    
+
     print(f"⚠️ Memory did not reduce significantly (current: {current_memory:.1f}%)")
     return False
 ```
@@ -476,10 +476,10 @@ remediation_results = []
 for deployment in ['memory-leak-app']:
     # Execute remediation
     scale_deployment_proactively(deployment, 'self-healing-platform', 4)
-    
+
     # Verify
     success = verify_memory_reduction('self-healing-platform', deployment)
-    
+
     remediation_results.append({
         'deployment': deployment,
         'remediated': success,

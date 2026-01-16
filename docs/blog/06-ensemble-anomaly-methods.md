@@ -116,11 +116,11 @@ def predict_prophet(model, data, threshold=2.0):
     """Get Prophet-based anomaly predictions"""
     future = model.make_future_dataframe(periods=len(data), freq='H')
     forecast = model.predict(future)
-    
+
     # Calculate deviations
     errors = data - forecast['yhat'].values[-len(data):]
     z_scores = errors / ((forecast['yhat_upper'] - forecast['yhat_lower']).values[-len(data):] / 4)
-    
+
     return (np.abs(z_scores) > threshold).astype(int)
 ```
 
@@ -165,19 +165,19 @@ print(f"   LSTM: {pred_lstm.sum()} anomalies")
 def hard_voting(predictions_list):
     """
     Hard voting: Anomaly if majority of models agree.
-    
+
     Args:
         predictions_list: List of binary prediction arrays
-    
+
     Returns:
         Ensemble predictions
     """
     # Stack predictions
     predictions_matrix = np.array(predictions_list)
-    
+
     # Majority vote
     ensemble_pred = (predictions_matrix.sum(axis=0) >= len(predictions_list) / 2).astype(int)
-    
+
     return ensemble_pred
 
 # Apply hard voting
@@ -192,20 +192,20 @@ print(f"🔍 Hard voting: {ensemble_hard.sum()} anomalies detected")
 def soft_voting(probabilities_list, threshold=0.5):
     """
     Soft voting: Average probabilities, then threshold.
-    
+
     Args:
         probabilities_list: List of probability arrays
         threshold: Probability threshold for anomaly
-    
+
     Returns:
         Ensemble predictions
     """
     # Average probabilities
     avg_prob = np.mean(probabilities_list, axis=0)
-    
+
     # Threshold
     ensemble_pred = (avg_prob > threshold).astype(int)
-    
+
     return ensemble_pred
 
 # Get probabilities from each model (if available)
@@ -226,11 +226,11 @@ print(f"🔍 Soft voting: {ensemble_soft.sum()} anomalies detected")
 def weighted_voting(predictions_list, weights):
     """
     Weighted voting: Weight each model by its performance.
-    
+
     Args:
         predictions_list: List of prediction arrays
         weights: List of weights (sum to 1.0)
-    
+
     Returns:
         Ensemble predictions
     """
@@ -238,10 +238,10 @@ def weighted_voting(predictions_list, weights):
     weighted_sum = np.zeros(len(predictions_list[0]))
     for pred, weight in zip(predictions_list, weights):
         weighted_sum += pred * weight
-    
+
     # Threshold at 0.5
     ensemble_pred = (weighted_sum > 0.5).astype(int)
-    
+
     return ensemble_pred
 
 # Weights based on individual model F1-scores
@@ -322,7 +322,7 @@ for method_name, predictions in methods.items():
     precision = precision_score(test_labels, predictions)
     recall = recall_score(test_labels, predictions)
     f1 = f1_score(test_labels, predictions)
-    
+
     results.append({
         'Method': method_name,
         'Precision': precision,
@@ -365,12 +365,12 @@ class EnsembleAnomalyDetector:
         self.models = models
         self.strategy = strategy
         self.weights = weights
-    
+
     def predict(self, data):
         """Get ensemble predictions"""
         # Get predictions from each model
         predictions = [model.predict(data) for model in self.models]
-        
+
         if self.strategy == 'hard_voting':
             return hard_voting(predictions)
         elif self.strategy == 'soft_voting':
@@ -445,8 +445,8 @@ def objective(weights):
     ensemble_pred = weighted_voting(predictions_list, weights)
     return -f1_score(test_labels, ensemble_pred)  # Minimize negative F1
 
-result = minimize(objective, [0.25, 0.25, 0.25, 0.25], 
-                 bounds=[(0, 1)] * 4, 
+result = minimize(objective, [0.25, 0.25, 0.25, 0.25],
+                 bounds=[(0, 1)] * 4,
                  constraints={'type': 'eq', 'fun': lambda w: sum(w) - 1})
 ```
 

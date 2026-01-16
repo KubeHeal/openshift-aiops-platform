@@ -356,4 +356,3 @@ coordinationEngine:
 
 **Approved by**: Architecture Team
 **Date**: 2026-01-07
-
