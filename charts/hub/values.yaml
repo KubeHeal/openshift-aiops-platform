@@ -112,6 +112,20 @@ rbac:
 
 # Storage configuration
 storage:
+   # S3/NooBaa credentials for model storage
+  # These values are used by the model-storage-config secret
+ # IMPORTANT: Override these in values-secret.yaml or via --set for production
+  s3:
+   # AWS/NooBaa access key ID
+    accessKeyId: ""  # Set via values-secret.yaml
+   # AWS/NooBaa secret access key
+    secretAccessKey: ""  # Set via values-secret.yaml
+   # S3 endpoint URL (NooBaa route)
+   # Example: https://s3-openshift-storage.apps.<cluster-domain>
+    endpoint: ""  # Set via values-secret.yaml
+   # S3 bucket name for model storage
+    bucket: "first.bucket"
+ 
   # Self-healing data storage
   selfHealingData:
     size: "10Gi"
