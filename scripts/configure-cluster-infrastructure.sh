@@ -174,103 +174,137 @@ check_prerequisites() {
 # Node Management
 # =============================================================================
 
-get_current_worker_count() {
-    oc get nodes -l 'node-role.kubernetes.io/worker' --no-headers 2>/dev/null | wc -l
-}
-
-get_machinesets() {
+get_worker_machinesets() {
+    # Get all worker MachineSets (including GPU)
     oc get machinesets -n openshift-machine-api -o json | \
         jq -r '.items[] | select(.spec.template.metadata.labels["machine.openshift.io/cluster-api-machine-role"]=="worker") | .metadata.name'
+}
+
+get_regular_worker_machineset() {
+    # Get the primary (non-GPU) worker MachineSet
+    # GPU MachineSets typically contain "gpu" in the name
+    local all_machinesets
+    all_machinesets=$(get_worker_machinesets)
+    
+    # Prefer non-GPU MachineSets
+    local regular_ms
+    regular_ms=$(echo "$all_machinesets" | grep -v -i gpu | head -1)
+    
+    if [[ -n "$regular_ms" ]]; then
+        echo "$regular_ms"
+    else
+        # Fallback to first MachineSet if no non-GPU found
+        echo "$all_machinesets" | head -1
+    fi
+}
+
+get_machineset_replicas() {
+    local machineset=$1
+    oc get machineset "$machineset" -n openshift-machine-api -o jsonpath='{.spec.replicas}' 2>/dev/null || echo "0"
+}
+
+get_machineset_ready_replicas() {
+    local machineset=$1
+    oc get machineset "$machineset" -n openshift-machine-api -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo "0"
 }
 
 scale_worker_nodes() {
     log_step "Scaling Worker Nodes"
     
-    local current_workers
-    current_workers=$(get_current_worker_count)
+    # Get all worker MachineSets
+    local all_machinesets
+    all_machinesets=$(get_worker_machinesets)
     
-    log_info "Current worker nodes: $current_workers"
-    log_info "Minimum required: $MIN_WORKERS"
-    
-    if [[ $current_workers -ge $MIN_WORKERS ]]; then
-        log_success "Worker node count meets requirements ($current_workers >= $MIN_WORKERS)"
-        return 0
-    fi
-    
-    local workers_needed=$((MIN_WORKERS - current_workers))
-    log_info "Need to add $workers_needed more worker node(s)"
-    
-    # Get available MachineSets
-    local machinesets
-    machinesets=$(get_machinesets)
-    
-    if [[ -z "$machinesets" ]]; then
+    if [[ -z "$all_machinesets" ]]; then
         log_error "No worker MachineSets found. Cannot scale nodes automatically."
         log_info "For bare-metal or non-IPI clusters, add nodes manually."
         exit 1
     fi
     
     log_info "Available MachineSets:"
-    echo "$machinesets" | while read -r ms; do
-        local replicas
-        replicas=$(oc get machineset "$ms" -n openshift-machine-api -o jsonpath='{.spec.replicas}')
-        echo "  - $ms (replicas: $replicas)"
+    echo "$all_machinesets" | while read -r ms; do
+        local replicas ready
+        replicas=$(get_machineset_replicas "$ms")
+        ready=$(get_machineset_ready_replicas "$ms")
+        if echo "$ms" | grep -qi gpu; then
+            echo "  - $ms (replicas: $replicas, ready: $ready) [GPU]"
+        else
+            echo "  - $ms (replicas: $replicas, ready: $ready) [Regular Worker]"
+        fi
     done
     
-    # Scale the first available MachineSet
+    # Get the target MachineSet (non-GPU worker)
     local target_machineset
-    target_machineset=$(echo "$machinesets" | grep -v gpu | head -1)
+    target_machineset=$(get_regular_worker_machineset)
     
     if [[ -z "$target_machineset" ]]; then
-        target_machineset=$(echo "$machinesets" | head -1)
+        log_error "Could not determine target MachineSet for scaling."
+        exit 1
     fi
     
+    log_info ""
+    log_info "Target MachineSet for scaling: $target_machineset"
+    
+    # Check replicas on the target MachineSet (not total cluster workers)
     local current_replicas
-    current_replicas=$(oc get machineset "$target_machineset" -n openshift-machine-api -o jsonpath='{.spec.replicas}')
-    local new_replicas=$((current_replicas + workers_needed))
+    current_replicas=$(get_machineset_replicas "$target_machineset")
     
-    log_info "Scaling MachineSet: $target_machineset"
-    log_info "  Current replicas: $current_replicas"
-    log_info "  New replicas: $new_replicas"
+    log_info "Current replicas in target MachineSet: $current_replicas"
+    log_info "Minimum required replicas: $MIN_WORKERS"
     
-    if [[ "$DRY_RUN" == "true" ]]; then
-        log_warn "[DRY RUN] Would run: oc scale machineset $target_machineset --replicas=$new_replicas -n openshift-machine-api"
+    if [[ $current_replicas -ge $MIN_WORKERS ]]; then
+        log_success "MachineSet $target_machineset meets requirements ($current_replicas >= $MIN_WORKERS)"
         return 0
     fi
     
-    oc scale machineset "$target_machineset" --replicas="$new_replicas" -n openshift-machine-api
-    log_success "MachineSet scaled to $new_replicas replicas"
+    local replicas_needed=$((MIN_WORKERS - current_replicas))
+    log_info "Need to add $replicas_needed more replica(s) to MachineSet"
     
-    # Wait for nodes to be ready
-    wait_for_nodes "$MIN_WORKERS"
+    log_info "Scaling MachineSet: $target_machineset"
+    log_info "  Current replicas: $current_replicas"
+    log_info "  New replicas: $MIN_WORKERS"
+    
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_warn "[DRY RUN] Would run: oc scale machineset $target_machineset --replicas=$MIN_WORKERS -n openshift-machine-api"
+        return 0
+    fi
+    
+    oc scale machineset "$target_machineset" --replicas="$MIN_WORKERS" -n openshift-machine-api
+    log_success "MachineSet scaled to $MIN_WORKERS replicas"
+    
+    # Wait for the MachineSet to have all replicas ready
+    wait_for_machineset_ready "$target_machineset" "$MIN_WORKERS"
 }
 
-wait_for_nodes() {
-    local required_count=$1
+wait_for_machineset_ready() {
+    local machineset=$1
+    local required_replicas=$2
     local timeout=600  # 10 minutes
     local interval=15
     local elapsed=0
     
-    log_info "Waiting for $required_count worker nodes to be Ready (timeout: ${timeout}s)..."
+    log_info "Waiting for MachineSet $machineset to have $required_replicas ready replicas (timeout: ${timeout}s)..."
     
     while [[ $elapsed -lt $timeout ]]; do
-        local ready_count
-        ready_count=$(oc get nodes -l 'node-role.kubernetes.io/worker' --no-headers 2>/dev/null | grep -c ' Ready ' || echo 0)
+        local ready_replicas
+        ready_replicas=$(get_machineset_ready_replicas "$machineset")
         
-        if [[ $ready_count -ge $required_count ]]; then
-            log_success "All $required_count worker nodes are Ready"
-            oc get nodes -l 'node-role.kubernetes.io/worker'
+        if [[ $ready_replicas -ge $required_replicas ]]; then
+            log_success "MachineSet $machineset has $ready_replicas ready replicas"
+            oc get machineset "$machineset" -n openshift-machine-api
             return 0
         fi
         
-        log_info "  Ready nodes: $ready_count / $required_count (waiting...)"
+        log_info "  Ready replicas: $ready_replicas / $required_replicas (waiting...)"
         sleep $interval
         elapsed=$((elapsed + interval))
     done
     
-    log_error "Timeout waiting for nodes to be Ready"
+    log_error "Timeout waiting for MachineSet replicas to be Ready"
+    log_info "Current MachineSet status:"
+    oc get machineset "$machineset" -n openshift-machine-api -o wide
     log_info "Current node status:"
-    oc get nodes
+    oc get nodes -l 'node-role.kubernetes.io/worker'
     exit 1
 }
 
