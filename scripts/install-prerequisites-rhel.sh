@@ -12,7 +12,8 @@
 #
 # What gets installed:
 #   - System packages: podman, git, make, jq, python3-pip, development headers
-#   - Python packages: ansible-navigator, ansible-builder, envsubst
+#   - Python packages: ansible-navigator, ansible-builder, kubernetes, openshift-client
+#   - Ansible collections: kubernetes.core, community.general, ansible.posix
 #   - CLI tools: oc, kubectl, helm, yq, tkn
 #
 # Requirements:
@@ -206,6 +207,28 @@ install_python_packages() {
         netaddr
     
     log_success "Python packages installed"
+}
+
+install_ansible_collections() {
+    log_info "Installing Ansible collections..."
+    
+    # Ensure we're in the venv
+    source "$VENV_DIR/bin/activate"
+    
+    # Install required Ansible collections
+    ansible-galaxy collection install kubernetes.core --force
+    ansible-galaxy collection install community.general --force
+    ansible-galaxy collection install ansible.posix --force
+    
+    # Verify installation
+    if ansible-galaxy collection list | grep -q "kubernetes.core"; then
+        log_success "kubernetes.core collection installed"
+    else
+        log_error "Failed to install kubernetes.core collection"
+        exit 1
+    fi
+    
+    log_success "Ansible collections installed"
 }
 
 # =============================================================================
@@ -456,6 +479,23 @@ validate_installation() {
     
     echo
     
+    # Check Ansible collections
+    if [[ -d "$VENV_DIR" ]]; then
+        source "$VENV_DIR/bin/activate"
+        
+        local collections=("kubernetes.core" "community.general" "ansible.posix")
+        for collection in "${collections[@]}"; do
+            if ansible-galaxy collection list 2>/dev/null | grep -q "$collection"; then
+                printf "%-20s ${GREEN}%-15s${NC} %-30s\n" "$collection" "✓ OK" "Ansible collection"
+            else
+                printf "%-20s ${RED}%-15s${NC} %-30s\n" "$collection" "✗ MISSING" "Ansible collection"
+                all_ok=false
+            fi
+        done
+    fi
+    
+    echo
+    
     if $all_ok; then
         log_success "All prerequisites installed successfully!"
         return 0
@@ -492,6 +532,7 @@ main() {
     # Python environment
     setup_python_venv
     install_python_packages
+    install_ansible_collections
     
     # CLI tools
     install_oc_cli
