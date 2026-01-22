@@ -107,7 +107,7 @@ class PredictiveAnalytics:
                 features[f'{metric}_pct_change'] = features[metric].pct_change()
 
         # Fill NaN values
-        features = features.fillna(method='forward').fillna(method='backward').fillna(0)
+        features = features.fillna(method='ffill').fillna(method='bfill').fillna(0)
 
         # Remove timestamp column for modeling
         if 'timestamp' in features.columns:
