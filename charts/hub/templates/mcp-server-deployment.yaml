@@ -45,11 +45,11 @@ spec:
         imagePullPolicy: {{ .Values.mcpServer.image.pullPolicy | default "Always" }}
         command:
         - /usr/local/bin/healthcheck
-        - https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready
         - --bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
         - --insecure-skip-verify
         - --timeout=10s
         - --interval=15s
+        - https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
