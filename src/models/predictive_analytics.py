@@ -344,75 +344,192 @@ class PredictiveAnalytics:
             'threshold': threshold
         }
 
-    def save_models(self, model_dir: str):
-        """Save all trained models and scalers"""
+    def save_models(self, model_dir: str, kserve_compatible: bool = True):
+        """
+        Save all trained models and scalers
+
+        Args:
+            model_dir: Base directory for model storage (e.g., /mnt/models)
+            kserve_compatible: If True, creates KServe-compatible structure with single model.pkl
+        """
         if not self.is_trained:
             raise ValueError("Models must be trained before saving")
 
-        os.makedirs(model_dir, exist_ok=True)
+        if kserve_compatible:
+            # KServe-compatible structure: /mnt/models/predictive-analytics/model.pkl
+            from pathlib import Path
+            base_dir = Path(model_dir)
+            model_name = 'predictive-analytics'
+            kserve_dir = base_dir / model_name
+            kserve_dir.mkdir(parents=True, exist_ok=True)
 
-        for target_metric in self.models:
-            # Save models for each forecast step
-            for step, model in enumerate(self.models[target_metric]):
-                model_path = os.path.join(model_dir, f"{target_metric}_step_{step}_model.pkl")
-                joblib.dump(model, model_path)
+            # Package everything into a single model.pkl file
+            model_package = {
+                'models': self.models,
+                'scalers': self.scalers,
+                'metadata': {
+                    'forecast_horizon': self.forecast_horizon,
+                    'lookback_window': self.lookback_window,
+                    'feature_names': self.feature_names,
+                    'target_metrics': self.target_metrics,
+                    'is_trained': self.is_trained
+                }
+            }
 
-            # Save scaler
-            scaler_path = os.path.join(model_dir, f"{target_metric}_scaler.pkl")
-            joblib.dump(self.scalers[target_metric], scaler_path)
+            # Wrap in KServe-compatible wrapper
+            try:
+                from kserve_wrapper import create_kserve_model
+                kserve_model = create_kserve_model(model_package)
+                model_to_save = kserve_model
+                logger.info("Using KServe wrapper for sklearn server compatibility")
+            except ImportError:
+                # Fallback if wrapper not available (still works but less compatible)
+                logger.warning("KServe wrapper not found, saving raw model package")
+                model_to_save = model_package
 
-        # Save metadata
-        metadata = {
-            'forecast_horizon': self.forecast_horizon,
-            'lookback_window': self.lookback_window,
-            'feature_names': self.feature_names,
-            'target_metrics': self.target_metrics,
-            'is_trained': self.is_trained
-        }
+            model_path = kserve_dir / 'model.pkl'
 
-        metadata_path = os.path.join(model_dir, 'metadata.json')
-        import json
-        with open(metadata_path, 'w') as f:
-            json.dump(metadata, f, indent=2)
+            # Migration: Move old files if they exist
+            old_files = list(base_dir.glob('*_step_*_model.pkl')) + list(base_dir.glob('*_scaler.pkl'))
+            if old_files and not model_path.exists():
+                logger.info(f"🔄 Migrating {len(old_files)} old model files to KServe structure")
 
-        logger.info(f"Models saved to {model_dir}")
+            joblib.dump(model_to_save, model_path)
+            logger.info(f"💾 Saved KServe-compatible model to: {model_path}")
+            logger.info(f"   ✅ KServe-compatible path: {model_name}/model.pkl")
+            logger.info(f"   ✅ Single .pkl file (models + scalers + metadata)")
+
+            # Clean up old files
+            for old_file in old_files:
+                try:
+                    old_file.unlink()
+                    logger.info(f"🗑️  Removed old file: {old_file.name}")
+                except Exception as e:
+                    logger.warning(f"Could not remove old file {old_file}: {e}")
+
+            # Also clean up old metadata.json if exists
+            old_metadata = base_dir / 'metadata.json'
+            if old_metadata.exists():
+                try:
+                    old_metadata.unlink()
+                    logger.info(f"🗑️  Removed old metadata.json")
+                except Exception as e:
+                    logger.warning(f"Could not remove old metadata: {e}")
+
+        else:
+            # Legacy structure (deprecated) - multiple files
+            os.makedirs(model_dir, exist_ok=True)
+
+            for target_metric in self.models:
+                # Save models for each forecast step
+                for step, model in enumerate(self.models[target_metric]):
+                    model_path = os.path.join(model_dir, f"{target_metric}_step_{step}_model.pkl")
+                    joblib.dump(model, model_path)
+
+                # Save scaler
+                scaler_path = os.path.join(model_dir, f"{target_metric}_scaler.pkl")
+                joblib.dump(self.scalers[target_metric], scaler_path)
+
+            # Save metadata
+            metadata = {
+                'forecast_horizon': self.forecast_horizon,
+                'lookback_window': self.lookback_window,
+                'feature_names': self.feature_names,
+                'target_metrics': self.target_metrics,
+                'is_trained': self.is_trained
+            }
+
+            metadata_path = os.path.join(model_dir, 'metadata.json')
+            import json
+            with open(metadata_path, 'w') as f:
+                json.dump(metadata, f, indent=2)
+
+            logger.info(f"Models saved to {model_dir} (legacy structure)")
 
     def load_models(self, model_dir: str):
-        """Load trained models and scalers"""
-        # Load metadata
-        metadata_path = os.path.join(model_dir, 'metadata.json')
-        import json
-        with open(metadata_path, 'r') as f:
-            metadata = json.load(f)
+        """
+        Load trained models and scalers
+        Supports both KServe-compatible structure and legacy structure
+        """
+        from pathlib import Path
+        base_dir = Path(model_dir)
 
-        self.forecast_horizon = metadata['forecast_horizon']
-        self.lookback_window = metadata['lookback_window']
-        self.feature_names = metadata['feature_names']
-        self.target_metrics = metadata['target_metrics']
-        self.is_trained = metadata['is_trained']
+        # Try KServe-compatible structure first: /mnt/models/predictive-analytics/model.pkl
+        kserve_path = base_dir / 'predictive-analytics' / 'model.pkl'
 
-        # Load models and scalers
-        self.models = {}
-        self.scalers = {}
+        if kserve_path.exists():
+            # Load KServe-compatible single-file model
+            logger.info(f"Loading KServe-compatible model from: {kserve_path}")
+            loaded_model = joblib.load(kserve_path)
 
-        for target_metric in self.target_metrics:
-            # Load models for each forecast step
-            models_for_metric = []
-            for step in range(self.forecast_horizon):
-                model_path = os.path.join(model_dir, f"{target_metric}_step_{step}_model.pkl")
-                if os.path.exists(model_path):
-                    model = joblib.load(model_path)
-                    models_for_metric.append(model)
+            # Check if it's a wrapper or raw model package
+            if hasattr(loaded_model, 'models') and hasattr(loaded_model, 'metadata'):
+                # It's a wrapper instance - extract the internal components
+                logger.info("Detected KServe wrapper, extracting model components")
+                self.models = loaded_model.models
+                self.scalers = loaded_model.scalers
+                metadata = loaded_model.metadata
+            elif isinstance(loaded_model, dict) and 'models' in loaded_model:
+                # It's a raw model package
+                logger.info("Detected raw model package")
+                self.models = loaded_model['models']
+                self.scalers = loaded_model['scalers']
+                metadata = loaded_model['metadata']
+            else:
+                raise ValueError(f"Unknown model format at {kserve_path}")
 
-            if models_for_metric:
-                self.models[target_metric] = models_for_metric
+            self.forecast_horizon = metadata['forecast_horizon']
+            self.lookback_window = metadata['lookback_window']
+            self.feature_names = metadata['feature_names']
+            self.target_metrics = metadata['target_metrics']
+            self.is_trained = metadata['is_trained']
 
-            # Load scaler
-            scaler_path = os.path.join(model_dir, f"{target_metric}_scaler.pkl")
-            if os.path.exists(scaler_path):
-                self.scalers[target_metric] = joblib.load(scaler_path)
+            logger.info(f"✅ Loaded KServe model: {len(self.models)} metrics")
 
-        logger.info(f"Models loaded from {model_dir}")
+        else:
+            # Fall back to legacy structure
+            logger.info(f"Loading legacy model structure from: {model_dir}")
+
+            # Load metadata
+            metadata_path = os.path.join(model_dir, 'metadata.json')
+            import json
+
+            if not os.path.exists(metadata_path):
+                raise FileNotFoundError(
+                    f"No model found at {kserve_path} or legacy metadata at {metadata_path}"
+                )
+
+            with open(metadata_path, 'r') as f:
+                metadata = json.load(f)
+
+            self.forecast_horizon = metadata['forecast_horizon']
+            self.lookback_window = metadata['lookback_window']
+            self.feature_names = metadata['feature_names']
+            self.target_metrics = metadata['target_metrics']
+            self.is_trained = metadata['is_trained']
+
+            # Load models and scalers
+            self.models = {}
+            self.scalers = {}
+
+            for target_metric in self.target_metrics:
+                # Load models for each forecast step
+                models_for_metric = []
+                for step in range(self.forecast_horizon):
+                    model_path = os.path.join(model_dir, f"{target_metric}_step_{step}_model.pkl")
+                    if os.path.exists(model_path):
+                        model = joblib.load(model_path)
+                        models_for_metric.append(model)
+
+                if models_for_metric:
+                    self.models[target_metric] = models_for_metric
+
+                # Load scaler
+                scaler_path = os.path.join(model_dir, f"{target_metric}_scaler.pkl")
+                if os.path.exists(scaler_path):
+                    self.scalers[target_metric] = joblib.load(scaler_path)
+
+            logger.info(f"✅ Loaded legacy models from {model_dir}")
 
 def generate_sample_timeseries_data(n_samples: int = 1000) -> pd.DataFrame:
     """
@@ -495,8 +612,16 @@ if __name__ == "__main__":
                        if metric_anomalies['anomaly_detected'])
     print(f"Anomalies detected in {anomaly_count} metrics")
 
-    # Save models
+    # Save models (KServe-compatible)
     print("Saving models...")
-    predictor.save_models('/tmp/predictive_models')
+    # Use /mnt/models in production, /tmp for testing
+    model_base_dir = '/mnt/models' if os.path.exists('/mnt/models') else '/tmp'
+    predictor.save_models(model_base_dir, kserve_compatible=True)
+
+    # Test loading
+    print("Testing model loading...")
+    predictor_loaded = PredictiveAnalytics()
+    predictor_loaded.load_models(model_base_dir)
+    print(f"Model loaded successfully with {len(predictor_loaded.models)} metrics")
 
     print("Predictive analytics test completed successfully!")
