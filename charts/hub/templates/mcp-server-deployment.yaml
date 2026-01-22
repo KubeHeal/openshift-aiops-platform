@@ -31,6 +31,7 @@ spec:
       # Wait for Coordination Engine to be available before starting
       - name: wait-for-coordination-engine
         image: {{ .Values.mcpServer.image.repository | default "quay.io/takinosh/openshift-cluster-health-mcp" }}:{{ .Values.mcpServer.image.tag | default "ocp-4.18-latest" }}
+        imagePullPolicy: {{ .Values.mcpServer.image.pullPolicy | default "Always" }}
         command: ["/usr/local/bin/healthcheck", "http://coordination-engine:8080/health"]
         securityContext:
           allowPrivilegeEscalation: false
@@ -41,7 +42,14 @@ spec:
       # Wait for Prometheus to be available before starting
       - name: wait-for-prometheus
         image: {{ .Values.mcpServer.image.repository | default "quay.io/takinosh/openshift-cluster-health-mcp" }}:{{ .Values.mcpServer.image.tag | default "ocp-4.18-latest" }}
-        command: ["/usr/local/bin/healthcheck", "http://prometheus-k8s.openshift-monitoring.svc:9090/-/ready"]
+        imagePullPolicy: {{ .Values.mcpServer.image.pullPolicy | default "Always" }}
+        command:
+        - /usr/local/bin/healthcheck
+        - https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready
+        - --bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+        - --insecure-skip-verify
+        - --timeout=10s
+        - --interval=15s
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
