@@ -49,6 +49,27 @@ spec:
           set -e
           echo "Setting up Jupyter directories..."
 
+          # Wait for model storage to be initialized
+          echo "Verifying model storage is ready..."
+          MAX_WAIT=300  # 5 minutes
+          ELAPSED=0
+          INTERVAL=10
+
+          while [ $ELAPSED -lt $MAX_WAIT ]; do
+            if [ -f /mnt/models/.initialized ]; then
+              echo "✓ Model storage is initialized and ready"
+              break
+            fi
+            echo "⚠ Model storage not yet initialized, waiting ${INTERVAL}s... (${ELAPSED}s/${MAX_WAIT}s)"
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
+          done
+
+          if [ ! -f /mnt/models/.initialized ]; then
+            echo "⚠ WARNING: Model storage not initialized after ${MAX_WAIT}s, continuing anyway..."
+            echo "  Workbench will start but model access may be limited until storage is ready"
+          fi
+
           # Create writable Jupyter directories
           mkdir -p /opt/app-root/src/.jupyter/lab/workspaces
           mkdir -p /opt/app-root/src/.jupyter/lab/user-settings
@@ -63,8 +84,10 @@ spec:
             cp -r /jupyter-config-ro/* /opt/app-root/src/.jupyter/config/ 2>/dev/null || true
           fi
 
-          echo "Jupyter directories setup complete"
+          echo "✓ Jupyter directories setup complete"
         volumeMounts:
+        - name: model-storage
+          mountPath: /mnt/models
         - name: jupyter-config-ro
           mountPath: /jupyter-config-ro
           readOnly: true
@@ -154,6 +177,16 @@ spec:
           periodSeconds: 5
           successThreshold: 1
           timeoutSeconds: 1
+        # Startup probe to allow longer initialization time after cluster restart
+        startupProbe:
+          httpGet:
+            path: /notebook/self-healing-platform/self-healing-workbench/api
+            port: notebook-port
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 30
         volumeMounts:
         - name: data-volume
           mountPath: /opt/app-root/src/data

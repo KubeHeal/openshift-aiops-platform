@@ -12,6 +12,36 @@ metadata:
 spec:
   template:
     spec:
+      initContainers:
+      # Verify PVC is bound before attempting to mount
+      - name: wait-for-pvc
+        image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Waiting for PVC model-storage-pvc to be bound..."
+          MAX_WAIT=300  # 5 minutes
+          ELAPSED=0
+          INTERVAL=10
+
+          while [ $ELAPSED -lt $MAX_WAIT ]; do
+            # Check if the PVC directory is accessible (indicates PVC is mounted)
+            if [ -d /mnt/models ]; then
+              echo "PVC is bound and mounted successfully!"
+              exit 0
+            fi
+            echo "PVC not yet available, waiting ${INTERVAL}s... (${ELAPSED}s/${MAX_WAIT}s)"
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
+          done
+
+          echo "ERROR: PVC did not become available within ${MAX_WAIT}s"
+          exit 1
+        volumeMounts:
+        - name: model-storage
+          mountPath: /mnt/models
       containers:
       - name: init
         image: registry.access.redhat.com/ubi9/ubi-minimal:latest
@@ -22,19 +52,50 @@ spec:
           set -e
           echo "Initializing model storage directory structure..."
 
+          # Function to create directory with retry logic and exponential backoff
+          create_dir_with_retry() {
+            local dir=$1
+            local max_retries=5
+            local retry=0
+            local backoff=1
+
+            while [ $retry -lt $max_retries ]; do
+              if mkdir -p "$dir" 2>/dev/null; then
+                echo "✓ Created $dir"
+                return 0
+              else
+                retry=$((retry + 1))
+                if [ $retry -lt $max_retries ]; then
+                  echo "⚠ Failed to create $dir (attempt $retry/$max_retries), retrying in ${backoff}s..."
+                  sleep $backoff
+                  backoff=$((backoff * 2))  # Exponential backoff
+                else
+                  echo "✗ ERROR: Failed to create $dir after $max_retries attempts"
+                  return 1
+                fi
+              fi
+            done
+          }
+
           # Create subdirectories for different model types
           # Each InferenceService requires its own directory
-          mkdir -p /mnt/models/predictive-analytics
-          mkdir -p /mnt/models/arima-predictor
-          mkdir -p /mnt/models/prophet-predictor
-          mkdir -p /mnt/models/lstm-predictor
-          mkdir -p /mnt/models/ensemble-predictor
-          mkdir -p /mnt/models/anomaly-detector  # Keep for backward compatibility
+          create_dir_with_retry /mnt/models/predictive-analytics
+          create_dir_with_retry /mnt/models/arima-predictor
+          create_dir_with_retry /mnt/models/prophet-predictor
+          create_dir_with_retry /mnt/models/lstm-predictor
+          create_dir_with_retry /mnt/models/ensemble-predictor
+          create_dir_with_retry /mnt/models/anomaly-detector  # Keep for backward compatibility
 
           # Create marker file to indicate initialization complete
-          touch /mnt/models/.initialized
+          if touch /mnt/models/.initialized; then
+            echo "✓ Created initialization marker file"
+          else
+            echo "✗ ERROR: Failed to create initialization marker file"
+            exit 1
+          fi
 
-          echo "Model storage initialized successfully"
+          echo ""
+          echo "✓✓✓ Model storage initialized successfully ✓✓✓"
           echo "  - /mnt/models/predictive-analytics/ (Isolation Forest models)"
           echo "  - /mnt/models/arima-predictor/ (ARIMA time-series models)"
           echo "  - /mnt/models/prophet-predictor/ (Prophet time-series models)"
@@ -49,5 +110,6 @@ spec:
         persistentVolumeClaim:
           claimName: model-storage-pvc
       restartPolicy: OnFailure
-  backoffLimit: 3
+  backoffLimit: 10
+  activeDeadlineSeconds: 900
 {{- end }}
