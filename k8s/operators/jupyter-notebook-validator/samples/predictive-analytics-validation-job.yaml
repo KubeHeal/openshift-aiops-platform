@@ -1,0 +1,82 @@
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: predictive-analytics-kserve-validation
+  namespace: self-healing-platform
+  annotations:
+    # ArgoCD sync wave - run notebook before InferenceService
+    argocd.argoproj.io/sync-wave: "3"
+
+    # CRITICAL: Auto-restart InferenceService when notebook succeeds
+    # This solves the manual pod deletion issue for InferenceServices
+    mlops.dev/on-success-trigger: |
+      - apiVersion: serving.kserve.io/v1beta1
+        kind: InferenceService
+        name: predictive-analytics
+        namespace: self-healing-platform
+        action: restart
+
+    # Optional: Block next wave until this completes
+    mlops.dev/block-wave: "4"
+
+spec:
+  notebook:
+    git:
+      url: "https://github.com/tosin2013/jupyter-notebook-validator-test-notebooks.git"
+      ref: "main"
+    path: "notebooks/predictive-analytics.ipynb"
+
+  podConfig:
+    containerImage: "quay.io/modh/runtime-images:jupyter-datascience-ubi9-python-3.11-2025.1"
+    resources:
+      requests:
+        memory: "4Gi"
+        cpu: "2000m"
+      limits:
+        memory: "8Gi"
+        cpu: "4000m"
+
+    # Volume mount for model storage
+    volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-storage-pvc
+    volumeMounts:
+      - name: model-storage
+        mountPath: /opt/app-root/src/models
+
+  timeout: "30m"
+
+  # Model validation configuration (NEW in v1.0.5)
+  # Validates that the notebook works with deployed KServe models
+  modelValidation:
+    enabled: true
+    platform: kserve
+    phase: both  # Validate in clean and existing environments
+    targetModels:
+      - predictive-analytics
+    predictionValidation:
+      enabled: true
+      testData: |
+        {"instances": [[1.0, 2.0, 3.0, 4.0, 5.0]]}
+      expectedOutput: |
+        {"predictions": [[0.8, 0.2]]}
+      tolerance: "0.1"
+    timeout: "5m"
+
+  # Exit code validation to catch silent failures (NEW in v1.0.5)
+  # Prevents None returns, NaN values, and missing exit codes from passing
+  validationConfig:
+    level: "production"
+    strictMode: true
+    failOnStderr: false  # Allow warnings
+    detectSilentFailures: true
+    checkOutputTypes: true
+
+  # Advanced comparison for ML metrics (NEW in v1.0.5)
+  # Handles non-deterministic ML outputs and training time variations
+  comparisonConfig:
+    strategy: "normalized"
+    floatingPointTolerance: "0.01"
+    ignoreTimestamps: true
+    ignoreExecutionCount: true

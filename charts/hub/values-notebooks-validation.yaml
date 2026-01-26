@@ -20,7 +20,8 @@ notebooks:
     operatorDeploymentMethod: "olm"
 
     # Operator image (only used when operatorDeploymentMethod: "helm")
-    operatorImage: "quay.io/takinosh/jupyter-notebook-validator-operator:release-4.18-bdc4fc0"
+    # v1.0.5 includes: ArgoCD integration, model validation, exit code validation, advanced comparison
+    operatorImage: "quay.io/takinosh/jupyter-notebook-validator-operator:1.0.5"
 
     # Operator resource configuration (only used when operatorDeploymentMethod: "helm")
     operatorResources:
@@ -104,6 +105,68 @@ notebooks:
           count: "1"
 
     # =========================================================================
+    # v1.0.5 FEATURES CONFIGURATION (Operator ADR-049, ADR-020, ADR-041, ADR-030)
+    # =========================================================================
+    #
+    # 1. ArgoCD Integration (ADR-049)
+    #    - Auto-restart InferenceServices after model training
+    #    - Block next sync wave until notebook completes
+    #
+    #    Example:
+    #      - name: "predictive-analytics"
+    #        path: "notebooks/model-training.ipynb"
+    #        blockNextWave: true                    # Block wave 4 until complete
+    #        inferenceServiceTrigger:
+    #          name: "predictive-analytics"         # Auto-restart this InferenceService on success
+    #
+    # 2. Model Validation (ADR-020)
+    #    - Validate notebooks work with deployed KServe models
+    #    - Test model predictions with sample data
+    #
+    #    Example:
+    #      - name: "model-training"
+    #        path: "notebooks/training.ipynb"
+    #        modelValidation:
+    #          enabled: true
+    #          platform: "kserve"
+    #          phase: "both"                        # Clean + existing environments
+    #          targetModels:
+    #            - "predictive-analytics"
+    #          predictionValidation:
+    #            enabled: true
+    #            testData: '{"instances": [[1.0, 2.0, 3.0]]}'
+    #            expectedOutput: '{"predictions": [[0.8, 0.2]]}'
+    #            tolerance: "0.1"
+    #          timeout: "5m"
+    #
+    # 3. Exit Code Validation (ADR-041)
+    #    - Catch silent failures (None returns, NaN values)
+    #    - Enforce output type contracts
+    #
+    #    Example:
+    #      - name: "production-notebook"
+    #        path: "notebooks/prod.ipynb"
+    #        validationConfig:
+    #          level: "production"                  # learning|development|staging|production
+    #          strictMode: true
+    #          failOnStderr: false
+    #          detectSilentFailures: true
+    #          checkOutputTypes: true
+    #
+    # 4. Advanced Comparison (ADR-030)
+    #    - Handle non-deterministic ML outputs
+    #    - Tolerate floating-point variations
+    #
+    #    Example:
+    #      - name: "ml-training"
+    #        path: "notebooks/ml.ipynb"
+    #        comparisonConfig:
+    #          strategy: "normalized"               # exact|normalized
+    #          floatingPointTolerance: "0.01"       # 1% tolerance
+    #          ignoreTimestamps: true
+    #          ignoreExecutionCount: true
+    #
+    # =========================================================================
     # SYNC WAVE CONFIGURATION
     # Notebooks are organized into waves based on data/model dependencies
     #
@@ -177,6 +240,18 @@ notebooks:
             path: "notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb"
             tier: "tier3"
             # Trains predictive analytics model with KServe-compatible format (Issue #13 fix)
+            # v1.0.5: Example configuration with all features enabled
+            blockNextWave: true  # Block wave 4 until model training completes
+            inferenceServiceTrigger:
+              name: "predictive-analytics"  # Auto-restart InferenceService on success
+            validationConfig:
+              level: "production"
+              strictMode: true
+              detectSilentFailures: true
+            comparisonConfig:
+              strategy: "normalized"
+              floatingPointTolerance: "0.01"
+              ignoreTimestamps: true
 
       # Wave 4: Ensemble Model
       wave4:

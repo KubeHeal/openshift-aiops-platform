@@ -2,7 +2,13 @@
   NotebookValidationJob Generator Template
 
   Purpose: Creates NotebookValidationJob CRDs for each notebook defined in the waves
-  Integration: Jupyter Notebook Validator Operator + ArgoCD Sync Waves
+  Integration: Jupyter Notebook Validator Operator v1.0.5+ with ArgoCD Integration
+
+  v1.0.5 Features:
+  - ArgoCD Integration (ADR-049): Health checks, sync waves, post-success triggers
+  - Model Validation (ADR-020): KServe model-aware validation with prediction testing
+  - Exit Code Validation (ADR-041): Silent failure detection for production notebooks
+  - Advanced Comparison (ADR-030): Smart comparison for ML metric variations
 
   Sync Wave Strategy:
   - Wave -5 to -3: Infrastructure (ImageStream, PVC, Pipeline, PipelineRun)
@@ -29,9 +35,21 @@ metadata:
   annotations:
     {{- if .enableSyncWaves }}
     argocd.argoproj.io/sync-wave: {{ .waveNum | quote }}
+    {{- if .notebook.blockNextWave }}
+    mlops.dev/block-wave: {{ add .waveNum 1 | quote }}
+    {{- end }}
     {{- end }}
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
     notebooks.mlops.dev/path: {{ .notebook.path }}
+    {{- if .notebook.inferenceServiceTrigger }}
+    # v1.0.5: Auto-restart InferenceService when notebook succeeds
+    mlops.dev/on-success-trigger: |
+      - apiVersion: serving.kserve.io/v1beta1
+        kind: InferenceService
+        name: {{ .notebook.inferenceServiceTrigger.name }}
+        namespace: {{ .namespace }}
+        action: restart
+    {{- end }}
 spec:
   notebook:
     git:
@@ -64,6 +82,44 @@ spec:
       persistentVolumeClaim:
         claimName: model-storage-pvc
   timeout: {{ .resources.timeout | default "15m" }}
+  {{- if .notebook.modelValidation }}
+  # v1.0.5: Model-aware validation (validates against deployed KServe models)
+  modelValidation:
+    enabled: {{ .notebook.modelValidation.enabled | default true }}
+    platform: {{ .notebook.modelValidation.platform | default "kserve" }}
+    phase: {{ .notebook.modelValidation.phase | default "both" }}
+    {{- if .notebook.modelValidation.targetModels }}
+    targetModels:
+      {{- range .notebook.modelValidation.targetModels }}
+      - {{ . }}
+      {{- end }}
+    {{- end }}
+    {{- if .notebook.modelValidation.predictionValidation }}
+    predictionValidation:
+      enabled: {{ .notebook.modelValidation.predictionValidation.enabled | default true }}
+      testData: {{ .notebook.modelValidation.predictionValidation.testData | toJson }}
+      expectedOutput: {{ .notebook.modelValidation.predictionValidation.expectedOutput | toJson }}
+      tolerance: {{ .notebook.modelValidation.predictionValidation.tolerance | default "0.1" | quote }}
+    {{- end }}
+    timeout: {{ .notebook.modelValidation.timeout | default "5m" | quote }}
+  {{- end }}
+  {{- if .notebook.validationConfig }}
+  # v1.0.5: Exit code validation (catches silent failures)
+  validationConfig:
+    level: {{ .notebook.validationConfig.level | default "production" | quote }}
+    strictMode: {{ .notebook.validationConfig.strictMode | default true }}
+    failOnStderr: {{ .notebook.validationConfig.failOnStderr | default false }}
+    detectSilentFailures: {{ .notebook.validationConfig.detectSilentFailures | default true }}
+    checkOutputTypes: {{ .notebook.validationConfig.checkOutputTypes | default true }}
+  {{- end }}
+  {{- if .notebook.comparisonConfig }}
+  # v1.0.5: Advanced comparison (handles ML metric variations)
+  comparisonConfig:
+    strategy: {{ .notebook.comparisonConfig.strategy | default "normalized" | quote }}
+    floatingPointTolerance: {{ .notebook.comparisonConfig.floatingPointTolerance | default "0.01" | quote }}
+    ignoreTimestamps: {{ .notebook.comparisonConfig.ignoreTimestamps | default true }}
+    ignoreExecutionCount: {{ .notebook.comparisonConfig.ignoreExecutionCount | default true }}
+  {{- end }}
 {{- end }}
 
 {{- if and .Values.notebooks .Values.notebooks.validation .Values.notebooks.validation.enabled }}

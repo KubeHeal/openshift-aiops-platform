@@ -2,7 +2,7 @@
 
 **Status:** IMPLEMENTED
 **Date:** 2025-11-18
-**Updated:** 2025-12-01 (Added volume support for model storage)
+**Updated:** 2026-01-26 (Upgraded to v1.0.5 with ArgoCD integration, model validation, and exit code validation)
 **Decision Makers:** Architecture Team, ML Engineering
 **Consulted:** DevOps Team, Platform Engineering
 **Informed:** Operations Team, Data Science Team
@@ -177,6 +177,216 @@ spec:
 4. **Model Versioning**: Track model versions across multiple training runs
 5. **Shared Storage**: Enable multiple notebooks to access common model repository
 
+### v1.0.5 Enhancements (2026-01-26)
+
+**Operator Version**: v1.0.5 (universal release for OpenShift 4.18/4.19/4.20)
+
+The v1.0.5 release introduces significant new features that improve notebook validation and deployment workflows:
+
+#### 1. ArgoCD Integration (ADR-049)
+
+All 5 ArgoCD integration features are fully implemented:
+
+**ArgoCD Health Assessment**: Notebook validation status visible in ArgoCD UI
+- Installation: `kubectl apply -f k8s/operators/jupyter-notebook-validator/argocd/health-check-configmap.yaml`
+- Status mapping: Succeeded → Healthy, Failed → Degraded, Running → Progressing
+- Real-time validation progress visible in ArgoCD dashboard
+
+**Post-Success Resource Hooks**: Auto-restart InferenceServices when notebooks succeed
+```yaml
+annotations:
+  mlops.dev/on-success-trigger: |
+    - apiVersion: serving.kserve.io/v1beta1
+      kind: InferenceService
+      name: predictive-analytics
+      namespace: self-healing-platform
+      action: restart
+```
+
+**CRITICAL ISSUE SOLVED**: This feature eliminates the manual pod deletion requirement for InferenceServices. Previously, when notebooks trained models and stored them in PVCs, the InferenceService predictor pods remained at 1/2 ready state until manually deleted. The `mlops.dev/on-success-trigger` annotation automatically triggers pod restart, bringing InferenceServices to 2/2 ready state without manual intervention.
+
+**Sync Wave Awareness**: Coordinate notebook execution with ArgoCD deployment waves
+```yaml
+annotations:
+  argocd.argoproj.io/sync-wave: "3"     # Run notebook in wave 3
+  mlops.dev/block-wave: "4"              # Block wave 4 until success
+```
+
+This enables precise orchestration of notebook execution in relation to other resources:
+- Wave 1: Infrastructure (PVCs, ConfigMaps)
+- Wave 2: Dependencies (databases, services)
+- Wave 3: Notebook validation (model training)
+- Wave 4: Model deployment (InferenceServices)
+
+**Application Status Integration**: Aggregated notebook status in ArgoCD Applications
+- Auto-updates `mlops.dev/notebook-status` annotation with success/failure counts
+- Application-level health reflects notebook validation state
+- Rollback policies can trigger on notebook failures
+
+**Notification Events**: Kubernetes Events for ArgoCD notifications
+- Integrates with ArgoCD notification controller
+- Supports Slack, email, PagerDuty, webhook notifications
+- Events created for: validation started, succeeded, failed, timeout
+
+**RBAC Requirements**: Updated ClusterRole permissions required
+```yaml
+# Required for auto-restart InferenceServices
+- apiGroups: ["serving.kserve.io"]
+  resources: ["inferenceservices"]
+  verbs: ["get", "list", "patch"]
+
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list", "delete"]
+
+# Required for ArgoCD Application status updates
+- apiGroups: ["argoproj.io"]
+  resources: ["applications"]
+  verbs: ["get", "list", "patch"]
+
+# Required for notification events
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+```
+
+#### 2. Model-Aware Validation (ADR-020)
+
+Fully implemented multi-platform model validation:
+
+**Supported Platforms**: KServe, OpenShift AI, vLLM, TorchServe, Triton, Ray Serve, Seldon Core, BentoML
+
+**Two-Phase Validation Strategy**:
+- **Phase 1 (Clean Environment)**: Validate notebook in isolated environment before deployment
+- **Phase 2 (Existing Environment)**: Validate against deployed models after deployment
+- **Both**: Run both phases for comprehensive testing
+
+**Prediction Validation**: Test deployed models with sample data
+```yaml
+modelValidation:
+  enabled: true
+  platform: kserve
+  phase: both
+  targetModels:
+    - predictive-analytics
+  predictionValidation:
+    enabled: true
+    testData: |
+      {"instances": [[1.0, 2.0, 3.0, 4.0, 5.0]]}
+    expectedOutput: |
+      {"predictions": [[0.8, 0.2]]}
+    tolerance: "0.1"
+  timeout: "5m"
+```
+
+**Platform Auto-Detection**: Automatically detects serving platform from deployed models
+- Scans namespace for InferenceServices (KServe)
+- Detects Ray Serve deployments
+- Identifies Seldon Core models
+- No manual platform configuration required
+
+**Benefits**:
+- ✅ Catch model integration issues before deployment
+- ✅ Validate notebook works with actual serving infrastructure
+- ✅ Prevent version mismatches between training and serving
+- ✅ Ensure model API compatibility
+
+#### 3. Exit Code Validation (ADR-041)
+
+Developer safety framework to catch silent failures:
+
+**Validation Levels**:
+- `learning`: Minimal checks, maximum flexibility (for experimentation)
+- `development`: Basic checks, allow warnings
+- `staging`: Strict checks, catch most issues
+- `production`: Full checks, zero tolerance for errors
+
+**Silent Failure Detection**: Catches common issues
+- None returns from cells
+- NaN values in outputs
+- Missing exit codes
+- Empty results when output expected
+- Type mismatches
+
+**Configuration Example**:
+```yaml
+validationConfig:
+  level: "production"
+  strictMode: true
+  failOnStderr: false  # Allow warnings but not errors
+  detectSilentFailures: true
+  checkOutputTypes: true
+  expectedOutputs:
+    - cell: 10  # Cell that trains model
+      type: "object"
+      notEmpty: true
+    - cell: 15  # Cell that evaluates model
+      type: "float"
+      range: [0.7, 1.0]  # Accuracy 70-100%
+```
+
+**Use Cases**:
+- Prevent broken notebooks from passing validation
+- Catch logical errors that don't raise exceptions
+- Enforce output type contracts
+- Validate metric ranges (accuracy, loss, etc.)
+
+#### 4. Advanced Comparison (ADR-030)
+
+Smart error messages and comparison strategies for ML workflows:
+
+**Comparison Strategies**:
+- `exact`: Byte-for-byte comparison (for deterministic notebooks)
+- `normalized`: Floating-point tolerant comparison (for ML notebooks)
+
+**Floating-Point Tolerance**: Handle non-deterministic ML outputs
+```yaml
+comparisonConfig:
+  strategy: "normalized"
+  floatingPointTolerance: "0.01"  # 1% tolerance
+  ignoreTimestamps: true
+  ignoreExecutionCount: true
+```
+
+**Custom Timestamp Patterns**: Ignore ML training logs
+```yaml
+comparisonConfig:
+  customTimestampPatterns:
+    - "Training time: \\d+\\.\\d+s"
+    - "Epoch \\d+/\\d+ - \\d+\\.\\d+s"
+    - "Accuracy: 0\\.\\d+"  # Tolerate accuracy variations
+```
+
+**Benefits**:
+- ✅ Handle non-deterministic model training outputs
+- ✅ Tolerate timing variations across runs
+- ✅ Focus on meaningful differences, not noise
+- ✅ Reduce false positive validation failures
+
+#### Integration Benefits
+
+The v1.0.5 features solve critical pain points in the platform:
+
+**Before v1.0.5**:
+- Manual pod deletion required for InferenceServices after model training
+- No visibility of notebook validation in ArgoCD UI
+- Model integration issues discovered in production
+- Silent notebook failures could pass validation
+- ML metric variations caused false positive failures
+
+**After v1.0.5**:
+- ✅ Automatic InferenceService reload when notebooks succeed (no manual intervention)
+- ✅ Full GitOps compliance with ArgoCD health checks and sync waves
+- ✅ Model validation gates prevent broken deployments
+- ✅ Silent failure detection catches logical errors
+- ✅ Smart comparison strategies handle ML non-determinism
+- ✅ Comprehensive notification integration (Slack, email, PagerDuty)
+
+**Cross-Reference**:
+- See ADR-043 (Deployment Stability & Health Checks) for init container patterns
+- See operator ADR-020, ADR-030, ADR-041, ADR-049 for detailed feature specifications
+- See `k8s/operators/jupyter-notebook-validator/samples/` for example manifests
+
 ### Operator Deployment
 
 The operator requires:
@@ -210,10 +420,16 @@ k8s/operators/jupyter-notebook-validator/
 │   ├── manager/                    # Operator Deployment
 │   ├── certmanager/                # Certificates (optional - webhooks)
 │   └── webhook/                    # Webhook configuration (optional)
+├── argocd/                         # ArgoCD integration (NEW v1.0.5)
+│   ├── health-check-configmap.yaml # Health assessment for NotebookValidationJob
+│   └── README.md                   # ArgoCD integration guide
+├── samples/                        # Example validation jobs (NEW v1.0.5)
+│   ├── predictive-analytics-validation-job.yaml
+│   └── README.md                   # Usage examples
 └── overlays/
-    ├── dev-ocp4.18/                # OCP 4.18 (image: 1.0.7-ocp4.18)
-    ├── dev-ocp4.19/                # OCP 4.19 (image: 1.0.8-ocp4.19)
-    └── dev-ocp4.20/                # OCP 4.20 (image: 1.0.9-ocp4.20)
+    ├── dev-ocp4.18/                # OCP 4.18 (image: 1.0.5 - universal release)
+    ├── dev-ocp4.19/                # OCP 4.19 (image: 1.0.5 - universal release)
+    └── dev-ocp4.20/                # OCP 4.20 (image: 1.0.5 - universal release)
 ```
 
 **Installation**:

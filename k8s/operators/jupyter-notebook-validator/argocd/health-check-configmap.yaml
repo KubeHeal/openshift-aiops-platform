@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd  # Or openshift-gitops
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  resource.customizations.health.mlops.mlops.dev_NotebookValidationJob: |
+    hs = {}
+
+    if obj.status ~= nil then
+      if obj.status.phase == "Succeeded" then
+        hs.status = "Healthy"
+        hs.message = "Notebook validation succeeded"
+      elseif obj.status.phase == "Failed" then
+        hs.status = "Degraded"
+        hs.message = obj.status.message or "Notebook validation failed"
+      elseif obj.status.phase == "ValidationRunning" or obj.status.phase == "Building" then
+        hs.status = "Progressing"
+        hs.message = "Notebook validation in progress"
+      else
+        hs.status = "Progressing"
+        hs.message = obj.status.phase or "Unknown phase"
+      end
+    else
+      hs.status = "Progressing"
+      hs.message = "Waiting for validation to start"
+    end
+
+    return hs

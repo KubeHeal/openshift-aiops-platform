@@ -1,13 +1,9 @@
-# Example Ansible Configuration with Secure Token Management
-# Copy this to ansible.cfg.local and add your real token
-# ansible.cfg.local is git-ignored for security
+# Ansible Configuration Example
+# Copy this file to ~/.ansible.cfg and add your Red Hat Automation Hub tokens
+# DO NOT commit tokens to git!
 
 [defaults]
-# Roles path - include ansible/roles directory
-roles_path = ansible/roles:/home/lab-user/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles
-
-# Host key checking
-host_key_checking = False
+roles_path = ansible/roles:~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles
 
 [galaxy]
 server_list = published, validated, community
@@ -15,22 +11,18 @@ server_list = published, validated, community
 [galaxy_server.published]
 url=https://console.redhat.com/api/automation-hub/content/published/
 auth_url=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
-# ⚠️ SECURITY: Replace YOUR_TOKEN_HERE with real token from:
-# https://console.redhat.com/ansible/automation-hub/token
-token=YOUR_TOKEN_HERE
+token=YOUR_PUBLISHED_TOKEN_HERE
 
 [galaxy_server.validated]
 url=https://console.redhat.com/api/automation-hub/content/validated/
 auth_url=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
-# ⚠️ SECURITY: Use same token as above
-token=YOUR_TOKEN_HERE
+token=YOUR_VALIDATED_TOKEN_HERE
 
 [galaxy_server.community]
 url=https://galaxy.ansible.com
 
-# SETUP INSTRUCTIONS:
-# 1. Copy this file: cp ansible.cfg.example ansible.cfg.local
-# 2. Get your token: https://console.redhat.com/ansible/automation-hub/token
-# 3. Replace YOUR_TOKEN_HERE in ansible.cfg.local with your real token
-# 4. Export environment variable: export ANSIBLE_CONFIG=ansible.cfg.local
-# 5. Verify: ansible-galaxy collection list
+# To get your tokens:
+# 1. Go to https://console.redhat.com/ansible/automation-hub/token
+# 2. Copy your token
+# 3. Paste it in the token fields above
+# 4. Save this file as ~/.ansible.cfg
