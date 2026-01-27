@@ -229,17 +229,40 @@ notebooks:
           - name: "isolation-forest-implementation"
             path: "notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb"
             tier: "tier2"
+            # Trains anomaly-detector model (primary production model - ADR-050)
+            # Auto-restart InferenceService after successful training
+            blockNextWave: true  # Block wave 4 until model training completes
+            inferenceServiceTrigger:
+              name: "anomaly-detector"  # Auto-restart anomaly-detector InferenceService on success
+            validationConfig:
+              level: "production"
+              strictMode: true
+              detectSilentFailures: true
+            comparisonConfig:
+              strategy: "normalized"
+              floatingPointTolerance: "0.01"
+              ignoreTimestamps: true
           - name: "time-series-anomaly-detection"
             path: "notebooks/02-anomaly-detection/02-time-series-anomaly-detection.ipynb"
             tier: "tier2"
+            # Not deployed as InferenceService (experimental models)
+            validationConfig:
+              level: "production"
+              strictMode: true
+              detectSilentFailures: true
           - name: "lstm-based-prediction"
             path: "notebooks/02-anomaly-detection/03-lstm-based-prediction.ipynb"
             tier: "tier3"
             gpuRequired: true
+            # Not deployed as InferenceService (experimental model)
+            validationConfig:
+              level: "production"
+              strictMode: true
+              detectSilentFailures: true
           - name: "predictive-analytics-kserve"
             path: "notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb"
             tier: "tier3"
-            # Trains predictive analytics model with KServe-compatible format (Issue #13 fix)
+            # Trains predictive analytics model with KServe-compatible format (Issue #13 fix, ADR-051)
             # v1.0.5: Example configuration with all features enabled
             blockNextWave: true  # Block wave 4 until model training completes
             inferenceServiceTrigger:
