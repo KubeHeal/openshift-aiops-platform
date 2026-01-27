@@ -379,7 +379,7 @@ The app won't crash on its own - we need to trigger the memory leak by sending r
 sleep 30
 
 # Hit the endpoint repeatedly to trigger memory leak
-for i in {1..10}; do
+for i in {1..100}; do
   echo "Request $i:"
   oc exec -n self-healing-platform deployment/broken-app -- curl -s http://localhost:8080/ 2>/dev/null || echo "Pod crashed!"
   sleep 1
