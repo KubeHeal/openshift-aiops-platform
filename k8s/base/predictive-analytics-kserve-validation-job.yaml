@@ -1,0 +1,72 @@
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: predictive-analytics-kserve-validation
+  namespace: self-healing-platform
+  labels:
+    app.kubernetes.io/name: predictive-analytics-kserve-validation
+    app.kubernetes.io/component: notebook-validation
+    app.kubernetes.io/part-of: self-healing-platform
+    argocd.argoproj.io/instance: self-healing-platform
+    tier: tier3
+    wave: "3"
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    notebooks.mlops.dev/path: notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb
+    # v1.0.5: Auto-restart InferenceService when notebook succeeds
+    mlops.dev/on-success-trigger: |
+      - apiVersion: serving.kserve.io/v1beta1
+        kind: InferenceService
+        name: predictive-analytics
+        namespace: self-healing-platform
+        action: restart
+    # v1.0.5: Block next wave until this completes
+    mlops.dev/block-wave: "4"
+spec:
+  notebook:
+    git:
+      url: "https://github.com/tosin2013/openshift-aiops-platform.git"
+      ref: "main"
+    path: "notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb"
+
+  podConfig:
+    containerImage: "image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest"
+    serviceAccountName: self-healing-workbench
+
+    # Volume mounts for model storage
+    volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-storage-pvc
+
+    volumeMounts:
+      - name: model-storage
+        mountPath: /mnt/models
+
+    # Environment from model storage config
+    envFrom:
+      - secretRef:
+          name: model-storage-config
+
+    resources:
+      requests:
+        memory: "4Gi"
+        cpu: "2000m"
+      limits:
+        memory: "8Gi"
+        cpu: "4000m"
+
+  timeout: "45m"
+
+  # v1.0.5: Production-level validation
+  validationConfig:
+    level: "production"
+    strictMode: true
+    detectSilentFailures: true
+
+  # v1.0.5: Handle ML metric variations
+  comparisonConfig:
+    strategy: "normalized"
+    floatingPointTolerance: "0.01"
+    ignoreTimestamps: true
