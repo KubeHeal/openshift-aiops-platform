@@ -109,6 +109,9 @@ class PredictiveAnalytics:
         # Fill NaN values
         features = features.fillna(method='ffill').fillna(method='bfill').fillna(0)
 
+        # Replace infinity values with reasonable bounds
+        features = features.replace([np.inf, -np.inf], 0)
+
         # Remove timestamp column for modeling
         if 'timestamp' in features.columns:
             features = features.drop('timestamp', axis=1)
