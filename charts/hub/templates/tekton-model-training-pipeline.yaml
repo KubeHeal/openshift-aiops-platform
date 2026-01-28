@@ -83,23 +83,18 @@ spec:
         echo "Job Name:       $JOB_NAME"
         echo "=========================================="
 
-        # Set timeout and GPU config based on model type
+        # Set timeout based on model type
         if [ "$MODEL_NAME" = "predictive-analytics" ]; then
           TIMEOUT="45m"
-          GPU_LIMITS='nvidia.com/gpu: "1"'
-          GPU_TOLERATIONS='
-            tolerations:
-              - key: nvidia.com/gpu
-                operator: Exists
-                effect: NoSchedule'
+          NEEDS_GPU="true"
         else
           TIMEOUT="15m"
-          GPU_LIMITS=""
-          GPU_TOLERATIONS=""
+          NEEDS_GPU="false"
         fi
 
-        # Create NotebookValidationJob YAML
-        cat <<EOF | oc apply -f -
+        # Build NotebookValidationJob YAML dynamically
+        # This avoids shell variables in YAML that break Helm linting
+        JOB_YAML=$(cat <<YAML
         apiVersion: mlops.mlops.dev/v1alpha1
         kind: NotebookValidationJob
         metadata:
@@ -145,10 +140,20 @@ spec:
               limits:
                 memory: "8Gi"
                 cpu: "4000m"
-                ${GPU_LIMITS}
-${GPU_TOLERATIONS}
-          timeout: ${TIMEOUT}
-        EOF
+          timeout: $TIMEOUT
+        YAML
+        )
+
+        # Add GPU resources and tolerations for predictive-analytics model
+        if [ "$NEEDS_GPU" = "true" ]; then
+          # Insert GPU limit under resources.limits
+          JOB_YAML=$(echo "$JOB_YAML" | sed '/cpu: "4000m"/a\                nvidia.com/gpu: "1"')
+          # Add tolerations section before timeout
+          JOB_YAML=$(echo "$JOB_YAML" | sed '/timeout:/i\            tolerations:\n              - key: nvidia.com/gpu\n                operator: Exists\n                effect: NoSchedule')
+        fi
+
+        # Apply the job
+        echo "$JOB_YAML" | oc apply -f -
 
         echo "$JOB_NAME" > $(results.job-name.path)
         echo "✅ NotebookValidationJob created: $JOB_NAME"

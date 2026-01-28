@@ -90,9 +90,9 @@ repos:
     hooks:
       - id: helm-lint
         name: Helm lint charts
-        entry: bash -c 'if [ -f values-hub.yaml ] && [ -f values-global.yaml ]; then helm template test /tmp/clustergroup -f values-global.yaml -f values-hub.yaml > /dev/null || exit 1; fi'
+        entry: bash -c 'helm lint charts/hub && helm lint charts/notebooks'
         language: system
-        files: '^(values-hub\.yaml|values-global\.yaml|charts/.*)$'
+        files: '^(charts/.*)$'
         pass_filenames: false
 
 # Configuration for running hooks on push (in addition to commit)
