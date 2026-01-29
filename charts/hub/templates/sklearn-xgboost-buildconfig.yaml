@@ -50,7 +50,9 @@ spec:
       # Extends KServe sklearn server to add gradient boosting libraries
       FROM kserve/sklearnserver:latest
       USER root
-      RUN pip install --no-cache-dir xgboost lightgbm
+      # Install to the venv site-packages directory where Python looks for packages
+      # The base image uses /prod_venv/bin/python which looks in /prod_venv/lib/python3.11/site-packages
+      RUN pip install --no-cache-dir --target=/prod_venv/lib/python3.11/site-packages xgboost lightgbm
       USER 1000
       LABEL name="sklearn-xgboost-server" \
             description="KServe sklearn server with XGBoost and LightGBM support" \
