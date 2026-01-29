@@ -257,10 +257,10 @@ log_success "NotebookValidationJob created: $JOB_NAME"
 # Wait for completion if requested
 if [ "$WAIT_FOR_COMPLETION" = true ]; then
     log_info "Waiting for training to complete..."
-    
+
     while true; do
         STATUS=$(oc get notebookvalidationjob "$JOB_NAME" -n "$NAMESPACE" -o jsonpath='{.status.phase}' 2>/dev/null || echo "Pending")
-        
+
         case "$STATUS" in
             "Succeeded")
                 log_success "Training completed successfully!"
@@ -277,7 +277,7 @@ if [ "$WAIT_FOR_COMPLETION" = true ]; then
                 ;;
         esac
     done
-    
+
     # Show final logs
     log_info "Training logs (last 30 lines):"
     oc logs "${JOB_NAME}-validation" -n "$NAMESPACE" --tail=30 2>/dev/null || true
