@@ -422,6 +422,24 @@ coordinationEngine:
     enabled: true
     url: "https://prometheus-k8s.openshift-monitoring.svc:9091"
 
+  # Feature Engineering Configuration (Issue #54)
+  # Enables building 3264 engineered features from Prometheus metrics
+  # MUST match the training notebook's feature engineering!
+  # Guide: https://github.com/tosin2013/openshift-coordination-engine/blob/main/docs/FEATURE-ENGINEERING-GUIDE.md
+  featureEngineering:
+    # Enable feature engineering for predictive-analytics model
+    # When true: builds 3264 features (matches model training)
+    # When false: sends only 4 raw features (will cause model errors)
+    enabled: true
+    # Number of hours to look back for historical data (default: 24)
+    # Must match: notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb
+    lookbackHours: 24
+    # Expected feature count for validation (0=disabled)
+    # Set this to match the model's StandardScaler expectation
+    # Formula: lookback × (5 metrics + 6 time_features + (25 features × 5 metrics))
+    #        = 24 × 136 = 3264
+    expectedFeatureCount: 3264
+
   # Resource limits
   resources:
     requests:
