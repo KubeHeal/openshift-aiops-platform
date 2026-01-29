@@ -182,18 +182,37 @@ class PredictiveAnalytics:
             models_for_metric = []
             for step in range(self.forecast_horizon):
                 if XGBOOST_AVAILABLE:
-                    # XGBoost with GPU acceleration
-                    model = xgb.XGBRegressor(
-                        n_estimators=100,
-                        max_depth=10,
-                        learning_rate=0.1,
-                        tree_method='gpu_hist' if self.use_gpu else 'hist',  # GPU or CPU
-                        device='cuda' if self.use_gpu else 'cpu',
-                        random_state=42,
-                        n_jobs=-1
-                    )
+                    # XGBoost - faster than RandomForest even on CPU
+                    # tree_method='hist' is the fast histogram algorithm (CPU)
+                    # tree_method='gpu_hist' requires CUDA-enabled XGBoost build
+                    try:
+                        # Try GPU first if requested
+                        if self.use_gpu:
+                            model = xgb.XGBRegressor(
+                                n_estimators=100,
+                                max_depth=10,
+                                learning_rate=0.1,
+                                tree_method='gpu_hist',
+                                device='cuda',
+                                random_state=42,
+                                n_jobs=-1
+                            )
+                        else:
+                            raise ValueError("GPU not requested")
+                    except (ValueError, xgb.core.XGBoostError):
+                        # Fall back to CPU histogram method (still faster than RandomForest)
+                        if step == 0:
+                            logger.info("Using XGBoost CPU histogram method (fast)")
+                        model = xgb.XGBRegressor(
+                            n_estimators=100,
+                            max_depth=10,
+                            learning_rate=0.1,
+                            tree_method='hist',  # CPU histogram - fast
+                            random_state=42,
+                            n_jobs=-1
+                        )
                 else:
-                    # Fallback to RandomForest
+                    # Fallback to RandomForest (slowest)
                     model = RandomForestRegressor(
                         n_estimators=100,
                         max_depth=10,
