@@ -97,6 +97,65 @@ spec:
 EOF
 ```
 
+### GPU-Accelerated Training with NotebookValidationJob
+
+For faster training, use GPU resources with `NotebookValidationJob`:
+
+```bash
+oc create -f - <<'EOF'
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: train-predictive-gpu
+  namespace: self-healing-platform
+  labels:
+    model-name: predictive-analytics
+spec:
+  notebook:
+    git:
+      ref: main
+      url: https://github.com/tosin2013/openshift-aiops-platform.git
+    path: notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb
+  podConfig:
+    containerImage: image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest
+    env:
+    - name: DATA_SOURCE
+      value: prometheus
+    - name: PROMETHEUS_URL
+      value: https://prometheus-k8s.openshift-monitoring.svc:9091
+    - name: TRAINING_HOURS
+      value: "168"
+    - name: MODEL_NAME
+      value: predictive-analytics
+    nodeSelector:
+      nvidia.com/gpu.present: "true"
+    resources:
+      limits:
+        cpu: "4"
+        memory: 8Gi
+        nvidia.com/gpu: "1"
+      requests:
+        cpu: "2"
+        memory: 4Gi
+        nvidia.com/gpu: "1"
+    serviceAccountName: self-healing-workbench
+    tolerations:
+    - effect: NoSchedule
+      key: nvidia.com/gpu
+      operator: Exists
+    volumeMounts:
+    - mountPath: /mnt/models
+      name: model-storage
+    volumes:
+    - name: model-storage
+      persistentVolumeClaim:
+        claimName: gpu-training-pvc  # Use GP3 for GPU nodes (CephFS may not be available)
+  timeout: 45m
+EOF
+```
+
+**Note**: GPU nodes may not have CephFS drivers. Use `gpu-training-pvc` (GP3 storage class) instead of `model-storage-pvc` (CephFS) for GPU-accelerated training. Copy the model to CephFS after training completes.
+
 ## Training Time Windows
 
 Choose the appropriate time window based on your use case:
@@ -258,11 +317,43 @@ PREDICTOR_IP=$(oc get pod -n self-healing-platform \
   -l serving.kserve.io/inferenceservice=anomaly-detector \
   -o jsonpath='{.items[0].status.podIP}')
 
-# Test prediction
+# Test anomaly detector (single output)
 curl -X POST http://${PREDICTOR_IP}:8080/v1/models/anomaly-detector:predict \
   -H 'Content-Type: application/json' \
   -d '{"instances": [[0.5, 0.6, 0.4, 0.3, 0.8]]}'
 ```
+
+### Predictive Analytics Multi-Output Model
+
+The predictive analytics model returns **all 5 metrics** in a single prediction:
+
+```bash
+# Get predictive-analytics predictor IP
+PREDICTOR_IP=$(oc get pod -n self-healing-platform \
+  -l serving.kserve.io/inferenceservice=predictive-analytics \
+  -o jsonpath='{.items[0].status.podIP}')
+
+# Test prediction (requires 3264 features from coordination engine)
+# For testing, use zeros:
+curl -X POST http://${PREDICTOR_IP}:8080/v1/models/predictive-analytics:predict \
+  -H 'Content-Type: application/json' \
+  -d "{\"instances\": [$(python3 -c 'print([0.0] * 3264)')]}"
+```
+
+**Response format** (all 5 metrics):
+```json
+{
+  "predictions": [[0.45, 0.62, 0.38, 150.2, 89.5]]
+}
+```
+
+| Index | Metric |
+|-------|--------|
+| 0 | `cpu_usage` |
+| 1 | `memory_usage` |
+| 2 | `disk_usage` |
+| 3 | `network_in` |
+| 4 | `network_out` |
 
 ## Adding Your Own Custom Model
 
@@ -514,26 +605,34 @@ oc logs -n self-healing-platform <training-pod-name> | grep -A 10 "Model Evaluat
 
 **Symptoms**: Training falls back to synthetic data, empty Prometheus queries
 
+**Important**: OpenShift Prometheus requires **bearer token authentication** over HTTPS port 9091.
+
 **Diagnosis**:
 ```bash
-# Check Prometheus accessibility
-oc exec -n self-healing-platform deployment/model-troubleshooting-utilities -- \
-  curl -s http://prometheus-k8s.openshift-monitoring.svc:9090/api/v1/status/config
+# Check Prometheus accessibility with bearer token
+oc exec -n self-healing-platform deployment/model-troubleshooting-utilities -- sh -c '
+TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+curl -sk -H "Authorization: Bearer $TOKEN" \
+  "https://prometheus-k8s.openshift-monitoring.svc:9091/api/v1/status/config" | head -c 200
+'
 
-# Test metric query
-PROM_URL="http://prometheus-k8s.openshift-monitoring.svc:9090"
-oc exec -n self-healing-platform deployment/model-troubleshooting-utilities -- \
-  curl -s "${PROM_URL}/api/v1/query?query=instance:node_cpu:ratio"
+# Test metric query with authentication
+oc exec -n self-healing-platform deployment/model-troubleshooting-utilities -- sh -c '
+TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+curl -sk -H "Authorization: Bearer $TOKEN" \
+  "https://prometheus-k8s.openshift-monitoring.svc:9091/api/v1/query?query=instance:node_memory_utilisation:ratio"
+'
 
 # Check ServiceAccount permissions
-oc auth can-i get prometheus --as=system:serviceaccount:self-healing-platform:self-healing-workbench \
+oc auth can-i get pods --as=system:serviceaccount:self-healing-platform:self-healing-workbench \
   -n openshift-monitoring
 ```
 
 **Solutions**:
-- Verify Prometheus URL is correct
-- Ensure ServiceAccount has permissions to query Prometheus
-- Check that required metrics are being scraped
+- Use HTTPS port 9091 (not HTTP port 9090) for authenticated access
+- Ensure ServiceAccount token is mounted (automatically done by Kubernetes)
+- Verify ServiceAccount has `cluster-monitoring-view` ClusterRole
+- Check that required metrics exist (some metrics may have different names)
 - Use `hybrid` mode as fallback if some metrics missing
 
 ## Validation Scripts
