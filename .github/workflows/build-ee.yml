@@ -1,0 +1,145 @@
+name: Build Execution Environment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'execution-environment.yml'
+      - 'files/requirements.yml'
+      - 'files/requirements.txt'
+      - 'files/bindep.txt'
+      - 'scripts/assemble'
+      - 'scripts/install-from-bindep'
+      - '.github/workflows/build-ee.yml'
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Image tag (default: latest)'
+        required: false
+        default: 'latest'
+
+env:
+  REGISTRY: quay.io
+  IMAGE_NAME: takinosh/openshift-aiops-platform-ee
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install ansible-builder
+        run: |
+          pip install ansible-builder ansible-core
+
+      - name: Login to Quay.io
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+
+      - name: Login to Red Hat Registry
+        uses: docker/login-action@v3
+        with:
+          registry: registry.redhat.io
+          username: ${{ secrets.REDHAT_REGISTRY_USER }}
+          password: ${{ secrets.REDHAT_REGISTRY_PASSWORD }}
+
+      - name: Create ansible.cfg with Automation Hub token
+        run: |
+          cat > ansible.cfg << 'EOF'
+          [defaults]
+          # Execution environment settings
+          remote_tmp = /tmp/.ansible-${USER}/tmp
+          local_tmp = /tmp/.ansible-${USER}/tmp
+
+          [galaxy]
+          server_list = automation_hub, galaxy
+
+          [galaxy_server.automation_hub]
+          url = https://console.redhat.com/api/automation-hub/content/published/
+          auth_url = https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+          token = ${{ secrets.ANSIBLE_HUB_TOKEN }}
+
+          [galaxy_server.galaxy]
+          url = https://galaxy.ansible.com/
+          EOF
+
+      - name: Determine image tags
+        id: tags
+        run: |
+          TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          
+          # Add SHA tag
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          TAGS="${TAGS},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${SHORT_SHA}"
+          
+          # Add version tag for releases
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            VERSION=${{ github.event.release.tag_name }}
+            TAGS="${TAGS},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION}"
+          fi
+          
+          # Add manual tag if provided
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.tag }}" != "latest" ]]; then
+            TAGS="${TAGS},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.tag }}"
+          fi
+          
+          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+          echo "Generated tags: ${TAGS}"
+
+      - name: Build Execution Environment
+        run: |
+          ansible-builder build \
+            --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
+            --container-runtime docker \
+            --verbosity 3
+
+      - name: Tag additional versions
+        run: |
+          IFS=',' read -ra TAG_ARRAY <<< "${{ steps.tags.outputs.tags }}"
+          for tag in "${TAG_ARRAY[@]}"; do
+            if [[ "$tag" != "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" ]]; then
+              docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest $tag
+              echo "Tagged: $tag"
+            fi
+          done
+
+      - name: Push to Quay.io
+        run: |
+          IFS=',' read -ra TAG_ARRAY <<< "${{ steps.tags.outputs.tags }}"
+          for tag in "${TAG_ARRAY[@]}"; do
+            echo "Pushing: $tag"
+            docker push $tag
+          done
+
+      - name: Generate build summary
+        run: |
+          echo "## Execution Environment Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Registry:** ${{ env.REGISTRY }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** ${{ env.IMAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Tags Pushed" >> $GITHUB_STEP_SUMMARY
+          IFS=',' read -ra TAG_ARRAY <<< "${{ steps.tags.outputs.tags }}"
+          for tag in "${TAG_ARRAY[@]}"; do
+            echo "- \`$tag\`" >> $GITHUB_STEP_SUMMARY
+          done
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Usage" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "podman pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
