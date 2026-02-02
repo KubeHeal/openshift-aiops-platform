@@ -21,7 +21,7 @@ The OpenShift AI Ops Self-Healing Platform brings machine learning-powered anoma
 
 These questions trigger cluster-wide analysis across **5 key metrics**:
 - Node CPU utilization
-- Node memory utilization  
+- Node memory utilization
 - Pod CPU usage
 - Pod memory usage
 - Container restart count

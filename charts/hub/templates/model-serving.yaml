@@ -16,7 +16,8 @@ spec:
   predictor:
     containers:
     - name: kserve-container  # Must be named kserve-container for webhook compatibility
-      image: kserve/sklearnserver:latest
+      # Use custom sklearn-xgboost-server image with XGBoost support
+      image: {{ $.Values.modelServing.sklearn.image | default "kserve/sklearnserver:latest" }}
       args:
       - --model_name={{ .name }}  # ⭐ Automatically set from model name - prevents default "model" registration
       - --model_dir=/mnt/models/{{ .name }}

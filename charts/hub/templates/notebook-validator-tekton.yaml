@@ -1,6 +1,6 @@
 {{- if and .Values.notebooks .Values.notebooks.validation .Values.notebooks.validation.enabled }}
 {{- /* Resolve git URL with fallback chain */ -}}
-{{- $gitUrl := .Values.notebooks.validation.git.url | default .Values.git.repoURL | default .Values.global.git.repoURL | default "" }}
+{{- $gitUrl := .Values.notebooks.validation.git.url | default .Values.git.repoURL | default .Values.global.git.repoURL | default .Values.global.repoURL | default "" }}
 {{- $gitRef := .Values.notebooks.validation.git.ref | default .Values.git.revision | default .Values.global.git.revision | default "main" }}
 ---
 # Notebook Validator Image Build

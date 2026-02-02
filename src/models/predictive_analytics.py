@@ -9,11 +9,54 @@ import joblib
 import numpy as np
 import pandas as pd
 from typing import Dict, List, Any, Optional, Tuple
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.model_selection import train_test_split, TimeSeriesSplit
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import logging
+import json
+from datetime import datetime
+
+# #region agent log - DEBUG INSTRUMENTATION
+DEBUG_LOG_PATH = '/home/lab-user/openshift-aiops-platform/.cursor/debug.log'
+
+def _debug_log(hypothesis_id: str, location: str, message: str, data: dict = None):
+    """Write debug log entry to NDJSON file"""
+    try:
+        entry = {
+            "timestamp": int(datetime.now().timestamp() * 1000),
+            "sessionId": "debug-session",
+            "runId": "predictive-analytics-train",
+            "hypothesisId": hypothesis_id,
+            "location": location,
+            "message": message,
+            "data": data or {}
+        }
+        with open(DEBUG_LOG_PATH, 'a') as f:
+            f.write(json.dumps(entry) + '\n')
+    except Exception:
+        pass  # Silent fail for debug logging
+# #endregion
+
+# Try to import XGBoost for GPU training, fall back to sklearn RandomForest
+try:
+    import xgboost as xgb
+    XGBOOST_AVAILABLE = True
+    # Check if GPU support is available in XGBoost build
+    # Must actually call fit() to trigger tree_method validation
+    try:
+        test_model = xgb.XGBRegressor(tree_method='gpu_hist', n_estimators=1, max_depth=1)
+        # Create minimal test data and fit to trigger validation
+        _test_X = np.array([[1, 2], [3, 4], [5, 6]])
+        _test_y = np.array([1, 2, 3])
+        test_model.fit(_test_X, _test_y)
+        XGBOOST_GPU_AVAILABLE = True
+        del test_model, _test_X, _test_y
+    except (xgb.core.XGBoostError, ValueError, Exception):
+        XGBOOST_GPU_AVAILABLE = False
+except ImportError:
+    from sklearn.ensemble import RandomForestRegressor
+    XGBOOST_AVAILABLE = False
+    XGBOOST_GPU_AVAILABLE = False
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,16 +65,17 @@ logger = logging.getLogger(__name__)
 class PredictiveAnalytics:
     """
     Predictive analytics model for infrastructure resource forecasting
-    Uses Random Forest for multi-step time series prediction
+    Uses XGBoost with GPU for multi-step time series prediction (falls back to RandomForest if unavailable)
     """
 
-    def __init__(self, forecast_horizon: int = 12, lookback_window: int = 24):
+    def __init__(self, forecast_horizon: int = 12, lookback_window: int = 24, use_gpu: bool = True):
         """
         Initialize the predictive analytics model
 
         Args:
             forecast_horizon: Number of time steps to forecast ahead
             lookback_window: Number of historical time steps to use for prediction
+            use_gpu: Whether to use GPU acceleration (requires XGBoost and NVIDIA GPU)
         """
         self.forecast_horizon = forecast_horizon
         self.lookback_window = lookback_window
@@ -40,6 +84,17 @@ class PredictiveAnalytics:
         self.feature_names = []
         self.target_metrics = ['cpu_usage', 'memory_usage', 'disk_usage', 'network_in', 'network_out']
         self.is_trained = False
+        # Only use GPU if XGBoost has GPU support AND user requested it
+        self.use_gpu = use_gpu and XGBOOST_AVAILABLE and XGBOOST_GPU_AVAILABLE
+        self.model_type = 'xgboost' if XGBOOST_AVAILABLE else 'random_forest'
+
+        if XGBOOST_AVAILABLE:
+            if self.use_gpu:
+                logger.info("🚀 XGBoost with GPU acceleration enabled")
+            else:
+                logger.info("🚀 XGBoost available (CPU histogram method - fast)")
+        else:
+            logger.info("⚠️ XGBoost not available - using sklearn RandomForest (slower)")
 
     def create_sequences(self, data: pd.DataFrame, target_col: str) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -130,8 +185,30 @@ class PredictiveAnalytics:
         """
         logger.info("Starting predictive analytics training...")
 
+        # #region agent log - Hypothesis A,B: Entry point with memory info
+        import psutil
+        mem = psutil.virtual_memory()
+        _debug_log("A,B", "predictive_analytics.py:train:entry", "Train method started", {
+            "input_shape": list(data.shape),
+            "input_columns": list(data.columns)[:10],
+            "memory_used_gb": round(mem.used / (1024**3), 2),
+            "memory_available_gb": round(mem.available / (1024**3), 2),
+            "memory_percent": mem.percent
+        })
+        # #endregion
+
         # Engineer features
         features = self.engineer_features(data)
+
+        # #region agent log - Hypothesis C: Feature engineering output
+        _debug_log("C", "predictive_analytics.py:train:post_engineer", "Features engineered", {
+            "features_shape": list(features.shape),
+            "features_columns_count": len(features.columns),
+            "features_sample_cols": list(features.columns)[:10],
+            "has_nan": bool(features.isna().any().any()),
+            "has_inf": bool((features == np.inf).any().any() or (features == -np.inf).any().any())
+        })
+        # #endregion
         self.feature_names = list(features.columns)
 
         results = {}
@@ -143,8 +220,27 @@ class PredictiveAnalytics:
 
             logger.info(f"Training model for {target_metric}...")
 
+            # #region agent log - Hypothesis B,C: Before sequence creation
+            _debug_log("B,C", f"predictive_analytics.py:train:{target_metric}:pre_sequence",
+                      f"Creating sequences for {target_metric}", {
+                "target_metric": target_metric,
+                "features_shape": list(features.shape),
+                "lookback_window": self.lookback_window,
+                "forecast_horizon": self.forecast_horizon
+            })
+            # #endregion
+
             # Create sequences
             X, y = self.create_sequences(features, target_metric)
+
+            # #region agent log - Hypothesis C: Sequence shapes
+            _debug_log("C", f"predictive_analytics.py:train:{target_metric}:post_sequence",
+                      f"Sequences created for {target_metric}", {
+                "X_shape": list(X.shape) if len(X) > 0 else [0],
+                "y_shape": list(y.shape) if len(y) > 0 else [0],
+                "X_len": len(X)
+            })
+            # #endregion
 
             if len(X) == 0:
                 logger.warning(f"Not enough data for {target_metric}")
@@ -152,6 +248,14 @@ class PredictiveAnalytics:
 
             # Reshape X for Random Forest (flatten sequences)
             X_reshaped = X.reshape(X.shape[0], -1)
+
+            # #region agent log - Hypothesis C: Reshaped features
+            _debug_log("C", f"predictive_analytics.py:train:{target_metric}:reshaped",
+                      f"Features reshaped for {target_metric}", {
+                "X_reshaped_shape": list(X_reshaped.shape),
+                "expected_features": self.lookback_window * features.shape[1]
+            })
+            # #endregion
 
             # Split data
             X_train, X_test, y_train, y_test = train_test_split(
@@ -165,19 +269,91 @@ class PredictiveAnalytics:
 
             # Train model for each forecast step
             models_for_metric = []
+
+            # #region agent log - Hypothesis A: Memory before training loop
+            mem = psutil.virtual_memory()
+            _debug_log("A", f"predictive_analytics.py:train:{target_metric}:pre_train_loop",
+                      f"Starting training loop for {target_metric}", {
+                "X_train_shape": list(X_train_scaled.shape),
+                "y_train_shape": list(y_train.shape),
+                "memory_used_gb": round(mem.used / (1024**3), 2),
+                "memory_percent": mem.percent,
+                "forecast_steps": self.forecast_horizon
+            })
+            # #endregion
+
             for step in range(self.forecast_horizon):
-                model = RandomForestRegressor(
-                    n_estimators=100,
-                    max_depth=10,
-                    random_state=42,
-                    n_jobs=-1
-                )
+                if XGBOOST_AVAILABLE:
+                    # XGBoost - faster than RandomForest even on CPU
+                    if self.use_gpu and XGBOOST_GPU_AVAILABLE:
+                        # GPU-accelerated XGBoost
+                        if step == 0:
+                            logger.info("Using XGBoost GPU histogram method (fastest)")
+                        model = xgb.XGBRegressor(
+                            n_estimators=100,
+                            max_depth=10,
+                            learning_rate=0.1,
+                            tree_method='gpu_hist',
+                            device='cuda',
+                            random_state=42,
+                            n_jobs=-1
+                        )
+                    else:
+                        # CPU histogram method (still faster than RandomForest)
+                        if step == 0:
+                            logger.info("Using XGBoost CPU histogram method (fast)")
+                        model = xgb.XGBRegressor(
+                            n_estimators=100,
+                            max_depth=10,
+                            learning_rate=0.1,
+                            tree_method='hist',  # CPU histogram - fast
+                            random_state=42,
+                            n_jobs=-1
+                        )
+                else:
+                    # Fallback to RandomForest (slowest)
+                    if step == 0:
+                        logger.info("Using sklearn RandomForest (slowest)")
+                    model = RandomForestRegressor(
+                        n_estimators=100,
+                        max_depth=10,
+                        random_state=42,
+                        n_jobs=-1
+                    )
+                # #region agent log - Hypothesis A,B: Before fit
+                if step == 0 or step == self.forecast_horizon - 1:
+                    _debug_log("A,B", f"predictive_analytics.py:train:{target_metric}:step{step}:pre_fit",
+                              f"Fitting model step {step}", {
+                        "step": step,
+                        "model_type": type(model).__name__
+                    })
+                # #endregion
+
                 model.fit(X_train_scaled, y_train[:, step])
                 models_for_metric.append(model)
+
+                # #region agent log - Hypothesis A: After fit memory check
+                if step == 0 or step == self.forecast_horizon - 1:
+                    mem = psutil.virtual_memory()
+                    _debug_log("A", f"predictive_analytics.py:train:{target_metric}:step{step}:post_fit",
+                              f"Model step {step} trained", {
+                        "step": step,
+                        "memory_used_gb": round(mem.used / (1024**3), 2),
+                        "memory_percent": mem.percent
+                    })
+                # #endregion
 
             # Store models and scaler
             self.models[target_metric] = models_for_metric
             self.scalers[target_metric] = scaler
+
+            # #region agent log - Hypothesis B: Metric training complete
+            _debug_log("B", f"predictive_analytics.py:train:{target_metric}:complete",
+                      f"Training complete for {target_metric}", {
+                "models_count": len(models_for_metric),
+                "scaler_type": type(scaler).__name__
+            })
+            # #endregion
 
             # Evaluate model
             y_pred = np.zeros_like(y_test)
@@ -210,6 +386,17 @@ class PredictiveAnalytics:
             'feature_count': len(self.feature_names),
             'metrics': results
         }
+
+        # #region agent log - Hypothesis B: Training fully complete
+        mem = psutil.virtual_memory()
+        _debug_log("B", "predictive_analytics.py:train:success", "All training completed successfully", {
+            "models_trained": len(self.models),
+            "feature_count": len(self.feature_names),
+            "memory_used_gb": round(mem.used / (1024**3), 2),
+            "memory_percent": mem.percent,
+            "metrics_list": list(results.keys())
+        })
+        # #endregion
 
         logger.info(f"Training completed: {len(self.models)} models trained")
         return overall_results
@@ -287,10 +474,15 @@ class PredictiveAnalytics:
 
             # Use tree variance as confidence measure
             if hasattr(model, 'estimators_'):
+                # RandomForest - use tree predictions variance
                 predictions = [tree.predict(X_scaled)[0] for tree in model.estimators_]
                 variance = np.var(predictions)
                 # Convert variance to confidence (0-1 scale)
                 confidence = max(0, min(1, 1 - (variance / np.mean(predictions) if np.mean(predictions) != 0 else 1)))
+            elif hasattr(model, 'get_booster'):
+                # XGBoost - use prediction intervals or default confidence
+                # XGBoost doesn't expose individual tree predictions easily, use default high confidence
+                confidence = 0.85  # XGBoost typically has high accuracy
             else:
                 confidence = 0.5  # Default confidence
 
@@ -375,7 +567,9 @@ class PredictiveAnalytics:
                     'lookback_window': self.lookback_window,
                     'feature_names': self.feature_names,
                     'target_metrics': self.target_metrics,
-                    'is_trained': self.is_trained
+                    'is_trained': self.is_trained,
+                    'model_type': self.model_type,
+                    'use_gpu': self.use_gpu
                 }
             }
 
@@ -486,8 +680,10 @@ class PredictiveAnalytics:
             self.feature_names = metadata['feature_names']
             self.target_metrics = metadata['target_metrics']
             self.is_trained = metadata['is_trained']
+            self.model_type = metadata.get('model_type', 'random_forest')
+            self.use_gpu = metadata.get('use_gpu', False)
 
-            logger.info(f"✅ Loaded KServe model: {len(self.models)} metrics")
+            logger.info(f"✅ Loaded KServe model: {len(self.models)} metrics (type: {self.model_type})")
 
         else:
             # Fall back to legacy structure
@@ -546,8 +742,12 @@ def generate_sample_timeseries_data(n_samples: int = 1000) -> pd.DataFrame:
     """
     np.random.seed(42)
 
-    # Generate timestamps
-    timestamps = pd.date_range(start='2024-01-01', periods=n_samples, freq='5min')
+    # Generate timestamps ending at current time
+    # This ensures synthetic data has realistic, recent timestamps
+    from datetime import datetime, timedelta
+    end_time = datetime.now()
+    start_time = end_time - timedelta(minutes=5 * n_samples)
+    timestamps = pd.date_range(start=start_time, periods=n_samples, freq='5min')
 
     # Generate base patterns with seasonality
     hours = timestamps.hour

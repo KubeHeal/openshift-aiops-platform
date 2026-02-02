@@ -193,7 +193,8 @@ modelServing:
 
   # sklearn runtime configuration
   sklearn:
-    image: kserve/sklearnserver:latest
+    # Custom sklearn server with XGBoost support (built via BuildConfig)
+    image: image-registry.openshift-image-registry.svc:5000/self-healing-platform/sklearn-xgboost-server:latest
     resources:
       requests:
         memory: "256Mi"
@@ -410,7 +411,7 @@ coordinationEngine:
     anomalyDetectorModel: anomaly-detector  # Model name in KServe API endpoint
     predictiveAnalyticsService: predictive-analytics-stable  # Service DNS name
     predictiveAnalyticsModel: predictive-analytics  # Model name in KServe API endpoint
-    timeout: "10s"
+    timeout: "120s"  # Increased for feature engineering (builds 3264 features from 24h Prometheus data)
 
   # ArgoCD Integration
   argocd:
@@ -421,6 +422,26 @@ coordinationEngine:
   prometheus:
     enabled: true
     url: "https://prometheus-k8s.openshift-monitoring.svc:9091"
+
+  # Feature Engineering Configuration (Issue #54)
+  # Enables building engineered features from Prometheus metrics
+  # MUST match the training notebook's feature engineering!
+  # Guide: https://github.com/tosin2013/openshift-coordination-engine/blob/main/docs/FEATURE-ENGINEERING-GUIDE.md
+  featureEngineering:
+    # Enable feature engineering for predictive-analytics model
+    # When true: builds 3264 features (matches model trained with full feature engineering)
+    # When false: sends 5 raw features (cpu, memory, disk, network_in, network_out)
+    # NOTE: Set to false for fast-trained models (synthetic data, 5 features)
+    #       Set to true for production models (Prometheus data, 3264 features)
+    enabled: false
+    # Number of hours to look back for historical data (default: 24)
+    # Must match: notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb
+    lookbackHours: 24
+    # Expected feature count for validation (0=disabled)
+    # Set this to match the model's StandardScaler expectation
+    # For full feature engineering: 24 × 136 = 3264
+    # For simple model: 5 (raw metrics only)
+    expectedFeatureCount: 5
 
   # Resource limits
   resources:

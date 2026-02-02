@@ -1,0 +1,66 @@
+{{- if .Values.modelServing.enabled }}
+---
+# ImageStream for custom sklearn server with XGBoost
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: sklearn-xgboost-server
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/name: sklearn-xgboost-server
+    app.kubernetes.io/component: model-serving
+    app.kubernetes.io/part-of: self-healing-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+---
+# BuildConfig for custom sklearn server with XGBoost support
+# This extends the official KServe sklearn server to add XGBoost and LightGBM
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: sklearn-xgboost-server
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/name: sklearn-xgboost-server
+    app.kubernetes.io/component: model-serving
+    app.kubernetes.io/part-of: self-healing-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+    description: |
+      Builds custom sklearn server image with XGBoost and LightGBM.
+      Base: kserve/sklearnserver:latest
+      Adds: xgboost, lightgbm for faster model training and inference
+spec:
+  completionDeadlineSeconds: 1800
+  output:
+    to:
+      kind: ImageStreamTag
+      name: sklearn-xgboost-server:latest
+  resources:
+    limits:
+      cpu: "2"
+      memory: 4Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+  source:
+    type: Dockerfile
+    dockerfile: |
+      # Custom sklearn server with XGBoost support
+      # Extends KServe sklearn server to add gradient boosting libraries
+      FROM kserve/sklearnserver:latest
+      USER root
+      # Install to the venv site-packages directory where Python looks for packages
+      # The base image uses /prod_venv/bin/python which looks in /prod_venv/lib/python3.11/site-packages
+      RUN pip install --no-cache-dir --target=/prod_venv/lib/python3.11/site-packages xgboost lightgbm
+      USER 1000
+      LABEL name="sklearn-xgboost-server" \
+            description="KServe sklearn server with XGBoost and LightGBM support" \
+            maintainer="openshift-aiops-platform"
+  strategy:
+    type: Docker
+    dockerStrategy:
+      forcePull: true
+  triggers:
+  - type: ConfigChange
+{{- end }}
