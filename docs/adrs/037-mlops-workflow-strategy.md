@@ -140,7 +140,7 @@ metadata:
 spec:
   notebook:
     git:
-      url: "https://github.com/tosin2013/openshift-aiops-platform.git"
+      url: "https://github.com/KubeHeal/openshift-aiops-platform.git"
       ref: "main"
     path: "notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb"
   podConfig:

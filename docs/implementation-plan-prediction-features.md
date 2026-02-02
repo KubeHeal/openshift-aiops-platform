@@ -237,7 +237,7 @@
 
 ### Phase 4: Coordination Engine API Extensions
 
-**Location**: `https://github.com/tosin2013/openshift-coordination-engine`
+**Location**: `https://github.com/KubeHeal/openshift-coordination-engine`
 
 **New Endpoints**:
 

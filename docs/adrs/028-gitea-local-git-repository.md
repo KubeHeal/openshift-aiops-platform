@@ -18,7 +18,7 @@ The OpenShift AIOps Platform requires a reliable Git repository for GitOps workf
 5. Aligns with validated-patterns framework requirements
 
 **Current State:**
-- External GitHub repository: `https://github.com/tosin2013/openshift-aiops-platform.git`
+- External GitHub repository: `https://github.com/KubeHeal/openshift-aiops-platform.git`
 - ArgoCD configured to sync from external GitHub
 - No local Git repository for air-gapped scenarios
 - Manual repository mirroring required for disconnected environments
@@ -206,7 +206,7 @@ We will deploy Gitea using the Red Hat RHPDS Gitea Operator for the following re
     gitea_admin_user: opentlc-mgr
     external_repos:
       - name: openshift-aiops-platform
-        url: https://github.com/tosin2013/openshift-aiops-platform.git
+        url: https://github.com/KubeHeal/openshift-aiops-platform.git
         private: false
       - name: validated-patterns-ansible-toolkit
         url: https://github.com/tosin2013/validated-patterns-ansible-toolkit.git

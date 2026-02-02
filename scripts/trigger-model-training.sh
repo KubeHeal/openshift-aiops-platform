@@ -57,7 +57,7 @@ case $MODEL_NAME in
 esac
 
 # Get Git configuration from values.yaml or use defaults
-GIT_URL="${GIT_URL:-https://github.com/tosin2013/openshift-aiops-platform.git}"
+GIT_URL="${GIT_URL:-https://github.com/KubeHeal/openshift-aiops-platform.git}"
 GIT_REF="${GIT_REF:-main}"
 
 echo "=========================================="

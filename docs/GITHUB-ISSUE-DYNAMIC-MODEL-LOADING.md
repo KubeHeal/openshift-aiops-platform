@@ -1,6 +1,6 @@
 # GitHub Issue: Dynamic KServe Model Loading Support
 
-**Repository**: `tosin2013/openshift-coordination-engine`
+**Repository**: `KubeHeal/openshift-coordination-engine`
 
 ---
 
@@ -16,7 +16,7 @@ The coordination engine should support dynamic discovery of KServe InferenceServ
 
 ### Context
 
-The OpenShift AIOps Platform follows a **user-deployed model architecture** (see [ADR-039](https://github.com/tosin2013/openshift-aiops-platform/blob/main/docs/adrs/039-user-deployed-kserve-models.md) and [ADR-040](https://github.com/tosin2013/openshift-aiops-platform/blob/main/docs/adrs/040-extensible-kserve-model-registry.md)) where:
+The OpenShift AIOps Platform follows a **user-deployed model architecture** (see [ADR-039](https://github.com/KubeHeal/openshift-aiops-platform/blob/main/docs/adrs/039-user-deployed-kserve-models.md) and [ADR-040](https://github.com/KubeHeal/openshift-aiops-platform/blob/main/docs/adrs/040-extensible-kserve-model-registry.md)) where:
 
 - **Users** train and deploy their own models via KServe InferenceServices
 - **Platform** provides coordination engine and infrastructure
@@ -216,7 +216,7 @@ package main
 
 import (
     "log"
-    "github.com/tosin2013/openshift-coordination-engine/pkg/kserve"
+    "github.com/KubeHeal/openshift-coordination-engine/pkg/kserve"
 )
 
 func main() {
@@ -340,7 +340,7 @@ func TestGetModelURL(t *testing.T) {
 
 ## Documentation
 
-Update the following files in `tosin2013/openshift-coordination-engine`:
+Update the following files in `KubeHeal/openshift-coordination-engine`:
 
 1. **README.md**: Add "Model Registry Configuration" section
 2. **API.md**: Document `/api/v1/models` endpoints
@@ -388,9 +388,9 @@ curl -X POST http://coordination-engine:8080/api/v1/models/disk-failure-predicto
 
 ## References
 
-- **Platform ADR-039**: [User-Deployed KServe Models](https://github.com/tosin2013/openshift-aiops-platform/blob/main/docs/adrs/039-user-deployed-kserve-models.md)
-- **Platform ADR-040**: [Extensible KServe Model Registry](https://github.com/tosin2013/openshift-aiops-platform/blob/main/docs/adrs/040-extensible-kserve-model-registry.md)
-- **User Guide**: [USER-MODEL-DEPLOYMENT-GUIDE.md](https://github.com/tosin2013/openshift-aiops-platform/blob/main/docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md)
+- **Platform ADR-039**: [User-Deployed KServe Models](https://github.com/KubeHeal/openshift-aiops-platform/blob/main/docs/adrs/039-user-deployed-kserve-models.md)
+- **Platform ADR-040**: [Extensible KServe Model Registry](https://github.com/KubeHeal/openshift-aiops-platform/blob/main/docs/adrs/040-extensible-kserve-model-registry.md)
+- **User Guide**: [USER-MODEL-DEPLOYMENT-GUIDE.md](https://github.com/KubeHeal/openshift-aiops-platform/blob/main/docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md)
 - **KServe v1 Prediction API**: https://kserve.github.io/website/latest/modelserving/data_plane/v1_protocol/
 
 ## Labels

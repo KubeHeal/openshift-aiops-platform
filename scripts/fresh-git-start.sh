@@ -61,11 +61,11 @@ if [ -d ".git" ]; then
         echo -e "${GREEN}✓ Remote URL saved${NC}"
     else
         echo -e "${YELLOW}⚠️  No remote URL found${NC}"
-        REMOTE_URL="https://github.com/tosin2013/openshift-aiops-platform.git"
+        REMOTE_URL="https://github.com/KubeHeal/openshift-aiops-platform.git"
         echo "Will use: $REMOTE_URL"
     fi
 else
-    REMOTE_URL="https://github.com/tosin2013/openshift-aiops-platform.git"
+    REMOTE_URL="https://github.com/KubeHeal/openshift-aiops-platform.git"
     echo "Will use: $REMOTE_URL"
 fi
 

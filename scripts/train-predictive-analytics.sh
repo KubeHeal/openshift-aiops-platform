@@ -25,7 +25,7 @@
 #
 # NOTE: Feature count is ALWAYS 3264 (24-hour lookback × 136 features per timestep)
 #       This matches the coordination engine's FEATURE_ENGINEERING_LOOKBACK_HOURS=24
-#       See: https://github.com/tosin2013/openshift-coordination-engine/blob/main/docs/FEATURE-ENGINEERING-GUIDE.md
+#       See: https://github.com/KubeHeal/openshift-coordination-engine/blob/main/docs/FEATURE-ENGINEERING-GUIDE.md
 # =============================================================================
 
 set -e
@@ -39,7 +39,7 @@ FAST_MODE=false
 MAX_SAMPLES="${MAX_SAMPLES:-0}"  # 0 = no limit
 NAMESPACE="self-healing-platform"
 MODEL_NAME="predictive-analytics"
-GIT_URL="${GIT_URL:-https://github.com/tosin2013/openshift-aiops-platform.git}"
+GIT_URL="${GIT_URL:-https://github.com/KubeHeal/openshift-aiops-platform.git}"
 GIT_REF="${GIT_REF:-main}"
 
 # Colors for output

@@ -142,7 +142,7 @@ notebooks:
   validation:
     enabled: true  # Enable notebook validation
     git:
-      url: "https://github.com/tosin2013/openshift-aiops-platform.git"
+      url: "https://github.com/KubeHeal/openshift-aiops-platform.git"
       ref: "main"
       credentialsSecret: "github-pat-credentials"
 
@@ -169,7 +169,7 @@ notebooks:
   validation:
     enabled: true
     git:
-      url: "https://github.com/tosin2013/openshift-aiops-platform.git"
+      url: "https://github.com/KubeHeal/openshift-aiops-platform.git"
       credentialsSecret: "github-pat-credentials"
     tiers:
       tier1:

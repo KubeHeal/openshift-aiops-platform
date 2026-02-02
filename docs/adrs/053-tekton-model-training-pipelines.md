@@ -247,7 +247,7 @@ spec:
           notebook:
             path: $NOTEBOOK_PATH
             git:
-              url: https://github.com/tosin2013/openshift-aiops-platform.git
+              url: https://github.com/KubeHeal/openshift-aiops-platform.git
               ref: main
           podConfig:
             containerImage: image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest

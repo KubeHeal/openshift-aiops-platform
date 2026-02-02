@@ -433,7 +433,7 @@ oc logs -n self-healing-platform-hub deployment/hub-gitops-application-controlle
 
 ### Support Channels
 
-- **GitHub Issues**: [openshift-aiops-platform/issues](https://github.com/tosin2013/openshift-aiops-platform/issues)
+- **GitHub Issues**: [openshift-aiops-platform/issues](https://github.com/KubeHeal/openshift-aiops-platform/issues)
 - **Documentation**: [docs/adrs/](../adrs/) - Architectural Decision Records
 - **Development Guide**: [AGENTS.md](../../AGENTS.md) - Comprehensive platform guide
 

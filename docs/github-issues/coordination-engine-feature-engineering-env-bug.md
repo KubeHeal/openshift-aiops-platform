@@ -68,9 +68,9 @@ func DefaultPredictionHandlerConfig() PredictionHandlerConfig {
 }
 ```
 
-**Why it happens**: 
+**Why it happens**:
 - `main.go` calls `NewPredictionHandler()` without passing config
-- `NewPredictionHandler()` calls `DefaultPredictionHandlerConfig()` 
+- `NewPredictionHandler()` calls `DefaultPredictionHandlerConfig()`
 - `DefaultPredictionHandlerConfig()` returns hardcoded `true` instead of reading from `config.Get().FeatureEngineering.Enabled`
 
 ## Proposed Fix

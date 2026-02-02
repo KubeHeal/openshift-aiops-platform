@@ -56,7 +56,7 @@ func (h *PredictionHandler) buildRawMetricInstances(ctx context.Context) ([][]fl
     diskUsage := h.getMetric(ctx, "1 - sum(node_filesystem_avail_bytes) / sum(node_filesystem_size_bytes)")
     networkIn := h.getMetric(ctx, "sum(rate(container_network_receive_bytes_total[5m]))")
     networkOut := h.getMetric(ctx, "sum(rate(container_network_transmit_bytes_total[5m]))")
-    
+
     return [][]float64{{
         cpuUsage,
         memoryUsage,

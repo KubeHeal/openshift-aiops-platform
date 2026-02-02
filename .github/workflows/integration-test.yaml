@@ -27,19 +27,19 @@ jobs:
       - name: Checkout aiops-platform
         uses: actions/checkout@v4
         with:
-          repository: tosin2013/openshift-aiops-platform
+          repository: KubeHeal/openshift-aiops-platform
           path: aiops-platform
 
       - name: Checkout coordination-engine
         uses: actions/checkout@v4
         with:
-          repository: tosin2013/openshift-coordination-engine
+          repository: KubeHeal/openshift-coordination-engine
           path: coordination-engine
 
       - name: Checkout cluster-health-mcp
         uses: actions/checkout@v4
         with:
-          repository: tosin2013/openshift-cluster-health-mcp
+          repository: KubeHeal/openshift-cluster-health-mcp
           path: cluster-health-mcp
 
       - name: Install OpenShift CLI
@@ -74,7 +74,7 @@ jobs:
           helm upgrade --install self-healing-platform charts/hub \
             --namespace ${{ inputs.test_namespace }} \
             --create-namespace \
-            --set global.git.repoURL=https://github.com/tosin2013/openshift-aiops-platform.git \
+            --set global.git.repoURL=https://github.com/KubeHeal/openshift-aiops-platform.git \
             --set global.git.revision=main \
             --wait --timeout 10m
 

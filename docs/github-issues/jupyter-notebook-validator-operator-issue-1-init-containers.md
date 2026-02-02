@@ -81,13 +81,13 @@ type PodConfigSpec struct {
 
 ### Specific Example: openshift-aiops-platform
 
-The [openshift-aiops-platform](https://github.com/tosin2013/openshift-aiops-platform) is **one example user** of this operator that would benefit:
+The [openshift-aiops-platform](https://github.com/KubeHeal/openshift-aiops-platform) is **one example user** of this operator that would benefit:
 
 - **Cluster Restart Resilience**: Wait for Prometheus and ArgoCD before metrics collection notebooks
 - **MLOps Workflow**: Ensure model registry is ready before training notebooks
 - **Cross-Namespace Dependencies**: Platform services in openshift-monitoring must be available before analysis
 
-See: [ADR-043: Deployment Stability Patterns](https://github.com/tosin2013/openshift-aiops-platform/blob/main/docs/adrs/043-deployment-stability-health-checks.md)
+See: [ADR-043: Deployment Stability Patterns](https://github.com/KubeHeal/openshift-aiops-platform/blob/main/docs/adrs/043-deployment-stability-health-checks.md)
 
 ## Implementation Examples
 
@@ -471,8 +471,8 @@ Let users implement retry logic in notebook cells.
 ## References
 
 - **Kubernetes Init Containers**: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
-- **openshift-aiops-platform**: https://github.com/tosin2013/openshift-aiops-platform
-- **ADR-043**: https://github.com/tosin2013/openshift-aiops-platform/blob/main/docs/adrs/043-deployment-stability-health-checks.md
+- **openshift-aiops-platform**: https://github.com/KubeHeal/openshift-aiops-platform
+- **ADR-043**: https://github.com/KubeHeal/openshift-aiops-platform/blob/main/docs/adrs/043-deployment-stability-health-checks.md
 - **ADR-045 (Volume Support)**: Complementary feature for init container volume access
 
 ---

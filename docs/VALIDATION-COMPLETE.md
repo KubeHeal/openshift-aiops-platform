@@ -211,7 +211,7 @@ oc apply -f tekton/pipelines/platform-readiness-validation-pipeline.yaml
 **Create PipelineRun**:
 ```bash
 tkn pipeline start platform-readiness-validation-pipeline \
-  --param git-url=https://github.com/tosin2013/openshift-aiops-platform.git \
+  --param git-url=https://github.com/KubeHeal/openshift-aiops-platform.git \
   --param git-revision=main \
   --workspace name=shared-workspace,claimName=validation-workspace-pvc \
   --showlog
