@@ -30,7 +30,7 @@ git.repoURL: "https://gitea-with-admin-gitea.apps.cluster-fn2qb.fn2qb.sandbox134
 ```bash
 # Format: https://github.com/<org>/<repo>.git
 
-git.repoURL: "https://github.com/tosin2013/openshift-aiops-platform.git"
+git.repoURL: "https://github.com/KubeHeal/openshift-aiops-platform.git"
 ```
 
 ## Where the Value is Used

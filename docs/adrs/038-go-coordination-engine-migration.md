@@ -17,7 +17,7 @@ The current Python/Flask-based coordination engine (`src/coordination-engine/`) 
 
 ### Available Go Implementation
 
-A production-ready Go implementation exists at `https://github.com/tosin2013/openshift-coordination-engine` with:
+A production-ready Go implementation exists at `https://github.com/KubeHeal/openshift-coordination-engine` with:
 
 - ✅ **Multi-version OpenShift support** (4.18, 4.19, 4.20)
 - ✅ **Deployment-aware remediation** (ArgoCD, Helm, Operator, Manual detection)
@@ -29,7 +29,7 @@ A production-ready Go implementation exists at `https://github.com/tosin2013/ope
 
 ## Decision
 
-**We will migrate from the Python-based coordination engine to the standalone Go implementation** from `tosin2013/openshift-coordination-engine`.
+**We will migrate from the Python-based coordination engine to the standalone Go implementation** from `KubeHeal/openshift-coordination-engine`.
 
 ### Migration Approach
 
@@ -160,7 +160,7 @@ func (c *MLServiceClient) DetectAnomaly(data AnomalyRequest) (*AnomalyResponse, 
    - Transparent migration from client perspective
 
 2. **Separate Repository**
-   - Go coordination engine maintained in `tosin2013/openshift-coordination-engine`
+   - Go coordination engine maintained in `KubeHeal/openshift-coordination-engine`
    - Independent versioning and release cycle
    - **Trade-off**: More repos to manage vs better separation of concerns
 
@@ -291,10 +291,10 @@ The Go implementation maintains **100% API compatibility** with the Python versi
 
 ### External
 
-- **Go Coordination Engine Repository**: https://github.com/tosin2013/openshift-coordination-engine
+- **Go Coordination Engine Repository**: https://github.com/KubeHeal/openshift-coordination-engine
   - Branch: `release-4.18`
   - Container Image: `quay.io/takinosh/openshift-coordination-engine:ocp-4.18-latest`
-- **API Contract Documentation**: https://github.com/tosin2013/openshift-coordination-engine/blob/release-4.18/API-CONTRACT.md
+- **API Contract Documentation**: https://github.com/KubeHeal/openshift-coordination-engine/blob/release-4.18/API-CONTRACT.md
 
 ### Internal
 

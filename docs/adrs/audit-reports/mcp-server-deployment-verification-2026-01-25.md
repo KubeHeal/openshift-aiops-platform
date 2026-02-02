@@ -217,7 +217,7 @@ OK
 
 ### Image
 ```
-Image: quay.io/tosin2013/openshift-cluster-health-mcp:latest
+Image: quay.io/KubeHeal/openshift-cluster-health-mcp:latest
 Pull Policy: Always
 ```
 

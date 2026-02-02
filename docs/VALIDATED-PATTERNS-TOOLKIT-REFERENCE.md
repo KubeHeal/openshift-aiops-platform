@@ -128,7 +128,7 @@ my-pattern/
     name: validated_patterns_operator
   vars:
     pattern_name: self-healing-platform
-    pattern_repo: https://github.com/tosin2013/openshift-aiops-platform.git
+    pattern_repo: https://github.com/KubeHeal/openshift-aiops-platform.git
     pattern_branch: main
 ```
 

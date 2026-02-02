@@ -1,6 +1,6 @@
 # GitHub Issue: Feature Engineering Mismatch and Prometheus Query Failure
 
-**Repository**: [openshift-coordination-engine](https://github.com/tosin2013/openshift-coordination-engine)
+**Repository**: [openshift-coordination-engine](https://github.com/KubeHeal/openshift-coordination-engine)
 **Created**: 2026-01-29
 **Priority**: High
 **Labels**: `bug`, `feature-engineering`, `predictive-analytics`

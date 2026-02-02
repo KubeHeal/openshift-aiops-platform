@@ -157,7 +157,7 @@ type PredictionValidationSpec struct {
 
 ### Specific Example: openshift-aiops-platform
 
-The [openshift-aiops-platform](https://github.com/tosin2013/openshift-aiops-platform) trains 2 KServe models:
+The [openshift-aiops-platform](https://github.com/KubeHeal/openshift-aiops-platform) trains 2 KServe models:
 
 **Current Workflow** (No Model Validation):
 ```yaml
@@ -483,7 +483,7 @@ Use init containers to validate models.
 ## References
 
 - **ADR-020**: https://github.com/tosin2013/jupyter-notebook-validator-operator/blob/main/docs/adrs/020-model-aware-validation.md
-- **openshift-aiops-platform**: https://github.com/tosin2013/openshift-aiops-platform
+- **openshift-aiops-platform**: https://github.com/KubeHeal/openshift-aiops-platform
 - **KServe Prediction API**: https://kserve.github.io/website/latest/modelserving/v1beta1/sklearn/v2/
 - **KServe InferenceService**: https://kserve.github.io/website/latest/get_started/first_isvc/
 

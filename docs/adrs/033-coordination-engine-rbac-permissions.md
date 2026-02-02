@@ -7,7 +7,7 @@
 **Author**: Platform Team
 **Relates to**: ADR-001, ADR-008, ADR-012, ADR-038
 
-> **Note**: This ADR is specific to the Python-based coordination engine which has been replaced by the Go-based engine from https://github.com/tosin2013/openshift-coordination-engine. This document is retained for historical reference only.
+> **Note**: This ADR is specific to the Python-based coordination engine which has been replaced by the Go-based engine from https://github.com/KubeHeal/openshift-coordination-engine. This document is retained for historical reference only.
 
 ## Problem Statement
 

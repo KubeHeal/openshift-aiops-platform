@@ -196,7 +196,7 @@ You've completed the blog series! Explore:
 
 If you encounter problems while following this guide:
 
-1. **Open a GitHub Issue**: [Create Issue](https://github.com/tosin2013/openshift-aiops-platform/issues/new)
+1. **Open a GitHub Issue**: [Create Issue](https://github.com/KubeHeal/openshift-aiops-platform/issues/new)
    - Use label: `blog-feedback`
    - Include: Blog name, step number, error message
 

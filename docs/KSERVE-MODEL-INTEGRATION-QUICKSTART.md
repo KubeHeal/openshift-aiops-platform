@@ -9,7 +9,7 @@ Notebooks → Coordination Engine → KServe InferenceServices
             /api/v1/detect        (user-deployed models)
 ```
 
-**Reference:** [ADR-039](./adrs/039-user-deployed-kserve-models.md), [ADR-040](./adrs/040-extensible-kserve-model-registry.md), [GitHub Issue #18](https://github.com/tosin2013/openshift-coordination-engine/issues/18)
+**Reference:** [ADR-039](./adrs/039-user-deployed-kserve-models.md), [ADR-040](./adrs/040-extensible-kserve-model-registry.md), [GitHub Issue #18](https://github.com/KubeHeal/openshift-coordination-engine/issues/18)
 
 ---
 
@@ -263,5 +263,5 @@ notebooks/00-setup/01-kserve-model-onboarding.ipynb
 
 - [ADR-039: User-Deployed KServe Models](./adrs/039-user-deployed-kserve-models.md)
 - [ADR-040: Extensible KServe Model Registry](./adrs/040-extensible-kserve-model-registry.md)
-- [Coordination Engine Repository](https://github.com/tosin2013/openshift-coordination-engine)
+- [Coordination Engine Repository](https://github.com/KubeHeal/openshift-coordination-engine)
 - [KServe v1 Protocol](https://kserve.github.io/website/latest/modelserving/data_plane/v1_protocol/)

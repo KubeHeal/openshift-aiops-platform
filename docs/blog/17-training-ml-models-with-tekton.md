@@ -43,7 +43,7 @@ spec:
     - name: inference-service-name
       value: "anomaly-detector"
     - name: git-url
-      value: "https://github.com/tosin2013/openshift-aiops-platform.git"
+      value: "https://github.com/KubeHeal/openshift-aiops-platform.git"
     - name: git-ref
       value: "main"
   timeout: 30m
@@ -90,7 +90,7 @@ spec:
     - name: inference-service-name
       value: "predictive-analytics"
     - name: git-url
-      value: "https://github.com/tosin2013/openshift-aiops-platform.git"
+      value: "https://github.com/KubeHeal/openshift-aiops-platform.git"
     - name: git-ref
       value: "main"
   timeout: 45m
@@ -114,7 +114,7 @@ spec:
   notebook:
     git:
       ref: main
-      url: https://github.com/tosin2013/openshift-aiops-platform.git
+      url: https://github.com/KubeHeal/openshift-aiops-platform.git
     path: notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb
   podConfig:
     containerImage: image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest
@@ -510,7 +510,7 @@ spec:
     - name: inference-service-name
       value: "your-model"
     - name: git-url
-      value: "https://github.com/tosin2013/openshift-aiops-platform.git"
+      value: "https://github.com/KubeHeal/openshift-aiops-platform.git"
     - name: git-ref
       value: "main"
 EOF

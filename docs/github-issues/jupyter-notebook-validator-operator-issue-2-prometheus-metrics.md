@@ -120,7 +120,7 @@ notebookvalidationjob_pending_jobs
 
 ### Specific Example: openshift-aiops-platform
 
-The [openshift-aiops-platform](https://github.com/tosin2013/openshift-aiops-platform) runs **32 NotebookValidationJobs** across 11 ArgoCD sync waves:
+The [openshift-aiops-platform](https://github.com/KubeHeal/openshift-aiops-platform) runs **32 NotebookValidationJobs** across 11 ArgoCD sync waves:
 
 **Current Challenge**:
 - No visibility into which notebooks are slow
@@ -610,7 +610,7 @@ Users query `kubectl get notebookvalidationjobs` for status.
 ## References
 
 - **ADR-010**: https://github.com/tosin2013/jupyter-notebook-validator-operator/blob/main/docs/adrs/010-observability-and-monitoring-strategy.md
-- **openshift-aiops-platform**: https://github.com/tosin2013/openshift-aiops-platform (32 NotebookValidationJobs)
+- **openshift-aiops-platform**: https://github.com/KubeHeal/openshift-aiops-platform (32 NotebookValidationJobs)
 - **Prometheus Operator**: https://prometheus-operator.dev/
 - **controller-runtime metrics**: https://pkg.go.dev/sigs.k8s.io/controller-runtime/pkg/metrics
 

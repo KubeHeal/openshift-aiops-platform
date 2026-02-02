@@ -195,7 +195,7 @@ oc patch application self-healing-platform \
 oc patch application self-healing-platform \
   -n openshift-gitops \
   --type merge \
-  -p '{"spec":{"source":{"repoURL":"https://github.com/tosin2013/openshift-aiops-platform.git"}}}'
+  -p '{"spec":{"source":{"repoURL":"https://github.com/KubeHeal/openshift-aiops-platform.git"}}}'
 ```
 
 ---

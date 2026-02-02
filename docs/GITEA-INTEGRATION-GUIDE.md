@@ -115,7 +115,7 @@ curl -k -X POST "$GITEA_URL/api/v1/repos/migrate" \
   -u "$ADMIN_USER:$ADMIN_PASS" \
   -H "Content-Type: application/json" \
   -d '{
-    "clone_addr": "https://github.com/tosin2013/openshift-aiops-platform.git",
+    "clone_addr": "https://github.com/KubeHeal/openshift-aiops-platform.git",
     "repo_name": "openshift-aiops-platform",
     "mirror": true,
     "private": false,

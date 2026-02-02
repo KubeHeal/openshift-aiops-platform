@@ -226,7 +226,7 @@ Consider deploying a wrapper ML service if:
 
 ### Phase 4: Coordination Engine Integration (Pending)
 
-**Upstream Repository**: `tosin2013/openshift-coordination-engine`
+**Upstream Repository**: `KubeHeal/openshift-coordination-engine`
 
 **Required Changes** (GitHub issue to be created):
 1. Remove `ML_SERVICE_URL` support

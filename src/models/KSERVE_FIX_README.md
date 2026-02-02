@@ -1,6 +1,6 @@
 # KServe Model Registration Fix (Issue #13)
 
-This document explains the fix for [Issue #13](https://github.com/tosin2013/openshift-aiops-platform/issues/13) where KServe InferenceServices were registering models as `"model"` instead of their InferenceService names.
+This document explains the fix for [Issue #13](https://github.com/KubeHeal/openshift-aiops-platform/issues/13) where KServe InferenceServices were registering models as `"model"` instead of their InferenceService names.
 
 ## Problem Summary
 
@@ -194,4 +194,4 @@ After implementing the fix:
 
 - [KServe v1 Protocol](https://kserve.github.io/website/latest/modelserving/data_plane/v1_protocol/)
 - [KServe PVC Storage](https://kserve.github.io/website/latest/modelserving/storage/pvc/)
-- [Issue #13](https://github.com/tosin2013/openshift-aiops-platform/issues/13)
+- [Issue #13](https://github.com/KubeHeal/openshift-aiops-platform/issues/13)

@@ -232,7 +232,7 @@ oc get pods -n self-healing-platform
 
 # Should show:
 # - self-healing-workbench-0 (Running)
-# - coordination-engine-* (Running) # Go-based from https://github.com/tosin2013/openshift-coordination-engine
+# - coordination-engine-* (Running) # Go-based from https://github.com/KubeHeal/openshift-coordination-engine
 # - cluster-health-mcp-server-* (Running)
 # - predictive-analytics-predictor-* (Running/PodInitializing)
 # - *-validation (Completed/Running)
@@ -270,7 +270,7 @@ oc get route openshift-gitops-server -n openshift-gitops -o jsonpath='{.spec.hos
 # 3. Test Coordination Engine API (Go-based engine)
 oc port-forward svc/coordination-engine 8080:8080 -n self-healing-platform
 curl http://localhost:8080/health
-# For Go engine source: https://github.com/tosin2013/openshift-coordination-engine
+# For Go engine source: https://github.com/KubeHeal/openshift-coordination-engine
 
 # 4. Check MCP Server (stdio transport - no external endpoint)
 oc logs deployment/cluster-health-mcp-server -n self-healing-platform

@@ -296,7 +296,7 @@ oc exec -n self-healing-platform deployment/coordination-engine -- \
 
 ### Current Implementation
 
-**Upstream Repository**: `tosin2013/openshift-coordination-engine`
+**Upstream Repository**: `KubeHeal/openshift-coordination-engine`
 
 **Required Changes** (GitHub issue to be created):
 

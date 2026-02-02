@@ -43,7 +43,7 @@ oc version
 
 ```bash
 # 1. Fork the repository on GitHub
-# Visit: https://github.com/tosin2013/openshift-aiops-platform
+# Visit: https://github.com/KubeHeal/openshift-aiops-platform
 # Click the "Fork" button in the top-right corner
 
 # 2. Clone YOUR fork to a new directory

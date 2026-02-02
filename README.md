@@ -3,8 +3,8 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![OpenShift](https://img.shields.io/badge/OpenShift-4.18+-red.svg)](https://www.openshift.com/)
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
-[![CI/CD Pipeline](https://github.com/tosin2013/openshift-aiops-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/tosin2013/openshift-aiops-platform/actions/workflows/ci.yml)
-[![Helm Chart Validation](https://github.com/tosin2013/openshift-aiops-platform/actions/workflows/helm-validation.yml/badge.svg)](https://github.com/tosin2013/openshift-aiops-platform/actions/workflows/helm-validation.yml)
+[![CI/CD Pipeline](https://github.com/KubeHeal/openshift-aiops-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/KubeHeal/openshift-aiops-platform/actions/workflows/ci.yml)
+[![Helm Chart Validation](https://github.com/KubeHeal/openshift-aiops-platform/actions/workflows/helm-validation.yml/badge.svg)](https://github.com/KubeHeal/openshift-aiops-platform/actions/workflows/helm-validation.yml)
 
 > **AI-powered self-healing platform for OpenShift clusters combining deterministic automation with machine learning for intelligent incident response.**
 
@@ -70,7 +70,7 @@ If you're running **RHEL 9** or **RHEL 10**, run the prerequisites installer scr
 
 ```bash
 # Clone the repository first
-git clone https://github.com/tosin2013/openshift-aiops-platform.git
+git clone https://github.com/KubeHeal/openshift-aiops-platform.git
 cd openshift-aiops-platform
 
 # Run the prerequisites installer (requires sudo)
@@ -126,7 +126,7 @@ oc login <cluster-api-url>
 
 ```bash
 # 1. Fork the repository on GitHub
-# Click "Fork" at https://github.com/tosin2013/openshift-aiops-platform
+# Click "Fork" at https://github.com/KubeHeal/openshift-aiops-platform
 
 # 2. Clone YOUR fork
 git clone https://github.com/YOUR-USERNAME/openshift-aiops-platform.git
@@ -180,7 +180,7 @@ For air-gapped environments or local development, you can deploy Gitea on your O
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/tosin2013/openshift-aiops-platform.git
+git clone https://github.com/KubeHeal/openshift-aiops-platform.git
 cd openshift-aiops-platform
 
 # 2. Deploy Gitea on OpenShift
@@ -353,8 +353,8 @@ We welcome contributions! Here's how you can help:
 
 ### Ways to Contribute
 
-1. 🐛 **Report Bugs**: [Open an issue](https://github.com/tosin2013/openshift-aiops-platform/issues/new)
-2. 💡 **Suggest Features**: [Feature request](https://github.com/tosin2013/openshift-aiops-platform/issues/new)
+1. 🐛 **Report Bugs**: [Open an issue](https://github.com/KubeHeal/openshift-aiops-platform/issues/new)
+2. 💡 **Suggest Features**: [Feature request](https://github.com/KubeHeal/openshift-aiops-platform/issues/new)
 3. 📝 **Improve Docs**: Fix typos, add examples, clarify instructions
 4. 🧪 **Add Tests**: Expand test coverage for notebooks and models
 5. 🚀 **Submit PRs**: Fix bugs, add features, improve performance
@@ -411,9 +411,9 @@ Closes #123
 ### Good First Issues
 
 Looking for a place to start? Check out issues tagged with:
-- [`good first issue`](https://github.com/tosin2013/openshift-aiops-platform/labels/good%20first%20issue)
-- [`documentation`](https://github.com/tosin2013/openshift-aiops-platform/labels/documentation)
-- [`help wanted`](https://github.com/tosin2013/openshift-aiops-platform/labels/help%20wanted)
+- [`good first issue`](https://github.com/KubeHeal/openshift-aiops-platform/labels/good%20first%20issue)
+- [`documentation`](https://github.com/KubeHeal/openshift-aiops-platform/labels/documentation)
+- [`help wanted`](https://github.com/KubeHeal/openshift-aiops-platform/labels/help%20wanted)
 
 ### Code of Conduct
 
@@ -486,7 +486,7 @@ oc logs -n self-healing-platform -l app.kubernetes.io/component=coordination-eng
 # Test health endpoint
 curl http://coordination-engine.self-healing-platform.svc.cluster.local:8080/health
 
-# Note: Coordination engine is from https://github.com/tosin2013/openshift-coordination-engine
+# Note: Coordination engine is from https://github.com/KubeHeal/openshift-coordination-engine
 ```
 
 **📖 Complete Troubleshooting Guide**: See [docs/guides/TROUBLESHOOTING-GUIDE.md](docs/guides/TROUBLESHOOTING-GUIDE.md) for comprehensive issue resolution
@@ -521,7 +521,7 @@ curl http://coordination-engine.self-healing-platform.svc.cluster.local:8080/hea
 
 ### Roadmap
 
-See [GitHub Projects](https://github.com/tosin2013/openshift-aiops-platform/projects) for upcoming features and milestones.
+See [GitHub Projects](https://github.com/KubeHeal/openshift-aiops-platform/projects) for upcoming features and milestones.
 
 ## 📜 License
 
@@ -557,8 +557,8 @@ This project is licensed under the **GNU General Public License v3.0** - see the
 ### Getting Help
 
 - 📖 **Documentation**: [docs/](docs/)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/tosin2013/openshift-aiops-platform/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/tosin2013/openshift-aiops-platform/discussions)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/KubeHeal/openshift-aiops-platform/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/KubeHeal/openshift-aiops-platform/discussions)
 
 ### Maintainers
 

@@ -556,4 +556,4 @@ This notebook demonstrates:
 For issues or questions:
 1. Check [Troubleshooting Guide](../guides/TROUBLESHOOTING-GUIDE.md)
 2. Review [KServe Documentation](https://kserve.github.io/website/)
-3. Open an issue on [GitHub](https://github.com/tosin2013/openshift-aiops-platform/issues)
+3. Open an issue on [GitHub](https://github.com/KubeHeal/openshift-aiops-platform/issues)

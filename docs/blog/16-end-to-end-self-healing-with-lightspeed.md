@@ -843,8 +843,8 @@ kubectl rollout status deployment/broken-app
 
 ## Resources
 
-- **GitHub**: [openshift-aiops-platform](https://github.com/tosin2013/openshift-aiops-platform)
-- **MCP Server**: [openshift-cluster-health-mcp](https://github.com/tosin2013/openshift-cluster-health-mcp)
+- **GitHub**: [openshift-aiops-platform](https://github.com/KubeHeal/openshift-aiops-platform)
+- **MCP Server**: [openshift-cluster-health-mcp](https://github.com/KubeHeal/openshift-cluster-health-mcp)
 - **Model Context Protocol**: [modelcontextprotocol.io](https://modelcontextprotocol.io/)
 - **OpenShift Lightspeed**: [docs.openshift.com/lightspeed](https://docs.openshift.com/container-platform/latest/lightspeed/)
 
