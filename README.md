@@ -91,6 +91,8 @@ source ~/.bashrc
 
 ### Cluster Infrastructure Setup (Optional)
 
+`It is a requirement to have ODF running on the cluster.`
+
 If your cluster needs additional worker nodes or OpenShift Data Foundation (ODF) storage, run the infrastructure configuration script:
 
 ```bash
