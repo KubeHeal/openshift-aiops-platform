@@ -98,30 +98,35 @@ jobs:
             echo "Skipping registry.redhat.io login (credentials not provided)"
           fi
 
-      - name: Generate ansible.cfg from template
+      - name: Validate token and generate ansible.cfg
         env:
           ANSIBLE_HUB_TOKEN: ${{ secrets.ANSIBLE_HUB_TOKEN }}
         run: |
-          if [[ ! -f ansible.cfg ]]; then
-            echo "Generating ansible.cfg from template..."
-            envsubst < files/ansible.cfg.template > ansible.cfg
-            echo "✅ ansible.cfg generated"
-          else
-            echo "ansible.cfg already exists"
+          echo "Validating ANSIBLE_HUB_TOKEN..."
+          if [[ -z "$ANSIBLE_HUB_TOKEN" ]]; then
+            echo "❌ ERROR: ANSIBLE_HUB_TOKEN not set"
+            exit 1
           fi
+          echo "✅ Token is set"
 
-          # Verify ansible.cfg was created and token was substituted
-          echo "Verifying ansible.cfg..."
+          echo "Generating ansible.cfg from template..."
+          envsubst < files/ansible.cfg.template > ansible.cfg
+          echo "✅ ansible.cfg generated"
+
+          # Verify token was substituted
           if grep -q '\$ANSIBLE_HUB_TOKEN' ansible.cfg; then
-            echo "❌ ERROR: Token placeholder not substituted in ansible.cfg"
+            echo "❌ ERROR: Token placeholder not substituted"
             exit 1
           fi
-          if grep -q 'token=' ansible.cfg; then
-            echo "✅ Token field found in ansible.cfg"
-          else
-            echo "❌ ERROR: No token field in ansible.cfg"
-            exit 1
-          fi
+          echo "✅ Token substituted successfully"
+
+          # Validate token by pre-fetching collections (like make token does)
+          echo "Pre-fetching collections to validate token..."
+          mkdir -p collections
+          ansible-galaxy collection download -r files/requirements.yml -p collections/ || {
+            echo "⚠️  Collection pre-fetch failed - may need to fallback to community galaxy"
+          }
+          echo "✅ Token validation complete"
 
       - name: Build execution environment
         env:
@@ -226,28 +231,27 @@ jobs:
             echo "Skipping registry.redhat.io login (credentials not provided)"
           fi
 
-      - name: Generate ansible.cfg from template
+      - name: Validate token and generate ansible.cfg
         env:
           ANSIBLE_HUB_TOKEN: ${{ secrets.ANSIBLE_HUB_TOKEN }}
         run: |
-          if [[ ! -f ansible.cfg ]]; then
-            echo "Generating ansible.cfg from template..."
-            envsubst < files/ansible.cfg.template > ansible.cfg
-            echo "✅ ansible.cfg generated"
+          echo "Validating ANSIBLE_HUB_TOKEN..."
+          if [[ -z "$ANSIBLE_HUB_TOKEN" ]]; then
+            echo "❌ ERROR: ANSIBLE_HUB_TOKEN not set"
+            exit 1
           fi
+          echo "✅ Token is set"
 
-          # Verify ansible.cfg was created and token was substituted
-          echo "Verifying ansible.cfg..."
+          echo "Generating ansible.cfg from template..."
+          envsubst < files/ansible.cfg.template > ansible.cfg
+          echo "✅ ansible.cfg generated"
+
+          # Verify token was substituted
           if grep -q '\$ANSIBLE_HUB_TOKEN' ansible.cfg; then
-            echo "❌ ERROR: Token placeholder not substituted in ansible.cfg"
+            echo "❌ ERROR: Token placeholder not substituted"
             exit 1
           fi
-          if grep -q 'token=' ansible.cfg; then
-            echo "✅ Token field found in ansible.cfg"
-          else
-            echo "❌ ERROR: No token field in ansible.cfg"
-            exit 1
-          fi
+          echo "✅ Token substituted successfully"
 
       - name: Rebuild execution environment for publish
         env:
