@@ -220,9 +220,16 @@ oc get storageclass
 git clone https://github.com/openshift-aiops/openshift-aiops-platform.git
 cd openshift-aiops-platform
 
-# Step 2a: Build Execution Environment (REQUIRED)
-export ANSIBLE_HUB_TOKEN='your-token-here'  # Get from console.redhat.com
-make build-ee
+# Step 2a: Get the Execution Environment (REQUIRED)
+#
+# Option A: Pull pre-built image (Recommended)
+podman pull quay.io/takinosh/openshift-aiops-platform-ee:latest
+podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest \
+  openshift-aiops-platform-ee:latest
+#
+# Option B: Build locally (requires ANSIBLE_HUB_TOKEN)
+# export ANSIBLE_HUB_TOKEN='your-token-here'  # Get from console.redhat.com
+# make build-ee
 
 # Step 2b: Install Jupyter Notebook Validator (REQUIRED)
 make install-jupyter-validator
@@ -239,7 +246,7 @@ make validate-deployment  # Runs Tekton validation pipeline
 ```
 
 **Why this workflow?**:
-- ✅ **build-ee**: Builds containerized Ansible execution environment with all dependencies
+- ✅ **Execution Environment**: Pull pre-built image from `quay.io/takinosh/openshift-aiops-platform-ee` or build locally with `make build-ee`
 - ✅ **install-jupyter-validator**: Deploys NotebookValidationJob CRD and operator
 - ✅ **deploy-prereqs-only**: Creates ServiceAccounts/RBAC BEFORE ArgoCD sync (breaks circular dependency)
 - ✅ **operator-deploy**: Uses VP Operator for production-ready deployment

@@ -145,30 +145,29 @@ vi values-hub.yaml
 # Change: repoURL: "https://gitea-with-admin-gitea.apps.cluster-pvbs6..."
 # To:     repoURL: "https://github.com/YOUR-USERNAME/openshift-aiops-platform.git"
 
-# 4. Set your Ansible Hub token
-export ANSIBLE_HUB_TOKEN='your-token-here'
-# Or create a token file
-echo 'your-token-here' > token
+# 4. Get the Execution Environment
+#
+# Option A: Pull pre-built image (Recommended)
+podman pull quay.io/takinosh/openshift-aiops-platform-ee:latest
+podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest \
+  openshift-aiops-platform-ee:latest
+#
+# Option B: Build locally (requires ANSIBLE_HUB_TOKEN)
+# export ANSIBLE_HUB_TOKEN='your-token-here'
+# podman login registry.redhat.io
+# make token
+# make build-ee
 
-# 5. Login to Red Hat registry (required for base images)
-podman login registry.redhat.io
-# Enter your Red Hat account credentials when prompted
-# (Get credentials at https://access.redhat.com/terms-based-registry/)
-
-# 6. Build execution environment (includes all dependencies)
-make token
-make build-ee
-
-# 7. Validate cluster prerequisites
+# 5. Validate cluster prerequisites
 make check-prerequisites
 
-# 8. Run Ansible prerequisites (creates secrets, RBAC, namespaces)
+# 6. Run Ansible prerequisites (creates secrets, RBAC, namespaces)
 make operator-deploy-prereqs
 
-# 9. Deploy the platform via Validated Patterns Operator
+# 7. Deploy the platform via Validated Patterns Operator
 make operator-deploy
 
-# 10. Validate deployment
+# 8. Validate deployment
 make argo-healthcheck
 ```
 
@@ -205,12 +204,17 @@ vi values-global.yaml
 vi values-hub.yaml
 # Set: repoURL: "https://gitea-with-admin-gitea.apps.<cluster-domain>/<username>/openshift-aiops-platform.git"
 
-# 6. Set Ansible Hub token
-export ANSIBLE_HUB_TOKEN='your-token-here'
+# 6. Get the Execution Environment
+# Option A: Pull pre-built image (Recommended)
+podman pull quay.io/takinosh/openshift-aiops-platform-ee:latest
+podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest \
+  openshift-aiops-platform-ee:latest
+# Option B: Build locally
+# export ANSIBLE_HUB_TOKEN='your-token-here'
+# podman login registry.redhat.io
+# make build-ee
 
-# 7. Login to Red Hat registry and build
-podman login registry.redhat.io
-make build-ee
+# 7. Continue with deployment
 make check-prerequisites
 make operator-deploy-prereqs
 make operator-deploy
@@ -245,12 +249,20 @@ oc delete namespace self-healing-platform-example imperative --ignore-not-found=
 git clone https://github.com/YOUR-USERNAME/openshift-aiops-platform.git
 cd openshift-aiops-platform
 
-# 2. Set up development environment
-export ANSIBLE_HUB_TOKEN='your-token'
-make token          # Validates token and generates ansible.cfg
+# 2. Get the Execution Environment
+#
+# Option A: Pull pre-built image (Recommended)
+podman pull quay.io/takinosh/openshift-aiops-platform-ee:latest
+podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest \
+  openshift-aiops-platform-ee:latest
+#
+# Option B: Build locally (requires ANSIBLE_HUB_TOKEN)
+# export ANSIBLE_HUB_TOKEN='your-token'
+# make token
+# make build-ee
 
-# 3. Build and test execution environment
-make build-ee test-ee
+# 3. Test execution environment
+make test-ee
 
 # 4. Run linting
 make super-linter   # Or use pre-commit hooks
@@ -279,7 +291,7 @@ make validate-deployment
 1. **Read the Docs**: Start with [AGENTS.md](AGENTS.md) and [ADRs](docs/adrs/)
 2. **Create Feature Branch**: `git checkout -b feature/your-feature-name`
 3. **Make Changes**: Follow coding standards (YAML 2-space indent, yamllint compliant)
-4. **Test Locally**: `make build-ee test-ee`
+4. **Test Locally**: `make test-ee` (pull or build the EE first; see [DEPLOYMENT.md](DEPLOYMENT.md))
 5. **Commit**: Use conventional commits (`feat:`, `fix:`, `docs:`, `chore:`)
 6. **Push & PR**: Push to your fork, open pull request with description
 
@@ -367,7 +379,7 @@ We welcome contributions! Here's how you can help:
 
 1. ✅ **Read [AGENTS.md](AGENTS.md)**: Understand project architecture and conventions
 2. ✅ **Check existing ADRs**: Review [docs/adrs/](docs/adrs/) for architectural decisions
-3. ✅ **Run tests**: `make build-ee test-ee`
+3. ✅ **Run tests**: `make test-ee` (pull or build the EE first; see [DEPLOYMENT.md](DEPLOYMENT.md))
 4. ✅ **Lint your code**: `make super-linter` or use pre-commit hooks
 5. ✅ **Update docs**: If changing behavior, update relevant docs and ADRs
 6. ✅ **Sign commits**: `git commit -s` (DCO required)

@@ -12,16 +12,30 @@ The OpenShift AI Ops Self-Healing Platform uses a **Hybrid Management Model** (A
 
 ## Quick Start
 
-### Step 1: Build Execution Environment
+### Step 1: Get the Execution Environment
+
+#### Option A: Pull Pre-Built Image (Recommended)
 
 ```bash
-# Build the Ansible execution environment container
+# Pull the latest pre-built image from Quay.io
+podman pull quay.io/takinosh/openshift-aiops-platform-ee:latest
+
+# Tag for local use
+podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest \
+  openshift-aiops-platform-ee:latest
+```
+
+#### Option B: Build Locally
+
+```bash
+# Requires ANSIBLE_HUB_TOKEN (get from https://console.redhat.com/ansible/automation-hub/token)
+export ANSIBLE_HUB_TOKEN='your-token-here'
 make build-ee
 ```
 
 This creates the `openshift-aiops-platform-ee:latest` container image with all required Ansible collections and dependencies.
 
-**Note**: The wrapper script will automatically build the image if missing, but building it explicitly first provides better visibility and faster subsequent runs.
+**Note**: The wrapper script will automatically build the image if missing, but getting it explicitly first provides better visibility and faster subsequent runs.
 
 ### Step 2: Complete Deployment with Prerequisites (Recommended)
 
@@ -42,8 +56,11 @@ This runs the full deployment sequence:
 ### Alternative: Manual Steps (Advanced)
 
 ```bash
-# Step 1: Build execution environment
-make build-ee
+# Step 1: Get execution environment (Option A: pull, or Option B: build)
+podman pull quay.io/takinosh/openshift-aiops-platform-ee:latest
+podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest \
+  openshift-aiops-platform-ee:latest
+# Or: export ANSIBLE_HUB_TOKEN='your-token' && make build-ee
 
 # Step 2: Deploy prerequisites only
 make deploy-prereqs-only
@@ -61,8 +78,10 @@ make argo-healthcheck
 ### Alternative: Skip Prerequisites (If Already Run)
 
 ```bash
-# Build EE first (if not already built)
-make build-ee
+# Get EE first (if not already available) — pull or build
+# podman pull quay.io/takinosh/openshift-aiops-platform-ee:latest && \
+#   podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest openshift-aiops-platform-ee:latest
+# Or: make build-ee
 
 # Use this if you've already run deploy-prereqs-only
 make -f common/Makefile operator-deploy
@@ -177,7 +196,7 @@ After successful deployment:
 ## Available Makefile Targets
 
 ```bash
-make build-ee                  # Build execution environment container (required first step)
+make build-ee                  # Build execution environment container (alternative to pulling pre-built image)
 make deploy-with-prereqs       # Complete deployment with prerequisites (recommended)
 make deploy-prereqs-only       # Deploy only prerequisites
 make operator-deploy           # Deploy pattern via VP Operator (use after prereqs)
