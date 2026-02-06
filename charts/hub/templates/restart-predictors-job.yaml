@@ -1,0 +1,211 @@
+{{- if and .Values.modelServing.enabled .Values.models }}
+{{- /*
+  Post-Deployment Restart Job for InferenceService Predictors
+
+  Purpose: Fixes race condition where predictor pods start (wave 2) before
+           models are trained and written to PVC (wave 3+).
+
+  Issue: KServe sklearn server loads models only at startup and does not retry.
+         Predictors report Ready: True even when models are missing, causing
+         ModelMissingError on inference requests.
+
+  Solution: This job runs at sync-wave 5 (after notebooks complete) and:
+            1. Waits for model.pkl files to exist on PVC
+            2. Restarts predictor deployments to trigger model reload
+            3. Validates pods reach Running state after restart
+
+  Reference: Issue #34, ADR-054
+*/ -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restart-predictors-after-models-ready
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/component: model-serving
+    app.kubernetes.io/name: restart-predictors-job
+    app.kubernetes.io/part-of: self-healing-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    description: "Waits for trained models to exist, then restarts InferenceService predictor pods"
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: model-serving
+        app.kubernetes.io/name: restart-predictors-job
+    spec:
+      serviceAccountName: self-healing-operator
+      restartPolicy: OnFailure
+      initContainers:
+      # Wait for PVC to be mounted
+      - name: wait-for-pvc
+        image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Waiting for PVC model-storage-pvc to be mounted..."
+          MAX_WAIT=300  # 5 minutes
+          ELAPSED=0
+          INTERVAL=10
+
+          while [ $ELAPSED -lt $MAX_WAIT ]; do
+            if [ -d /mnt/models ]; then
+              echo "✓ PVC is mounted successfully!"
+              exit 0
+            fi
+            echo "PVC not yet available, waiting ${INTERVAL}s... (${ELAPSED}s/${MAX_WAIT}s)"
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
+          done
+
+          echo "ERROR: PVC did not become available within ${MAX_WAIT}s"
+          exit 1
+        volumeMounts:
+        - name: model-storage
+          mountPath: /mnt/models
+      containers:
+      - name: restart-predictors
+        image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          NAMESPACE="{{ .Values.main.namespace }}"
+          MAX_WAIT_PER_MODEL=600  # 10 minutes per model
+          POLL_INTERVAL=10
+          RESTART_TIMEOUT=300  # 5 minutes for pod restart
+
+          echo "=========================================="
+          echo "Restart Predictors After Models Ready"
+          echo "=========================================="
+          echo "Namespace: $NAMESPACE"
+          echo "Max wait per model: ${MAX_WAIT_PER_MODEL}s"
+          echo "Poll interval: ${POLL_INTERVAL}s"
+          echo "=========================================="
+
+          # Function to wait for model file
+          wait_for_model() {
+            local model_name=$1
+            local model_path="/mnt/models/${model_name}/model.pkl"
+            local elapsed=0
+
+            echo ""
+            echo "Waiting for model: $model_name"
+            echo "Expected path: $model_path"
+
+            while [ $elapsed -lt $MAX_WAIT_PER_MODEL ]; do
+              if [ -f "$model_path" ]; then
+                local file_size=$(stat -f%z "$model_path" 2>/dev/null || stat -c%s "$model_path" 2>/dev/null || echo "unknown")
+                echo "✓ Model file found: $model_path (size: $file_size bytes)"
+                return 0
+              fi
+
+              echo "⏳ Model not found, waiting ${POLL_INTERVAL}s... (${elapsed}s/${MAX_WAIT_PER_MODEL}s)"
+              sleep $POLL_INTERVAL
+              elapsed=$((elapsed + POLL_INTERVAL))
+            done
+
+            echo "✗ ERROR: Model file not found after ${MAX_WAIT_PER_MODEL}s: $model_path"
+            return 1
+          }
+
+          # Function to restart predictor deployment
+          restart_predictor() {
+            local service_name=$1
+            local deployment_name="${service_name}-predictor"
+
+            echo ""
+            echo "Restarting predictor for InferenceService: $service_name"
+            echo "Deployment name: $deployment_name"
+
+            # Get current pod count
+            local pod_count=$(oc get pods -n "$NAMESPACE" \
+              -l serving.kserve.io/inferenceservice="$service_name" \
+              --no-headers 2>/dev/null | wc -l | tr -d ' ')
+
+            if [ "$pod_count" -eq 0 ]; then
+              echo "⚠️  WARNING: No predictor pods found for $service_name, skipping restart"
+              return 0
+            fi
+
+            echo "Current pod count: $pod_count"
+
+            # Restart deployment
+            if oc rollout restart deployment/"$deployment_name" -n "$NAMESPACE" 2>/dev/null; then
+              echo "✓ Deployment restart triggered"
+            else
+              echo "⚠️  WARNING: Could not restart deployment $deployment_name (may not exist yet)"
+              # Try deleting pods directly as fallback
+              echo "Attempting direct pod deletion..."
+              oc delete pods -n "$NAMESPACE" \
+                -l serving.kserve.io/inferenceservice="$service_name" \
+                --wait=false 2>/dev/null || true
+            fi
+
+            # Wait for pods to be running
+            echo "Waiting for pods to restart..."
+            local elapsed=0
+            while [ $elapsed -lt $RESTART_TIMEOUT ]; do
+              local ready_count=$(oc get pods -n "$NAMESPACE" \
+                -l serving.kserve.io/inferenceservice="$service_name" \
+                --field-selector=status.phase=Running \
+                --no-headers 2>/dev/null | wc -l | tr -d ' ')
+
+              if [ "$ready_count" -ge "$pod_count" ]; then
+                echo "✓ All pods are running ($ready_count/$pod_count)"
+                oc get pods -n "$NAMESPACE" -l serving.kserve.io/inferenceservice="$service_name"
+                return 0
+              fi
+
+              echo "⏳ Waiting for pods... ($ready_count/$pod_count running, elapsed: ${elapsed}s)"
+              sleep 5
+              elapsed=$((elapsed + 5))
+            done
+
+            echo "⚠️  WARNING: Timeout waiting for pods to restart (${elapsed}s/${RESTART_TIMEOUT}s)"
+            oc get pods -n "$NAMESPACE" -l serving.kserve.io/inferenceservice="$service_name"
+            return 1
+          }
+
+          # Process each model
+          {{- range .Values.models }}
+          MODEL_NAME="{{ .name }}"
+          echo ""
+          echo "=========================================="
+          echo "Processing model: $MODEL_NAME"
+          echo "=========================================="
+
+          # Wait for model file
+          if ! wait_for_model "$MODEL_NAME"; then
+            echo "✗ Failed to find model for $MODEL_NAME, skipping restart"
+            continue
+          fi
+
+          # Restart predictor
+          if restart_predictor "$MODEL_NAME"; then
+            echo "✓ Successfully restarted predictor for $MODEL_NAME"
+          else
+            echo "⚠️  Warning: Restart may not have completed for $MODEL_NAME"
+          fi
+          {{- end }}
+
+          echo ""
+          echo "=========================================="
+          echo "✓✓✓ All predictors restarted successfully ✓✓✓"
+          echo "=========================================="
+        volumeMounts:
+        - name: model-storage
+          mountPath: /mnt/models
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-storage-pvc
+  backoffLimit: 3
+  activeDeadlineSeconds: 1800  # 30 minutes total timeout
+{{- end }}

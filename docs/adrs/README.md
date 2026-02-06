@@ -48,6 +48,9 @@ This directory contains Architecture Decision Records for the Self-Healing Platf
 | [ADR-040](040-extensible-kserve-model-registry.md) | Extensible KServe Model Registry | Accepted | 2026-01-07 | Custom model registration via values.yaml |
 | [ADR-041](041-model-storage-and-versioning-strategy.md) | Model Storage and Versioning Strategy | Accepted | 2025-12-09 | One directory per InferenceService |
 | [ADR-042](042-argocd-deployment-lessons-learned.md) | ArgoCD Deployment Lessons Learned | Accepted | 2025-11-28 | Deployment patterns and best practices |
+|| [ADR-043](043-deployment-stability-health-checks.md) | Deployment Stability and Cross-Namespace Health Check Patterns | Implemented | 2026-01-24 | Init containers, startup probes, health checks |
+|| [ADR-053](053-tekton-model-training-pipelines.md) | Tekton Pipelines for Model Training | Proposed | 2026-01-27 | Replaces ArgoCD sync wave approach |
+|| [ADR-054](054-inferenceservice-model-readiness-race-condition.md) | InferenceService Model Readiness Race Condition Fix | Accepted | 2026-02-06 | Post-deploy restart job for predictor pods |
 
 ### Meta-Documents
 
@@ -86,13 +89,26 @@ Object storage, RBAC, routing, storage strategies, and model versioning.
 ### Coordination & Integration (038-040)
 Coordination engine architecture, KServe integration, and model registry.
 
-### Deployment & Lessons (042)
-ArgoCD deployment patterns and best practices.
+### Deployment & Lessons (042-043, 053-054)
+ArgoCD deployment patterns, health checks, Tekton pipelines, and race condition fixes.
 
 ### Advanced Features (031)
 Custom image building strategies and Docker configuration.
 
 ## Recent Changes
+
+### 2026-02-06: InferenceService Model Readiness Race Condition Fix
+
+**Major Fix**:
+- **ADR-054** created and accepted: InferenceService Model Readiness Race Condition Fix
+- Fixes Issue #34: Predictor pods start before models are trained
+- Solution: Post-deploy restart job at sync-wave 5 that waits for models and restarts predictors
+- Added inference endpoint health check to post-deployment validation script
+
+**Implementation**:
+- New Helm template: `charts/hub/templates/restart-predictors-job.yaml`
+- Updated validation script: `scripts/post-deployment-validation.sh` (Check 7)
+- Prevents silent ModelMissingError failures in workshop scenarios
 
 ### 2026-01-07: Go Coordination Engine and KServe Integration
 
@@ -228,6 +244,6 @@ This README is maintained by the Architecture Team and should be updated wheneve
 - ADRs are superseded or deprecated
 - Major platform versions change
 
-**Last Updated**: 2026-01-15
+**Last Updated**: 2026-02-06
 **Maintained By**: Architecture Team
 **Review Frequency**: Monthly or when ADRs change

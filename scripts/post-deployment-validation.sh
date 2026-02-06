@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 # Validation counters
 PASS_COUNT=0
 FAIL_COUNT=0
-TOTAL_CHECKS=7
+TOTAL_CHECKS=8
 
 # Helper functions
 print_header() {
@@ -431,9 +431,151 @@ fi
 check_result "$COMPONENT_STATUS"
 
 # ============================================================
-# 7. Error Diagnostics
+# 7. InferenceService Model Health Check
 # ============================================================
-print_section "7" "Error Diagnostics"
+print_section "7" "InferenceService Model Health Check"
+INFERENCE_STATUS="PASS"
+
+if oc get inferenceservices -n self-healing-platform &>/dev/null 2>&1; then
+    ISVC_COUNT=$(oc get inferenceservices -n self-healing-platform --no-headers 2>/dev/null | wc -l)
+    if [ "$ISVC_COUNT" -gt 0 ]; then
+        echo ""
+        print_info "Testing inference endpoints for ${ISVC_COUNT} InferenceService(s)..."
+        
+        while IFS= read -r line; do
+            ISVC_NAME=$(echo "$line" | awk '{print $1}')
+            ISVC_READY=$(echo "$line" | awk '{print $2}')
+            
+            echo ""
+            echo -e "${CYAN}Testing: ${ISVC_NAME}${NC}"
+            print_info "Status: ${ISVC_READY}"
+            
+            # Get predictor pod IP (RawDeployment mode uses headless service)
+            POD_IP=$(oc get pods -n self-healing-platform \
+              -l serving.kserve.io/inferenceservice="$ISVC_NAME" \
+              -o jsonpath='{.items[0].status.podIP}' 2>/dev/null || echo "")
+            
+            if [ -z "$POD_IP" ]; then
+                print_fail "No predictor pod found for ${ISVC_NAME}"
+                INFERENCE_STATUS="FAIL"
+                continue
+            fi
+            
+            print_info "Pod IP: ${POD_IP}"
+            
+            # Determine test data size based on model name
+            if [ "$ISVC_NAME" = "anomaly-detector" ]; then
+                TEST_DATA_SIZE=45
+            elif [ "$ISVC_NAME" = "predictive-analytics" ]; then
+                TEST_DATA_SIZE=120
+            else
+                TEST_DATA_SIZE=45  # Default
+            fi
+            
+            # Generate test payload (simple array of random floats)
+            TEST_PAYLOAD=$(python3 -c "
+import json
+import random
+random.seed(42)
+test_data = [round(random.random(), 4) for _ in range($TEST_DATA_SIZE)]
+print(json.dumps({'instances': [test_data]}))
+" 2>/dev/null || echo "")
+            
+            if [ -z "$TEST_PAYLOAD" ]; then
+                print_warn "Could not generate test payload (python3 not available), skipping test"
+                continue
+            fi
+            
+            # Test inference endpoint
+            URL="http://${POD_IP}:8080/v1/models/${ISVC_NAME}:predict"
+            print_info "Testing endpoint: ${URL}"
+            
+            # Retry logic (service might be starting up)
+            MAX_RETRIES=5
+            RETRY_DELAY=5
+            TEST_PASSED=false
+            
+            for attempt in $(seq 1 $MAX_RETRIES); do
+                print_info "Attempt ${attempt}/${MAX_RETRIES}..."
+                
+                # Send prediction request
+                RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$URL" \
+                  -H "Content-Type: application/json" \
+                  -d "$TEST_PAYLOAD" \
+                  --max-time 10 2>/dev/null || echo "")
+                
+                HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+                RESPONSE_BODY=$(echo "$RESPONSE" | head -n-1)
+                
+                if [ "$HTTP_CODE" = "200" ]; then
+                    # Check if response contains predictions (not an error)
+                    if echo "$RESPONSE_BODY" | grep -q "predictions\|predictions\|\"error\""; then
+                        if echo "$RESPONSE_BODY" | grep -q "\"error\""; then
+                            ERROR_MSG=$(echo "$RESPONSE_BODY" | python3 -c "import sys, json; print(json.load(sys.stdin).get('error', 'Unknown error'))" 2>/dev/null || echo "Unknown error")
+                            if echo "$ERROR_MSG" | grep -qi "model.*not.*exist\|ModelMissingError"; then
+                                print_fail "Model not loaded: ${ERROR_MSG}"
+                                print_info "This indicates the predictor started before the model was trained."
+                                print_info "Solution: Wait for restart-predictors-after-models-ready job to complete, or manually restart:"
+                                print_info "  oc rollout restart deployment/${ISVC_NAME}-predictor -n self-healing-platform"
+                                INFERENCE_STATUS="FAIL"
+                                TEST_PASSED=false
+                                break
+                            else
+                                print_fail "Inference error: ${ERROR_MSG}"
+                                INFERENCE_STATUS="FAIL"
+                                TEST_PASSED=false
+                                break
+                            fi
+                        else
+                            print_pass "Inference successful (HTTP ${HTTP_CODE})"
+                            print_info "Response preview: $(echo "$RESPONSE_BODY" | head -c 100)..."
+                            TEST_PASSED=true
+                            break
+                        fi
+                    else
+                        print_pass "Inference successful (HTTP ${HTTP_CODE})"
+                        print_info "Response: ${RESPONSE_BODY}"
+                        TEST_PASSED=true
+                        break
+                    fi
+                elif [ "$HTTP_CODE" = "000" ] || [ -z "$HTTP_CODE" ]; then
+                    print_warn "Connection failed (service may be starting up)"
+                    if [ $attempt -lt $MAX_RETRIES ]; then
+                        print_info "Retrying in ${RETRY_DELAY}s..."
+                        sleep $RETRY_DELAY
+                    fi
+                else
+                    print_fail "Unexpected HTTP status: ${HTTP_CODE}"
+                    print_info "Response: ${RESPONSE_BODY}"
+                    INFERENCE_STATUS="FAIL"
+                    TEST_PASSED=false
+                    break
+                fi
+            done
+            
+            if [ "$TEST_PASSED" = false ]; then
+                print_fail "Inference test failed for ${ISVC_NAME} after ${MAX_RETRIES} attempts"
+                INFERENCE_STATUS="FAIL"
+            fi
+            
+        done < <(oc get inferenceservices -n self-healing-platform --no-headers 2>/dev/null)
+        
+        if [ "$INFERENCE_STATUS" = "PASS" ]; then
+            print_pass "All inference endpoints are healthy and serving predictions"
+        fi
+    else
+        print_info "No InferenceServices found (model serving not deployed)"
+    fi
+else
+    print_info "KServe not available (InferenceService CRD not installed)"
+fi
+
+check_result "$INFERENCE_STATUS"
+
+# ============================================================
+# 8. Error Diagnostics
+# ============================================================
+print_section "8" "Error Diagnostics"
 
 echo ""
 # ArgoCD Application Errors
@@ -501,6 +643,14 @@ if [ "$POD_HEALTH_STATUS" = "FAIL" ] && [ "$POD_COUNT" -eq 0 ]; then
     echo "2. No Pods Deployed:"
     echo "   - ArgoCD application must sync successfully first"
     echo "   - Fix the Helm template error before pods can be created"
+fi
+
+if [ "$INFERENCE_STATUS" = "FAIL" ]; then
+    echo "4. InferenceService Model Not Loaded:"
+    echo "   - Predictor pods started before models were trained (race condition)"
+    echo "   - Wait for restart-predictors-after-models-ready job to complete"
+    echo "   - Or manually restart: oc rollout restart deployment/<model-name>-predictor -n self-healing-platform"
+    echo "   - Reference: Issue #34, ADR-054"
 fi
 
 if [ "$NAMESPACE_STATUS" = "FAIL" ]; then
