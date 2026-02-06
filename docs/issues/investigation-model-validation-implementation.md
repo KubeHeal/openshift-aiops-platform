@@ -220,6 +220,38 @@ The pod only executes the notebook via Papermill. There is no evidence of modelV
 
 ---
 
-**Status**: Investigation complete - **modelValidation appears NOT implemented**  
+## Test Configuration Added
+
+**Date**: 2026-02-06  
+**Action**: Added explicit `modelValidation` configuration to `predictive-analytics-kserve` notebook in `values-hub.yaml`:
+
+```yaml
+modelValidation:
+  enabled: true
+  platform: kserve
+  phase: both
+  targetModels:
+    - predictive-analytics
+  predictionValidation:
+    enabled: true
+    testData: '{"instances": [[0.5, 0.6, 0.4, 100, 80]]}'
+    tolerance: "0.1"
+  timeout: "10m"
+```
+
+**Test Plan**:
+1. ✅ Configuration added and committed
+2. ⏳ Wait for ArgoCD sync
+3. ⏳ Monitor pod spec for changes (init containers, env vars)
+4. ⏳ Check operator logs for modelValidation processing
+5. ⏳ Verify status.modelValidationResult appears
+
+**Expected Results**:
+- **If implemented**: Pod spec changes, operator processes modelValidation, status fields populated
+- **If NOT implemented**: No changes, no status fields, confirms it's just a CRD definition
+
+---
+
+**Status**: Testing in progress - **modelValidation configuration added for testing**  
 **Priority**: Medium (affects model deployment validation strategy)  
-**Labels**: `investigation`, `operator`, `model-validation`, `documentation`, `bug` (if not implemented)
+**Labels**: `investigation`, `operator`, `model-validation`, `documentation`, `bug` (if not implemented), `testing`
