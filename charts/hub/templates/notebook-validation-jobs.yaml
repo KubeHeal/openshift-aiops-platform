@@ -85,13 +85,15 @@ spec:
     - secretRef:
         name: model-storage-config
     # Mount shared model storage for training output
-    # GPU jobs use model-storage-gpu-pvc (gp3-csi), non-GPU jobs use model-storage-pvc (ocs-storagecluster-cephfs)
+    # GPU jobs use model-storage-gpu-pvc (gp3-csi) - GPU nodes cannot mount ocs-storagecluster-cephfs
+    # Non-GPU jobs use model-storage-pvc (ocs-storagecluster-cephfs)
+    # Models are copied from GPU PVC to final PVC after training via post-training job
     volumeMounts:
     {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) }}
     - name: model-storage-gpu
       mountPath: /mnt/models-gpu
-    - name: model-storage
-      mountPath: /mnt/models  # Also mount final PVC for post-training copy
+    # NOTE: Do NOT mount final PVC during GPU training - GPU nodes cannot mount CephFS
+    # Model will be copied from GPU PVC to final PVC after training completes
     {{- else }}
     - name: model-storage
       mountPath: /mnt/models
@@ -101,9 +103,7 @@ spec:
     - name: model-storage-gpu
       persistentVolumeClaim:
         claimName: model-storage-gpu-pvc
-    - name: model-storage
-      persistentVolumeClaim:
-        claimName: model-storage-pvc
+    # NOTE: Final PVC not mounted for GPU jobs - will be copied after training
     {{- else }}
     - name: model-storage
       persistentVolumeClaim:

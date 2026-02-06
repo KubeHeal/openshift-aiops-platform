@@ -47,34 +47,48 @@ spec:
       serviceAccountName: self-healing-operator
       restartPolicy: OnFailure
       initContainers:
-      # Wait for PVC to be mounted
-      - name: wait-for-pvc
+      # Wait for PVCs to be mounted
+      - name: wait-for-pvcs
         image: registry.access.redhat.com/ubi9/ubi-minimal:latest
         command:
         - /bin/bash
         - -c
         - |
           set -e
-          echo "Waiting for PVC model-storage-pvc to be mounted..."
+          echo "Waiting for PVCs to be mounted..."
           MAX_WAIT=300  # 5 minutes
           ELAPSED=0
           INTERVAL=10
 
+          # Wait for final PVC (required)
           while [ $ELAPSED -lt $MAX_WAIT ]; do
             if [ -d /mnt/models ]; then
-              echo "✓ PVC is mounted successfully!"
-              exit 0
+              echo "✓ Final PVC (model-storage-pvc) is mounted successfully!"
+              break
             fi
-            echo "PVC not yet available, waiting ${INTERVAL}s... (${ELAPSED}s/${MAX_WAIT}s)"
+            echo "Final PVC not yet available, waiting ${INTERVAL}s... (${ELAPSED}s/${MAX_WAIT}s)"
             sleep $INTERVAL
             ELAPSED=$((ELAPSED + INTERVAL))
           done
 
-          echo "ERROR: PVC did not become available within ${MAX_WAIT}s"
-          exit 1
+          if [ ! -d /mnt/models ]; then
+            echo "ERROR: Final PVC did not become available within ${MAX_WAIT}s"
+            exit 1
+          fi
+
+          # Check for GPU PVC (optional - may not exist for non-GPU models)
+          if [ -d /mnt/models-gpu ]; then
+            echo "✓ GPU PVC (model-storage-gpu-pvc) is also mounted"
+          else
+            echo "ℹ️  GPU PVC not mounted (not needed for this model or not available)"
+          fi
+
+          echo "✓ All required PVCs are ready"
         volumeMounts:
         - name: model-storage
           mountPath: /mnt/models
+        - name: model-storage-gpu
+          mountPath: /mnt/models-gpu
       containers:
       - name: restart-predictors
         image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
@@ -96,6 +110,57 @@ spec:
           echo "Poll interval: ${POLL_INTERVAL}s"
           echo "=========================================="
 
+          # Function to copy model from GPU PVC to final PVC (if needed)
+          copy_model_from_gpu() {
+            local model_name=$1
+            local gpu_path="/mnt/models-gpu/${model_name}/model.pkl"
+            local final_path="/mnt/models/${model_name}/model.pkl"
+            local final_dir="/mnt/models/${model_name}"
+
+            # Check if GPU PVC is available and has model
+            if [ ! -d /mnt/models-gpu ]; then
+              echo "ℹ️  GPU PVC not mounted (not needed for this model)"
+              return 0
+            fi
+
+            if [ ! -f "$gpu_path" ]; then
+              echo "ℹ️  Model not found in GPU PVC (not GPU-trained)"
+              return 0
+            fi
+
+            # Check if already in final PVC
+            if [ -f "$final_path" ]; then
+              echo "ℹ️  Model already exists in final PVC, skipping copy"
+              return 0
+            fi
+
+            echo "🔄 Copying model from GPU PVC to final PVC..."
+            echo "   Source: $gpu_path"
+            echo "   Target: $final_path"
+
+            # Create target directory
+            mkdir -p "$final_dir"
+
+            # Copy model file
+            cp "$gpu_path" "$final_path"
+
+            # Verify copy
+            if [ -f "$final_path" ]; then
+              local source_size=$(stat -f%z "$gpu_path" 2>/dev/null || stat -c%s "$gpu_path" 2>/dev/null || echo "0")
+              local target_size=$(stat -f%z "$final_path" 2>/dev/null || stat -c%s "$final_path" 2>/dev/null || echo "0")
+              if [ "$source_size" = "$target_size" ] && [ "$source_size" != "0" ]; then
+                echo "✓ Model copied successfully! (size: $source_size bytes)"
+                return 0
+              else
+                echo "✗ ERROR: Copy size mismatch (source: $source_size, target: $target_size)"
+                return 1
+              fi
+            else
+              echo "✗ ERROR: Copy failed - target file not found"
+              return 1
+            fi
+          }
+
           # Function to wait for model file
           wait_for_model() {
             local model_name=$1
@@ -106,6 +171,10 @@ spec:
             echo "Waiting for model: $model_name"
             echo "Expected path: $model_path"
 
+            # First, try copying from GPU PVC if available
+            copy_model_from_gpu "$model_name"
+
+            # Then wait for model in final PVC
             while [ $elapsed -lt $MAX_WAIT_PER_MODEL ]; do
               if [ -f "$model_path" ]; then
                 local file_size=$(stat -f%z "$model_path" 2>/dev/null || stat -c%s "$model_path" 2>/dev/null || echo "unknown")
@@ -209,10 +278,15 @@ spec:
         volumeMounts:
         - name: model-storage
           mountPath: /mnt/models
+        - name: model-storage-gpu
+          mountPath: /mnt/models-gpu
       volumes:
       - name: model-storage
         persistentVolumeClaim:
           claimName: model-storage-pvc
+      - name: model-storage-gpu
+        persistentVolumeClaim:
+          claimName: model-storage-gpu-pvc
   backoffLimit: 3
   activeDeadlineSeconds: 1800  # 30 minutes total timeout
 {{- end }}
