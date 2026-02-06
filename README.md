@@ -100,7 +100,7 @@ If your cluster needs additional worker nodes or OpenShift Data Foundation (ODF)
 oc login <cluster-api-url>
 
 # Configure cluster infrastructure (adds workers, installs ODF)
-./scripts/configure-cluster-infrastructure.sh
+./scripts/configure-cluster-infrastructure.sh --min-workers 3
 
 # Or with options:
 ./scripts/configure-cluster-infrastructure.sh --min-workers 3 --odf-storage-size 512Gi
