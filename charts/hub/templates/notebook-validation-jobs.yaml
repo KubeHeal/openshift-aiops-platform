@@ -68,6 +68,17 @@ spec:
         {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) }}
         nvidia.com/gpu: {{ .resources.gpu.count | default "1" | quote }}
         {{- end }}
+    {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) }}
+    # GPU node tolerations - required to schedule on GPU nodes with nvidia.com/gpu=True:NoSchedule taint
+    tolerations:
+    - key: nvidia.com/gpu
+      operator: Equal
+      value: "True"
+      effect: NoSchedule
+    # Prefer GPU nodes for scheduling
+    nodeSelector:
+      nvidia.com/gpu.present: "true"
+    {{- end }}
     # Use self-healing-workbench SA for Prometheus access and other cluster permissions
     serviceAccountName: self-healing-workbench
     envFrom:
