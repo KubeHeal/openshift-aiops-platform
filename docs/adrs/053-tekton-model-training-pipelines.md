@@ -625,9 +625,8 @@ Train model → Health check → Deploy only if healthy ✅
 
 ### Files to Create
 
-1. `charts/hub/templates/tekton-model-training-pipeline.yaml` - Pipeline + Tasks
-2. `charts/hub/templates/tekton-model-training-triggers.yaml` - CronJobs + TriggerTemplates
-3. `charts/hub/templates/tekton-model-health-checks.yaml` - Health check tasks
+1. `charts/hub/templates/tekton-model-training-pipeline.yaml` - Two pipelines (CPU + GPU), six tasks
+2. `charts/hub/templates/tekton-model-training-cronjobs.yaml` - CronJobs + RBAC
 
 ### Files to Modify
 
@@ -702,6 +701,83 @@ oc create job --from=cronjob/weekly-anomaly-detector-training test-cron-$(date +
 
 # Monitor
 oc logs -f job/test-cron-* -n self-healing-platform
+```
+
+## Amendment: CPU/GPU Pipeline Split (2026-02-16, Issue #38)
+
+### Problem
+
+The original single-pipeline design used `sed` to patch the NotebookValidationJob YAML
+at runtime, replacing the CPU resources block with a GPU block (resources, tolerations,
+nodeSelector) for the `predictive-analytics` model:
+
+```bash
+# Original (broken) approach
+JOB_YAML=$(echo "$JOB_YAML" | sed '/resources:/,/cpu: "4000m"/c\'"$GPU_CONFIG")
+```
+
+The `sed` `c\` command cannot handle multi-line replacement text without explicit
+line-continuation backslashes. When `$GPU_CONFIG` expanded to multiple lines, `sed`
+treated only the first line as the replacement and interpreted subsequent lines
+(e.g., `memory: "4Gi"`) as new sed commands, failing with:
+
+```
+sed: -e expression #1, char 77: unknown command: `m'
+```
+
+This blocked all predictive-analytics training and made the pipeline fragile for
+any custom model using a different notebook path.
+
+### Solution
+
+Split into two separate pipelines with static YAML heredocs (no `sed`, no shell
+variable interpolation for the resources block):
+
+| Pipeline | Task | Resources | Use Case |
+|----------|------|-----------|----------|
+| `model-training-pipeline` | `run-notebook-validation` | CPU only (4Gi/2CPU) | anomaly-detector, custom CPU models |
+| `model-training-pipeline-gpu` | `run-notebook-validation-gpu` | GPU (4Gi/2CPU/1 GPU + tolerations + nodeSelector) | predictive-analytics, custom GPU models |
+
+### Updated Architecture
+
+```
+Tekton Pipelines (Model Training & Validation)
+
+1. model-training-pipeline (CPU)
+   train-model -> health-check -> deploy-model -> post-deployment-check
+
+2. model-training-pipeline-gpu (GPU)
+   train-model -> copy-gpu-model -> health-check -> deploy-model -> post-deployment-check
+```
+
+Shared tasks used by both pipelines:
+- `validate-model-health` - Model file, load, and prediction checks
+- `restart-inference-service` - Pod restart for KServe
+- `test-inference-endpoint` - Endpoint validation
+- `copy-gpu-model-to-shared` - GPU PVC to shared PVC copy (GPU pipeline only)
+
+### Updated Files
+
+- `charts/hub/templates/tekton-model-training-pipeline.yaml` - Two tasks + two pipelines
+- `charts/hub/templates/tekton-model-training-cronjobs.yaml` - predictive-analytics uses `model-training-pipeline-gpu`
+- `scripts/trigger-model-training.sh` - `--gpu` flag selects pipeline; removed `gpu-trained`/`training-timeout` params
+
+### Custom Model Support
+
+Users can now train any custom model by providing a notebook path and inference service name:
+
+```bash
+# CPU custom model
+./scripts/trigger-model-training.sh \
+  --notebook-path notebooks/02-anomaly-detection/my-custom-model.ipynb \
+  --inference-service my-custom-model \
+  my-custom-model 168
+
+# GPU custom model
+./scripts/trigger-model-training.sh \
+  --notebook-path notebooks/02-anomaly-detection/my-gpu-model.ipynb \
+  --inference-service my-gpu-model --gpu \
+  my-gpu-model 720
 ```
 
 ## Related ADRs

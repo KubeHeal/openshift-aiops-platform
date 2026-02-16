@@ -67,8 +67,6 @@ spec:
                         value: "168"
                       - name: inference-service-name
                         value: "anomaly-detector"
-                      - name: gpu-trained
-                        value: "false"
                       - name: health-check-enabled
                         value: "{{ .Values.tekton.modelTraining.healthCheckEnabled | default "true" }}"
                       - name: git-url
@@ -92,7 +90,7 @@ spec:
 # Implements ADR-053: Scheduled model retraining via Tekton
 #
 # Schedule: Every Sunday at 3:00 AM UTC (1 hour after anomaly-detector)
-# Triggers: model-training-pipeline for predictive-analytics
+# Triggers: model-training-pipeline-gpu for predictive-analytics
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -143,7 +141,7 @@ spec:
                       triggered-by: cronjob
                   spec:
                     pipelineRef:
-                      name: model-training-pipeline
+                      name: model-training-pipeline-gpu
                     params:
                       - name: model-name
                         value: "predictive-analytics"
@@ -155,8 +153,6 @@ spec:
                         value: "720"
                       - name: inference-service-name
                         value: "predictive-analytics"
-                      - name: gpu-trained
-                        value: "true"
                       - name: health-check-enabled
                         value: "{{ .Values.tekton.modelTraining.healthCheckEnabled | default "true" }}"
                       - name: git-url

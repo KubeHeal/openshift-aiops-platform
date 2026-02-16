@@ -1,20 +1,59 @@
 #!/bin/bash
 # Manually trigger model training pipeline
+#
+# Two pipelines are available (see ADR-053):
+#   model-training-pipeline      - CPU models (default)
+#   model-training-pipeline-gpu  - GPU models (--gpu flag)
 
 set -e
 
+# Optional flags (for custom models or overrides)
+USE_GPU="false"
+NOTEBOOK_PATH=""
+INFERENCE_SERVICE=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --notebook-path)
+            NOTEBOOK_PATH="$2"
+            shift 2
+            ;;
+        --inference-service)
+            INFERENCE_SERVICE="$2"
+            shift 2
+            ;;
+        --gpu)
+            USE_GPU="true"
+            shift
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
 if [ -z "$1" ]; then
-    echo "Usage: $0 <model-name> [training-hours] [data-source] [namespace]"
+    echo "Usage: $0 [OPTIONS] <model-name> [training-hours] [data-source] [namespace]"
+    echo ""
+    echo "Options (optional, for custom models or overrides):"
+    echo "  --notebook-path PATH       Path to training notebook in repo (required for custom models)"
+    echo "  --inference-service NAME   InferenceService name to restart (required for custom models)"
+    echo "  --gpu                      Use GPU pipeline (model-training-pipeline-gpu)"
     echo ""
     echo "Examples:"
     echo "  $0 anomaly-detector                      # Train with default settings (24h, synthetic)"
     echo "  $0 anomaly-detector 168                  # Train with 1 week of data"
     echo "  $0 anomaly-detector 168 prometheus       # Train with 1 week of Prometheus data"
-    echo "  $0 predictive-analytics 720 prometheus   # Train with 30 days of Prometheus data"
+    echo "  $0 predictive-analytics 720 prometheus   # Train with 30 days of Prometheus data (auto-GPU)"
+    echo "  $0 --notebook-path notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb \\"
+    echo "     --inference-service my-model --gpu my-model 720"
     echo ""
-    echo "Supported models:"
-    echo "  - anomaly-detector"
-    echo "  - predictive-analytics"
+    echo "Built-in models:"
+    echo "  - anomaly-detector       (CPU pipeline)"
+    echo "  - predictive-analytics   (GPU pipeline)"
+    echo ""
+    echo "Custom models: pass --notebook-path and --inference-service with any model name."
+    echo "Add --gpu to use the GPU pipeline for custom models."
     echo ""
     echo "Training hours:"
     echo "  24   = 1 day (quick iteration, development)"
@@ -39,22 +78,33 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-# Determine notebook path and InferenceService based on model name
+# Set defaults for known models; require flags for custom models
 case $MODEL_NAME in
     anomaly-detector)
-        NOTEBOOK_PATH="notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb"
-        INFERENCE_SERVICE="anomaly-detector"
+        NOTEBOOK_PATH="${NOTEBOOK_PATH:-notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb}"
+        INFERENCE_SERVICE="${INFERENCE_SERVICE:-anomaly-detector}"
         ;;
     predictive-analytics)
-        NOTEBOOK_PATH="notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb"
-        INFERENCE_SERVICE="predictive-analytics"
+        NOTEBOOK_PATH="${NOTEBOOK_PATH:-notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb}"
+        INFERENCE_SERVICE="${INFERENCE_SERVICE:-predictive-analytics}"
+        USE_GPU="true"
         ;;
     *)
-        echo "Error: Unknown model '$MODEL_NAME'"
-        echo "Supported models: anomaly-detector, predictive-analytics"
-        exit 1
+        if [ -z "$NOTEBOOK_PATH" ] || [ -z "$INFERENCE_SERVICE" ]; then
+            echo "Error: Unknown model '$MODEL_NAME'. For custom models, pass --notebook-path and --inference-service."
+            exit 1
+        fi
         ;;
 esac
+
+# Select pipeline based on GPU flag
+if [ "$USE_GPU" = "true" ]; then
+    PIPELINE_NAME="model-training-pipeline-gpu"
+    PIPELINE_TIMEOUT="45m"
+else
+    PIPELINE_NAME="model-training-pipeline"
+    PIPELINE_TIMEOUT="30m"
+fi
 
 # Get Git configuration from values.yaml or use defaults
 GIT_URL="${GIT_URL:-https://github.com/KubeHeal/openshift-aiops-platform.git}"
@@ -63,13 +113,15 @@ GIT_REF="${GIT_REF:-main}"
 echo "=========================================="
 echo "Triggering Model Training"
 echo "=========================================="
-echo "Model:          $MODEL_NAME"
-echo "Notebook:       $NOTEBOOK_PATH"
-echo "Training hours: $TRAINING_HOURS ($(echo "scale=1; $TRAINING_HOURS/24" | bc) days)"
-echo "Data source:    $DATA_SOURCE"
-echo "Namespace:      $NAMESPACE"
-echo "Git URL:        $GIT_URL"
-echo "Git ref:        $GIT_REF"
+echo "Model:             $MODEL_NAME"
+echo "Notebook:          $NOTEBOOK_PATH"
+echo "Inference service: $INFERENCE_SERVICE"
+echo "Training hours:    $TRAINING_HOURS ($(echo "scale=1; $TRAINING_HOURS/24" | bc) days)"
+echo "Data source:       $DATA_SOURCE"
+echo "Pipeline:          $PIPELINE_NAME"
+echo "Namespace:         $NAMESPACE"
+echo "Git URL:           $GIT_URL"
+echo "Git ref:           $GIT_REF"
 echo "=========================================="
 echo ""
 
@@ -96,7 +148,7 @@ metadata:
     triggered-by: manual
 spec:
   pipelineRef:
-    name: model-training-pipeline
+    name: $PIPELINE_NAME
   params:
     - name: model-name
       value: "$MODEL_NAME"
@@ -114,13 +166,13 @@ spec:
       value: "$GIT_URL"
     - name: git-ref
       value: "$GIT_REF"
-  timeout: 45m
+  timeout: $PIPELINE_TIMEOUT
 EOF
 )
 
 PIPELINERUN_NAME=$(echo "$PIPELINERUN" | awk '{print $1}')
 
-echo -e "${GREEN}✅ PipelineRun created: $PIPELINERUN_NAME${NC}"
+echo -e "${GREEN}PipelineRun created: $PIPELINERUN_NAME${NC}"
 echo ""
 
 # Check if tkn is available

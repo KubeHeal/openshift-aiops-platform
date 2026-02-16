@@ -7,12 +7,20 @@
 #   ArgoCD: Deploy infrastructure (InferenceServices, PVCs, etc.)
 #   Tekton: Train models, validate health, deploy if healthy
 #
+# Two pipelines (Issue #38 fix):
+#   model-training-pipeline      - CPU models (e.g., anomaly-detector)
+#   model-training-pipeline-gpu  - GPU models (e.g., predictive-analytics)
+#
 # Benefits:
 #   - Health checks before deployment
 #   - No blocking of ArgoCD sync
 #   - Flexible triggers (cron, events, manual)
 #   - Rollback capability
+#   - Static YAML heredocs (no sed, no shell variable interpolation for resources)
 
+# =============================================================================
+# Task: run-notebook-validation (CPU)
+# =============================================================================
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -25,7 +33,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "3"
 spec:
   description: |
-    Executes a Jupyter notebook via NotebookValidationJob CRD.
+    Executes a Jupyter notebook via NotebookValidationJob CRD (CPU resources).
     Creates a job, waits for completion, and validates success.
 
   params:
@@ -72,7 +80,7 @@ spec:
         JOB_NAME="train-${MODEL_NAME}-$(date +%s)"
 
         echo "=========================================="
-        echo "Creating NotebookValidationJob"
+        echo "Creating NotebookValidationJob (CPU)"
         echo "=========================================="
         echo "Model:          $MODEL_NAME"
         echo "Notebook:       $NOTEBOOK_PATH"
@@ -83,18 +91,7 @@ spec:
         echo "Job Name:       $JOB_NAME"
         echo "=========================================="
 
-        # Set timeout based on model type
-        if [ "$MODEL_NAME" = "predictive-analytics" ]; then
-          TIMEOUT="45m"
-          NEEDS_GPU="true"
-        else
-          TIMEOUT="15m"
-          NEEDS_GPU="false"
-        fi
-
-        # Build NotebookValidationJob YAML dynamically
-        # This avoids shell variables in YAML that break Helm linting
-        JOB_YAML=$(cat <<YAML
+        cat <<EOF | oc apply -f -
         apiVersion: mlops.mlops.dev/v1alpha1
         kind: NotebookValidationJob
         metadata:
@@ -140,39 +137,11 @@ spec:
               limits:
                 memory: "8Gi"
                 cpu: "4000m"
-          timeout: $TIMEOUT
-        YAML
-        )
-
-        # Add GPU resources and tolerations for predictive-analytics model
-        # Using v1.0.6+ native CRD support for tolerations, nodeSelector, and affinity
-        if [ "$NEEDS_GPU" = "true" ]; then
-          # Build GPU config block (v1.0.6+ native support)
-          GPU_CONFIG='            resources:
-              requests:
-                memory: "4Gi"
-                cpu: "2000m"
-                nvidia.com/gpu: "1"
-              limits:
-                memory: "8Gi"
-                cpu: "4000m"
-                nvidia.com/gpu: "1"
-            tolerations:
-              - key: nvidia.com/gpu
-                operator: Exists
-                effect: NoSchedule
-            nodeSelector:
-              nvidia.com/gpu.present: "true"'
-
-          # Replace the resources section with GPU-enabled config
-          JOB_YAML=$(echo "$JOB_YAML" | sed '/resources:/,/cpu: "4000m"/c\'"$GPU_CONFIG")
-        fi
-
-        # Apply the job
-        echo "$JOB_YAML" | oc apply -f -
+          timeout: 15m
+        EOF
 
         echo "$JOB_NAME" > $(results.job-name.path)
-        echo "✅ NotebookValidationJob created: $JOB_NAME"
+        echo "NotebookValidationJob created: $JOB_NAME"
 
     - name: wait-for-completion
       image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
@@ -196,19 +165,19 @@ spec:
 
           case $PHASE in
             Succeeded)
-              echo "✅ Training completed successfully!"
+              echo "Training completed successfully!"
               exit 0
               ;;
             Failed)
-              echo "❌ Training failed!"
+              echo "Training failed!"
               oc get notebookvalidationjob $JOB_NAME -n {{ .Values.main.namespace }} -o yaml
               exit 1
               ;;
             Running)
-              echo "⏳ Training in progress (elapsed: ${ELAPSED}s)"
+              echo "Training in progress (elapsed: ${ELAPSED}s)"
               ;;
             *)
-              echo "⏳ Waiting for job to start (phase: $PHASE, elapsed: ${ELAPSED}s)"
+              echo "Waiting for job to start (phase: $PHASE, elapsed: ${ELAPSED}s)"
               ;;
           esac
 
@@ -216,10 +185,192 @@ spec:
           ELAPSED=$((ELAPSED + INTERVAL))
         done
 
-        echo "❌ Timeout waiting for training to complete"
+        echo "Timeout waiting for training to complete"
         exit 1
 
 ---
+# =============================================================================
+# Task: run-notebook-validation-gpu (GPU)
+# =============================================================================
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: run-notebook-validation-gpu
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/name: run-notebook-validation-gpu
+    app.kubernetes.io/part-of: model-training
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  description: |
+    Executes a Jupyter notebook via NotebookValidationJob CRD (GPU resources).
+    Includes GPU requests, tolerations, and nodeSelector for GPU-enabled nodes.
+
+  params:
+    - name: model-name
+      type: string
+      description: "Model name (e.g., predictive-analytics)"
+    - name: notebook-path
+      type: string
+      description: "Path to training notebook in git repo"
+    - name: data-source
+      type: string
+      default: "synthetic"
+      description: "Data source mode (synthetic|prometheus|hybrid)"
+    - name: training-hours
+      type: string
+      default: "168"
+      description: "Training window in hours (24=1day, 168=1week, 720=30days)"
+    - name: git-url
+      type: string
+      default: "{{ .Values.git.repoURL | default .Values.global.git.repoURL }}"
+      description: "Git repository URL"
+    - name: git-ref
+      type: string
+      default: "{{ .Values.git.revision | default .Values.global.git.revision | default "main" }}"
+      description: "Git branch/tag/commit"
+
+  results:
+    - name: job-name
+      description: "Name of created NotebookValidationJob"
+
+  steps:
+    - name: create-validation-job
+      image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+      script: |
+        #!/bin/bash
+        set -e
+
+        MODEL_NAME="$(params.model-name)"
+        NOTEBOOK_PATH="$(params.notebook-path)"
+        DATA_SOURCE="$(params.data-source)"
+        TRAINING_HOURS="$(params.training-hours)"
+        GIT_URL="$(params.git-url)"
+        GIT_REF="$(params.git-ref)"
+        JOB_NAME="train-${MODEL_NAME}-$(date +%s)"
+
+        echo "=========================================="
+        echo "Creating NotebookValidationJob (GPU)"
+        echo "=========================================="
+        echo "Model:          $MODEL_NAME"
+        echo "Notebook:       $NOTEBOOK_PATH"
+        echo "Data Source:    $DATA_SOURCE"
+        echo "Training Hours: $TRAINING_HOURS"
+        echo "Git URL:        $GIT_URL"
+        echo "Git Ref:        $GIT_REF"
+        echo "Job Name:       $JOB_NAME"
+        echo "=========================================="
+
+        cat <<EOF | oc apply -f -
+        apiVersion: mlops.mlops.dev/v1alpha1
+        kind: NotebookValidationJob
+        metadata:
+          name: $JOB_NAME
+          namespace: {{ .Values.main.namespace }}
+          labels:
+            model-name: $MODEL_NAME
+            triggered-by: tekton-pipeline
+        spec:
+          notebook:
+            path: $NOTEBOOK_PATH
+            git:
+              url: $GIT_URL
+              ref: $GIT_REF
+          podConfig:
+            containerImage: image-registry.openshift-image-registry.svc:5000/{{ .Values.main.namespace }}/notebook-validator:latest
+            env:
+              - name: DATA_SOURCE
+                value: "$DATA_SOURCE"
+              - name: PROMETHEUS_URL
+                value: "http://prometheus-k8s.openshift-monitoring.svc:9090"
+              - name: TRAINING_HOURS
+                value: "$TRAINING_HOURS"
+              - name: TRAINING_DAYS
+                value: "7"
+              - name: ANOMALY_RATE
+                value: "0.03"
+            envFrom:
+              - secretRef:
+                  name: model-storage-config
+            serviceAccountName: self-healing-workbench
+            volumeMounts:
+              - name: model-storage
+                mountPath: /mnt/models
+            volumes:
+              - name: model-storage
+                persistentVolumeClaim:
+                  claimName: model-storage-pvc
+            resources:
+              requests:
+                memory: "4Gi"
+                cpu: "2000m"
+                nvidia.com/gpu: "1"
+              limits:
+                memory: "8Gi"
+                cpu: "4000m"
+                nvidia.com/gpu: "1"
+            tolerations:
+              - key: nvidia.com/gpu
+                operator: Exists
+                effect: NoSchedule
+            nodeSelector:
+              nvidia.com/gpu.present: "true"
+          timeout: 45m
+        EOF
+
+        echo "$JOB_NAME" > $(results.job-name.path)
+        echo "NotebookValidationJob created: $JOB_NAME"
+
+    - name: wait-for-completion
+      image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+      script: |
+        #!/bin/bash
+        set -e
+
+        JOB_NAME=$(cat $(results.job-name.path))
+        TIMEOUT=2700  # 45 minutes
+        INTERVAL=15
+        ELAPSED=0
+
+        echo "=========================================="
+        echo "Waiting for NotebookValidationJob: $JOB_NAME"
+        echo "Timeout: ${TIMEOUT}s"
+        echo "=========================================="
+
+        while [ $ELAPSED -lt $TIMEOUT ]; do
+          PHASE=$(oc get notebookvalidationjob $JOB_NAME -n {{ .Values.main.namespace }} \
+            -o jsonpath='{.status.phase}' 2>/dev/null || echo "Unknown")
+
+          case $PHASE in
+            Succeeded)
+              echo "Training completed successfully!"
+              exit 0
+              ;;
+            Failed)
+              echo "Training failed!"
+              oc get notebookvalidationjob $JOB_NAME -n {{ .Values.main.namespace }} -o yaml
+              exit 1
+              ;;
+            Running)
+              echo "Training in progress (elapsed: ${ELAPSED}s)"
+              ;;
+            *)
+              echo "Waiting for job to start (phase: $PHASE, elapsed: ${ELAPSED}s)"
+              ;;
+          esac
+
+          sleep $INTERVAL
+          ELAPSED=$((ELAPSED + INTERVAL))
+        done
+
+        echo "Timeout waiting for training to complete"
+        exit 1
+
+---
+# =============================================================================
+# Task: validate-model-health (shared)
+# =============================================================================
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -258,16 +409,16 @@ spec:
         echo "=========================================="
 
         if [ ! -f "$MODEL_PATH" ]; then
-          echo "❌ Model file not found: $MODEL_PATH"
+          echo "Model file not found: $MODEL_PATH"
           exit 1
         fi
 
         SIZE=$(stat -c%s "$MODEL_PATH" 2>/dev/null || echo 0)
-        echo "✅ Model file exists: $MODEL_PATH"
+        echo "Model file exists: $MODEL_PATH"
         echo "   Size: $SIZE bytes"
 
         if [ "$SIZE" -lt 1000 ]; then
-          echo "❌ Model file too small (< 1KB), likely corrupted"
+          echo "Model file too small (< 1KB), likely corrupted"
           exit 1
         fi
 
@@ -291,7 +442,7 @@ spec:
 
         try:
             model = joblib.load(model_path)
-            print(f"✅ Model loaded successfully")
+            print(f"Model loaded successfully")
             print(f"   Type: {type(model)}")
             print(f"   Class: {model.__class__.__name__}")
 
@@ -299,7 +450,7 @@ spec:
             if hasattr(model, 'steps'):
                 print(f"   Pipeline steps: {[step[0] for step in model.steps]}")
         except Exception as e:
-            print(f"❌ Failed to load model: {e}")
+            print(f"Failed to load model: {e}")
             sys.exit(1)
 
     - name: test-predictions
@@ -325,30 +476,30 @@ spec:
 
         # Generate test data based on model type
         if model_name == "anomaly-detector":
-            # 45 features for Isolation Forest (5 metrics × 9 features each)
+            # 45 features for Isolation Forest (5 metrics x 9 features each)
             test_data = np.random.rand(10, 45)
             print(f"   Test data shape: {test_data.shape}")
         elif model_name == "predictive-analytics":
-            # 120 features for predictive analytics (24 samples × 5 metrics)
+            # 120 features for predictive analytics (24 samples x 5 metrics)
             test_data = np.random.rand(10, 120)
             print(f"   Test data shape: {test_data.shape}")
         else:
-            print(f"⚠️  Unknown model type: {model_name}, using 45 features")
+            print(f"Unknown model type: {model_name}, using 45 features")
             test_data = np.random.rand(10, 45)
 
         try:
             predictions = model.predict(test_data)
-            print(f"✅ Predictions successful")
+            print(f"Predictions successful")
             print(f"   Shape: {predictions.shape}")
             print(f"   Sample predictions: {predictions[:3]}")
 
             # Validate predictions are reasonable
             if len(predictions) != len(test_data):
-                print(f"❌ Prediction count mismatch: {len(predictions)} != {len(test_data)}")
+                print(f"Prediction count mismatch: {len(predictions)} != {len(test_data)}")
                 sys.exit(1)
 
         except Exception as e:
-            print(f"❌ Prediction failed: {e}")
+            print(f"Prediction failed: {e}")
             import traceback
             traceback.print_exc()
             sys.exit(1)
@@ -359,6 +510,9 @@ spec:
         claimName: model-storage-pvc
 
 ---
+# =============================================================================
+# Task: restart-inference-service (shared)
+# =============================================================================
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -405,7 +559,7 @@ spec:
           -l serving.kserve.io/inferenceservice=$SERVICE_NAME \
           --wait=false
 
-        echo "✅ Pods deleted, waiting for recreation..."
+        echo "Pods deleted, waiting for recreation..."
 
         # Wait for new pods to be running
         TIMEOUT=300
@@ -419,20 +573,23 @@ spec:
             --no-headers 2>/dev/null | wc -l)
 
           if [ "$READY_COUNT" -ge "$POD_COUNT" ]; then
-            echo "✅ InferenceService restarted successfully"
+            echo "InferenceService restarted successfully"
             oc get pods -n $NAMESPACE -l serving.kserve.io/inferenceservice=$SERVICE_NAME
             exit 0
           fi
 
-          echo "⏳ Waiting for pods to be ready ($READY_COUNT/$POD_COUNT, elapsed: ${ELAPSED}s)"
+          echo "Waiting for pods to be ready ($READY_COUNT/$POD_COUNT, elapsed: ${ELAPSED}s)"
           sleep $INTERVAL
           ELAPSED=$((ELAPSED + INTERVAL))
         done
 
-        echo "❌ Timeout waiting for pods to restart"
+        echo "Timeout waiting for pods to restart"
         exit 1
 
 ---
+# =============================================================================
+# Task: test-inference-endpoint (shared)
+# =============================================================================
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -492,7 +649,7 @@ spec:
             )
             pod_ip = result.stdout.strip()
             if not pod_ip:
-                print("❌ Failed to get pod IP")
+                print("Failed to get pod IP")
                 sys.exit(1)
 
             url = f"http://{pod_ip}:8080/v1/models/{service_name}:predict"
@@ -500,7 +657,7 @@ spec:
             print(f"URL: {url}")
             print("=" * 50)
         except subprocess.CalledProcessError as e:
-            print(f"❌ Failed to get pod IP: {e}")
+            print(f"Failed to get pod IP: {e}")
             sys.exit(1)
 
         # Generate test payload
@@ -524,25 +681,28 @@ spec:
 
                 if response.status_code == 200:
                     result = response.json()
-                    print(f"✅ Endpoint test successful!")
+                    print(f"Endpoint test successful!")
                     print(f"   Status: {response.status_code}")
                     print(f"   Response: {json.dumps(result, indent=2)}")
                     sys.exit(0)
                 else:
-                    print(f"⚠️  Unexpected status: {response.status_code}")
+                    print(f"Unexpected status: {response.status_code}")
                     print(f"   Response: {response.text}")
 
             except requests.exceptions.RequestException as e:
-                print(f"⚠️  Request failed: {e}")
+                print(f"Request failed: {e}")
 
             if attempt < max_retries - 1:
                 print(f"   Retrying in {retry_delay}s...")
                 time.sleep(retry_delay)
 
-        print(f"❌ Endpoint test failed after {max_retries} attempts")
+        print(f"Endpoint test failed after {max_retries} attempts")
         sys.exit(1)
 
 ---
+# =============================================================================
+# Task: copy-gpu-model-to-shared (GPU pipeline only)
+# =============================================================================
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -598,19 +758,19 @@ spec:
           if [ -f "$GPU_PATH" ]; then
             FILE_SIZE=$(stat -c%s "$GPU_PATH" 2>/dev/null || echo "0")
             if [ "$FILE_SIZE" -gt 0 ]; then
-              echo "✓ Model file found: $GPU_PATH (size: $FILE_SIZE bytes)"
+              echo "Model file found: $GPU_PATH (size: $FILE_SIZE bytes)"
               break
             fi
-            echo "⏳ Model file exists but is empty, waiting..."
+            echo "Model file exists but is empty, waiting..."
           else
-            echo "⏳ Model not yet available, waiting ${INTERVAL}s... (${ELAPSED}s/${MAX_WAIT}s)"
+            echo "Model not yet available, waiting ${INTERVAL}s... (${ELAPSED}s/${MAX_WAIT}s)"
           fi
           sleep $INTERVAL
           ELAPSED=$((ELAPSED + INTERVAL))
         done
 
         if [ ! -f "$GPU_PATH" ] || [ "$(stat -c%s "$GPU_PATH" 2>/dev/null || echo 0)" -eq 0 ]; then
-          echo "✗ ERROR: GPU model not found after ${MAX_WAIT}s: $GPU_PATH"
+          echo "ERROR: GPU model not found after ${MAX_WAIT}s: $GPU_PATH"
           exit 1
         fi
 
@@ -623,18 +783,18 @@ spec:
 
         # Verify
         if [ ! -f "$FINAL_PATH" ]; then
-          echo "✗ ERROR: Copy failed — target file not found"
+          echo "ERROR: Copy failed - target file not found"
           exit 1
         fi
 
         TARGET_SIZE=$(stat -c%s "$FINAL_PATH" 2>/dev/null || echo "0")
         if [ "$GPU_SIZE" != "$TARGET_SIZE" ]; then
-          echo "✗ ERROR: Size mismatch — source: $GPU_SIZE, target: $TARGET_SIZE"
+          echo "ERROR: Size mismatch - source: $GPU_SIZE, target: $TARGET_SIZE"
           exit 1
         fi
 
         echo "=========================================="
-        echo "✓ Model copied successfully!"
+        echo "Model copied successfully!"
         echo "  Size: $TARGET_SIZE bytes"
         echo "=========================================="
 
@@ -647,7 +807,9 @@ spec:
         claimName: model-storage-pvc
 
 ---
-# Main Model Training Pipeline
+# =============================================================================
+# Pipeline: model-training-pipeline (CPU)
+# =============================================================================
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
@@ -660,11 +822,11 @@ metadata:
     argocd.argoproj.io/sync-wave: "3"
 spec:
   description: |
-    Trains ML models using NotebookValidationJobs and deploys to KServe.
+    Trains CPU-based ML models using NotebookValidationJobs and deploys to KServe.
     Implements ADR-053: Separation of model training from ArgoCD sync waves.
 
     Flow:
-      1. Train model (NotebookValidationJob)
+      1. Train model (NotebookValidationJob - CPU)
       2. Health check (validate model works)
       3. Deploy (restart InferenceService)
       4. Post-deployment test (verify endpoint)
@@ -672,7 +834,7 @@ spec:
   params:
     - name: model-name
       type: string
-      description: "Model to train (anomaly-detector or predictive-analytics)"
+      description: "Model to train (e.g., anomaly-detector or any custom model)"
     - name: notebook-path
       type: string
       description: "Path to training notebook"
@@ -687,10 +849,6 @@ spec:
     - name: inference-service-name
       type: string
       description: "InferenceService to restart after training"
-    - name: gpu-trained
-      type: string
-      default: "false"
-      description: "Whether the model is GPU-trained and needs copying from GPU PVC to shared PVC"
     - name: health-check-enabled
       type: string
       default: "true"
@@ -722,20 +880,6 @@ spec:
         - name: git-ref
           value: $(params.git-ref)
 
-    # Task 1.5: Copy GPU model to shared storage (only if GPU-trained)
-    - name: copy-gpu-model
-      when:
-        - input: "$(params.gpu-trained)"
-          operator: in
-          values: ["true"]
-      runAfter:
-        - train-model
-      taskRef:
-        name: copy-gpu-model-to-shared
-      params:
-        - name: model-name
-          value: $(params.model-name)
-
     # Task 2: Health check (only if enabled)
     - name: health-check
       when:
@@ -743,7 +887,7 @@ spec:
           operator: in
           values: ["true"]
       runAfter:
-        - copy-gpu-model
+        - train-model
       taskRef:
         name: validate-model-health
       params:
@@ -761,6 +905,127 @@ spec:
           value: $(params.inference-service-name)
 
     # Task 4: Post-deployment validation
+    - name: post-deployment-check
+      runAfter:
+        - deploy-model
+      taskRef:
+        name: test-inference-endpoint
+      params:
+        - name: inference-service-name
+          value: $(params.inference-service-name)
+        - name: model-name
+          value: $(params.model-name)
+
+---
+# =============================================================================
+# Pipeline: model-training-pipeline-gpu (GPU)
+# =============================================================================
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: model-training-pipeline-gpu
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/name: model-training-pipeline-gpu
+    app.kubernetes.io/part-of: openshift-aiops-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  description: |
+    Trains GPU-based ML models using NotebookValidationJobs and deploys to KServe.
+    Implements ADR-053: Separation of model training from ArgoCD sync waves.
+
+    Flow:
+      1. Train model (NotebookValidationJob - GPU with tolerations/nodeSelector)
+      2. Copy model from GPU PVC to shared PVC
+      3. Health check (validate model works)
+      4. Deploy (restart InferenceService)
+      5. Post-deployment test (verify endpoint)
+
+  params:
+    - name: model-name
+      type: string
+      description: "Model to train (e.g., predictive-analytics or any GPU-trained custom model)"
+    - name: notebook-path
+      type: string
+      description: "Path to training notebook"
+    - name: data-source
+      type: string
+      default: "hybrid"
+      description: "Data source mode (synthetic|prometheus|hybrid)"
+    - name: training-hours
+      type: string
+      default: "168"
+      description: "Training window in hours (24=1day, 168=1week, 720=30days)"
+    - name: inference-service-name
+      type: string
+      description: "InferenceService to restart after training"
+    - name: health-check-enabled
+      type: string
+      default: "true"
+      description: "Run health checks before deployment"
+    - name: git-url
+      type: string
+      description: "Git repository URL"
+    - name: git-ref
+      type: string
+      default: "main"
+      description: "Git branch/tag/commit"
+
+  tasks:
+    # Task 1: Train model using NotebookValidationJob (GPU)
+    - name: train-model
+      taskRef:
+        name: run-notebook-validation-gpu
+      params:
+        - name: model-name
+          value: $(params.model-name)
+        - name: notebook-path
+          value: $(params.notebook-path)
+        - name: data-source
+          value: $(params.data-source)
+        - name: training-hours
+          value: $(params.training-hours)
+        - name: git-url
+          value: $(params.git-url)
+        - name: git-ref
+          value: $(params.git-ref)
+
+    # Task 2: Copy GPU model to shared storage
+    - name: copy-gpu-model
+      runAfter:
+        - train-model
+      taskRef:
+        name: copy-gpu-model-to-shared
+      params:
+        - name: model-name
+          value: $(params.model-name)
+
+    # Task 3: Health check (only if enabled)
+    - name: health-check
+      when:
+        - input: "$(params.health-check-enabled)"
+          operator: in
+          values: ["true"]
+      runAfter:
+        - copy-gpu-model
+      taskRef:
+        name: validate-model-health
+      params:
+        - name: model-name
+          value: $(params.model-name)
+
+    # Task 4: Deploy to InferenceService
+    - name: deploy-model
+      runAfter:
+        - health-check
+      taskRef:
+        name: restart-inference-service
+      params:
+        - name: inference-service-name
+          value: $(params.inference-service-name)
+
+    # Task 5: Post-deployment validation
     - name: post-deployment-check
       runAfter:
         - deploy-model
