@@ -1,0 +1,57 @@
+{{- if and .Values.tekton .Values.tekton.enabled }}
+---
+# Role: Model Training Pipeline Permissions (namespace-scoped)
+# Grants the pipeline service account permissions to create/manage NotebookValidationJobs
+# and related resources. Fixes pipeline failure when rbac.clusterScoped.enabled=false (Issue #36).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pipeline-notebook-validation
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/name: pipeline-notebook-validation
+    app.kubernetes.io/part-of: model-training
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+rules:
+  # NotebookValidationJob management
+  - apiGroups: ["mlops.mlops.dev"]
+    resources: ["notebookvalidationjobs"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["mlops.mlops.dev"]
+    resources: ["notebookvalidationjobs/status"]
+    verbs: ["get", "list", "watch"]
+
+  # InferenceService management (restart-inference-service task)
+  - apiGroups: ["serving.kserve.io"]
+    resources: ["inferenceservices"]
+    verbs: ["get", "list", "watch"]
+
+  # Pod management (restart-inference-service, test-inference-endpoint tasks)
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list"]
+---
+# RoleBinding: Bind pipeline permissions to service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pipeline-notebook-validation
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/name: pipeline-notebook-validation
+    app.kubernetes.io/part-of: model-training
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pipeline-notebook-validation
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.tekton.modelTraining.serviceAccount | default "pipeline" }}
+    namespace: {{ .Values.main.namespace }}
+{{- end }}
