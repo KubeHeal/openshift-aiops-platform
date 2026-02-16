@@ -49,7 +49,7 @@ This directory contains Architecture Decision Records for the Self-Healing Platf
 | [ADR-041](041-model-storage-and-versioning-strategy.md) | Model Storage and Versioning Strategy | Accepted | 2025-12-09 | One directory per InferenceService |
 | [ADR-042](042-argocd-deployment-lessons-learned.md) | ArgoCD Deployment Lessons Learned | Accepted | 2025-11-28 | Deployment patterns and best practices |
 || [ADR-043](043-deployment-stability-health-checks.md) | Deployment Stability and Cross-Namespace Health Check Patterns | Implemented | 2026-01-24 | Init containers, startup probes, health checks |
-|| [ADR-053](053-tekton-model-training-pipelines.md) | Tekton Pipelines for Model Training | Proposed | 2026-01-27 | Replaces ArgoCD sync wave approach |
+|| [ADR-053](053-tekton-model-training-pipelines.md) | Tekton Pipelines for Model Training | Proposed | 2026-01-27 | Replaces ArgoCD sync wave approach; amended #38 CPU/GPU split, #40 GPU PVC fix |
 || [ADR-054](054-inferenceservice-model-readiness-race-condition.md) | InferenceService Model Readiness Race Condition Fix | Accepted | 2026-02-06 | Post-deploy restart job for predictor pods |
 
 ### Meta-Documents

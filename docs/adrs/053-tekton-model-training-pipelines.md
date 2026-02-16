@@ -780,6 +780,74 @@ Users can now train any custom model by providing a notebook path and inference 
   my-gpu-model 720
 ```
 
+## Amendment: GPU Task PVC Fix (2026-02-16, Issue #40)
+
+### Problem
+
+The `run-notebook-validation-gpu` task was using `model-storage-pvc` (CephFS storage
+class) for its volume mount. GPU nodes do not have the CephFS CSI driver
+(`openshift-storage.cephfs.csi.ceph.com`) installed, causing the validation job pod
+to get stuck in `Init:0/1` with:
+
+```
+MountVolume.MountDevice failed for volume "pvc-..." :
+kubernetes.io/csi: attacher.MountDevice failed to create newCsiDriverClient:
+driver name openshift-storage.cephfs.csi.ceph.com not found in the list of registered CSI drivers
+```
+
+This broke all GPU pipeline training (predictive-analytics and any custom GPU model).
+
+### Root Cause
+
+When the CPU/GPU pipeline split was implemented (Issue #38 amendment above), the
+`run-notebook-validation-gpu` task's volume was not updated from `model-storage-pvc`
+(CephFS) to `model-storage-gpu-pvc` (GP3). The `copy-gpu-model-to-shared` task
+already correctly referenced `model-storage-gpu-pvc` as its source volume, but the
+training task itself still wrote to the CephFS-backed PVC that GPU nodes cannot mount.
+
+### Fix
+
+Single-line change in `charts/hub/templates/tekton-model-training-pipeline.yaml`,
+in the `run-notebook-validation-gpu` task's NotebookValidationJob spec:
+
+```yaml
+# Before (broken)
+volumes:
+  - name: model-storage
+    persistentVolumeClaim:
+      claimName: model-storage-pvc        # CephFS - not available on GPU nodes
+
+# After (fixed)
+volumes:
+  - name: model-storage
+    persistentVolumeClaim:
+      claimName: model-storage-gpu-pvc    # GP3 - available on GPU nodes
+```
+
+The pipeline flow is now correct end-to-end:
+
+```
+run-notebook-validation-gpu (writes to model-storage-gpu-pvc, GP3)
+  -> copy-gpu-model-to-shared (copies model-storage-gpu-pvc -> model-storage-pvc)
+  -> validate-model-health (reads from model-storage-pvc, CephFS)
+  -> restart-inference-service / test-inference-endpoint
+```
+
+### Environment Note
+
+This fix was identified and validated on a **demo.redhat.com** provisioned cluster
+where GPU nodes do not include CephFS CSI drivers. If you are deploying this platform
+in your own environment, your storage configuration may differ:
+
+- Your GPU nodes may have CephFS drivers available (e.g., ODF deployed across all nodes).
+- You may use a different storage class for GPU-accessible volumes (not necessarily `gp3-csi`).
+- The PVC names (`model-storage-pvc`, `model-storage-gpu-pvc`) are defined in
+  `charts/hub/templates/storage.yaml` and can be adjusted to match your cluster's
+  storage classes.
+
+The key principle remains: GPU training tasks must use a PVC backed by a storage class
+whose CSI driver is available on GPU-capable nodes.
+
 ## Related ADRs
 
 - [ADR-050: Anomaly Detector Model Training](050-anomaly-detector-model-training.md) - **Updated trigger section**
