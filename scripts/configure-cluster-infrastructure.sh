@@ -479,15 +479,15 @@ create_storage_cluster() {
     # Label nodes for storage
     label_storage_nodes
 
-    log_info "Creating StorageSystem..."
+    # Check if StorageSystem CRD exists (not available in ODF 4.20+)
+    if oc get crd storagesystems.odf.openshift.io &>/dev/null; then
+        log_info "Creating StorageSystem..."
 
-    if [[ "$DRY_RUN" == "true" ]]; then
-        log_warn "[DRY RUN] Would create StorageSystem and StorageCluster"
-        return 0
-    fi
-
-    # Create StorageSystem
-    cat <<EOF | oc apply -f -
+        if [[ "$DRY_RUN" == "true" ]]; then
+            log_warn "[DRY RUN] Would create StorageSystem"
+        else
+            # Create StorageSystem (ODF 4.18/4.19)
+            cat <<EOF | oc apply -f -
 apiVersion: odf.openshift.io/v1alpha1
 kind: StorageSystem
 metadata:
@@ -498,6 +498,15 @@ spec:
   name: ocs-storagecluster
   namespace: openshift-storage
 EOF
+        fi
+    else
+        log_info "StorageSystem CRD not found (ODF 4.20+), skipping StorageSystem creation"
+    fi
+
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_warn "[DRY RUN] Would create StorageCluster"
+        return 0
+    fi
 
     log_info "Creating StorageCluster (storage size: $ODF_STORAGE_SIZE)..."
 
@@ -536,9 +545,9 @@ spec:
         resources:
           requests:
             storage: $ODF_STORAGE_SIZE
-        storageClassName: gp2-csi
+        storageClassName: gp3-csi
         volumeMode: Block
-    name: ocs-deviceset-gp2-csi
+    name: ocs-deviceset-gp3-csi
     placement: {}
     preparePlacement: {}
     replica: 3
