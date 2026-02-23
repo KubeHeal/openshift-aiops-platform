@@ -1,9 +1,29 @@
 ---
 # Deploy Jupyter Notebook Validator Operator using kustomize
 
+- name: Detect OpenShift version for overlay selection
+  shell: |
+    oc version -o json | jq -r '.openshiftVersion // "4.18.0"' | cut -d. -f1-2
+  register: detected_ocp_version
+  changed_when: false
+  when: lookup('env', 'OCP_VERSION') == ''
+
+- name: Set overlay path based on detected version
+  set_fact:
+    jupyter_validator_overlay_path: "overlays/dev-ocp{{ detected_ocp_version.stdout | default(jupyter_validator_openshift_version) }}"
+  when: detected_ocp_version.stdout is defined
+
+- name: Display deployment configuration
+  debug:
+    msg: |
+      Jupyter Notebook Validator Operator Deployment:
+        OpenShift Version: {{ detected_ocp_version.stdout | default(jupyter_validator_openshift_version) }}
+        Overlay Path: {{ jupyter_validator_overlay_path | default(jupyter_validator_kustomize_overlay) }}
+        Cluster Topology: {{ jupyter_validator_cluster_topology }}
+
 - name: Build kustomize overlay path
   set_fact:
-    kustomize_path: "{{ jupyter_validator_kustomize_base }}/{{ jupyter_validator_kustomize_overlay }}"
+    kustomize_path: "{{ jupyter_validator_kustomize_base }}/{{ jupyter_validator_overlay_path | default(jupyter_validator_kustomize_overlay) }}"
 
 - name: Display kustomize path
   debug:

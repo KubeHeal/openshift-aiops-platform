@@ -38,7 +38,20 @@ MIN_WORKERS="${MIN_WORKERS:-3}"
 ENABLE_ODF="${ENABLE_ODF:-true}"
 ODF_STORAGE_SIZE="${ODF_STORAGE_SIZE:-512Gi}"
 DRY_RUN="${DRY_RUN:-false}"
-ODF_CHANNEL="${ODF_CHANNEL:-stable-4.18}"
+
+# Auto-detect cluster topology if not specified
+if [[ -z "$CLUSTER_TOPOLOGY" ]]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    CLUSTER_TOPOLOGY=$(${SCRIPT_DIR}/detect-cluster-topology.sh 2>/dev/null | tr '[:upper:]' '[:lower:]' || echo "standard")
+fi
+
+# Auto-detect ODF channel based on OpenShift version
+if [[ -z "$ODF_CHANNEL" ]]; then
+    OCP_VERSION=$(oc version -o json 2>/dev/null | jq -r '.openshiftVersion // "4.18.0"' | cut -d. -f1-2)
+    ODF_CHANNEL="stable-${OCP_VERSION}"
+else
+    ODF_CHANNEL="${ODF_CHANNEL:-stable-4.18}"
+fi
 
 # Colors for output
 RED='\033[0;31m'
@@ -156,18 +169,21 @@ check_prerequisites() {
     log_success "Cluster: $CLUSTER_NAME"
     log_success "Platform: $PLATFORM_TYPE"
     log_success "API URL: $API_URL"
+    log_info "Detected cluster topology: $CLUSTER_TOPOLOGY"
+    log_info "ODF Channel: $ODF_CHANNEL"
 
-    if [[ "$PLATFORM_TYPE" != "AWS" ]]; then
+    if [[ "$CLUSTER_TOPOLOGY" == "sno" ]]; then
+        log_info "Single Node OpenShift (SNO) detected"
+        log_info "Skipping MachineSet scaling and ODF installation"
+        ENABLE_ODF=false
+        export MIN_WORKERS=1
+    elif [[ "$PLATFORM_TYPE" != "AWS" ]]; then
         log_warn "This script is optimized for AWS. Platform detected: $PLATFORM_TYPE"
-        log_warn "MachineSet scaling may not work as expected on other platforms."
-        read -p "Continue anyway? [y/N] " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            exit 1
-        fi
+        log_warn "MachineSet scaling may not work as expected."
+        log_warn "Continuing with manual node scaling instructions..."
     fi
 
-    export CLUSTER_NAME PLATFORM_TYPE API_URL
+    export CLUSTER_NAME PLATFORM_TYPE API_URL CLUSTER_TOPOLOGY
 }
 
 # =============================================================================
@@ -209,6 +225,12 @@ get_machineset_ready_replicas() {
 }
 
 scale_worker_nodes() {
+    if [[ "$CLUSTER_TOPOLOGY" == "sno" ]]; then
+        log_step "Skipping Worker Node Scaling (SNO Cluster)"
+        log_info "Single Node OpenShift does not support MachineSet scaling"
+        return 0
+    fi
+
     log_step "Scaling Worker Nodes"
 
     # Get all worker MachineSets
@@ -320,6 +342,12 @@ check_odf_installed() {
 }
 
 install_odf_operator() {
+    if [[ "$CLUSTER_TOPOLOGY" == "sno" ]]; then
+        log_step "Skipping ODF Installation (SNO Cluster)"
+        log_warn "ODF requires minimum 3 nodes. SNO uses CSI storage classes only."
+        return 0
+    fi
+
     log_step "Installing OpenShift Data Foundation Operator"
 
     if check_odf_installed; then

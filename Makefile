@@ -27,6 +27,16 @@ INDEX_IMAGES ?=
 # git branch --show-current is also available as of git 2.22, but we will use this for compatibility
 TARGET_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 
+# Cluster topology detection (auto-detect or override with CLUSTER_TOPOLOGY=sno)
+CLUSTER_TOPOLOGY ?= $(shell ./scripts/detect-cluster-topology.sh 2>/dev/null | tr '[:upper:]' '[:lower:]' || echo "standard")
+OCP_VERSION ?= $(shell ./scripts/detect-ocp-version.sh 2>/dev/null || echo "4.18")
+ODF_CHANNEL ?= stable-$(OCP_VERSION)
+
+# Export for scripts and Ansible
+export CLUSTER_TOPOLOGY
+export OCP_VERSION
+export ODF_CHANNEL
+
 #default to the branch remote
 TARGET_ORIGIN ?= $(shell git config branch.$(TARGET_BRANCH).remote)
 
@@ -95,7 +105,27 @@ install-prereqs-local: ## Install local workstation prerequisites (RHEL 9/10)
 .PHONY: configure-cluster
 configure-cluster: ## Configure cluster infrastructure (scale nodes, install ODF)
 	@echo "Configuring cluster infrastructure..."
-	@./scripts/configure-cluster-infrastructure.sh
+	@echo "Detected cluster topology: $(CLUSTER_TOPOLOGY)"
+	@echo "Detected OpenShift version: $(OCP_VERSION)"
+	@CLUSTER_TOPOLOGY=$(CLUSTER_TOPOLOGY) OCP_VERSION=$(OCP_VERSION) ./scripts/configure-cluster-infrastructure.sh
+
+.PHONY: configure-cluster-standard
+configure-cluster-standard: ## Configure standard HighlyAvailable cluster
+	@CLUSTER_TOPOLOGY=standard ./scripts/configure-cluster-infrastructure.sh
+
+.PHONY: configure-cluster-sno
+configure-cluster-sno: ## Configure SNO SingleReplica cluster
+	@CLUSTER_TOPOLOGY=sno ./scripts/configure-cluster-infrastructure.sh
+
+.PHONY: show-cluster-info
+show-cluster-info: ## Display detected cluster information
+	@echo "Cluster Information:"
+	@echo "  Topology: $(CLUSTER_TOPOLOGY)"
+	@echo "  OpenShift Version: $(OCP_VERSION)"
+	@echo "  Platform: $(shell oc get infrastructure cluster -o jsonpath='{.status.platformStatus.type}' 2>/dev/null || echo 'Unknown')"
+	@echo "  ODF Channel: $(ODF_CHANNEL)"
+	@echo ""
+	@./scripts/detect-cluster-topology.sh --verbose || true
 
 .PHONY: install
 install: operator-deploy load-secrets validate-deployment ## Install the pattern (deploy + load secrets + validate)

@@ -1,0 +1,42 @@
+# SNO-specific overrides for Single Node OpenShift deployments
+# Usage: -f values-sno.yaml
+
+# Cluster configuration
+cluster:
+  topology: "sno"
+
+# Reduced resource requirements for single-node constraints
+notebooks:
+  validation:
+    resources:
+      tier1:
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+      tier2:
+        limits:
+          memory: "2Gi"
+          cpu: "1000m"
+      tier3:
+        limits:
+          memory: "8Gi"
+          cpu: "2000m"
+
+# Storage classes (CSI only - ODF not available)
+storage:
+  modelStorage:
+    size: "10Gi"
+    storageClass: "gp3-csi"
+  modelStorageGpu:
+    size: "10Gi"
+    storageClass: "gp3-csi"
+
+# Coordination Engine configuration
+coordinationEngine:
+  storage:
+    useODF: false
+    storageClass: "gp3-csi"
+
+# Disable ODF-dependent features
+odf:
+  enabled: false

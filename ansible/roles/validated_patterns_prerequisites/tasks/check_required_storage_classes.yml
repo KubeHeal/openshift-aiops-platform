@@ -2,6 +2,9 @@
 # Check for required storage classes based on chart values
 # Purpose: Validate storage classes exist before deployment to fail fast with clear messages
 
+- name: Include cluster topology detection
+  include_tasks: check_cluster_topology.yml
+
 - name: Set default chart values path
   set_fact:
     chart_values_path: "{{ helm_chart_path | default('charts/hub') }}/values.yaml"
@@ -79,10 +82,24 @@
     has_rwx_storage: >-
       {{ available_sc_names | select('match', '.*(cephfs|nfs|azurefile|glusterfs|filestore).*') | list | length > 0 }}
 
-- name: Fail if required RWX storage is missing
+- name: Display topology-specific storage guidance
+  debug:
+    msg: |
+      ========================================
+      Storage Configuration for {{ cluster_topology | upper }} Cluster
+      ========================================
+      {% if cluster_topology == 'sno' %}
+      SNO clusters use CSI storage classes only (ODF not supported)
+      Recommended storage classes: gp3-csi (AWS), managed-csi (Azure)
+      {% else %}
+      Standard clusters can use ODF + CSI storage classes
+      Recommended: Install ODF for RWX storage (CephFS)
+      {% endif %}
+
+- name: Fail if required RWX storage is missing (standard clusters only)
   fail:
     msg: |
-      ❌ CRITICAL: Missing required storage classes
+      ❌ CRITICAL: Missing required storage classes for {{ cluster_topology | upper }} cluster
 
       Missing Storage Classes:
       {% for missing_sc in missing_storage_classes %}
@@ -161,6 +178,7 @@
 
       After installing storage, re-run this deployment.
   when:
+    - cluster_topology != 'sno'  # Skip RWX requirement for SNO clusters
     - missing_storage_classes is defined
     - missing_storage_classes | length > 0
     - missing_storage_classes | selectattr('access_mode', 'equalto', 'RWX') | list | length > 0

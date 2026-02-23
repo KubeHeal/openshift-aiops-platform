@@ -22,6 +22,11 @@
 #   3. Update repoURL in values-global.yaml git.repoURL
 # ============================================================
 
+# Cluster topology configuration (auto-detected)
+cluster:
+  topology: "standard"  # or "sno" - auto-detected by Makefile
+  version: "4.18"       # OpenShift version - auto-detected
+
 # Main cluster group configuration
 main:
   clusterGroupName: hub
@@ -399,9 +404,14 @@ notebooks:
 # ============================================================================
 # STORAGE CONFIGURATION
 # ============================================================================
+# Topology-aware storage defaults:
+# - Standard clusters: ODF storage (ocs-storagecluster-cephfs for RWX)
+# - SNO clusters: CSI storage only (gp3-csi)
+# Override with values-sno.yaml for SNO deployments
 storage:
   # Model Storage PVC (shared between notebooks and KServe)
-  # Uses ocs-storagecluster-cephfs (RWX) for multi-pod access
+  # Uses ocs-storagecluster-cephfs (RWX) for multi-pod access on standard clusters
+  # For SNO: Use gp3-csi (override with values-sno.yaml)
   modelStorage:
     size: "10Gi"
     storageClass: "ocs-storagecluster-cephfs"  # RWX required for notebook + inference pods
@@ -409,6 +419,7 @@ storage:
   # Model Storage PVC for GPU Training
   # GPU nodes cannot mount ocs-storagecluster-cephfs, so we use gp3-csi (RWO)
   # Models are copied to model-storage-pvc (ocs-storagecluster-cephfs) after training
+  # Compatible with all cluster topologies (standard and SNO)
   modelStorageGpu:
     size: "10Gi"
     storageClass: "gp3-csi"  # GPU-compatible storage class (RWO)

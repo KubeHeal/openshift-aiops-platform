@@ -1,0 +1,32 @@
+---
+# Detect cluster topology using Kubernetes API
+
+- name: Get cluster infrastructure information
+  kubernetes.core.k8s_info:
+    api_version: config.openshift.io/v1
+    kind: Infrastructure
+    name: cluster
+  register: cluster_infrastructure
+
+- name: Extract cluster topology
+  set_fact:
+    control_plane_topology: "{{ cluster_infrastructure.resources[0].status.controlPlaneTopology }}"
+    infrastructure_topology: "{{ cluster_infrastructure.resources[0].status.infrastructureTopology }}"
+    platform_type: "{{ cluster_infrastructure.resources[0].status.platformStatus.type }}"
+
+- name: Determine cluster type
+  set_fact:
+    detected_cluster_topology: "{{ 'sno' if (control_plane_topology == 'SingleReplica' and infrastructure_topology == 'SingleReplica') else 'standard' }}"
+
+- name: Set cluster topology (prefer environment variable)
+  set_fact:
+    cluster_topology: "{{ lookup('env', 'CLUSTER_TOPOLOGY') | default(detected_cluster_topology, true) }}"
+
+- name: Display cluster topology
+  debug:
+    msg: |
+      Cluster Topology Information:
+        Type: {{ cluster_topology | upper }}
+        Control Plane: {{ control_plane_topology }}
+        Infrastructure: {{ infrastructure_topology }}
+        Platform: {{ platform_type }}

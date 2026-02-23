@@ -1,6 +1,9 @@
 ---
 # Check cluster has sufficient resources
 
+- name: Include cluster topology detection
+  include_tasks: check_cluster_topology.yml
+
 - name: Get cluster nodes
   kubernetes.core.k8s_info:
     api_version: v1
@@ -8,12 +11,18 @@
   register: cluster_nodes
   failed_when: cluster_nodes.resources | length == 0
 
+- name: Set minimum requirements based on topology
+  set_fact:
+    min_nodes: "{{ validated_patterns_sno_min_nodes if cluster_topology == 'sno' else validated_patterns_min_nodes }}"
+    min_cpu: "{{ validated_patterns_sno_min_cpu if cluster_topology == 'sno' else validated_patterns_min_cpu }}"
+    min_memory: "{{ validated_patterns_sno_min_memory if cluster_topology == 'sno' else validated_patterns_min_memory }}"
+
 - name: Validate minimum number of nodes
   assert:
     that:
-      - cluster_nodes.resources | length >= validated_patterns_min_nodes
-    fail_msg: "Cluster has {{ cluster_nodes.resources | length }} nodes, minimum required is {{ validated_patterns_min_nodes }}"
-    success_msg: "✅ Cluster has {{ cluster_nodes.resources | length }} nodes (minimum: {{ validated_patterns_min_nodes }})"
+      - cluster_nodes.resources | length >= min_nodes | int
+    fail_msg: "Cluster has {{ cluster_nodes.resources | length }} nodes, minimum required is {{ min_nodes }} for {{ cluster_topology | upper }} topology"
+    success_msg: "✅ Cluster has {{ cluster_nodes.resources | length }} nodes (minimum: {{ min_nodes }} for {{ cluster_topology | upper }})"
 
 - name: Check node resources
   set_fact:
@@ -30,13 +39,13 @@
 - name: Validate cluster has sufficient CPU
   assert:
     that:
-      - (cluster_nodes.resources | map(attribute='status.allocatable.cpu') | map('regex_replace', 'm$', '') | map('int') | sum) >= validated_patterns_min_cpu
-    fail_msg: "Cluster does not have sufficient CPU resources"
-    success_msg: "✅ Cluster has sufficient CPU resources"
+      - (cluster_nodes.resources | map(attribute='status.allocatable.cpu') | map('regex_replace', 'm$', '') | map('int') | sum) >= min_cpu | int
+    fail_msg: "Cluster does not have sufficient CPU resources (minimum: {{ min_cpu }} cores for {{ cluster_topology | upper }})"
+    success_msg: "✅ Cluster has sufficient CPU resources (minimum: {{ min_cpu }} cores for {{ cluster_topology | upper }})"
 
 - name: Validate cluster has sufficient memory
   assert:
     that:
-      - (cluster_nodes.resources | map(attribute='status.allocatable.memory') | map('regex_replace', 'Ki$', '') | map('int') | sum) >= (validated_patterns_min_memory * 1024 * 1024)
-    fail_msg: "Cluster does not have sufficient memory resources"
-    success_msg: "✅ Cluster has sufficient memory resources"
+      - (cluster_nodes.resources | map(attribute='status.allocatable.memory') | map('regex_replace', 'Ki$', '') | map('int') | sum) >= (min_memory | int * 1024 * 1024)
+    fail_msg: "Cluster does not have sufficient memory resources (minimum: {{ min_memory }}GB for {{ cluster_topology | upper }})"
+    success_msg: "✅ Cluster has sufficient memory resources (minimum: {{ min_memory }}GB for {{ cluster_topology | upper }})"

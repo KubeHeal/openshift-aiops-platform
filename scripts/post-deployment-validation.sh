@@ -63,12 +63,22 @@ get_cluster_info() {
     CLUSTER_VERSION=$(oc version -o json 2>/dev/null | jq -r '.openshiftVersion // "unknown"')
 }
 
+# Detect cluster topology
+detect_topology() {
+    if [[ -z "$CLUSTER_TOPOLOGY" ]]; then
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        CLUSTER_TOPOLOGY=$(${SCRIPT_DIR}/detect-cluster-topology.sh 2>/dev/null | tr '[:upper:]' '[:lower:]' || echo "standard")
+    fi
+}
+
 # Main validation
 print_header "OpenShift AI Ops Platform - Post-Deployment Validation"
 echo "Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
 get_cluster_info
+detect_topology
 echo "Cluster: ${CLUSTER_DOMAIN}"
 echo "OpenShift Version: ${CLUSTER_VERSION}"
+echo "Cluster Topology: ${CLUSTER_TOPOLOGY}"
 
 # ============================================================
 # 1. Pattern CR Validation

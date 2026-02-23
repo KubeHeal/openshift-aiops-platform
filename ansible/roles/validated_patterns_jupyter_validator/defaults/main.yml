@@ -7,11 +7,15 @@
 jupyter_validator_operator_enabled: true
 
 # OpenShift version (determines overlay selection)
-jupyter_validator_openshift_version: "4.18"
+# Auto-detect from environment or default to 4.18
+jupyter_validator_openshift_version: "{{ lookup('env', 'OCP_VERSION') | default('4.18', true) }}"
+
+# Cluster topology (affects resource allocation)
+jupyter_validator_cluster_topology: "{{ lookup('env', 'CLUSTER_TOPOLOGY') | default('standard', true) }}"
 
 # Kustomize overlay path (relative to project root)
 jupyter_validator_kustomize_base: "k8s/operators/jupyter-notebook-validator"
-jupyter_validator_kustomize_overlay: "overlays/dev-ocp4.18"
+jupyter_validator_kustomize_overlay: "overlays/dev-ocp{{ jupyter_validator_openshift_version }}"
 
 # Operator namespace (from kustomize base)
 jupyter_validator_operator_namespace: "jupyter-notebook-validator-operator"

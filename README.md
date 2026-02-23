@@ -44,12 +44,74 @@ See the **[User Model Deployment Guide](docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.
 
 ## 🚀 Quick Start (5 Minutes)
 
+### Supported Cluster Topologies
+
+This platform supports both standard HighlyAvailable and Single Node OpenShift (SNO) deployments:
+
+| Topology | Nodes | Storage | ODF | Use Case |
+|----------|-------|---------|-----|----------|
+| **Standard HighlyAvailable** | 3+ (separate control-plane/worker) | ODF + CSI | ✅ Yes | Production, full features |
+| **SNO SingleReplica** | 1 (all roles on single node) | CSI only | ❌ No | Edge, development, testing |
+
+**Supported OpenShift Versions:**
+- OpenShift 4.18, 4.19, 4.20
+- Auto-detected during deployment
+- Version-specific operator overlays
+
+**Auto-Detection:**
+
+The platform automatically detects your cluster topology and version:
+
+```bash
+make show-cluster-info
+```
+
+**Output example:**
+```
+Cluster Information:
+  Topology: standard  # or "sno"
+  OpenShift Version: 4.20
+  Platform: AWS
+  ODF Channel: stable-4.20
+```
+
+**Manual Override:**
+
+Force a specific topology or version:
+
+```bash
+export CLUSTER_TOPOLOGY=sno
+export OCP_VERSION=4.20
+make operator-deploy
+```
+
+**SNO-Specific Deployment:**
+
+For SNO clusters, use the SNO values override:
+
+```bash
+make operator-deploy EXTRA_HELM_OPTS="-f values-sno.yaml"
+```
+
+This will:
+- Skip MachineSet scaling
+- Skip ODF installation
+- Use CSI storage classes (gp2-csi, gp3-csi)
+- Apply reduced resource limits
+
+📖 **See also:** [SNO Deployment Guide](docs/how-to/deploy-on-sno.md)
+
 ### Prerequisites
 
-**Cluster Requirements:**
+**Standard Cluster Requirements:**
 - OpenShift 4.18+ cluster (admin access)
 - 6+ nodes (3 control-plane, 3+ workers, 1 GPU-enabled recommended)
 - 24+ CPU cores, 96+ GB RAM, 500+ GB storage
+
+**SNO Cluster Requirements:**
+- OpenShift 4.18+ cluster (admin access)
+- 1 node (all roles: control-plane, master, worker)
+- 8+ CPU cores (16+ recommended), 32+ GB RAM (64+ recommended), 120+ GB storage
 
 **Local Workstation Tools:**
 - `podman` - Container runtime for building execution environments
@@ -91,34 +153,41 @@ source ~/.bashrc
 
 ### Cluster Infrastructure Setup (Optional)
 
-`It is a requirement to have ODF running on the cluster.`
+**For Standard Clusters:** ODF is a requirement for full functionality (provides RWX storage for model artifacts).
 
-If your cluster needs additional worker nodes or OpenShift Data Foundation (ODF) storage, run the infrastructure configuration script:
+**For SNO Clusters:** ODF is not supported (uses CSI storage classes only).
+
+The infrastructure configuration script is **topology-aware** and automatically adapts based on your cluster type:
 
 ```bash
 # Ensure you're logged into your OpenShift cluster
 oc login <cluster-api-url>
 
-# Configure cluster infrastructure (adds workers, installs ODF)
+# Configure cluster infrastructure (auto-detects topology)
+make configure-cluster
+
+# Or use the script directly:
 ./scripts/configure-cluster-infrastructure.sh --min-workers 3
-
-# Or with options:
-./scripts/configure-cluster-infrastructure.sh --min-workers 3 --odf-storage-size 512Gi
-
-# Dry run to see what would be done:
-./scripts/configure-cluster-infrastructure.sh --dry-run
 ```
 
-**What the script does:**
-- Detects cluster infrastructure (AWS IPI)
-- Scales MachineSets to ensure minimum worker nodes (default: 3)
-- Installs OpenShift Data Foundation (ODF) operator
-- Creates StorageSystem and StorageCluster for persistent storage
-- Labels nodes for ODF and validates storage classes
+**What the script does (Standard Clusters):**
+- ✅ Detects cluster infrastructure (AWS IPI)
+- ✅ Scales MachineSets to ensure minimum worker nodes (default: 3)
+- ✅ Installs OpenShift Data Foundation (ODF) operator
+- ✅ Creates StorageSystem and StorageCluster for persistent storage
+- ✅ Labels nodes for ODF and validates storage classes
 
-> **⚠️ Note**: ODF installation takes 10-15 minutes. The script will wait for completion.
+**What the script does (SNO Clusters):**
+- ✅ Detects SNO topology
+- ⏩ Skips MachineSet scaling (not applicable)
+- ⏩ Skips ODF installation (not supported on SNO)
+- ✅ Validates CSI storage classes (gp2-csi, gp3-csi)
 
-> **💡 Skip ODF**: If you already have storage configured, use `--skip-odf`
+> **⚠️ Note**: ODF installation takes 10-15 minutes on standard clusters. The script will wait for completion.
+
+> **💡 Skip ODF**: If you already have storage configured on a standard cluster, use `--skip-odf`
+
+> **💡 SNO**: The script automatically skips ODF installation when it detects SNO topology
 
 ### Installation
 
