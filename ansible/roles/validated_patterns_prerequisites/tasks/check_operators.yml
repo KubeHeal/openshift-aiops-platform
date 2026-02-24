@@ -1,5 +1,6 @@
 ---
 # Check required operators are installed
+# Auto-installs OpenShift GitOps if missing (controlled by validated_patterns_auto_install_gitops)
 
 - name: Get installed operators
   kubernetes.core.k8s_info:
@@ -7,18 +8,56 @@
     kind: ClusterServiceVersion
     namespace: openshift-operators
   register: installed_operators
-  failed_when: installed_operators.resources | length == 0
+  failed_when: false
 
 - name: Extract operator names
   set_fact:
-    installed_operator_names: "{{ installed_operators.resources | map(attribute='metadata.name') | list }}"
+    installed_operator_names: "{{ (installed_operators.resources | default([])) | map(attribute='metadata.name') | list }}"
 
-- name: Check for OpenShift GitOps operator
+- name: Set GitOps operator presence fact
+  set_fact:
+    gitops_operator_present: "{{ installed_operator_names | select('search', 'openshift-gitops') | list | length > 0 }}"
+
+- name: Display GitOps operator status (already installed)
+  debug:
+    msg: "✅ OpenShift GitOps operator is installed"
+  when: gitops_operator_present
+
+- name: Auto-install OpenShift GitOps operator
+  include_tasks: install_gitops_operator.yml
+  when:
+    - not gitops_operator_present
+    - validated_patterns_auto_install_gitops | default(true) | bool
+
+- name: Fail if GitOps not installed and auto-install disabled
+  fail:
+    msg: >-
+      OpenShift GitOps operator not found and auto-install is disabled
+      (validated_patterns_auto_install_gitops=false).
+      Install it manually: OperatorHub -> OpenShift GitOps -> Install
+  when:
+    - not gitops_operator_present
+    - not (validated_patterns_auto_install_gitops | default(true) | bool)
+
+- name: Re-query installed operators after auto-install
+  kubernetes.core.k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    namespace: openshift-operators
+  register: installed_operators
+  when: not gitops_operator_present
+
+- name: Update operator names after auto-install
+  set_fact:
+    installed_operator_names: "{{ installed_operators.resources | map(attribute='metadata.name') | list }}"
+  when: not gitops_operator_present
+
+- name: Verify OpenShift GitOps operator is now installed
   assert:
     that:
       - installed_operator_names | select('search', 'openshift-gitops') | list | length > 0
-    fail_msg: "OpenShift GitOps operator not found. Please install it first."
-    success_msg: "✅ OpenShift GitOps operator is installed"
+    fail_msg: "OpenShift GitOps operator installation failed. Check operator logs in openshift-operators namespace."
+    success_msg: "✅ OpenShift GitOps operator is installed and ready"
 
 - name: Check for OpenShift Pipelines operator (optional)
   debug:

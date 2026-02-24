@@ -1,0 +1,97 @@
+---
+# Auto-install OpenShift GitOps operator when not present
+# Called from check_operators.yml when GitOps is missing and auto-install is enabled.
+# Logic adapted from validated_patterns_operator/tasks/install_operator.yml
+
+- name: Display GitOps auto-install notice
+  debug:
+    msg: |
+      ========================================
+      OpenShift GitOps operator not found - installing automatically
+      ========================================
+      Namespace: openshift-operators
+      Channel: latest
+      Source: redhat-operators
+
+      This is required for the Validated Patterns framework.
+      Disable with: validated_patterns_auto_install_gitops: false
+      ========================================
+
+- name: Ensure OperatorGroup exists in openshift-operators
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: operators.coreos.com/v1
+      kind: OperatorGroup
+      metadata:
+        name: global-operators
+        namespace: openshift-operators
+      spec:
+        targetNamespaces: []
+  register: operatorgroup_result
+  failed_when: false
+
+- name: Create Subscription for OpenShift GitOps Operator
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: Subscription
+      metadata:
+        name: openshift-gitops-operator
+        namespace: openshift-operators
+      spec:
+        channel: "latest"
+        name: "openshift-gitops-operator"
+        source: "redhat-operators"
+        sourceNamespace: "openshift-marketplace"
+        installPlanApproval: "Automatic"
+  register: gitops_subscription_result
+
+- name: Wait for OpenShift GitOps CSV to reach Succeeded phase
+  kubernetes.core.k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    namespace: openshift-operators
+  register: gitops_csv_check
+  until:
+    - gitops_csv_check.resources | length > 0
+    - gitops_csv_check.resources | selectattr('metadata.name', 'search', 'gitops-operator') | list | length > 0
+    - (gitops_csv_check.resources | selectattr('metadata.name', 'search', 'gitops-operator') | list | first).status.phase | default('') == "Succeeded"
+  retries: "{{ validated_patterns_gitops_install_retries }}"
+  delay: "{{ validated_patterns_gitops_install_delay }}"
+
+- name: Extract installed GitOps CSV name
+  set_fact:
+    gitops_csv_name: "{{ (gitops_csv_check.resources | selectattr('metadata.name', 'search', 'gitops-operator') | list | first).metadata.name }}"
+
+- name: Wait for openshift-gitops namespace to be created
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Namespace
+    name: openshift-gitops
+  register: gitops_namespace_check
+  until: gitops_namespace_check.resources | length > 0
+  retries: "{{ validated_patterns_gitops_install_retries }}"
+  delay: "{{ validated_patterns_gitops_install_delay }}"
+
+- name: Wait for openshift-gitops-server deployment to be ready
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
+    name: openshift-gitops-server
+    namespace: openshift-gitops
+  register: gitops_server_check
+  until:
+    - gitops_server_check.resources | length > 0
+    - (gitops_server_check.resources[0].status.readyReplicas | default(0)) >= 1
+  retries: "{{ validated_patterns_gitops_install_retries }}"
+  delay: "{{ validated_patterns_gitops_install_delay }}"
+
+- name: Display GitOps auto-install success
+  debug:
+    msg: |
+      ✅ OpenShift GitOps operator installed successfully
+      CSV: {{ gitops_csv_name }}
+      Namespace: openshift-gitops
+      ArgoCD Server: Ready
