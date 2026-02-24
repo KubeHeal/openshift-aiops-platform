@@ -51,6 +51,8 @@ This directory contains Architecture Decision Records for the Self-Healing Platf
 || [ADR-043](043-deployment-stability-health-checks.md) | Deployment Stability and Cross-Namespace Health Check Patterns | Implemented | 2026-01-24 | Init containers, startup probes, health checks |
 || [ADR-053](053-tekton-model-training-pipelines.md) | Tekton Pipelines for Model Training | Proposed | 2026-01-27 | Replaces ArgoCD sync wave approach; amended #38 CPU/GPU split, #40 GPU PVC fix |
 || [ADR-054](054-inferenceservice-model-readiness-race-condition.md) | InferenceService Model Readiness Race Condition Fix | Accepted | 2026-02-06 | Post-deploy restart job for predictor pods |
+|| [ADR-055](055-openshift-420-multi-cluster-topology-support.md) | OpenShift 4.20 Multi-Cluster Topology Support | Accepted | 2026-02-23 | Auto-detect SNO vs standard; topology-aware deployment |
+|| [ADR-056](056-standalone-mcg-on-sno.md) | Standalone MCG on SNO for Consistent S3 Storage | Accepted | 2026-02-24 | MCG-only ODF on SNO provides NooBaa S3 without Ceph |
 
 ### Meta-Documents
 
@@ -244,6 +246,6 @@ This README is maintained by the Architecture Team and should be updated wheneve
 - ADRs are superseded or deprecated
 - Major platform versions change
 
-**Last Updated**: 2026-02-06
+**Last Updated**: 2026-02-24
 **Maintained By**: Architecture Team
 **Review Frequency**: Monthly or when ADRs change

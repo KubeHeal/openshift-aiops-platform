@@ -17,8 +17,8 @@ The AI Ops Self-Healing Platform needs to support OpenShift 4.20 across two dist
 | **Nodes** | 3+ nodes (separate control-plane/worker) | 1 node (all roles) |
 | **Topology** | controlPlaneTopology=HighlyAvailable, infrastructureTopology=HighlyAvailable | controlPlaneTopology=SingleReplica, infrastructureTopology=SingleReplica |
 | **MachineSet** | AWS IPI MachineSets available | Not applicable |
-| **ODF Storage** | Can install (requires 3 nodes) | Cannot install |
-| **Storage Classes** | ODF (CephFS/RBD) + CSI (gp2/gp3) | CSI only (gp2/gp3) |
+| **ODF Storage** | Full ODF (Ceph + NooBaa) | MCG-only ODF (NooBaa S3, no Ceph) |
+| **Storage Classes** | ODF (CephFS/RBD/NooBaa) + CSI (gp2/gp3) | NooBaa + CSI (gp2/gp3) |
 | **Resource Distribution** | Distributed across nodes | Single node constraints |
 | **Use Cases** | Production, full features | Edge, development, testing |
 
@@ -59,7 +59,7 @@ Implement **auto-detection of cluster topology and OpenShift version** with envi
 
 4. **Deployment Logic**
    - Conditional infrastructure setup (skip MachineSet scaling for SNO)
-   - Conditional ODF installation (skip for SNO)
+   - Topology-aware ODF: full StorageCluster for standard, MCG-only StorageCluster for SNO (see [ADR-056](056-standalone-mcg-on-sno.md))
    - Version-based operator overlay selection
 
 ### Detection Logic
@@ -95,7 +95,7 @@ For SNO clusters, edit `values-hub.yaml` with SNO overrides before deploying:
 
 - Set `cluster.topology: "sno"`
 - Change `storage.modelStorage.storageClass` to `"gp3-csi"`
-- Set `objectStore.enabled: false`
+- `objectStore.enabled` stays `true` -- MCG-only ODF provides NooBaa S3 on SNO (see [ADR-056](056-standalone-mcg-on-sno.md))
 
 Then deploy normally:
 
@@ -132,7 +132,7 @@ The chart templates use topology-aware conditionals (e.g., RWO vs RWX access mod
 ### Positive
 
 1. **Simplified Deployment**: No manual topology configuration needed
-2. **Prevents Misconfiguration**: Automatic checks prevent ODF on SNO
+2. **Prevents Misconfiguration**: Automatic checks adapt ODF to topology (MCG-only on SNO, full on standard)
 3. **Version Agnostic**: Works across OpenShift 4.18, 4.19, 4.20
 4. **Reduced Documentation**: Users don't need to know topology details
 5. **Better User Experience**: Platform adapts automatically
@@ -151,7 +151,7 @@ The chart templates use topology-aware conditionals (e.g., RWO vs RWX access mod
 | Detection failure | Deployment fails | Fallback to "standard", allow manual override |
 | Version mismatch | Wrong overlay used | Version detection from cluster, not user input |
 | Resource exhaustion on SNO | Pods crash | Reduced resource limits in values-hub.yaml |
-| Missing storage on SNO | PVCs pending | Fail-fast validation of required storage classes |
+| Missing storage on SNO | PVCs pending | MCG-only ODF provides S3; CSI validated for block/file |
 
 ## Implementation
 
@@ -160,20 +160,23 @@ The chart templates use topology-aware conditionals (e.g., RWO vs RWX access mod
 1. `scripts/detect-cluster-topology.sh` - Topology detection script
 2. `scripts/detect-ocp-version.sh` - Version detection script
 3. `ansible/roles/validated_patterns_prerequisites/tasks/check_cluster_topology.yml` - Ansible topology detection
-4. `docs/how-to/deploy-on-sno.md` - SNO deployment guide
+4. `ansible/roles/validated_patterns_prerequisites/tasks/install_gitops_operator.yml` - Auto-installs OpenShift GitOps if missing
+5. `docs/how-to/deploy-on-sno.md` - SNO deployment guide
 
 ### Files Modified
 
 1. `Makefile` - Added topology/version detection variables
-2. `scripts/configure-cluster-infrastructure.sh` - Topology-aware infrastructure setup
+2. `scripts/configure-cluster-infrastructure.sh` - Topology-aware infrastructure setup: MCG-only StorageCluster for SNO, full ODF for standard
 3. `scripts/post-deployment-validation.sh` - Topology-aware validation
-4. `ansible/roles/validated_patterns_prerequisites/defaults/main.yml` - SNO resource minimums
-5. `ansible/roles/validated_patterns_prerequisites/tasks/check_cluster_resources.yml` - Topology-aware validation
-6. `ansible/roles/validated_patterns_prerequisites/tasks/check_required_storage_classes.yml` - Topology-aware storage validation
-7. `ansible/roles/validated_patterns_jupyter_validator/defaults/main.yml` - Version detection
-8. `ansible/roles/validated_patterns_jupyter_validator/tasks/deploy_operator.yml` - Version-based overlay selection
-9. `values-hub.yaml` - Added cluster topology configuration
-10. `README.md` - Documented topology support
+4. `ansible/roles/validated_patterns_prerequisites/defaults/main.yml` - SNO resource minimums, GitOps auto-install settings
+5. `ansible/roles/validated_patterns_prerequisites/tasks/check_operators.yml` - Auto-installs GitOps if missing
+6. `ansible/roles/validated_patterns_prerequisites/tasks/check_cluster_resources.yml` - Topology-aware validation
+7. `ansible/roles/validated_patterns_prerequisites/tasks/check_required_storage_classes.yml` - Topology-aware storage validation
+8. `ansible/roles/validated_patterns_jupyter_validator/defaults/main.yml` - Version detection
+9. `ansible/roles/validated_patterns_jupyter_validator/tasks/deploy_operator.yml` - Version-based overlay selection
+10. `ansible/roles/validated_patterns_deploy_cluster_resources/tasks/deploy_cross_namespace_rbac.yml` - Values-driven NooBaa RBAC (reads objectStore.enabled + checks namespace)
+11. `values-hub.yaml` - Added cluster topology configuration, objectStore.enabled=true for all topologies
+12. `README.md` - Documented topology support
 
 ## Verification
 
@@ -204,9 +207,10 @@ make show-cluster-info
 
 # Configure infrastructure
 make configure-cluster
-# Expected: Skip MachineSet, Skip ODF
+# Expected: Skip MachineSet, install ODF operator, create MCG-only StorageCluster, NooBaa Ready
 
-# Edit values-hub.yaml with SNO overrides (cluster.topology, storage, objectStore)
+# Edit values-hub.yaml with SNO overrides (cluster.topology, storage.modelStorage.storageClass)
+# objectStore.enabled stays true (MCG provides S3)
 # Then deploy
 make operator-deploy
 
@@ -219,6 +223,7 @@ make argo-healthcheck
 - [ADR-029: Jupyter Notebook Validator Operator](029-jupyter-notebook-validator-operator.md)
 - [ADR-030: Hybrid Management Model](030-hybrid-management-model.md)
 - [ADR-043: GitOps-based Deployment Architecture](043-gitops-based-deployment-architecture.md)
+- [ADR-056: Standalone MCG on SNO for Consistent S3 Storage](056-standalone-mcg-on-sno.md)
 
 ## References
 

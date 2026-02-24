@@ -136,8 +136,8 @@ make show-cluster-info
 # Output shows: Topology (standard or sno), OpenShift Version, Platform, ODF Channel
 
 # 6. Configure cluster infrastructure (ODF, node scaling)
-# Standard clusters: installs ODF, scales MachineSets (takes 10-15 min)
-# SNO clusters: validates CSI storage classes, skips ODF
+# Standard clusters: installs full ODF (Ceph + NooBaa), scales MachineSets (takes 10-15 min)
+# SNO clusters: installs MCG-only ODF (NooBaa S3 without Ceph)
 make configure-cluster
 # Skip ODF on standard clusters with existing storage: ./scripts/configure-cluster-infrastructure.sh --skip-odf
 
@@ -155,7 +155,6 @@ vi values-hub.yaml
 # IMPORTANT: If step 5 showed topology "sno", also update values-hub.yaml:
 #   cluster.topology: "sno"
 #   storage.modelStorage.storageClass: "gp3-csi"
-#   objectStore.enabled: false
 
 # 8. Get the Execution Environment
 #
@@ -199,7 +198,7 @@ tkn pipeline start deployment-validation-pipeline --showlog
 
 > **⚠️ Critical**: If you skip step 7 (updating repoURL in values files), ArgoCD will try to sync from the example Gitea URL which won't exist on your cluster, causing deployment failures. Always update both `values-global.yaml` and `values-hub.yaml` to point to YOUR fork's repository URL.
 
-> **🖥️ SNO Deployment**: If step 5 (`make show-cluster-info`) shows topology `sno`, edit `values-hub.yaml` before step 11: set `cluster.topology: "sno"`, change `storage.modelStorage.storageClass` to `"gp3-csi"`, and set `objectStore.enabled: false`. See [SNO Deployment Guide](docs/how-to/deploy-on-sno.md) for details.
+> **🖥️ SNO Deployment**: If step 5 (`make show-cluster-info`) shows topology `sno`, edit `values-hub.yaml` before step 11: set `cluster.topology: "sno"` and change `storage.modelStorage.storageClass` to `"gp3-csi"`. Object storage (NooBaa) is automatically provided by MCG-only ODF. See [SNO Deployment Guide](docs/how-to/deploy-on-sno.md) for details.
 
 #### Option 2: Deploy with Local Gitea (Air-Gapped/Development)
 
@@ -222,8 +221,8 @@ make show-cluster-info
 # Output shows: Topology (standard or sno), OpenShift Version, Platform, ODF Channel
 
 # 5. Configure cluster infrastructure (ODF, node scaling)
-# Standard clusters: installs ODF, scales MachineSets (takes 10-15 min)
-# SNO clusters: validates CSI storage classes, skips ODF
+# Standard clusters: installs full ODF (Ceph + NooBaa), scales MachineSets (takes 10-15 min)
+# SNO clusters: installs MCG-only ODF (NooBaa S3 without Ceph)
 make configure-cluster
 # Skip ODF on standard clusters with existing storage: ./scripts/configure-cluster-infrastructure.sh --skip-odf
 
@@ -250,7 +249,6 @@ vi values-hub.yaml
 # IMPORTANT: If step 4 showed topology "sno", also update values-hub.yaml:
 #   cluster.topology: "sno"
 #   storage.modelStorage.storageClass: "gp3-csi"
-#   objectStore.enabled: false
 
 # 10. Get the Execution Environment
 # Option A: Pull pre-built image (Recommended)
@@ -288,7 +286,7 @@ tkn pipeline start deployment-validation-pipeline --showlog
 
 > **📖 More info**: See [Gitea Integration Guide](docs/GITEA-INTEGRATION-GUIDE.md) for detailed setup
 
-> **🖥️ SNO Deployment**: If step 4 (`make show-cluster-info`) shows topology `sno`, edit `values-hub.yaml` before step 13: set `cluster.topology: "sno"`, change `storage.modelStorage.storageClass` to `"gp3-csi"`, and set `objectStore.enabled: false`. See [SNO Deployment Guide](docs/how-to/deploy-on-sno.md) for details.
+> **🖥️ SNO Deployment**: If step 4 (`make show-cluster-info`) shows topology `sno`, edit `values-hub.yaml` before step 13: set `cluster.topology: "sno"` and change `storage.modelStorage.storageClass` to `"gp3-csi"`. Object storage (NooBaa) is automatically provided by MCG-only ODF. See [SNO Deployment Guide](docs/how-to/deploy-on-sno.md) for details.
 
 **🎉 Done!** Your self-healing platform is now running.
 

@@ -35,7 +35,7 @@ We will **adopt the Validated Patterns OpenShift Framework** as the primary depl
 
 The framework uses 9 production-ready Ansible roles (8 from validated-patterns-ansible-toolkit + 1 custom):
 
-1. **validated_patterns_prerequisites** - Cluster validation (OpenShift version, operators, resources, RBAC, storage, network)
+1. **validated_patterns_prerequisites** - Cluster validation (OpenShift version, operators, resources, RBAC, storage, network). Auto-installs OpenShift GitOps operator if missing (controlled by `validated_patterns_auto_install_gitops` variable).
 2. **validated_patterns_common** - Helm/GitOps infrastructure (Helm install, ArgoCD, clustergroup chart)
 3. **validated_patterns_operator** - Simplified end-user deployment via VP Operator
 4. **validated_patterns_deploy** - Application deployment via ArgoCD and BuildConfigs

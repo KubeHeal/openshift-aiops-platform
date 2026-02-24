@@ -101,8 +101,10 @@ make configure-cluster
 
 **Expected Behavior:**
 - ✅ Skips MachineSet scaling (log message: "Skipping Worker Node Scaling (SNO Cluster)")
-- ✅ Skips ODF installation (log message: "Skipping ODF Installation (SNO Cluster)")
-- ✅ Validates CSI storage classes only
+- ✅ Installs ODF operator (MCG-only mode, no Ceph daemons)
+- ✅ Creates MCG-only StorageCluster (NooBaa S3 with gp3-csi backing)
+- ✅ Waits for NooBaa to become Ready
+- ✅ Validates storage classes
 
 ### 5. Build Execution Environment (First Time Only)
 
@@ -136,10 +138,9 @@ cluster:
 
 storage:
   modelStorage:
-    storageClass: "gp3-csi"  # CSI only (no ODF on SNO)
+    storageClass: "gp3-csi"  # CSI only (no CephFS on SNO)
 
-objectStore:
-  enabled: false  # NooBaa/ODF not available on SNO
+# objectStore.enabled stays true -- MCG-only ODF provides NooBaa S3
 ```
 
 Then deploy:
@@ -165,9 +166,10 @@ oc get pvc -n self-healing-platform
 
 ### Storage
 
-❌ **No ODF support** (requires minimum 3 nodes)
-- Only CSI storage classes available (gp2-csi, gp3-csi on AWS)
-- No CephFS or RBD storage
+⚠️ **MCG-only ODF** (no full Ceph)
+- NooBaa S3 object storage is available (via MCG-only StorageCluster)
+- No CephFS or RBD storage classes
+- Only CSI storage classes for block/file (gp2-csi, gp3-csi on AWS)
 - ReadWriteMany (RWX) support depends on CSI driver
 
 ### Resource Constraints
@@ -251,7 +253,7 @@ make operator-deploy
 ```bash
 export CLUSTER_TOPOLOGY=sno
 make show-cluster-info  # Verify detection
-# Then edit values-hub.yaml: set cluster.topology to "sno", storage.modelStorage.storageClass to "gp3-csi", objectStore.enabled to false
+# Then edit values-hub.yaml: set cluster.topology to "sno", storage.modelStorage.storageClass to "gp3-csi"
 make operator-deploy
 ```
 
@@ -357,15 +359,15 @@ Apply these changes to `values-hub.yaml` for SNO deployments:
 cluster:
   topology: "sno"
 
-# Storage classes (CSI only - ODF not available)
+# Storage classes (CSI for block/file - MCG provides S3)
 storage:
   modelStorage:
     size: "10Gi"
     storageClass: "gp3-csi"  # Changed from ocs-storagecluster-cephfs
 
-# Disable ODF-dependent features
+# Object store stays enabled -- MCG-only ODF provides NooBaa S3
 objectStore:
-  enabled: false
+  enabled: true
 
 # Optionally reduce notebook resource limits
 notebooks:
@@ -391,7 +393,7 @@ notebooks:
 |---------|-----|---------------------|
 | **Resource Isolation** | ❌ Shared | ✅ Distributed |
 | **High Availability** | ❌ No | ✅ Yes |
-| **ODF Storage** | ❌ No | ✅ Yes |
+| **ODF Storage** | ⚠️ MCG-only (S3) | ✅ Full (Ceph+S3) |
 | **MachineSet Scaling** | ❌ No | ✅ Yes |
 | **Production Ready** | ⚠️ Limited | ✅ Yes |
 | **Use Case** | Dev/Test, Edge | Production |

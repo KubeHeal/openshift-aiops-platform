@@ -116,7 +116,40 @@
 
 # ==============================================================================
 # OpenShift Storage Namespace (NooBaa S3)
+# Dynamically determine whether to deploy NooBaa RBAC based on:
+#   1. objectStore.enabled from values-hub.yaml
+#   2. openshift-storage namespace existence (safety net)
 # ==============================================================================
+
+- name: Read objectStore.enabled from values-hub.yaml
+  slurp:
+    src: "{{ playbook_dir }}/../../values-hub.yaml"
+  register: values_hub_content
+  failed_when: false
+
+- name: Parse objectStore.enabled setting
+  set_fact:
+    object_store_enabled: "{{ (values_hub_content.content | b64decode | from_yaml).objectStore.enabled | default(true) }}"
+  when: values_hub_content.content is defined
+
+- name: Check if openshift-storage namespace exists
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Namespace
+    name: openshift-storage
+  register: openshift_storage_ns
+  failed_when: false
+
+- name: Set NooBaa RBAC deployment flag
+  set_fact:
+    deploy_noobaa_rbac: "{{ (object_store_enabled | default(true) | bool) and (openshift_storage_ns.resources | default([]) | length > 0) }}"
+
+- name: Display NooBaa RBAC decision
+  debug:
+    msg: >-
+      NooBaa RBAC: {{ 'DEPLOYING' if deploy_noobaa_rbac | bool else 'SKIPPING' }}
+      (objectStore.enabled={{ object_store_enabled | default(true) }},
+      openshift-storage namespace={{ 'exists' if (openshift_storage_ns.resources | default([]) | length > 0) else 'missing' }})
 
 - name: Deploy Role in openshift-storage namespace (NooBaa)
   kubernetes.core.k8s:
@@ -176,9 +209,9 @@
       ✅ Cross-namespace RBAC resources deployed:
       - openshift-monitoring: Role and RoleBinding
       - default: Role and RoleBinding
-      - openshift-storage: Role and RoleBinding (NooBaa S3)
+      {{ '- openshift-storage: Role and RoleBinding (NooBaa S3)' if deploy_noobaa_rbac | default(false) | bool else '- openshift-storage: SKIPPED (object store disabled or namespace missing)' }}
 
       These allow ServiceAccounts to access:
       - Workbench: Prometheus metrics in openshift-monitoring
       - Workbench: Test workloads in default namespace
-      - Operator: NooBaa S3 credentials in openshift-storage
+      {{ '- Operator: NooBaa S3 credentials in openshift-storage' if deploy_noobaa_rbac | default(false) | bool else '' }}

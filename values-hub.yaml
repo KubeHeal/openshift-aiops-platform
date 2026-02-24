@@ -22,10 +22,14 @@
 #   3. Update repoURL in values-global.yaml git.repoURL
 # ============================================================
 
-# Cluster topology configuration (auto-detected)
+# Cluster topology configuration (auto-detected by Makefile)
+# For SNO deployments, change topology to "sno" and update the following:
+#   - storage.modelStorage.storageClass: "gp3-csi"  (no ODF/CephFS on SNO)
+# MCG-only ODF provides NooBaa S3 on SNO (objectStore.enabled stays true)
+# Verify with: make show-cluster-info
 cluster:
-  topology: "standard"  # or "sno" - auto-detected by Makefile
-  version: "4.18"       # OpenShift version - auto-detected
+  topology: "sno"  # Set to "sno" for Single Node OpenShift
+  version: "4.20"       # OpenShift version - auto-detected
 
 # Main cluster group configuration
 main:
@@ -407,11 +411,11 @@ notebooks:
 # Topology-aware storage defaults:
 # - Standard clusters: ODF storage (ocs-storagecluster-cephfs for RWX)
 # - SNO clusters: CSI storage only (gp3-csi)
-# Override with values-sno.yaml for SNO deployments
+# For SNO: set cluster.topology to "sno" and change storageClass to "gp3-csi"
 storage:
   # Model Storage PVC (shared between notebooks and KServe)
-  # Uses ocs-storagecluster-cephfs (RWX) for multi-pod access on standard clusters
-  # For SNO: Use gp3-csi (override with values-sno.yaml)
+  # Standard clusters: ocs-storagecluster-cephfs (RWX) for multi-pod access
+  # SNO clusters: change to "gp3-csi" (RWO, single pod access)
   modelStorage:
     size: "10Gi"
     storageClass: "ocs-storagecluster-cephfs"  # RWX required for notebook + inference pods
@@ -423,6 +427,13 @@ storage:
   modelStorageGpu:
     size: "10Gi"
     storageClass: "gp3-csi"  # GPU-compatible storage class (RWO)
+
+# Object Store (NooBaa/ODF S3)
+# Standard clusters: full ODF (Ceph + NooBaa S3)
+# SNO clusters: MCG-only ODF (NooBaa S3 without Ceph)
+# Enabled for all topologies -- make configure-cluster installs the appropriate backend
+objectStore:
+  enabled: true
 
 # ============================================================================
 # GO-BASED SERVICES CONFIGURATION

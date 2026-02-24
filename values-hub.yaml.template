@@ -18,7 +18,7 @@
 # Cluster topology configuration (auto-detected by Makefile)
 # For SNO deployments, change topology to "sno" and update the following:
 #   - storage.modelStorage.storageClass: "gp3-csi"  (no ODF/CephFS on SNO)
-#   - objectStore.enabled: false                     (no NooBaa/ODF on SNO)
+# MCG-only ODF provides NooBaa S3 on SNO (objectStore.enabled stays true)
 # Verify with: make show-cluster-info
 cluster:
   topology: "standard"  # Set to "sno" for Single Node OpenShift
@@ -374,8 +374,9 @@ storage:
     storageClass: "ocs-storagecluster-cephfs"  # RWX required for notebook + inference pods
 
 # Object Store configuration (NooBaa/ODF S3)
-# Standard clusters: true (ODF provides NooBaa S3-compatible object store)
-# SNO clusters: set to false (ODF not available)
+# Standard clusters: full ODF (Ceph + NooBaa S3)
+# SNO clusters: MCG-only ODF (NooBaa S3 without Ceph)
+# Enabled for all topologies -- make configure-cluster installs the appropriate backend
 objectStore:
   enabled: true
   endpoint: "https://s3.openshift-storage.svc:443"

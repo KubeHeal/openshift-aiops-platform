@@ -36,6 +36,7 @@ set -euo pipefail
 
 MIN_WORKERS="${MIN_WORKERS:-3}"
 ENABLE_ODF="${ENABLE_ODF:-true}"
+MCG_ONLY="${MCG_ONLY:-false}"
 ODF_STORAGE_SIZE="${ODF_STORAGE_SIZE:-512Gi}"
 DRY_RUN="${DRY_RUN:-false}"
 
@@ -174,8 +175,9 @@ check_prerequisites() {
 
     if [[ "$CLUSTER_TOPOLOGY" == "sno" ]]; then
         log_info "Single Node OpenShift (SNO) detected"
-        log_info "Skipping MachineSet scaling and ODF installation"
-        ENABLE_ODF=false
+        log_info "Will install MCG-only ODF (NooBaa S3 without Ceph)"
+        log_info "Skipping MachineSet scaling"
+        MCG_ONLY=true
         export MIN_WORKERS=1
     elif [[ "$PLATFORM_TYPE" != "AWS" ]]; then
         log_warn "This script is optimized for AWS. Platform detected: $PLATFORM_TYPE"
@@ -342,13 +344,11 @@ check_odf_installed() {
 }
 
 install_odf_operator() {
-    if [[ "$CLUSTER_TOPOLOGY" == "sno" ]]; then
-        log_step "Skipping ODF Installation (SNO Cluster)"
-        log_warn "ODF requires minimum 3 nodes. SNO uses CSI storage classes only."
-        return 0
+    if [[ "$MCG_ONLY" == "true" ]]; then
+        log_step "Installing OpenShift Data Foundation Operator (MCG-only for SNO)"
+    else
+        log_step "Installing OpenShift Data Foundation Operator"
     fi
-
-    log_step "Installing OpenShift Data Foundation Operator"
 
     if check_odf_installed; then
         log_success "ODF operator is already installed"
@@ -479,6 +479,8 @@ create_storage_cluster() {
     # Label nodes for storage
     label_storage_nodes
 
+    wait_for_storagecluster_crd
+
     # Check if StorageSystem CRD exists (not available in ODF 4.20+)
     if oc get crd storagesystems.odf.openshift.io &>/dev/null; then
         log_info "Creating StorageSystem..."
@@ -595,6 +597,94 @@ wait_for_storage_cluster() {
     oc get pods -n openshift-storage
 }
 
+wait_for_storagecluster_crd() {
+    local timeout=300  # 5 minutes
+    local interval=10
+    local elapsed=0
+
+    log_info "Waiting for StorageCluster CRD (ocs-operator sub-operator)..."
+
+    while [[ $elapsed -lt $timeout ]]; do
+        if oc get crd storageclusters.ocs.openshift.io &>/dev/null; then
+            log_success "StorageCluster CRD is available"
+            return 0
+        fi
+
+        log_info "  Waiting for CRD... (${elapsed}s)"
+        sleep $interval
+        elapsed=$((elapsed + interval))
+    done
+
+    log_error "Timeout waiting for StorageCluster CRD"
+    log_info "Current CSVs in openshift-storage:"
+    oc get csv -n openshift-storage 2>/dev/null || true
+    exit 1
+}
+
+create_mcg_storage_cluster() {
+    log_step "Creating MCG-Only StorageCluster (SNO)"
+
+    if oc get storagecluster -n openshift-storage 2>/dev/null | grep -q "ocs-storagecluster"; then
+        log_success "StorageCluster already exists"
+        oc get storagecluster -n openshift-storage
+        return 0
+    fi
+
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_warn "[DRY RUN] Would create MCG-only StorageCluster"
+        return 0
+    fi
+
+    wait_for_storagecluster_crd
+
+    log_info "Creating MCG-only StorageCluster (NooBaa S3 without Ceph)..."
+    log_info "Backing store: gp3-csi (AWS EBS)"
+
+    cat <<EOF | oc apply -f -
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  multiCloudGateway:
+    reconcileStrategy: standalone
+    dbStorageClassName: gp3-csi
+EOF
+
+    log_success "MCG-only StorageCluster created"
+
+    wait_for_noobaa
+}
+
+wait_for_noobaa() {
+    local timeout=600  # 10 minutes
+    local interval=15
+    local elapsed=0
+
+    log_info "Waiting for NooBaa to be ready (timeout: ${timeout}s)..."
+
+    while [[ $elapsed -lt $timeout ]]; do
+        local phase
+        phase=$(oc get noobaa noobaa -n openshift-storage -o jsonpath='{.status.phase}' 2>/dev/null || echo "Pending")
+
+        if [[ "$phase" == "Ready" ]]; then
+            log_success "NooBaa is Ready"
+            oc get noobaa -n openshift-storage
+            return 0
+        fi
+
+        log_info "  NooBaa phase: $phase (${elapsed}s elapsed)"
+        sleep $interval
+        elapsed=$((elapsed + interval))
+    done
+
+    log_warn "Timeout waiting for NooBaa (may still be provisioning)"
+    log_info "Current status:"
+    oc get noobaa -n openshift-storage 2>/dev/null || true
+    oc get pods -n openshift-storage
+}
+
 validate_storage() {
     log_step "Validating Storage Configuration"
 
@@ -664,9 +754,17 @@ print_summary() {
         echo "Storage Configuration:"
         if check_odf_installed; then
             echo "  ODF Status: Installed"
-            local sc_phase
-            sc_phase=$(oc get storagecluster ocs-storagecluster -n openshift-storage -o jsonpath='{.status.phase}' 2>/dev/null || echo "Unknown")
-            echo "  StorageCluster: $sc_phase"
+            if [[ "$MCG_ONLY" == "true" ]]; then
+                echo "  Mode: MCG-only (NooBaa S3, no Ceph)"
+                local noobaa_phase
+                noobaa_phase=$(oc get noobaa noobaa -n openshift-storage -o jsonpath='{.status.phase}' 2>/dev/null || echo "Unknown")
+                echo "  NooBaa: $noobaa_phase"
+            else
+                local sc_phase
+                sc_phase=$(oc get storagecluster ocs-storagecluster -n openshift-storage -o jsonpath='{.status.phase}' 2>/dev/null || echo "Unknown")
+                echo "  Mode: Full ODF (Ceph + NooBaa)"
+                echo "  StorageCluster: $sc_phase"
+            fi
         else
             echo "  ODF Status: Not Installed"
         fi
@@ -717,7 +815,11 @@ main() {
     # Install and configure ODF
     if [[ "$ENABLE_ODF" == "true" ]]; then
         install_odf_operator
-        create_storage_cluster
+        if [[ "$MCG_ONLY" == "true" ]]; then
+            create_mcg_storage_cluster
+        else
+            create_storage_cluster
+        fi
         validate_storage
     else
         log_info "Skipping ODF installation (--skip-odf specified)"
