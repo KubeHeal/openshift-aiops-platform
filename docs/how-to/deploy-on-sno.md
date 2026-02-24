@@ -128,12 +128,25 @@ The platform will automatically detect SNO topology and adjust deployment accord
 
 **Option 2: Explicit SNO Configuration**
 
-```bash
-export CLUSTER_TOPOLOGY=sno
-make operator-deploy EXTRA_HELM_OPTS="-f values-sno.yaml"
+Edit `values-hub.yaml` before deploying:
+
+```yaml
+cluster:
+  topology: "sno"
+
+storage:
+  modelStorage:
+    storageClass: "gp3-csi"  # CSI only (no ODF on SNO)
+
+objectStore:
+  enabled: false  # NooBaa/ODF not available on SNO
 ```
 
-This explicitly uses SNO-specific resource limits and storage configuration.
+Then deploy:
+
+```bash
+make operator-deploy
+```
 
 ### 7. Validate Deployment
 
@@ -160,7 +173,7 @@ oc get pvc -n self-healing-platform
 ### Resource Constraints
 
 ⚠️ **All workloads compete for single node's resources**
-- Reduced resource limits applied automatically via `values-sno.yaml`
+- Reduced resource limits should be configured in `values-hub.yaml`
 - GPU workloads may impact cluster stability
 - Monitor resource usage closely
 
@@ -202,13 +215,11 @@ make configure-cluster
 Warning  FailedScheduling  pod/my-pod  0/1 nodes available: insufficient memory
 ```
 
-**Solution:** Apply SNO resource limits
+**Solution:** Reduce resource requests/limits in `values-hub.yaml` notebook validation resources, then redeploy:
 
 ```bash
-make operator-deploy EXTRA_HELM_OPTS="-f values-sno.yaml"
+make operator-deploy
 ```
-
-Or manually adjust resource requests/limits in chart values.
 
 ### Issue: Storage Class Not Found (ocs-storagecluster-cephfs)
 
@@ -227,8 +238,8 @@ oc patch storageclass gp3-csi -p '{"metadata": {"annotations":{"storageclass.kub
 # Remove default from other storage classes
 oc patch storageclass gp2-csi -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 
-# Redeploy with SNO values
-make operator-deploy EXTRA_HELM_OPTS="-f values-sno.yaml"
+# Redeploy after updating values-hub.yaml with SNO settings
+make operator-deploy
 ```
 
 ### Issue: Auto-Detection Not Working
@@ -240,14 +251,15 @@ make operator-deploy EXTRA_HELM_OPTS="-f values-sno.yaml"
 ```bash
 export CLUSTER_TOPOLOGY=sno
 make show-cluster-info  # Verify detection
-make operator-deploy EXTRA_HELM_OPTS="-f values-sno.yaml"
+# Then edit values-hub.yaml: set cluster.topology to "sno", storage.modelStorage.storageClass to "gp3-csi", objectStore.enabled to false
+make operator-deploy
 ```
 
 ### Issue: Notebook Validation Jobs Failing
 
 **Symptom:** NotebookValidationJob pods OOMKilled or CrashLoopBackOff
 
-**Solution:** Reduce notebook resource limits in `values-sno.yaml`
+**Solution:** Reduce notebook resource limits in `values-hub.yaml` under `notebooks.validation.resources`:
 
 ```yaml
 notebooks:
@@ -255,8 +267,8 @@ notebooks:
     resources:
       tier1:
         limits:
-          memory: "256Mi"  # Reduced from 512Mi
-          cpu: "250m"      # Reduced from 500m
+          memory: "256Mi"  # Reduced from 1Gi
+          cpu: "250m"      # Reduced from 1000m
 ```
 
 ## Best Practices
@@ -299,10 +311,11 @@ Deploy only essential workloads on SNO:
 
 ### 4. Set Appropriate Resource Requests/Limits
 
-Use the SNO values file and adjust as needed:
+Configure SNO settings directly in `values-hub.yaml` and adjust as needed:
 
 ```bash
-make operator-deploy EXTRA_HELM_OPTS="-f values-sno.yaml"
+# Edit values-hub.yaml with SNO overrides, then deploy
+make operator-deploy
 ```
 
 ### 5. Regular Backups
@@ -335,14 +348,26 @@ Node maintenance requires cluster downtime:
 
 ## Resource Configuration Reference
 
-### SNO Values File (`values-sno.yaml`)
+### SNO Overrides in `values-hub.yaml`
+
+Apply these changes to `values-hub.yaml` for SNO deployments:
 
 ```yaml
 # Cluster configuration
 cluster:
   topology: "sno"
 
-# Reduced resource requirements for single-node constraints
+# Storage classes (CSI only - ODF not available)
+storage:
+  modelStorage:
+    size: "10Gi"
+    storageClass: "gp3-csi"  # Changed from ocs-storagecluster-cephfs
+
+# Disable ODF-dependent features
+objectStore:
+  enabled: false
+
+# Optionally reduce notebook resource limits
 notebooks:
   validation:
     resources:
@@ -358,19 +383,6 @@ notebooks:
         limits:
           memory: "8Gi"
           cpu: "2000m"
-
-# Storage classes (CSI only - ODF not available)
-storage:
-  modelStorage:
-    size: "10Gi"
-    storageClass: "gp3-csi"
-  modelStorageGpu:
-    size: "10Gi"
-    storageClass: "gp3-csi"
-
-# Disable ODF-dependent features
-odf:
-  enabled: false
 ```
 
 ## Comparison: SNO vs Standard Cluster

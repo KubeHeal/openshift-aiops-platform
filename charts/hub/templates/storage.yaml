@@ -58,10 +58,14 @@ metadata:
     app.kubernetes.io/name: model-storage
   annotations:
     argocd.argoproj.io/sync-wave: "-6"
-    description: "Shared model storage for notebooks and KServe - requires RWX"
+    description: "Shared model storage for notebooks and KServe"
 spec:
   accessModes:
-    - ReadWriteMany  # Required for notebook and multiple inference service pods
+    {{- if eq ((.Values.cluster).topology | default "standard") "sno" }}
+    - ReadWriteOnce
+    {{- else }}
+    - ReadWriteMany
+    {{- end }}
   resources:
     requests:
       storage: {{ if and .Values.storage .Values.storage.modelStorage .Values.storage.modelStorage.size }}{{ .Values.storage.modelStorage.size }}{{ else }}"10Gi"{{ end }}

@@ -91,16 +91,19 @@ make operator-deploy
 
 ### SNO-Specific Configuration
 
-For SNO clusters, use the SNO values override file:
+For SNO clusters, edit `values-hub.yaml` with SNO overrides before deploying:
+
+- Set `cluster.topology: "sno"`
+- Change `storage.modelStorage.storageClass` to `"gp3-csi"`
+- Set `objectStore.enabled: false`
+
+Then deploy normally:
 
 ```bash
-make operator-deploy EXTRA_HELM_OPTS="-f values-sno.yaml"
+make operator-deploy
 ```
 
-This applies:
-- Reduced resource limits
-- CSI-only storage classes
-- Disabled ODF features
+The chart templates use topology-aware conditionals (e.g., RWO vs RWX access modes) based on `cluster.topology`.
 
 ## Rationale
 
@@ -147,7 +150,7 @@ This applies:
 |------|--------|------------|
 | Detection failure | Deployment fails | Fallback to "standard", allow manual override |
 | Version mismatch | Wrong overlay used | Version detection from cluster, not user input |
-| Resource exhaustion on SNO | Pods crash | Reduced resource limits in values-sno.yaml |
+| Resource exhaustion on SNO | Pods crash | Reduced resource limits in values-hub.yaml |
 | Missing storage on SNO | PVCs pending | Fail-fast validation of required storage classes |
 
 ## Implementation
@@ -157,8 +160,7 @@ This applies:
 1. `scripts/detect-cluster-topology.sh` - Topology detection script
 2. `scripts/detect-ocp-version.sh` - Version detection script
 3. `ansible/roles/validated_patterns_prerequisites/tasks/check_cluster_topology.yml` - Ansible topology detection
-4. `values-sno.yaml` - SNO-specific value overrides
-5. `docs/how-to/deploy-on-sno.md` - SNO deployment guide
+4. `docs/how-to/deploy-on-sno.md` - SNO deployment guide
 
 ### Files Modified
 
@@ -204,8 +206,9 @@ make show-cluster-info
 make configure-cluster
 # Expected: Skip MachineSet, Skip ODF
 
-# Deploy pattern with SNO overrides
-make operator-deploy EXTRA_HELM_OPTS="-f values-sno.yaml"
+# Edit values-hub.yaml with SNO overrides (cluster.topology, storage, objectStore)
+# Then deploy
+make operator-deploy
 
 # Validate
 make argo-healthcheck

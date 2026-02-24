@@ -15,6 +15,15 @@
 #   ./scripts/configure-cluster-values.sh
 # ============================================================
 
+# Cluster topology configuration (auto-detected by Makefile)
+# For SNO deployments, change topology to "sno" and update the following:
+#   - storage.modelStorage.storageClass: "gp3-csi"  (no ODF/CephFS on SNO)
+#   - objectStore.enabled: false                     (no NooBaa/ODF on SNO)
+# Verify with: make show-cluster-info
+cluster:
+  topology: "standard"  # Set to "sno" for Single Node OpenShift
+  version: "4.18"       # OpenShift version - auto-detected
+
 # Main cluster group configuration
 main:
   # Cluster group name
@@ -364,9 +373,11 @@ storage:
     size: "10Gi"
     storageClass: "ocs-storagecluster-cephfs"  # RWX required for notebook + inference pods
 
-# Object Store configuration - enable now that ODF/NooBaa is available
+# Object Store configuration (NooBaa/ODF S3)
+# Standard clusters: true (ODF provides NooBaa S3-compatible object store)
+# SNO clusters: set to false (ODF not available)
 objectStore:
-  enabled: true  # Re-enabled with KServe storage-config fix
+  enabled: true
   endpoint: "https://s3.openshift-storage.svc:443"
   region: "us-east-1"
   sslVerify: false
