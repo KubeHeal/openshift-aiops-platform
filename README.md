@@ -141,7 +141,7 @@ make show-cluster-info
 make configure-cluster
 # Skip ODF on standard clusters with existing storage: ./scripts/configure-cluster-infrastructure.sh --skip-odf
 
-# 7. Configure values files (CRITICAL - Update Git repository URLs)
+# 7. Configure values files
 # Edit values-global.yaml - Update git.repoURL to YOUR repository:
 vi values-global.yaml
 # Change: repoURL: "https://gitea-with-admin-gitea.apps.cluster-pvbs6..."
@@ -151,6 +151,11 @@ vi values-global.yaml
 vi values-hub.yaml
 # Change: repoURL: "https://gitea-with-admin-gitea.apps.cluster-pvbs6..."
 # To:     repoURL: "https://github.com/YOUR-USERNAME/openshift-aiops-platform.git"
+#
+# IMPORTANT: If step 5 showed topology "sno", also update values-hub.yaml:
+#   cluster.topology: "sno"
+#   storage.modelStorage.storageClass: "gp3-csi"
+#   objectStore.enabled: false
 
 # 8. Get the Execution Environment
 #
@@ -241,6 +246,11 @@ vi values-global.yaml
 
 vi values-hub.yaml
 # Set: repoURL: "https://gitea-with-admin-gitea.apps.<cluster-domain>/<username>/openshift-aiops-platform.git"
+#
+# IMPORTANT: If step 4 showed topology "sno", also update values-hub.yaml:
+#   cluster.topology: "sno"
+#   storage.modelStorage.storageClass: "gp3-csi"
+#   objectStore.enabled: false
 
 # 10. Get the Execution Environment
 # Option A: Pull pre-built image (Recommended)
