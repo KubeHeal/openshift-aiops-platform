@@ -1,0 +1,136 @@
+---
+# Check GPU availability and optionally free GPUs from external workloads
+# This ensures the platform's GPU-requiring jobs can schedule successfully.
+
+- name: Get GPU-capable nodes
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Node
+    label_selectors:
+      - nvidia.com/gpu.present=true
+  register: gpu_nodes
+
+- name: Set GPU availability facts
+  set_fact:
+    gpu_node_count: "{{ gpu_nodes.resources | length }}"
+    total_gpu_capacity: "{{ gpu_nodes.resources | map(attribute='status.capacity') | map(attribute='nvidia.com/gpu', default='0') | map('int') | sum }}"
+    total_gpu_allocatable: "{{ gpu_nodes.resources | map(attribute='status.allocatable') | map(attribute='nvidia.com/gpu', default='0') | map('int') | sum }}"
+
+- name: Display GPU summary
+  debug:
+    msg: |
+      GPU Node Summary:
+      - GPU nodes: {{ gpu_node_count }}
+      - Total GPU capacity: {{ total_gpu_capacity }}
+      - Total GPU allocatable: {{ total_gpu_allocatable }}
+
+- name: Skip GPU checks if no GPUs available
+  debug:
+    msg: "No GPU nodes detected -- skipping GPU availability check"
+  when: gpu_node_count | int == 0
+
+- name: Find all pods requesting GPUs across the cluster
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Pod
+    field_selectors:
+      - status.phase=Running
+  register: all_running_pods
+  when: gpu_node_count | int > 0
+
+- name: Identify GPU-consuming pods
+  set_fact:
+    gpu_consuming_pods: >-
+      {{
+        all_running_pods.resources | default([])
+        | selectattr('spec.containers', 'defined')
+        | json_query(gpu_pods_query)
+      }}
+  vars:
+    gpu_pods_query: >-
+      [].{
+        name: metadata.name,
+        namespace: metadata.namespace,
+        gpu_request: spec.containers[?resources.requests."nvidia.com/gpu"].resources.requests."nvidia.com/gpu" | [0]
+      } | [?gpu_request]
+  when: gpu_node_count | int > 0
+
+- name: Identify external GPU-consuming pods (outside platform namespace)
+  set_fact:
+    external_gpu_pods: >-
+      {{
+        gpu_consuming_pods | default([])
+        | rejectattr('namespace', 'equalto', validated_patterns_platform_namespace)
+        | list
+      }}
+  when: gpu_node_count | int > 0
+
+- name: Display GPU allocation details
+  debug:
+    msg: |
+      GPU Pod Allocation:
+      - Total GPU-consuming pods: {{ gpu_consuming_pods | default([]) | length }}
+      - External GPU-consuming pods: {{ external_gpu_pods | default([]) | length }}
+      {% for pod in external_gpu_pods | default([]) %}
+      - {{ pod.namespace }}/{{ pod.name }} (GPU request: {{ pod.gpu_request }})
+      {% endfor %}
+  when: gpu_node_count | int > 0
+
+- name: Scale down external GPU workloads
+  when:
+    - gpu_node_count | int > 0
+    - validated_patterns_free_gpu_from_external_workloads | bool
+    - external_gpu_pods | default([]) | length > 0
+  block:
+    - name: Find parent deployments for external GPU pods
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        namespace: "{{ item.namespace }}"
+      register: external_deployments
+      loop: "{{ external_gpu_pods }}"
+      loop_control:
+        label: "{{ item.namespace }}/{{ item.name }}"
+
+    - name: Scale down external GPU deployments to 0
+      kubernetes.core.k8s:
+        api_version: apps/v1
+        kind: Deployment
+        name: "{{ item.1.metadata.name }}"
+        namespace: "{{ item.1.metadata.namespace }}"
+        definition:
+          spec:
+            replicas: 0
+      when:
+        - item.1.spec.template.spec.containers | default([]) | json_query('[?resources.requests."nvidia.com/gpu"]') | length > 0
+      loop: "{{ external_deployments.results | subelements('resources', skip_missing=True) }}"
+      loop_control:
+        label: "{{ item.1.metadata.namespace }}/{{ item.1.metadata.name }}"
+      register: scaled_down_deployments
+
+    - name: Report scaled-down workloads
+      debug:
+        msg: |
+          ⚠️  Scaled down external GPU workloads to free resources:
+          {% for result in scaled_down_deployments.results | default([]) %}
+          {% if result.changed | default(false) %}
+          - {{ result.item.1.metadata.namespace }}/{{ result.item.1.metadata.name }} → replicas: 0
+          {% endif %}
+          {% endfor %}
+          To restore after platform deployment, scale them back up manually.
+      when: scaled_down_deployments.results | default([]) | selectattr('changed', 'defined') | selectattr('changed') | list | length > 0
+
+- name: Warn about external GPU contention (when auto-scale-down is disabled)
+  debug:
+    msg: |
+      ⚠️  WARNING: External workloads are consuming {{ external_gpu_pods | length }} GPU(s).
+      Platform GPU-requiring jobs may not schedule until GPUs are freed.
+      Set validated_patterns_free_gpu_from_external_workloads: true to auto-scale-down.
+      External GPU pods:
+      {% for pod in external_gpu_pods %}
+      - {{ pod.namespace }}/{{ pod.name }}
+      {% endfor %}
+  when:
+    - gpu_node_count | int > 0
+    - not (validated_patterns_free_gpu_from_external_workloads | bool)
+    - external_gpu_pods | default([]) | length > 0

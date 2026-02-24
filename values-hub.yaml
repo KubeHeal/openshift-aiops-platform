@@ -420,9 +420,16 @@ storage:
     size: "10Gi"
     storageClass: "gp3-csi"  # SNO: gp3-csi (RWO); Standard: ocs-storagecluster-cephfs (RWX)
 
+  # Model Artifacts PVC (shared model artifacts storage)
+  # Standard clusters: ocs-storagecluster-cephfs (RWX) for multi-pod access
+  # SNO clusters: gp3-csi (RWO, no CephFS available)
+  modelArtifacts:
+    size: "50Gi"
+    storageClass: "gp3-csi"  # SNO: gp3-csi (RWO); Standard: ocs-storagecluster-cephfs (RWX)
+
   # Model Storage PVC for GPU Training
   # GPU nodes cannot mount ocs-storagecluster-cephfs, so we use gp3-csi (RWO)
-  # Models are copied to model-storage-pvc (ocs-storagecluster-cephfs) after training
+  # Models are copied to model-storage-pvc after training
   # Compatible with all cluster topologies (standard and SNO)
   modelStorageGpu:
     size: "10Gi"

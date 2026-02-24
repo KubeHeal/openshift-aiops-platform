@@ -371,7 +371,14 @@ storage:
   # Model Storage PVC (shared between notebooks and KServe)
   modelStorage:
     size: "10Gi"
-    storageClass: "ocs-storagecluster-cephfs"  # RWX required for notebook + inference pods
+    storageClass: "ocs-storagecluster-cephfs"  # Standard: RWX; SNO: change to "gp3-csi"
+
+  # Model Artifacts PVC (shared model artifacts storage)
+  # Standard clusters: ocs-storagecluster-cephfs (RWX) for multi-pod access
+  # SNO clusters: gp3-csi (RWO, no CephFS available)
+  modelArtifacts:
+    size: "50Gi"
+    storageClass: "ocs-storagecluster-cephfs"  # Standard: RWX; SNO: change to "gp3-csi"
 
 # Object Store configuration (NooBaa/ODF S3)
 # Standard clusters: full ODF (Ceph + NooBaa S3)
