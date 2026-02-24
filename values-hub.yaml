@@ -31,10 +31,12 @@ cluster:
   topology: "sno"  # Set to "sno" for Single Node OpenShift
   version: "4.20"       # OpenShift version - auto-detected
 
-# Cluster apps domain (used for dashboard URLs, Gitea, etc.)
-# Get via: oc get ingress.config.openshift.io cluster -o jsonpath='{.spec.domain}'
-global:
-  clusterDomain: "apps.ocp.6v4mq.sandbox1882.opentlc.com"
+# global.clusterDomain is auto-populated by the Validated Patterns operator
+# with the OpenShift baseDomain (e.g. "ocp.example.com").
+# Override only if auto-detection fails:
+#   oc get dns cluster -o jsonpath='{.spec.baseDomain}'
+# global:
+#   clusterDomain: "ocp.example.com"
 
 # Main cluster group configuration
 main:

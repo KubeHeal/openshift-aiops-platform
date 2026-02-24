@@ -10,10 +10,9 @@ global:
   # Pattern version
   version: "1.0.0"
 
-  # Cluster apps domain (e.g. "apps.ocp.example.com")
-  # Used to compute RHOAI dashboard URL and other cluster-specific endpoints.
-  # Override per-cluster in values-hub.yaml: global.clusterDomain
-  # Get via: oc get ingress.config.openshift.io cluster -o jsonpath='{.spec.domain}'
+  # OpenShift baseDomain (auto-populated by VP operator, e.g. "ocp.example.com")
+  # Used to compute RHOAI dashboard URL (apps.<baseDomain>) and other endpoints.
+  # Get via: oc get dns cluster -o jsonpath='{.spec.baseDomain}'
   clusterDomain: ""
 
   # Analytics UUID for tracking (optional)
