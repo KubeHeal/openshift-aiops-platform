@@ -194,3 +194,38 @@ Usage: {{- include "self-healing-platform.ifEnabled" (dict "enabled" .Values.fea
 {{ .content }}
 {{- end }}
 {{- end }}
+
+{{/*
+RHOAI dashboard route name
+Returns the route hostname prefix based on RHOAI version:
+  - RHOAI 3.x (OCP 4.20+): "data-science-gateway"
+  - RHOAI 2.x (OCP 4.18):  "rhods-dashboard-redhat-ods-applications"
+Can be overridden explicitly via workbench.dashboardRoute.
+*/}}
+{{- define "self-healing-platform.dashboardRoute" -}}
+{{- if ((.Values.workbench).dashboardRoute | default "") }}
+{{- .Values.workbench.dashboardRoute }}
+{{- else }}
+{{- $version := .Values.cluster.version | default "4.18" }}
+{{- if semverCompare ">=4.20" $version }}
+{{- "data-science-gateway" }}
+{{- else }}
+{{- "rhods-dashboard-redhat-ods-applications" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+RHOAI dashboard host (FQDN)
+Combines the dashboard route name with the cluster apps domain.
+Requires global.clusterDomain to be set (e.g. "apps.ocp.example.com").
+*/}}
+{{- define "self-healing-platform.dashboardHost" -}}
+{{- $route := include "self-healing-platform.dashboardRoute" . }}
+{{- $domain := .Values.global.clusterDomain | default "" }}
+{{- if $domain }}
+{{- printf "%s.%s" $route $domain }}
+{{- else }}
+{{- $route }}
+{{- end }}
+{{- end }}

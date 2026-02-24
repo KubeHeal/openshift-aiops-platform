@@ -11,6 +11,11 @@ cluster:
   topology: "standard"  # Set to "sno" for Single Node OpenShift
   version: "4.18"       # OpenShift version - auto-detected
 
+# Cluster apps domain (used for dashboard URLs, Gitea, etc.)
+# Get via: oc get ingress.config.openshift.io cluster -o jsonpath='{.spec.domain}'
+global:
+  clusterDomain: ""  # e.g. "apps.ocp.example.com"
+
 # Main cluster group configuration
 main:
   # Cluster group name
