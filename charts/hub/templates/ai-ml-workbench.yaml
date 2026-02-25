@@ -1,19 +1,26 @@
+{{- $version := .Values.cluster.version | default "4.18" }}
+{{- $namespace := .Values.main.namespace | default "self-healing-platform" }}
+{{- $dashboardHost := include "self-healing-platform.dashboardHost" . }}
 apiVersion: kubeflow.org/v1
 kind: Notebook
 metadata:
   name: self-healing-workbench
-  namespace: {{ .Values.main.namespace }}
+  namespace: {{ $namespace }}
   labels:
     app.kubernetes.io/component: ai-ml-workbench
     app: self-healing-workbench
+    opendatahub.io/dashboard: "true"
+    opendatahub.io/odh-managed: "true"
   annotations:
+    {{- if semverCompare ">=4.20" $version }}
+    notebooks.opendatahub.io/inject-auth: "true"
+    {{- else }}
     notebooks.opendatahub.io/inject-oauth: "true"
-    notebooks.opendatahub.io/oauth-logout-url: "https://{{ include "self-healing-platform.dashboardHost" . }}/projects/{{ .Values.main.namespace }}"
-    # ArgoCD: Prevent auto-deletion and recreation of workbench pod
-    # This preserves user work sessions and prevents interruptions during development
+    notebooks.opendatahub.io/oauth-logout-url: "https://{{ $dashboardHost }}/projects/{{ $namespace }}"
+    {{- end }}
+    opendatahub.io/username: "admin"
+    openshift.io/display-name: "Self-Healing Workbench"
     argocd.argoproj.io/sync-options: "Prune=false,Replace=false"
-    # ArgoCD: Allow manual changes to specific fields without reverting
-    # This enables operators to tune resources, env vars, and image during development
     argocd.argoproj.io/compare-options: |
       IgnoreDifferences=/spec/template/spec/containers/0/resources,/spec/template/spec/containers/0/env,/spec/template/spec/containers/0/image,/spec/template/spec/volumes
 spec:
@@ -112,9 +119,15 @@ spec:
             nvidia.com/gpu: "1"
             {{- end }}
         env:
-        # RHODS-compatible notebook arguments for path-based routing
-        {{- $namespace := .Values.main.namespace | default "self-healing-platform" }}
-        {{- $dashboardHost := include "self-healing-platform.dashboardHost" . }}
+        {{- if semverCompare ">=4.20" $version }}
+        - name: NOTEBOOK_ARGS
+          value: |-
+            --ServerApp.port=8888
+            --ServerApp.token=''
+            --ServerApp.password=''
+            --ServerApp.base_url=/notebook/{{ $namespace }}/self-healing-workbench
+            --ServerApp.quit_button=False
+        {{- else }}
         - name: NOTEBOOK_ARGS
           value: |-
             --ServerApp.port=8888
@@ -123,6 +136,7 @@ spec:
             --ServerApp.base_url=/notebook/{{ $namespace }}/self-healing-workbench
             --ServerApp.quit_button=False
             --ServerApp.tornado_settings={"user":"admin","hub_host":"https://{{ $dashboardHost }}","hub_prefix":"/projects/{{ $namespace }}"}
+        {{- end }}
         - name: JUPYTER_IMAGE
           value: image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest
         - name: JUPYTER_ENABLE_LAB
@@ -223,8 +237,9 @@ spec:
           readOnly: true
           subPath: ca-bundle.crt
         workingDir: /opt/app-root/src
-      # RHOAI 3.x handles authentication via HTTPRoute + Service Mesh
-      # (inject-oauth annotation triggers the ODH notebook controller to set this up)
+      # Auth is handled by the ODH notebook controller:
+      # RHOAI 3.x (inject-auth): kube-rbac-proxy sidecar + HTTPRoute
+      # RHOAI 2.x (inject-oauth): oauth-proxy sidecar
       serviceAccountName: self-healing-workbench
       enableServiceLinks: false
       volumes:
