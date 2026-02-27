@@ -25,6 +25,9 @@
 
 set -euo pipefail
 
+# Ensure /usr/local/bin is in PATH (sudo secure_path may exclude it)
+export PATH="/usr/local/bin:$PATH"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -294,11 +297,31 @@ install_helm() {
         fi
     fi
 
-    # Use official Helm install script
-    curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | \
-        DESIRED_VERSION="$HELM_VERSION" bash
+    local arch
+    arch=$(uname -m)
+    case "$arch" in
+        x86_64) arch="amd64" ;;
+        aarch64) arch="arm64" ;;
+        *) log_error "Unsupported architecture: $arch"; exit 1 ;;
+    esac
 
-    log_success "Helm installed"
+    local tmp_dir
+    tmp_dir=$(mktemp -d)
+    cd "$tmp_dir"
+
+    local url="https://get.helm.sh/helm-${HELM_VERSION}-linux-${arch}.tar.gz"
+    log_info "Downloading from: $url"
+
+    curl -fsSL "$url" -o helm.tar.gz
+    tar -xzf helm.tar.gz
+
+    sudo mv "linux-${arch}/helm" /usr/local/bin/helm
+    sudo chmod +x /usr/local/bin/helm
+
+    cd - > /dev/null
+    rm -rf "$tmp_dir"
+
+    log_success "Helm installed to /usr/local/bin/"
     helm version --short
 }
 
