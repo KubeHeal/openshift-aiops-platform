@@ -30,7 +30,7 @@ spec:
       initContainers:
       # Wait for Coordination Engine to be available before starting
       - name: wait-for-coordination-engine
-        image: {{ .Values.mcpServer.image.repository | default "quay.io/takinosh/openshift-cluster-health-mcp" }}:{{ .Values.mcpServer.image.tag | default "ocp-4.18-latest" }}
+        image: {{ .Values.mcpServer.image.repository | default "quay.io/takinosh/openshift-cluster-health-mcp" }}:{{ .Values.mcpServer.image.tag | default (include "self-healing-platform.imageTag" $) }}
         imagePullPolicy: {{ .Values.mcpServer.image.pullPolicy | default "Always" }}
         command: ["/usr/local/bin/healthcheck", "http://coordination-engine:8080/health"]
         securityContext:
@@ -41,7 +41,7 @@ spec:
           runAsNonRoot: true
       # Wait for Prometheus to be available before starting
       - name: wait-for-prometheus
-        image: {{ .Values.mcpServer.image.repository | default "quay.io/takinosh/openshift-cluster-health-mcp" }}:{{ .Values.mcpServer.image.tag | default "ocp-4.18-latest" }}
+        image: {{ .Values.mcpServer.image.repository | default "quay.io/takinosh/openshift-cluster-health-mcp" }}:{{ .Values.mcpServer.image.tag | default (include "self-healing-platform.imageTag" $) }}
         imagePullPolicy: {{ .Values.mcpServer.image.pullPolicy | default "Always" }}
         command:
         - /usr/local/bin/healthcheck
@@ -58,7 +58,7 @@ spec:
           runAsNonRoot: true
       containers:
       - name: mcp-server
-        image: {{ .Values.mcpServer.image.repository | default "quay.io/takinosh/openshift-cluster-health-mcp" }}:{{ .Values.mcpServer.image.tag | default "ocp-4.18-latest" }}
+        image: {{ .Values.mcpServer.image.repository | default "quay.io/takinosh/openshift-cluster-health-mcp" }}:{{ .Values.mcpServer.image.tag | default (include "self-healing-platform.imageTag" $) }}
         imagePullPolicy: {{ .Values.mcpServer.image.pullPolicy | default "Always" }}
         ports:
         - name: http

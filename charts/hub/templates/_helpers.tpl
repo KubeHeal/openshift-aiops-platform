@@ -196,6 +196,17 @@ Usage: {{- include "self-healing-platform.ifEnabled" (dict "enabled" .Values.fea
 {{- end }}
 
 {{/*
+Default container image tag derived from cluster.version.
+Produces "ocp-<version>-latest" (e.g. "ocp-4.20-latest").
+Deployment templates use: .Values.<component>.image.tag | default (include "self-healing-platform.imageTag" $)
+so an explicit tag in values always takes priority.
+*/}}
+{{- define "self-healing-platform.imageTag" -}}
+{{- $version := .Values.cluster.version | default "4.20" }}
+{{- printf "ocp-%s-latest" $version }}
+{{- end }}
+
+{{/*
 RHOAI dashboard route name
 Returns the route hostname prefix based on RHOAI version:
   - RHOAI 3.x (OCP 4.20+): "data-science-gateway"
