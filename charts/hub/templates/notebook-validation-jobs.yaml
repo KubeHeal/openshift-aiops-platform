@@ -165,6 +165,7 @@ spec:
 {{- $gitRef := .Values.git.revision | default .Values.global.git.revision | default .Values.notebooks.validation.git.ref | default "main" }}
 {{- $enableSyncWaves := .Values.notebooks.validation.enableSyncWaves | default true }}
 
+{{- if .Values.notebooks.validation.waves }}
 {{- /* Wave 0: Setup & Platform Validation */ -}}
 {{- if and .Values.notebooks.validation.waves.wave0 .Values.notebooks.validation.waves.wave0.enabled }}
 {{- range $notebook := .Values.notebooks.validation.waves.wave0.notebooks }}
@@ -319,4 +320,5 @@ spec:
 {{- end }}
 {{- end }}
 
+{{- end }}{{/* end waves */}}
 {{- end }}
