@@ -131,32 +131,36 @@ source ~/.bashrc
 # 4. Log into your OpenShift cluster
 oc login <cluster-api-url>
 
-# 5. Verify cluster topology and version
+# 5. Create values files from examples (REQUIRED before any make target)
+cp values-global.yaml.example values-global.yaml
+cp values-hub.yaml.example values-hub.yaml  # if not already present
+
+# 6. Update values files to point to YOUR repository
+# Edit values-global.yaml - Update git.repoURL:
+vi values-global.yaml
+# Change: repoURL: "https://github.com/YOUR-USERNAME/openshift-aiops-platform.git"
+# To:     repoURL: "https://github.com/<your-github-user>/openshift-aiops-platform.git"
+
+# Edit values-hub.yaml - Update repoURL:
+vi values-hub.yaml
+# Change: repoURL: "https://gitea-with-admin-gitea.apps.cluster-pvbs6..."
+# To:     repoURL: "https://github.com/<your-github-user>/openshift-aiops-platform.git"
+
+# 7. Verify cluster topology and version
 make show-cluster-info
 # Output shows: Topology (standard or sno), OpenShift Version, Platform, ODF Channel
+#
+# IMPORTANT: If topology shows "sno", also update values-hub.yaml:
+#   cluster.topology: "sno"
+#   storage.modelStorage.storageClass: "gp3-csi"
 
-# 6. Configure cluster infrastructure (ODF, node scaling)
+# 8. Configure cluster infrastructure (ODF, node scaling)
 # Standard clusters: installs full ODF (Ceph + NooBaa), scales MachineSets (takes 10-15 min)
 # SNO clusters: installs MCG-only ODF (NooBaa S3 without Ceph)
 make configure-cluster
 # Skip ODF on standard clusters with existing storage: ./scripts/configure-cluster-infrastructure.sh --skip-odf
 
-# 7. Configure values files
-# Edit values-global.yaml - Update git.repoURL to YOUR repository:
-vi values-global.yaml
-# Change: repoURL: "https://gitea-with-admin-gitea.apps.cluster-pvbs6..."
-# To:     repoURL: "https://github.com/YOUR-USERNAME/openshift-aiops-platform.git"
-
-# Edit values-hub.yaml - Update repoURL to YOUR repository:
-vi values-hub.yaml
-# Change: repoURL: "https://gitea-with-admin-gitea.apps.cluster-pvbs6..."
-# To:     repoURL: "https://github.com/YOUR-USERNAME/openshift-aiops-platform.git"
-#
-# IMPORTANT: If step 5 showed topology "sno", also update values-hub.yaml:
-#   cluster.topology: "sno"
-#   storage.modelStorage.storageClass: "gp3-csi"
-
-# 8. Get the Execution Environment
+# 9. Get the Execution Environment
 #
 # Option A: Pull pre-built image (Recommended)
 podman pull quay.io/takinosh/openshift-aiops-platform-ee:latest
@@ -169,36 +173,36 @@ podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest \
 # make token
 # make build-ee
 
-# 9. Validate cluster prerequisites
+# 10. Validate cluster prerequisites
 make check-prerequisites
 
-# 10. Run Ansible prerequisites (creates secrets, RBAC, namespaces)
+# 11. Run Ansible prerequisites (creates secrets, RBAC, namespaces)
 make operator-deploy-prereqs
 
-# 11. Deploy the platform via Validated Patterns Operator
+# 12. Deploy the platform via Validated Patterns Operator
 make operator-deploy
 
-# 12. Wait for the ArgoCD Application to be created by the operator
+# 13. Wait for the ArgoCD Application to be created by the operator
 oc wait --for=jsonpath='{.kind}'=Application \
   application/self-healing-platform -n self-healing-platform-hub --timeout=120s
 
-# 13. Sync ArgoCD (if needed)
+# 14. Sync ArgoCD (if needed)
 # A manual sync or refresh may be required for the self-healing-platform-hub ArgoCD project
 oc annotate application self-healing-platform -n self-healing-platform-hub \
   argocd.argoproj.io/refresh=hard --overwrite
 
-# 14. Validate deployment
+# 15. Validate deployment
 make argo-healthcheck
 
-# 15. Run Tekton validation pipeline (validates coordination engine + model connectivity)
+# 16. Run Tekton validation pipeline (validates coordination engine + model connectivity)
 tkn pipeline start deployment-validation-pipeline --showlog
 ```
 
-> **💡 Note**: Step 11 (`make operator-deploy`) automatically runs step 10 (`operator-deploy-prereqs`) as a dependency. However, running them separately helps with troubleshooting and understanding the deployment flow.
+> **💡 Note**: Step 12 (`make operator-deploy`) automatically runs step 11 (`operator-deploy-prereqs`) as a dependency. However, running them separately helps with troubleshooting and understanding the deployment flow.
 
-> **⚠️ Critical**: If you skip step 7 (updating repoURL in values files), ArgoCD will try to sync from the example Gitea URL which won't exist on your cluster, causing deployment failures. Always update both `values-global.yaml` and `values-hub.yaml` to point to YOUR fork's repository URL.
+> **⚠️ Critical**: Steps 5-6 (creating and editing values files) are **required before any `make` target**. The Makefile reads `values-global.yaml` on startup, so all `make` commands will fail if the file doesn't exist. Always update both `values-global.yaml` and `values-hub.yaml` to point to YOUR fork's repository URL.
 
-> **🖥️ SNO Deployment**: If step 5 (`make show-cluster-info`) shows topology `sno`, edit `values-hub.yaml` before step 11: set `cluster.topology: "sno"` and change `storage.modelStorage.storageClass` to `"gp3-csi"`. Object storage (NooBaa) is automatically provided by MCG-only ODF. See [SNO Deployment Guide](docs/how-to/deploy-on-sno.md) for details.
+> **🖥️ SNO Deployment**: If step 7 (`make show-cluster-info`) shows topology `sno`, edit `values-hub.yaml` before step 12: set `cluster.topology: "sno"` and change `storage.modelStorage.storageClass` to `"gp3-csi"`. Object storage (NooBaa) is automatically provided by MCG-only ODF. See [SNO Deployment Guide](docs/how-to/deploy-on-sno.md) for details.
 
 #### Option 2: Deploy with Local Gitea (Air-Gapped/Development)
 
@@ -216,41 +220,45 @@ source ~/.bashrc
 # 3. Log into your OpenShift cluster
 oc login <cluster-api-url>
 
-# 4. Verify cluster topology and version
+# 4. Create values files from examples (REQUIRED before any make target)
+cp values-global.yaml.example values-global.yaml
+cp values-hub.yaml.example values-hub.yaml  # if not already present
+
+# 5. Verify cluster topology and version
 make show-cluster-info
 # Output shows: Topology (standard or sno), OpenShift Version, Platform, ODF Channel
 
-# 5. Configure cluster infrastructure (ODF, node scaling)
+# 6. Configure cluster infrastructure (ODF, node scaling)
 # Standard clusters: installs full ODF (Ceph + NooBaa), scales MachineSets (takes 10-15 min)
 # SNO clusters: installs MCG-only ODF (NooBaa S3 without Ceph)
 make configure-cluster
 # Skip ODF on standard clusters with existing storage: ./scripts/configure-cluster-infrastructure.sh --skip-odf
 
-# 6. Deploy Gitea on OpenShift
+# 7. Deploy Gitea on OpenShift
 make deploy-gitea
 # This deploys Gitea operator and creates a Gitea instance
 
-# 7. Get Gitea URL
+# 8. Get Gitea URL
 GITEA_URL=$(oc get route gitea -n gitea -o jsonpath='{.spec.host}')
 echo "Gitea URL: https://${GITEA_URL}"
 
-# 8. Fork repository in Gitea
+# 9. Fork repository in Gitea
 # - Log into Gitea UI (default: admin / see giteuserpass.md for password)
 # - Create new repository or import from GitHub
 # - Repository name: openshift-aiops-platform
 
-# 9. Update values files to point to Gitea
+# 10. Update values files to point to Gitea
 vi values-global.yaml
 # Set: repoURL: "https://gitea-with-admin-gitea.apps.<cluster-domain>/<username>/openshift-aiops-platform.git"
 
 vi values-hub.yaml
 # Set: repoURL: "https://gitea-with-admin-gitea.apps.<cluster-domain>/<username>/openshift-aiops-platform.git"
 #
-# IMPORTANT: If step 4 showed topology "sno", also update values-hub.yaml:
+# IMPORTANT: If step 5 showed topology "sno", also update values-hub.yaml:
 #   cluster.topology: "sno"
 #   storage.modelStorage.storageClass: "gp3-csi"
 
-# 10. Get the Execution Environment
+# 11. Get the Execution Environment
 # Option A: Pull pre-built image (Recommended)
 podman pull quay.io/takinosh/openshift-aiops-platform-ee:latest
 podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest \
@@ -260,33 +268,33 @@ podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest \
 # podman login registry.redhat.io
 # make build-ee
 
-# 11. Validate cluster prerequisites
+# 12. Validate cluster prerequisites
 make check-prerequisites
 
-# 12. Run Ansible prerequisites (creates secrets, RBAC, namespaces)
+# 13. Run Ansible prerequisites (creates secrets, RBAC, namespaces)
 make operator-deploy-prereqs
 
-# 13. Deploy the platform via Validated Patterns Operator
+# 14. Deploy the platform via Validated Patterns Operator
 make operator-deploy
 
-# 14. Wait for the ArgoCD Application to be created by the operator
+# 15. Wait for the ArgoCD Application to be created by the operator
 oc wait --for=jsonpath='{.kind}'=Application \
   application/self-healing-platform -n self-healing-platform-hub --timeout=120s
 
-# 15. Sync ArgoCD (if needed)
+# 16. Sync ArgoCD (if needed)
 oc annotate application self-healing-platform -n self-healing-platform-hub \
   argocd.argoproj.io/refresh=hard --overwrite
 
-# 16. Validate deployment
+# 17. Validate deployment
 make argo-healthcheck
 
-# 17. Run Tekton validation pipeline (validates coordination engine + model connectivity)
+# 18. Run Tekton validation pipeline (validates coordination engine + model connectivity)
 tkn pipeline start deployment-validation-pipeline --showlog
 ```
 
 > **📖 More info**: See [Gitea Integration Guide](docs/GITEA-INTEGRATION-GUIDE.md) for detailed setup
 
-> **🖥️ SNO Deployment**: If step 4 (`make show-cluster-info`) shows topology `sno`, edit `values-hub.yaml` before step 13: set `cluster.topology: "sno"` and change `storage.modelStorage.storageClass` to `"gp3-csi"`. Object storage (NooBaa) is automatically provided by MCG-only ODF. See [SNO Deployment Guide](docs/how-to/deploy-on-sno.md) for details.
+> **🖥️ SNO Deployment**: If step 5 (`make show-cluster-info`) shows topology `sno`, edit `values-hub.yaml` before step 14: set `cluster.topology: "sno"` and change `storage.modelStorage.storageClass` to `"gp3-csi"`. Object storage (NooBaa) is automatically provided by MCG-only ODF. See [SNO Deployment Guide](docs/how-to/deploy-on-sno.md) for details.
 
 **🎉 Done!** Your self-healing platform is now running.
 

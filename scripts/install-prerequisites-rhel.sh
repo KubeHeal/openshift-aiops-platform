@@ -273,7 +273,7 @@ install_oc_cli() {
     tar -xzf openshift-client.tar.gz
 
     sudo mv oc kubectl /usr/local/bin/
-    sudo chmod +x /usr/local/bin/oc /usr/local/bin/kubectl
+    sudo chmod 0755 /usr/local/bin/oc /usr/local/bin/kubectl
 
     cd - > /dev/null
     rm -rf "$tmp_dir"
@@ -316,7 +316,7 @@ install_helm() {
     tar -xzf helm.tar.gz
 
     sudo mv "linux-${arch}/helm" /usr/local/bin/helm
-    sudo chmod +x /usr/local/bin/helm
+    sudo chmod 0755 /usr/local/bin/helm
 
     cd - > /dev/null
     rm -rf "$tmp_dir"
@@ -352,7 +352,7 @@ install_yq() {
     log_info "Downloading from: $url"
 
     sudo curl -sSL "$url" -o /usr/local/bin/yq
-    sudo chmod +x /usr/local/bin/yq
+    sudo chmod 0755 /usr/local/bin/yq
 
     log_success "yq installed to /usr/local/bin/"
     yq --version
@@ -392,7 +392,7 @@ install_tkn() {
     tar -xzf tkn.tar.gz
 
     sudo mv tkn /usr/local/bin/
-    sudo chmod +x /usr/local/bin/tkn
+    sudo chmod 0755 /usr/local/bin/tkn
 
     cd - > /dev/null
     rm -rf "$tmp_dir"
