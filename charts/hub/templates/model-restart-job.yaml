@@ -292,15 +292,19 @@ spec:
         volumeMounts:
         - name: model-storage
           mountPath: /mnt/models
+        {{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
         - name: model-storage-gpu
           mountPath: /mnt/models-gpu
+        {{- end }}
       volumes:
       - name: model-storage
         persistentVolumeClaim:
           claimName: model-storage-pvc
+      {{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
       - name: model-storage-gpu
         persistentVolumeClaim:
           claimName: model-storage-gpu-pvc
+      {{- end }}
   backoffLimit: 3
   activeDeadlineSeconds: 1800  # 30 minutes total timeout
 {{- end }}

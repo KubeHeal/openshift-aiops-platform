@@ -23,16 +23,20 @@ metadata:
   annotations:
     description: "Model artifacts storage - requires RWX for multi-pod access"
 spec:
+  {{- $maStorageClass := .Values.storage.modelArtifacts.storageClass | default "gp3-csi" }}
+  {{- if eq ((.Values.cluster).topology | default "ha") "sno" }}
+  {{- $maStorageClass = "gp3-csi" }}
+  {{- end }}
   accessModes:
-    {{- if or (contains "cephfs" (.Values.storage.modelArtifacts.storageClass | default "gp3-csi")) (contains "nfs" (.Values.storage.modelArtifacts.storageClass | default "gp3-csi")) (contains "azurefile" (.Values.storage.modelArtifacts.storageClass | default "gp3-csi")) }}
-    - ReadWriteMany  # RWX storage class detected
+    {{- if or (contains "cephfs" $maStorageClass) (contains "nfs" $maStorageClass) (contains "azurefile" $maStorageClass) }}
+    - ReadWriteMany
     {{- else }}
-    - ReadWriteOnce  # RWO fallback (limits to single pod)
+    - ReadWriteOnce
     {{- end }}
   resources:
     requests:
       storage: {{ .Values.storage.modelArtifacts.size | default "50Gi" }}
-  storageClassName: {{ .Values.storage.modelArtifacts.storageClass | default "gp3-csi" }}
+  storageClassName: {{ $maStorageClass }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -70,10 +74,12 @@ spec:
     requests:
       storage: {{ if and .Values.storage .Values.storage.modelStorage .Values.storage.modelStorage.size }}{{ .Values.storage.modelStorage.size }}{{ else }}"10Gi"{{ end }}
   storageClassName: {{ if and .Values.storage .Values.storage.modelStorage .Values.storage.modelStorage.storageClass }}{{ .Values.storage.modelStorage.storageClass }}{{ else if eq ((.Values.cluster).topology | default "ha") "sno" }}"gp3-csi"{{ else }}"ocs-storagecluster-cephfs"{{ end }}
+{{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
 ---
-# Model Storage PVC for GPU Training - GPU nodes cannot mount ocs-storagecluster-cephfs
-# This PVC uses gp3-csi (RWO) which is compatible with GPU nodes
-# Models are copied to model-storage-pvc (ocs-storagecluster-cephfs) after training
+# Model Storage PVC for GPU Training (HA only)
+# GPU nodes cannot mount CephFS; this gp3-csi (RWO) PVC is used for training,
+# then models are copied to model-storage-pvc (CephFS) via gpu-model-copy Job.
+# Skipped for SNO: single node has all drivers, training writes directly to model-storage-pvc.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -86,8 +92,9 @@ metadata:
     description: "GPU-compatible model storage for training (gp3-csi RWO) - models copied to model-storage-pvc after training"
 spec:
   accessModes:
-    - ReadWriteOnce  # RWO required for gp3-csi (GPU nodes compatible)
+    - ReadWriteOnce
   resources:
     requests:
       storage: {{ if and .Values.storage .Values.storage.modelStorageGpu .Values.storage.modelStorageGpu.size }}{{ .Values.storage.modelStorageGpu.size }}{{ else }}"10Gi"{{ end }}
   storageClassName: {{ if and .Values.storage .Values.storage.modelStorageGpu .Values.storage.modelStorageGpu.storageClass }}{{ .Values.storage.modelStorageGpu.storageClass }}{{ else }}"gp3-csi"{{ end }}
+{{- end }}

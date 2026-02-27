@@ -53,6 +53,7 @@ This directory contains Architecture Decision Records for the Self-Healing Platf
 || [ADR-054](054-inferenceservice-model-readiness-race-condition.md) | InferenceService Model Readiness Race Condition Fix | Accepted | 2026-02-06 | Post-deploy restart job for predictor pods |
 || [ADR-055](055-openshift-420-multi-cluster-topology-support.md) | OpenShift 4.20 Multi-Cluster Topology Support | Accepted | 2026-02-23 | Auto-detect SNO vs standard; topology-aware deployment |
 || [ADR-056](056-standalone-mcg-on-sno.md) | Standalone MCG on SNO for Consistent S3 Storage | Accepted | 2026-02-24 | MCG-only ODF on SNO provides NooBaa S3 without Ceph |
+|| [ADR-057](057-topology-aware-gpu-scheduling-and-storage.md) | Topology-Aware GPU Scheduling and Storage | Accepted | 2026-02-27 | Gate GPU PVCs, copy jobs, and scheduling on cluster.topology |
 
 ### Meta-Documents
 

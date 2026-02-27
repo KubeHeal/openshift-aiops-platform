@@ -375,11 +375,15 @@ spec:
           echo "WARNING: gp3-csi storage class not found"
         fi
 
+        {{- if eq ((.Values.cluster).topology | default "ha") "sno" }}
+        echo "INFO: SNO topology -- CephFS not expected, using gp3-csi only"
+        {{- else }}
         if oc get storageclass ocs-storagecluster-cephfs &>/dev/null; then
           echo "PASS: ocs-storagecluster-cephfs (RWX) storage class is available"
         else
           echo "WARNING: RWX storage class not found"
         fi
+        {{- end }}
 
     - name: check-pvc-status
       image: quay.io/takinosh/maintenance-tools:latest

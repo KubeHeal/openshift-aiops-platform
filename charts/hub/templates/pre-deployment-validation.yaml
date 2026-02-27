@@ -22,6 +22,7 @@ data:
     echo ""
 
     NAMESPACE="{{ .Values.main.namespace }}"
+    TOPOLOGY="{{ (.Values.cluster).topology | default "ha" }}"
     ERRORS=0
     WARNINGS=0
 
@@ -47,7 +48,14 @@ data:
     echo "   Worker Nodes: $WORKER_NODES"
     echo "   GPU Worker Nodes: $GPU_NODES"
 
-    if [[ $TOTAL_NODES -lt 5 ]]; then
+    if [[ "$TOPOLOGY" == "sno" ]]; then
+      if [[ $TOTAL_NODES -eq 1 ]]; then
+        echo "   ✅ PASS: SNO cluster (1 node expected)"
+      else
+        echo "   ⚠️  WARNING: SNO topology but $TOTAL_NODES nodes found"
+        ((WARNINGS++))
+      fi
+    elif [[ $TOTAL_NODES -lt 5 ]]; then
       echo "   ⚠️  WARNING: Minimum 5 nodes recommended (3 control + 2 workers)"
       ((WARNINGS++))
     fi
@@ -59,39 +67,50 @@ data:
     fi
     echo ""
 
-    # Check 3: Storage Configuration
+    # Check 3: Storage Configuration (HA only -- SNO uses gp3-csi, no CephFS)
     echo "3. Checking Storage Configuration..."
-    CEPHFS_SC=$(oc get storageclasses -o name 2>/dev/null | grep -i cephfs | wc -l)
-
-    if [[ $CEPHFS_SC -lt 1 ]]; then
-      echo "   ❌ FAIL: CephFS storage class required"
-      ((ERRORS++))
+    if [[ "$TOPOLOGY" == "sno" ]]; then
+      echo "   ℹ️  SNO topology: using gp3-csi storage (CephFS not required)"
+      echo "   ✅ PASS"
     else
-      echo "   ✅ PASS: CephFS storage class found"
+      CEPHFS_SC=$(oc get storageclasses -o name 2>/dev/null | grep -i cephfs | wc -l)
+      if [[ $CEPHFS_SC -lt 1 ]]; then
+        echo "   ❌ FAIL: CephFS storage class required for HA topology"
+        ((ERRORS++))
+      else
+        echo "   ✅ PASS: CephFS storage class found"
+      fi
     fi
     echo ""
 
-    # Check 4: CSI Drivers
+    # Check 4: CSI Drivers (HA only -- SNO has no CephFS CSI)
     echo "4. Checking CSI Drivers..."
-    CEPHFS_CSI=$(oc get csidriver -o name 2>/dev/null | grep -i cephfs | wc -l)
-
-    if [[ $CEPHFS_CSI -lt 1 ]]; then
-      echo "   ❌ FAIL: CephFS CSI driver required"
-      ((ERRORS++))
+    if [[ "$TOPOLOGY" == "sno" ]]; then
+      echo "   ℹ️  SNO topology: CephFS CSI driver not required"
+      echo "   ✅ PASS"
     else
-      echo "   ✅ PASS: CephFS CSI driver found"
+      CEPHFS_CSI=$(oc get csidriver -o name 2>/dev/null | grep -i cephfs | wc -l)
+      if [[ $CEPHFS_CSI -lt 1 ]]; then
+        echo "   ❌ FAIL: CephFS CSI driver required for HA topology"
+        ((ERRORS++))
+      else
+        echo "   ✅ PASS: CephFS CSI driver found"
+      fi
     fi
     echo ""
 
-    # Check 5: CSI Plugin on GPU Node
+    # Check 5: CSI Plugin on GPU Node (HA only -- SNO single node has all drivers)
     echo "5. Checking CSI Plugin on GPU Node..."
-    if [[ $GPU_NODES -gt 0 ]]; then
+    if [[ "$TOPOLOGY" == "sno" ]]; then
+      echo "   ℹ️  SNO topology: single node has all CSI drivers"
+      echo "   ✅ PASS"
+    elif [[ $GPU_NODES -gt 0 ]]; then
       GPU_NODE=$(oc get nodes -l node-role.kubernetes.io/worker-gpu -o name 2>/dev/null | head -1 | cut -d'/' -f2)
       CSI_PODS=$(oc get pods -n openshift-storage -o wide 2>/dev/null | grep "$GPU_NODE" | grep csi-cephfsplugin | wc -l)
 
       if [[ $CSI_PODS -lt 1 ]]; then
         echo "   ⚠️  WARNING: CSI plugin not running on GPU node: $GPU_NODE"
-        echo "   ACTION: Update CSI DaemonSet to add storage node toleration"
+        echo "   ACTION: This is expected in HA -- GPU nodes do not run CephFS"
         ((WARNINGS++))
       else
         echo "   ✅ PASS: CSI plugin running on GPU node"
@@ -156,8 +175,13 @@ data:
     - Storage Nodes: node.ocs.openshift.io/storage=true:NoSchedule
 
     ## Storage Classes Required
+    {{- if eq ((.Values.cluster).topology | default "ha") "sno" }}
+    - gp3-csi (AWS EBS, RWO)
+    - NooBaa (S3 object storage)
+    {{- else }}
     - ocs-storagecluster-cephfs (CephFS, RWX)
     - gp3-csi (AWS EBS, RWO)
+    {{- end }}
 
     ## Operators Required
     - OpenShift Storage (ODF/Ceph)

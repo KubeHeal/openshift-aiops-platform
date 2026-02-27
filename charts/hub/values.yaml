@@ -2,7 +2,9 @@
 # This file contains default values for the hub cluster deployment
 
 # Cluster topology (overridden by values-hub.yaml)
-# "ha" = HighlyAvailable multi-node, "sno" = Single Node OpenShift
+# "ha" = HighlyAvailable multi-node (CephFS on ODF nodes, gp3-csi on GPU nodes)
+# "sno" = Single Node OpenShift (gp3-csi + NooBaa only, no CephFS)
+# Affects: GPU scheduling, PVC selection, model copy jobs, validation checks
 cluster:
   topology: "ha"
   version: "4.20"
@@ -129,13 +131,11 @@ storage:
     storageClass: "gp3-csi"  # RWO - works with EBS, ODF, most providers
 
   # Model artifacts storage
-  # IMPORTANT: This requires ReadWriteMany (RWX) access mode
-  # Using ODF (OpenShift Data Foundation) CephFS for multi-pod access
-  # Alternative: gp3-csi (RWO only - limits to single pod access)
-  # Or use provider-specific RWX storage class (Azure Files, GCP Filestore, NFS, etc.)
+  # HA: uses CephFS (RWX) for multi-pod access across nodes
+  # SNO: override to "gp3-csi" in values-hub.yaml (no CephFS available, only NooBaa + gp3-csi)
   modelArtifacts:
     size: "100Gi"
-    storageClass: "ocs-storagecluster-cephfs"  # RWX - allows multiple predictor pods
+    storageClass: "ocs-storagecluster-cephfs"  # HA default; SNO should override to "gp3-csi"
 
   # Workbench data storage
   workbenchData:

@@ -26,7 +26,8 @@ metadata:
 spec:
   template:
     spec:
-      {{- if .Values.workbench.gpu.enabled }}
+      {{- if and .Values.workbench.gpu.enabled (eq ((.Values.cluster).topology | default "ha") "sno") }}
+      {{- /* SNO: GPU and CephFS coexist on the single node, so prefer GPU scheduling */}}
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -42,6 +43,7 @@ spec:
         value: "True"
         effect: NoSchedule
       {{- end }}
+      {{- /* HA: GPU affinity is NOT applied -- workbench needs CephFS which is only on non-GPU nodes */}}
       # Init container to set up writable Jupyter directories
       initContainers:
       - name: setup-jupyter-dirs

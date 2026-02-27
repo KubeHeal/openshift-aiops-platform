@@ -304,7 +304,11 @@ spec:
             volumes:
               - name: model-storage
                 persistentVolumeClaim:
+                  {{- if eq ((.Values.cluster).topology | default "ha") "sno" }}
+                  claimName: model-storage-pvc
+                  {{- else }}
                   claimName: model-storage-gpu-pvc
+                  {{- end }}
             resources:
               requests:
                 memory: "4Gi"
@@ -703,9 +707,11 @@ spec:
         print(f"Endpoint test failed after {max_retries} attempts")
         sys.exit(1)
 
+{{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
 ---
 # =============================================================================
-# Task: copy-gpu-model-to-shared (GPU pipeline only)
+# Task: copy-gpu-model-to-shared (GPU pipeline only, HA only)
+# SNO: training writes directly to model-storage-pvc, no copy needed
 # =============================================================================
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -809,6 +815,7 @@ spec:
     - name: model-storage
       persistentVolumeClaim:
         claimName: model-storage-pvc
+{{- end }}
 
 ---
 # =============================================================================
@@ -995,7 +1002,8 @@ spec:
         - name: git-ref
           value: $(params.git-ref)
 
-    # Task 2: Copy GPU model to shared storage
+    {{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
+    # Task 2: Copy GPU model to shared storage (HA only -- SNO writes directly to shared PVC)
     - name: copy-gpu-model
       runAfter:
         - train-model
@@ -1004,6 +1012,7 @@ spec:
       params:
         - name: model-name
           value: $(params.model-name)
+    {{- end }}
 
     # Task 3: Health check (only if enabled)
     - name: health-check
@@ -1012,7 +1021,11 @@ spec:
           operator: in
           values: ["true"]
       runAfter:
+        {{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
         - copy-gpu-model
+        {{- else }}
+        - train-model
+        {{- end }}
       taskRef:
         name: validate-model-health
       params:
