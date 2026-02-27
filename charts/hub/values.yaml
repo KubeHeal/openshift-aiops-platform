@@ -116,6 +116,11 @@ rbac:
   # Reason: Namespaced ArgoCD cannot manage resources in cluster-managed namespaces
   crossNamespaceEnabled: false
 
+# Cluster-scoped RBAC managed externally (by Ansible deploy-prereqs-only)
+# When true, mcp-server-rbac.yaml skips rendering ClusterRole/ClusterRoleBinding
+# resources that namespaced ArgoCD cannot manage (ADR-030)
+clusterRbacManagedExternally: true
+
 # Storage configuration
 storage:
   # Self-healing data storage
