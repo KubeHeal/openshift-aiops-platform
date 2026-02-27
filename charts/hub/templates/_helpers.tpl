@@ -196,12 +196,19 @@ Usage: {{- include "self-healing-platform.ifEnabled" (dict "enabled" .Values.fea
 {{- end }}
 
 {{/*
-Default container image tag derived from cluster.version.
-Produces "ocp-<version>-latest" (e.g. "ocp-4.20-latest").
-Deployment templates use: .Values.<component>.image.tag | default (include "self-healing-platform.imageTag" $)
-so an explicit tag in values always takes priority.
+Default image tag: "<version>-latest" (e.g. "4.20-latest").
+Used by components whose registry tags have no prefix (MCP server).
 */}}
 {{- define "self-healing-platform.imageTag" -}}
+{{- $version := .Values.cluster.version | default "4.20" }}
+{{- printf "%s-latest" $version }}
+{{- end }}
+
+{{/*
+OCP-prefixed image tag: "ocp-<version>-latest" (e.g. "ocp-4.20-latest").
+Used by components whose registry tags carry the ocp- prefix (coordination engine).
+*/}}
+{{- define "self-healing-platform.ocpImageTag" -}}
 {{- $version := .Values.cluster.version | default "4.20" }}
 {{- printf "ocp-%s-latest" $version }}
 {{- end }}

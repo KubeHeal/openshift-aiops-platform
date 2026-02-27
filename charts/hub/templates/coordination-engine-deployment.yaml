@@ -30,7 +30,7 @@ spec:
       initContainers:
       # Wait for Prometheus to be available before starting
       - name: wait-for-prometheus
-        image: {{ .Values.coordinationEngine.image.repository | default "quay.io/takinosh/openshift-coordination-engine" }}:{{ .Values.coordinationEngine.image.tag | default (include "self-healing-platform.imageTag" $) }}
+        image: {{ .Values.coordinationEngine.image.repository | default "quay.io/takinosh/openshift-coordination-engine" }}:{{ .Values.coordinationEngine.image.tag | default (include "self-healing-platform.ocpImageTag" $) }}
         command:
         - sh
         - -c
@@ -49,7 +49,7 @@ spec:
           runAsNonRoot: true
       # Wait for ArgoCD to be available before starting
       - name: wait-for-argocd
-        image: {{ .Values.coordinationEngine.image.repository | default "quay.io/takinosh/openshift-coordination-engine" }}:{{ .Values.coordinationEngine.image.tag | default (include "self-healing-platform.imageTag" $) }}
+        image: {{ .Values.coordinationEngine.image.repository | default "quay.io/takinosh/openshift-coordination-engine" }}:{{ .Values.coordinationEngine.image.tag | default (include "self-healing-platform.ocpImageTag" $) }}
         command:
         - sh
         - -c
@@ -68,7 +68,7 @@ spec:
           runAsNonRoot: true
       containers:
       - name: coordination-engine
-        image: {{ .Values.coordinationEngine.image.repository | default "quay.io/takinosh/openshift-coordination-engine" }}:{{ .Values.coordinationEngine.image.tag | default (include "self-healing-platform.imageTag" $) }}
+        image: {{ .Values.coordinationEngine.image.repository | default "quay.io/takinosh/openshift-coordination-engine" }}:{{ .Values.coordinationEngine.image.tag | default (include "self-healing-platform.ocpImageTag" $) }}
         imagePullPolicy: {{ .Values.coordinationEngine.image.pullPolicy | default "Always" }}
         ports:
         - name: http
