@@ -46,11 +46,11 @@ See the **[User Model Deployment Guide](docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.
 
 ### Supported Cluster Topologies
 
-This platform supports both standard HighlyAvailable and Single Node OpenShift (SNO) deployments:
+This platform supports both HighlyAvailable (HA) and Single Node OpenShift (SNO) deployments:
 
 | Topology | Nodes | Storage | ODF | Use Case |
 |----------|-------|---------|-----|----------|
-| **Standard HighlyAvailable** | 3+ (separate control-plane/worker) | ODF + CSI | ✅ Yes | Production, full features |
+| **HA (HighlyAvailable)** | 3+ (separate control-plane/worker) | ODF + CSI | ✅ Yes | Production, full features |
 | **SNO SingleReplica** | 1 (all roles on single node) | CSI only | ❌ No | Edge, development, testing |
 
 **Supported OpenShift Versions:**
@@ -66,7 +66,7 @@ The platform automatically detects your cluster topology and version. After inst
 
 ### Prerequisites
 
-**Standard Cluster Requirements:**
+**HA Cluster Requirements:**
 - OpenShift 4.18+ cluster (admin access)
 - 6+ nodes (3 control-plane, 3+ workers, 1 GPU-enabled recommended)
 - 24+ CPU cores, 96+ GB RAM, 500+ GB storage
@@ -148,17 +148,17 @@ vi values-hub.yaml
 
 # 7. Verify cluster topology and version
 make show-cluster-info
-# Output shows: Topology (standard or sno), OpenShift Version, Platform, ODF Channel
+# Output shows: Topology (ha or sno), OpenShift Version, Platform, ODF Channel
 #
 # IMPORTANT: If topology shows "sno", also update values-hub.yaml:
 #   cluster.topology: "sno"
 #   storage.modelStorage.storageClass: "gp3-csi"
 
 # 8. Configure cluster infrastructure (ODF, node scaling)
-# Standard clusters: installs full ODF (Ceph + NooBaa), scales MachineSets (takes 10-15 min)
+# HA clusters: installs full ODF (Ceph + NooBaa), scales MachineSets (takes 10-15 min)
 # SNO clusters: installs MCG-only ODF (NooBaa S3 without Ceph)
 make configure-cluster
-# Skip ODF on standard clusters with existing storage: ./scripts/configure-cluster-infrastructure.sh --skip-odf
+# Skip ODF on HA clusters with existing storage: ./scripts/configure-cluster-infrastructure.sh --skip-odf
 
 # 9. Get the Execution Environment
 #
@@ -226,13 +226,13 @@ cp values-hub.yaml.example values-hub.yaml  # if not already present
 
 # 5. Verify cluster topology and version
 make show-cluster-info
-# Output shows: Topology (standard or sno), OpenShift Version, Platform, ODF Channel
+# Output shows: Topology (ha or sno), OpenShift Version, Platform, ODF Channel
 
 # 6. Configure cluster infrastructure (ODF, node scaling)
-# Standard clusters: installs full ODF (Ceph + NooBaa), scales MachineSets (takes 10-15 min)
+# HA clusters: installs full ODF (Ceph + NooBaa), scales MachineSets (takes 10-15 min)
 # SNO clusters: installs MCG-only ODF (NooBaa S3 without Ceph)
 make configure-cluster
-# Skip ODF on standard clusters with existing storage: ./scripts/configure-cluster-infrastructure.sh --skip-odf
+# Skip ODF on HA clusters with existing storage: ./scripts/configure-cluster-infrastructure.sh --skip-odf
 
 # 7. Deploy Gitea on OpenShift
 make deploy-gitea

@@ -28,7 +28,7 @@ INDEX_IMAGES ?=
 TARGET_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 
 # Cluster topology detection (auto-detect or override with CLUSTER_TOPOLOGY=sno)
-CLUSTER_TOPOLOGY ?= $(shell ./scripts/detect-cluster-topology.sh 2>/dev/null | tr '[:upper:]' '[:lower:]' || echo "standard")
+CLUSTER_TOPOLOGY ?= $(shell ./scripts/detect-cluster-topology.sh 2>/dev/null | tr '[:upper:]' '[:lower:]' || echo "ha")
 OCP_VERSION ?= $(shell ./scripts/detect-ocp-version.sh 2>/dev/null || echo "4.18")
 ODF_CHANNEL ?= stable-$(OCP_VERSION)
 
@@ -109,9 +109,9 @@ configure-cluster: ## Configure cluster infrastructure (scale nodes, install ODF
 	@echo "Detected OpenShift version: $(OCP_VERSION)"
 	@CLUSTER_TOPOLOGY=$(CLUSTER_TOPOLOGY) OCP_VERSION=$(OCP_VERSION) ./scripts/configure-cluster-infrastructure.sh
 
-.PHONY: configure-cluster-standard
-configure-cluster-standard: ## Configure standard HighlyAvailable cluster
-	@CLUSTER_TOPOLOGY=standard ./scripts/configure-cluster-infrastructure.sh
+.PHONY: configure-cluster-ha
+configure-cluster-ha: ## Configure HighlyAvailable multi-node cluster
+	@CLUSTER_TOPOLOGY=ha ./scripts/configure-cluster-infrastructure.sh
 
 .PHONY: configure-cluster-sno
 configure-cluster-sno: ## Configure SNO SingleReplica cluster

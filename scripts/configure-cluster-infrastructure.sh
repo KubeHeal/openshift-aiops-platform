@@ -43,7 +43,7 @@ DRY_RUN="${DRY_RUN:-false}"
 # Auto-detect cluster topology if not specified
 if [[ -z "$CLUSTER_TOPOLOGY" ]]; then
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    CLUSTER_TOPOLOGY=$(${SCRIPT_DIR}/detect-cluster-topology.sh 2>/dev/null | tr '[:upper:]' '[:lower:]' || echo "standard")
+    CLUSTER_TOPOLOGY=$(${SCRIPT_DIR}/detect-cluster-topology.sh 2>/dev/null | tr '[:upper:]' '[:lower:]' || echo "ha")
 fi
 
 # Auto-detect ODF channel based on OpenShift version

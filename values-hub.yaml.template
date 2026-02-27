@@ -21,7 +21,7 @@
 # MCG-only ODF provides NooBaa S3 on SNO (objectStore.enabled stays true)
 # Verify with: make show-cluster-info
 cluster:
-  topology: "standard"  # Set to "sno" for Single Node OpenShift
+  topology: "ha"  # "ha" = HighlyAvailable multi-node, "sno" = Single Node OpenShift
   version: "4.18"       # OpenShift version - auto-detected
 
 # global.clusterDomain is auto-populated by the Validated Patterns operator
@@ -378,17 +378,17 @@ storage:
   # Model Storage PVC (shared between notebooks and KServe)
   modelStorage:
     size: "10Gi"
-    storageClass: "ocs-storagecluster-cephfs"  # Standard: RWX; SNO: change to "gp3-csi"
+    storageClass: "ocs-storagecluster-cephfs"  # HA: RWX; SNO: change to "gp3-csi"
 
   # Model Artifacts PVC (shared model artifacts storage)
-  # Standard clusters: ocs-storagecluster-cephfs (RWX) for multi-pod access
+  # HA clusters: ocs-storagecluster-cephfs (RWX) for multi-pod access
   # SNO clusters: gp3-csi (RWO, no CephFS available)
   modelArtifacts:
     size: "50Gi"
-    storageClass: "ocs-storagecluster-cephfs"  # Standard: RWX; SNO: change to "gp3-csi"
+    storageClass: "ocs-storagecluster-cephfs"  # HA: RWX; SNO: change to "gp3-csi"
 
 # Object Store configuration (NooBaa/ODF S3)
-# Standard clusters: full ODF (Ceph + NooBaa S3)
+# HA clusters: full ODF (Ceph + NooBaa S3)
 # SNO clusters: MCG-only ODF (NooBaa S3 without Ceph)
 # Enabled for all topologies -- make configure-cluster installs the appropriate backend
 objectStore:

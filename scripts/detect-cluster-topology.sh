@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Script: detect-cluster-topology.sh
-# Purpose: Detect OpenShift cluster topology (SNO vs Standard)
+# Purpose: Detect OpenShift cluster topology (SNO vs HA)
 # Exit Codes:
-#   0 = Standard (HighlyAvailable)
+#   0 = HA (HighlyAvailable)
 #   1 = SNO (SingleReplica)
 #   2 = Unknown topology
 #   3 = Error querying cluster
@@ -83,9 +83,9 @@ if [[ "$CONTROL_PLANE_TOPOLOGY" == "SingleReplica" ]] && [[ "$INFRASTRUCTURE_TOP
     fi
     exit 1
 elif [[ "$CONTROL_PLANE_TOPOLOGY" == "HighlyAvailable" ]] && [[ "$INFRASTRUCTURE_TOPOLOGY" == "HighlyAvailable" ]]; then
-    # Standard cluster
+    # HA (HighlyAvailable) cluster
     if [[ "$VERBOSE" == "true" ]]; then
-        echo -e "${GREEN}Cluster Type:              ${YELLOW}Standard (HighlyAvailable)${NC}"
+        echo -e "${GREEN}Cluster Type:              ${YELLOW}HA (HighlyAvailable)${NC}"
         echo ""
         echo -e "${YELLOW}Characteristics:${NC}"
         echo "  - Multiple nodes (3+ recommended)"
@@ -95,7 +95,7 @@ elif [[ "$CONTROL_PLANE_TOPOLOGY" == "HighlyAvailable" ]] && [[ "$INFRASTRUCTURE
         echo "  - Full storage options (ODF + CSI)"
         echo "  - Production-ready high availability"
     else
-        echo "Standard"
+        echo "HA"
     fi
     exit 0
 else

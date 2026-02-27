@@ -246,7 +246,7 @@ make operator-deploy
 
 ### Issue: Auto-Detection Not Working
 
-**Symptom:** Platform detects "standard" topology on SNO cluster
+**Symptom:** Platform detects "ha" topology on SNO cluster
 
 **Solution:** Manually override
 
@@ -341,9 +341,9 @@ Node maintenance requires cluster downtime:
 
 ### 7. Consider Upgrade Path
 
-**For Production:** Plan migration to standard HighlyAvailable cluster:
+**For Production:** Plan migration to HA (HighlyAvailable) cluster:
 
-1. Deploy standard cluster with 3+ nodes
+1. Deploy HA cluster with 3+ nodes
 2. Migrate workloads using GitOps (ArgoCD)
 3. Update `values-hub.yaml` to use ODF storage classes
 4. Redeploy with `make operator-deploy`

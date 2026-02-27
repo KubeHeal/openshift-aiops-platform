@@ -26,7 +26,7 @@ The AI Ops Self-Healing Platform needs to support OpenShift 4.20 across two dist
 
 1. **Infrastructure Requirements**: Different infrastructure setup requirements (MachineSet scaling, ODF availability)
 2. **Version-Specific Manifests**: Operator manifests vary across OpenShift versions (4.18, 4.19, 4.20)
-3. **Resource Constraints**: SNO clusters have tighter resource constraints than standard clusters
+3. **Resource Constraints**: SNO clusters have tighter resource constraints than HA clusters
 4. **Storage Class Availability**: ODF storage classes not available on SNO
 
 ### Current State
@@ -59,7 +59,7 @@ Implement **auto-detection of cluster topology and OpenShift version** with envi
 
 4. **Deployment Logic**
    - Conditional infrastructure setup (skip MachineSet scaling for SNO)
-   - Topology-aware ODF: full StorageCluster for standard, MCG-only StorageCluster for SNO (see [ADR-056](056-standalone-mcg-on-sno.md))
+   - Topology-aware ODF: full StorageCluster for HA, MCG-only StorageCluster for SNO (see [ADR-056](056-standalone-mcg-on-sno.md))
    - Version-based operator overlay selection
 
 ### Detection Logic
@@ -72,7 +72,7 @@ infrastructureTopology=$(oc get infrastructure cluster -o jsonpath='{.status.inf
 if [[ "$controlPlaneTopology" == "SingleReplica" ]] && [[ "$infrastructureTopology" == "SingleReplica" ]]; then
     CLUSTER_TOPOLOGY="sno"
 else
-    CLUSTER_TOPOLOGY="standard"
+    CLUSTER_TOPOLOGY="ha"
 fi
 
 # Version Detection
@@ -132,7 +132,7 @@ The chart templates use topology-aware conditionals (e.g., RWO vs RWX access mod
 ### Positive
 
 1. **Simplified Deployment**: No manual topology configuration needed
-2. **Prevents Misconfiguration**: Automatic checks adapt ODF to topology (MCG-only on SNO, full on standard)
+2. **Prevents Misconfiguration**: Automatic checks adapt ODF to topology (MCG-only on SNO, full on HA)
 3. **Version Agnostic**: Works across OpenShift 4.18, 4.19, 4.20
 4. **Reduced Documentation**: Users don't need to know topology details
 5. **Better User Experience**: Platform adapts automatically
@@ -148,7 +148,7 @@ The chart templates use topology-aware conditionals (e.g., RWO vs RWX access mod
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| Detection failure | Deployment fails | Fallback to "standard", allow manual override |
+| Detection failure | Deployment fails | Fallback to "ha", allow manual override |
 | Version mismatch | Wrong overlay used | Version detection from cluster, not user input |
 | Resource exhaustion on SNO | Pods crash | Reduced resource limits in values-hub.yaml |
 | Missing storage on SNO | PVCs pending | MCG-only ODF provides S3; CSI validated for block/file |
@@ -166,7 +166,7 @@ The chart templates use topology-aware conditionals (e.g., RWO vs RWX access mod
 ### Files Modified
 
 1. `Makefile` - Added topology/version detection variables
-2. `scripts/configure-cluster-infrastructure.sh` - Topology-aware infrastructure setup: MCG-only StorageCluster for SNO, full ODF for standard
+2. `scripts/configure-cluster-infrastructure.sh` - Topology-aware infrastructure setup: MCG-only StorageCluster for SNO, full ODF for HA
 3. `scripts/post-deployment-validation.sh` - Topology-aware validation
 4. `ansible/roles/validated_patterns_prerequisites/defaults/main.yml` - SNO resource minimums, GitOps auto-install settings
 5. `ansible/roles/validated_patterns_prerequisites/tasks/check_operators.yml` - Auto-installs GitOps if missing
@@ -180,12 +180,12 @@ The chart templates use topology-aware conditionals (e.g., RWO vs RWX access mod
 
 ## Verification
 
-### Standard Cluster Verification
+### HA Cluster Verification
 
 ```bash
 # Detect cluster
 make show-cluster-info
-# Expected: Topology=standard, Version=4.20
+# Expected: Topology=ha, Version=4.20
 
 # Configure infrastructure
 make configure-cluster

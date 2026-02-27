@@ -61,7 +61,7 @@ metadata:
     description: "Shared model storage for notebooks and KServe"
 spec:
   accessModes:
-    {{- if eq ((.Values.cluster).topology | default "standard") "sno" }}
+    {{- if eq ((.Values.cluster).topology | default "ha") "sno" }}
     - ReadWriteOnce
     {{- else }}
     - ReadWriteMany
@@ -69,7 +69,7 @@ spec:
   resources:
     requests:
       storage: {{ if and .Values.storage .Values.storage.modelStorage .Values.storage.modelStorage.size }}{{ .Values.storage.modelStorage.size }}{{ else }}"10Gi"{{ end }}
-  storageClassName: {{ if and .Values.storage .Values.storage.modelStorage .Values.storage.modelStorage.storageClass }}{{ .Values.storage.modelStorage.storageClass }}{{ else }}"ocs-storagecluster-cephfs"{{ end }}
+  storageClassName: {{ if and .Values.storage .Values.storage.modelStorage .Values.storage.modelStorage.storageClass }}{{ .Values.storage.modelStorage.storageClass }}{{ else if eq ((.Values.cluster).topology | default "ha") "sno" }}"gp3-csi"{{ else }}"ocs-storagecluster-cephfs"{{ end }}
 ---
 # Model Storage PVC for GPU Training - GPU nodes cannot mount ocs-storagecluster-cephfs
 # This PVC uses gp3-csi (RWO) which is compatible with GPU nodes

@@ -1,26 +1,6 @@
 # Validated Patterns - Self-Healing Platform
 # Hub Cluster Configuration
-#
-# ============================================================
-# 📌 REPOSITORY USAGE NOTICE
-# ============================================================
-# This file uses the official repository by default:
-#   https://github.com/KubeHeal/openshift-aiops-platform.git
-#
-# ✅ For testing/evaluation: Use the default repo as-is
-# ⚠️  For heavy customization: Fork the repo and update repoURL
-#
-# When to fork:
-#   - Custom notebooks or models
-#   - Modified coordination engine logic
-#   - Organization-specific configurations
-#   - Long-term production deployment
-#
-# To use your fork:
-#   1. Fork: https://github.com/KubeHeal/openshift-aiops-platform
-#   2. Update repoURL in clusterGroup.applications.self-healing-platform
-#   3. Update repoURL in values-global.yaml git.repoURL
-# ============================================================
+# Generated: 2025-10-16
 
 # Cluster topology configuration (auto-detected by Makefile)
 # For SNO deployments, change topology to "sno" and update the following:
@@ -28,7 +8,7 @@
 # MCG-only ODF provides NooBaa S3 on SNO (objectStore.enabled stays true)
 # Verify with: make show-cluster-info
 cluster:
-  topology: "sno"  # Set to "sno" for Single Node OpenShift
+  topology: "ha"  # "ha" = HighlyAvailable multi-node, "sno" = Single Node OpenShift
   version: "4.20"       # OpenShift version - auto-detected
 
 # global.clusterDomain is auto-populated by the Validated Patterns operator
@@ -40,49 +20,52 @@ cluster:
 
 # Main cluster group configuration
 main:
+  # Cluster group name
   clusterGroupName: hub
+
+  # Target site for this deployment
   targetSite: hub
+
+  # OpenShift GitOps operator namespace
   gitOpsOperator: openshift-gitops
+
+  # Namespace for pattern deployment
   namespace: self-healing-platform
 
-# Cluster-scoped RBAC managed externally (by Ansible)
-# Set to true to prevent ArgoCD from trying to manage ClusterRole/ClusterRoleBinding
-# These are created by ansible/roles/validated_patterns_deploy_cluster_resources
-clusterRbacManagedExternally: true
-
-# Namespaced RBAC managed externally (by Ansible)
-# Set to true to prevent ArgoCD from trying to manage ServiceAccount/Role/RoleBinding
-# These are created as prereqs by ansible/roles/validated_patterns_deploy_cluster_resources
-namespacedRbacManagedExternally: true
-
-# Image builds configuration
-imageBuilds:
-  enabled: true
-  gitRepository: "https://github.com/KubeHeal/openshift-aiops-platform.git"
-  gitRef: "main"
-  gitCredentialsSecret: "git-credentials-source"  # pragma: allowlist secret
-  baseImage: "registry.redhat.io/ubi8/python-39:latest"
-
 # Namespace configuration
+# CRITICAL: Set create=false since namespace already exists and has OpenShift-specific annotations
 namespace:
-  create: false  # Namespace already exists
+  create: false  # Namespace already exists, don't recreate it
   name: self-healing-platform
 
+  # Git repository configuration
+  # NOTE: Use values from values-global.yaml git.repoURL and git.revision
+  git:
+    # Repository URL - SHOULD MATCH values-global.yaml git.repoURL
+    repoURL: ""  # Will be overridden - see values-global.yaml
+    # Branch to deploy from - SHOULD MATCH values-global.yaml git.revision
+    revision: ""  # Will be overridden - see values-global.yaml
+
+  # Helm configuration
+  helm:
+    # Helm chart repository for clustergroup
+    clusterGroupChartVersion: 0.9.*
+    # Additional Helm options
+    extraValues: []
+
 # ClusterGroup configuration for hub
+# This section defines the applications that the clustergroup chart will deploy
 clusterGroup:
   name: hub
   isHubCluster: true
 
-  # Operator subscriptions (mark as disabled - already installed)
-  subscriptions: {}
-
   # Namespaces to create
   namespaces:
-    - self-healing-platform:
-        labels:
-          openshift.io/cluster-monitoring: "true"
-        annotations:
-          openshift.io/description: "Self-Healing Platform for AIOps automation"
+    - name: self-healing-platform
+      labels:
+        openshift.io/cluster-monitoring: "true"
+      annotations:
+        openshift.io/description: "Self-Healing Platform for AIOps automation"
 
   # ArgoCD Applications to deploy
   applications:
@@ -91,43 +74,401 @@ clusterGroup:
       namespace: self-healing-platform
       project: default
       path: charts/hub
+      # ⚠️ CRITICAL: Must match your actual repository URL (from values-global.yaml)
+      # PLACEHOLDER - Update this to your forked repository!
       repoURL: "https://github.com/KubeHeal/openshift-aiops-platform.git"
       targetRevision: main
       helm:
         valueFiles:
           - /values-global.yaml
           - /values-hub.yaml
+          - charts/hub/values-notebooks-validation.yaml
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
         syncOptions:
           - CreateNamespace=true
-# Notebook Validation Configuration
-# Purpose: Configure phased notebook validation via ArgoCD sync waves
-# Integration: Jupyter Notebook Validator Operator + ArgoCD Sync Waves
-# Reference: ADR-029, ADR-030
-# Operator: https://operatorhub.io/operator/jupyter-notebook-validator-operator
+          - Validate=false
+          - RespectIgnoreDifferences=true
+          - ServerSideApply=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+      ignoreDifferences:
+        - group: "*"
+          kind: "*"
+          managedFieldsManagers:
+            - kube-controller-manager
+        - group: external-secrets.io
+          kind: ExternalSecret
+          jqPathExpressions:
+            - .status
+        - kind: PersistentVolumeClaim
+          jqPathExpressions:
+            - .status
+        - group: serving.kserve.io
+          kind: InferenceService
+          jqPathExpressions:
+            - .status
 
-notebooks:
-  validation:
-    # Enable notebook validation
+  # Operator Subscriptions
+  # Note: Most operators are already installed on the cluster
+  # The clustergroup chart expects 'disabled' field (disabled: true means don't install)
+  # Omit operators that are already installed or managed elsewhere
+  subscriptions:
+    # OpenShift GitOps - Already installed via common/ subtree
+    # gitops:
+    #   disabled: true
+
+    # OpenShift AI - Already installed
+    # openshift-ai:
+    #   disabled: true
+
+    # GPU Operator - Already installed
+    # gpu-operator:
+    #   disabled: true
+
+    # OpenShift Serverless - Already installed
+    # serverless:
+    #   disabled: true
+
+    # OpenShift Pipelines - Already installed
+    # pipelines:
+    #   disabled: true
+
+    # OpenShift Data Foundation - Already installed
+    # odf:
+    #   disabled: true
+
+    # External Secrets Operator - Already installed via Ansible
+    # external-secrets:
+    #   disabled: true
+
+# Applications to deploy
+applications:
+  # Self-Healing Platform components
+  self-healing-platform:
+    enabled: true
+    namespace: self-healing-platform
+
+    # Coordination Engine
+    coordination-engine:
+      enabled: true
+      replicas: 1
+      image: coordination-engine:latest
+
+    # Model Serving (KServe)
+    model-serving:
+      enabled: true
+      models:
+        - name: anomaly-detector
+          framework: sklearn
+        - name: predictive-analytics
+          framework: tensorflow
+
+    # Jupyter Notebooks (RHODS)
+    notebooks:
+      enabled: true
+      workbench:
+        name: self-healing-workbench
+        image: jupyter-minimal-notebook:latest
+
+    # Monitoring
+    monitoring:
+      enabled: true
+      prometheus: true
+      grafana: true
+
+# AI/ML Workbench configuration
+# GPU enabled for AI/ML workloads
+workbench:
+  enabled: true  # Enable workbench
+  gpu:
+    enabled: true  # GPU support enabled for AI/ML model training and inference
+
+# Storage configuration (generic defaults)
+# See also: "Storage Configuration" section below for PVC-specific settings
+storageDefaults:
+  storageClass: ""
+  dataVolumeSize: 5Gi
+  modelsVolumeSize: 10Gi
+  logsVolumeSize: 5Gi
+
+# Networking configuration
+networking:
+  # Enable network policies
+  networkPolicies: true
+
+  # Service mesh
+  serviceMesh: false
+
+  # Ingress configuration
+  ingress:
+    enabled: true
+    className: openshift
+
+# Security configuration
+security:
+  # Enable RBAC
+  rbac: true
+
+  # Pod security policies
+  podSecurityPolicies: true
+
+  # Security context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 1000
+
+  # Network policies
+  networkPolicies: true
+
+# Secrets management
+secrets:
+  # Secret backend: vault, sealed-secrets, or external-secrets
+  backend: external-secrets
+
+  # Vault configuration
+  vault:
+    # Vault server address (will be set during deployment)
+    address: ""
+
+    # Vault namespace (if using Vault Enterprise)
+    namespace: ""
+
+    # Vault authentication method: kubernetes, jwt, or userpass
+    authMethod: kubernetes
+
+    # Vault role for Kubernetes auth
+    role: self-healing-platform
+
+    # Vault path for secrets
+    secretPath: secret/data/self-healing-platform  # pragma: allowlist secret
+
+# Model Serving Configuration (KServe)
+modelServing:
+  # Enable model serving
+  enabled: true
+
+  # sklearn runtime configuration
+  sklearn:
+    image: kserve/sklearnserver:latest
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+
+  # tensorflow runtime configuration
+  tensorflow:
+    image: kserve/tfserving:latest
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "200m"
+      limits:
+        memory: "1Gi"
+        cpu: "1000m"
+
+# Monitoring and observability
+monitoring:
+  # Prometheus configuration
+  prometheus:
+    enabled: true
+    retention: 30d
+
+  # Grafana configuration
+  grafana:
+    enabled: true
+    adminPassword: ""  # Will be set from secrets
+
+  # Alerting
+  alerting:
     enabled: true
 
-    # Enable ArgoCD sync waves for sequential execution
-    # Required for full pipeline validation with data/model dependencies
-    enableSyncWaves: true
+  # Service monitors
+  serviceMonitors:
+    - coordination-engine
+    - mcp-server
+    - self-healing-platform
 
-    # Operator deployment method: "olm" or "helm"
-    # - "olm": Operator installed via OperatorHub/OLM (recommended for production)
-    #          Helm chart only creates NotebookValidationJob CRs
-    # - "helm": Operator deployed by this Helm chart (for development/testing)
-    operatorDeploymentMethod: "olm"
+# Feature flags
+features:
+  # Enable experimental features
+  experimental: false
 
-    # Operator image (only used when operatorDeploymentMethod: "helm")
+  # Enable beta features
+  beta: false
+
+  # Enable AI/ML features
+  aiml: true
+
+  # Enable edge deployment
+  edge: false
+
+# Storage Configuration
+# HA clusters: ocs-storagecluster-cephfs (RWX) for multi-pod access
+# SNO clusters: gp3-csi (RWO, no CephFS available)
+storage:
+  # Self-healing data storage
+  selfHealingData:
+    size: "10Gi"
+    storageClass: "gp3-csi"
+
+  # Model artifacts storage (RWX for HA, RWO for SNO)
+  modelArtifacts:
+    size: "50Gi"
+    storageClass: "ocs-storagecluster-cephfs"  # HA: RWX; SNO: change to "gp3-csi"
+
+  # Model Storage PVC (shared between notebooks and KServe)
+  modelStorage:
+    size: "10Gi"
+    storageClass: "ocs-storagecluster-cephfs"  # HA: RWX; SNO: change to "gp3-csi"
+
+  # Workbench data storage
+  workbenchData:
+    size: "20Gi"
+    storageClass: "gp3-csi"
+
+# Metadata
+metadata:
+  # Owner/team
+  owner: "platform-team"
+
+  # Environment
+  environment: "development"
+
+  # Cost center (for billing)
+  costCenter: ""
+
+  # Tags for resource organization
+  tags:
+    project: "self-healing-platform"
+    managed-by: "validated-patterns"
+    version: "1.0.0"
+    framework: "openshift-gitops"
+
+# Object Store configuration (NooBaa/ODF S3)
+# HA clusters: full ODF (Ceph + NooBaa S3)
+# SNO clusters: MCG-only ODF (NooBaa S3 without Ceph)
+# Enabled for all topologies -- make configure-cluster installs the appropriate backend
+objectStore:
+  enabled: true
+  endpoint: "https://s3.openshift-storage.svc:443"
+  region: "us-east-1"
+  sslVerify: false
+  buckets:
+    models: "model-storage"
+    trainingData: "training-data"
+    inferenceResults: "inference-results"
+
+# Notebook Validation Configuration
+# Reference: ADR-029, ADR-030
+# Documentation: docs/NOTEBOOK-VALIDATION-ARGOCD.md
+notebooks:
+  validation:
+    enabled: true  # Enable ArgoCD-based notebook validation
+
+    # Git repository configuration
+    git:
+      url: "https://gitea-with-admin-gitea.apps.cluster-fn2qb.fn2qb.sandbox1343.opentlc.com/opentlc-mgr/openshift-aiops-platform.git"
+      ref: "main"
+      # GitHub PAT secret (must be created before deployment)
+      # See: /tmp/github-pat-quick-start.md or docs/NOTEBOOK-VALIDATION-ARGOCD.md
+      credentialsSecret: "github-pat-credentials"  # pragma: allowlist secret
+
+    # Default container image for notebook execution
+    # HYBRID APPROACH: RHOAI base + validation tools via BuildConfig
+    # Reference: ADR-029 - Notebook Validation with RHOAI ImageStreams
+    containerImage: "image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest"
+
+    # Tier-specific images (optional overrides)
+    tierImages:
+      tier1: "image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/s2i-minimal-notebook:2025.1"  # Fast startup
+      tier2: "image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.1"  # ML workloads
+      tier3: "image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.1"  # GPU-enabled
+
+    # Fallback to public image (only if RHOAI images unavailable)
+    fallbackImage: "quay.io/jupyter/scipy-notebook:latest"
+
+    # BuildConfig for custom validation image (Builds on top of RHOAI base)
+    # Adds: papermill, nbformat, nbconvert, oc CLI, kubectl
+    buildConfig:
+      enabled: true  # HYBRID: RHOAI base + validation tools
+      baseImage: "image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.1"
+      noCache: false
+      imageChangeTrigger: true
+      pullSecret: ""
+
+    # Default timeout for notebook validation
+    timeout: "30m"
+
+    # Default resources (tier1 - simple notebooks)
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "1000m"
+      limits:
+        memory: "4Gi"
+        cpu: "2000m"
+
+    # Phased validation configuration (ArgoCD Sync Waves)
+    tiers:
+      # Tier 1: Simple notebooks (Wave 10)
+      # Prerequisites, data collection
+      tier1:
+        enabled: true
+        notebooks:
+          - "notebooks/00-setup/00-platform-readiness-validation.ipynb"
+          - "notebooks/01-data-collection/prometheus-metrics-collection.ipynb"
+          - "notebooks/01-data-collection/openshift-events-analysis.ipynb"
+
+      # Tier 2: Intermediate notebooks (Wave 20)
+      # ML model training, integration
+      tier2:
+        enabled: true  # ✅ Enabled for ML training validation
+        notebooks:
+          - "notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb"
+          - "notebooks/02-anomaly-detection/02-time-series-anomaly-detection.ipynb"
+          - "notebooks/03-self-healing-logic/coordination-engine-integration.ipynb"
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2000m"
+          limits:
+            memory: "8Gi"
+            cpu: "4000m"
+        timeout: "30m"
+
+      # Tier 3: Advanced notebooks (Wave 30)
+      # Model serving, end-to-end scenarios
+      tier3:
+        enabled: false  # Enable after tier1+tier2 pass
+        notebooks:
+          - "notebooks/04-model-serving/kserve-model-deployment.ipynb"
+          - "notebooks/05-end-to-end-scenarios/pod-crash-loop-healing.ipynb"
+          - "notebooks/05-end-to-end-scenarios/resource-exhaustion-detection.ipynb"
+        resources:
+          requests:
+            memory: "6Gi"
+            cpu: "3000m"
+          limits:
+            memory: "12Gi"
+            cpu: "6000m"
+        timeout: "45m"
+        gpu:
+      enabled: false  # Set to true if GPU-enabled notebooks
+      count: "1"
+
+    # Operator configuration
     operatorImage: "quay.io/takinosh/jupyter-notebook-validator-operator:release-4.18-bdc4fc0"
-
-    # Operator resource configuration (only used when operatorDeploymentMethod: "helm")
     operatorResources:
       requests:
         memory: "128Mi"
@@ -135,418 +476,3 @@ notebooks:
       limits:
         memory: "512Mi"
         cpu: "500m"
-
-    # Git repository configuration
-    # NOTE: These values should match global.git.repoURL and global.git.revision
-    # Update values-global.yaml when changing clusters or pushing to GitHub
-    git:
-      # Use the same URL as values-global.yaml git.repoURL
-      url: ""  # Will be overridden - see values-global.yaml git.repoURL
-      ref: ""  # Will be overridden - see values-global.yaml git.revision
-      # credentialsSecret: "git-credentials"  # Optional: for private repos
-
-    # =========================================================================
-    # TEKTON BUILD CONFIGURATION
-    # Builds notebook-validator image with ML packages pre-installed
-    # Reference: notebooks/Dockerfile
-    # =========================================================================
-    build:
-      # PVC size for build workspace (pytorch base is ~17GB)
-      pvcSize: "50Gi"
-      # Storage class for build PVC
-      storageClass: "gp3-csi"
-      # Enable automated trigger for builds (webhook/EventListener)
-      autoTrigger: false
-      # Build timeout
-      timeout: "45m"
-
-    # Container images by tier (RHOAI images from redhat-ods-applications ImageStreams)
-    # These images have Papermill pre-installed and are optimized for OpenShift
-    #
-    # NOTE: For full ML validation, use notebook-validator image (tier3) which includes:
-    #   - statsmodels, prophet (time series forecasting)
-    #   - pyod (anomaly detection)
-    #   - xgboost, lightgbm (gradient boosting)
-    #   - seaborn, kserve
-    images:
-      # All tiers now use the notebook-validator image which has ALL ML packages pre-installed
-      # Built by BuildConfig from notebooks/Dockerfile
-      # Includes: statsmodels, prophet, pyod, xgboost, lightgbm, seaborn, kserve
-      tier1: "image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest"
-      tier2: "image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest"
-      tier3: "image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest"
-
-    # Resource configuration by tier
-    resources:
-      tier1:
-        requests:
-          memory: "512Mi"
-          cpu: "500m"
-        limits:
-          memory: "1Gi"
-          cpu: "1000m"
-        timeout: "5m"
-
-      tier2:
-        requests:
-          memory: "2Gi"
-          cpu: "1000m"
-        limits:
-          memory: "4Gi"
-          cpu: "2000m"
-        timeout: "15m"
-
-      tier3:
-        requests:
-          memory: "8Gi"  # Increased from 4Gi for GPU training (5 models)
-          cpu: "2000m"
-        limits:
-          memory: "16Gi"  # Increased from 8Gi to prevent OOMKilled during multi-model training
-          cpu: "4000m"
-        timeout: "45m"
-        gpu:
-          enabled: true  # Enable GPU allocation for tier3 notebooks
-          count: "1"
-
-    # =========================================================================
-    # SYNC WAVE CONFIGURATION
-    # Notebooks are organized into waves based on data/model dependencies
-    #
-    # Wave 0:  Setup & Platform Validation (MUST run first)
-    # Wave 1:  Data Collection (parallel - metrics, events, logs)
-    # Wave 2:  Feature Engineering (depends on Wave 1)
-    # Wave 3:  Anomaly Detection Models (parallel - depends on Wave 2)
-    # Wave 4:  Ensemble Model (depends on Wave 3)
-    # Wave 5:  Self-Healing Logic (depends on Wave 4)
-    # Wave 6:  Model Serving (depends on Wave 4)
-    # Wave 7:  End-to-End Scenarios (depends on Waves 5-6)
-    # Wave 8:  MCP/Lightspeed Integration (external services)
-    # Wave 9:  Monitoring (depends on all previous)
-    # Wave 10: Advanced Scenarios (final wave)
-    # =========================================================================
-    waves:
-      # Wave 0: Setup & Platform Validation
-      wave0:
-        enabled: true
-        notebooks:
-          - name: "platform-readiness-validation"
-            path: "notebooks/00-setup/00-platform-readiness-validation.ipynb"
-            tier: "tier1"
-          - name: "environment-setup"
-            path: "notebooks/00-setup/environment-setup.ipynb"
-            tier: "tier1"
-
-      # Wave 1: Data Collection (parallel)
-      wave1:
-        enabled: true
-        notebooks:
-          - name: "prometheus-metrics-collection"
-            path: "notebooks/01-data-collection/prometheus-metrics-collection.ipynb"
-            tier: "tier2"
-          - name: "openshift-events-analysis"
-            path: "notebooks/01-data-collection/openshift-events-analysis.ipynb"
-            tier: "tier1"
-          - name: "log-parsing-analysis"
-            path: "notebooks/01-data-collection/log-parsing-analysis.ipynb"
-            tier: "tier2"
-
-      # Wave 2: Feature Engineering
-      wave2:
-        enabled: true
-        notebooks:
-          - name: "feature-store-demo"
-            path: "notebooks/01-data-collection/feature-store-demo.ipynb"
-            tier: "tier2"
-          - name: "synthetic-anomaly-generation"
-            path: "notebooks/01-data-collection/synthetic-anomaly-generation.ipynb"
-            tier: "tier1"
-
-      # Wave 3: Anomaly Detection Models (parallel)
-      wave3:
-        enabled: true
-        notebooks:
-          - name: "isolation-forest-implementation"
-            path: "notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb"
-            tier: "tier2"
-          - name: "time-series-anomaly-detection"
-            path: "notebooks/02-anomaly-detection/02-time-series-anomaly-detection.ipynb"
-            tier: "tier2"
-          - name: "lstm-based-prediction"
-            path: "notebooks/02-anomaly-detection/03-lstm-based-prediction.ipynb"
-            tier: "tier3"
-            gpuRequired: true
-          - name: "predictive-analytics-kserve"
-            path: "notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb"
-            tier: "tier3"
-            gpuRequired: true  # Enable GPU for faster training (5 models need training)
-            # Trains predictive analytics model with KServe-compatible format (Issue #13 fix, ADR-051, ADR-053)
-            # Model training now handled by Tekton Pipelines (ADR-053)
-            # ArgoCD sync no longer blocks on training - Tekton handles scheduling/health checks
-            # Fast training mode for ArgoCD validation jobs (~1 min vs ~30 min for production)
-            # Uses hybrid data source: combines real Prometheus metrics with synthetic data
-            # ServiceAccount (self-healing-workbench) has cluster-monitoring-view permissions
-            env:
-              - name: TRAINING_MODE
-                value: "quick"
-              - name: DATA_SOURCE
-                value: "hybrid"  # hybrid = 50% Prometheus + 50% synthetic (good for validation)
-              - name: PROMETHEUS_URL
-                value: "https://prometheus-k8s.openshift-monitoring.svc:9091"  # HTTPS port 9091 for authenticated access
-            validationConfig:
-              level: "production"
-              strictMode: true
-              detectSilentFailures: true
-            comparisonConfig:
-              strategy: "normalized"
-              floatingPointTolerance: "0.01"
-              ignoreTimestamps: true
-            # TEST: Add modelValidation to test if it's actually implemented
-            modelValidation:
-              enabled: true
-              platform: kserve
-              phase: both  # Test both clean and existing phases
-              targetModels:
-                - predictive-analytics
-              predictionValidation:
-                enabled: true
-                testData: '{"instances": [[0.5, 0.6, 0.4, 100, 80]]}'
-                tolerance: "0.1"
-              timeout: "10m"
-
-      # Wave 4: Ensemble Model
-      wave4:
-        enabled: true
-        notebooks:
-          - name: "ensemble-anomaly-methods"
-            path: "notebooks/02-anomaly-detection/04-ensemble-anomaly-methods.ipynb"
-            tier: "tier3"
-
-      # Wave 5: Self-Healing Logic
-      wave5:
-        enabled: true
-        notebooks:
-          - name: "rule-based-remediation"
-            path: "notebooks/03-self-healing-logic/rule-based-remediation.ipynb"
-            tier: "tier2"
-          - name: "ai-driven-decision-making"
-            path: "notebooks/03-self-healing-logic/ai-driven-decision-making.ipynb"
-            tier: "tier3"
-          - name: "hybrid-healing-workflows"
-            path: "notebooks/03-self-healing-logic/hybrid-healing-workflows.ipynb"
-            tier: "tier3"
-
-      # Wave 6: Model Serving
-      wave6:
-        enabled: true
-        notebooks:
-          - name: "kserve-model-deployment"
-            path: "notebooks/04-model-serving/kserve-model-deployment.ipynb"
-            tier: "tier3"
-          - name: "model-versioning-mlops"
-            path: "notebooks/04-model-serving/model-versioning-mlops.ipynb"
-            tier: "tier3"
-          - name: "inference-pipeline-setup"
-            path: "notebooks/04-model-serving/inference-pipeline-setup.ipynb"
-            tier: "tier3"
-
-      # Wave 7: End-to-End Scenarios
-      wave7:
-        enabled: true
-        notebooks:
-          - name: "pod-crash-loop-healing"
-            path: "notebooks/05-end-to-end-scenarios/pod-crash-loop-healing.ipynb"
-            tier: "tier2"
-          - name: "network-anomaly-response"
-            path: "notebooks/05-end-to-end-scenarios/network-anomaly-response.ipynb"
-            tier: "tier2"
-          - name: "resource-exhaustion-detection"
-            path: "notebooks/05-end-to-end-scenarios/resource-exhaustion-detection.ipynb"
-            tier: "tier2"
-          - name: "complete-platform-demo"
-            path: "notebooks/05-end-to-end-scenarios/complete-platform-demo.ipynb"
-            tier: "tier3"
-
-      # Wave 8: MCP & Lightspeed Integration
-      wave8:
-        enabled: true
-        notebooks:
-          - name: "mcp-server-integration"
-            path: "notebooks/06-mcp-lightspeed-integration/mcp-server-integration.ipynb"
-            tier: "tier3"
-          - name: "openshift-lightspeed-integration"
-            path: "notebooks/06-mcp-lightspeed-integration/openshift-lightspeed-integration.ipynb"
-            tier: "tier3"
-          - name: "llamastack-integration"
-            path: "notebooks/06-mcp-lightspeed-integration/llamastack-integration.ipynb"
-            tier: "tier3"
-
-      # Wave 9: Monitoring & Operations
-      wave9:
-        enabled: true
-        notebooks:
-          - name: "prometheus-metrics-monitoring"
-            path: "notebooks/07-monitoring-operations/prometheus-metrics-monitoring.ipynb"
-            tier: "tier2"
-          - name: "model-performance-monitoring"
-            path: "notebooks/07-monitoring-operations/model-performance-monitoring.ipynb"
-            tier: "tier3"
-          - name: "healing-success-tracking"
-            path: "notebooks/07-monitoring-operations/healing-success-tracking.ipynb"
-            tier: "tier2"
-
-      # Wave 10: Advanced Scenarios
-      wave10:
-        enabled: true
-        notebooks:
-          - name: "multi-cluster-healing"
-            path: "notebooks/08-advanced-scenarios/multi-cluster-healing-coordination.ipynb"
-            tier: "tier3"
-          - name: "predictive-scaling"
-            path: "notebooks/08-advanced-scenarios/predictive-scaling-capacity-planning.ipynb"
-            tier: "tier3"
-            # Note: Model saved to S3 via model-storage-config secret (PVC mount not supported by CRD)
-          - name: "security-incident-response"
-            path: "notebooks/08-advanced-scenarios/security-incident-response-automation.ipynb"
-            tier: "tier3"
-          - name: "cost-optimization"
-            path: "notebooks/08-advanced-scenarios/cost-optimization-resource-efficiency.ipynb"
-            tier: "tier2"
-
-# ============================================================================
-# STORAGE CONFIGURATION
-# ============================================================================
-# Topology-aware storage defaults:
-# - Standard clusters: ODF storage (ocs-storagecluster-cephfs for RWX)
-# - SNO clusters: CSI storage only (gp3-csi)
-# For SNO: set cluster.topology to "sno" and change storageClass to "gp3-csi"
-storage:
-  # Model Storage PVC (shared between notebooks and KServe)
-  # Standard clusters: ocs-storagecluster-cephfs (RWX) for multi-pod access
-  # SNO clusters: change to "gp3-csi" (RWO, single pod access)
-  modelStorage:
-    size: "10Gi"
-    storageClass: "gp3-csi"  # SNO: gp3-csi (RWO); Standard: ocs-storagecluster-cephfs (RWX)
-
-  # Model Artifacts PVC (shared model artifacts storage)
-  # Standard clusters: ocs-storagecluster-cephfs (RWX) for multi-pod access
-  # SNO clusters: gp3-csi (RWO, no CephFS available)
-  modelArtifacts:
-    size: "50Gi"
-    storageClass: "gp3-csi"  # SNO: gp3-csi (RWO); Standard: ocs-storagecluster-cephfs (RWX)
-
-  # Model Storage PVC for GPU Training
-  # GPU nodes cannot mount ocs-storagecluster-cephfs, so we use gp3-csi (RWO)
-  # Models are copied to model-storage-pvc after training
-  # Compatible with all cluster topologies (standard and SNO)
-  modelStorageGpu:
-    size: "10Gi"
-    storageClass: "gp3-csi"  # GPU-compatible storage class (RWO)
-
-# Object Store (NooBaa/ODF S3)
-# Standard clusters: full ODF (Ceph + NooBaa S3)
-# SNO clusters: MCG-only ODF (NooBaa S3 without Ceph)
-# Enabled for all topologies -- make configure-cluster installs the appropriate backend
-objectStore:
-  enabled: true
-
-# ============================================================================
-# GO-BASED SERVICES CONFIGURATION
-# Reference: ADR-038 (Go Coordination Engine), ADR-036 (Go MCP Server)
-# ============================================================================
-
-# Coordination Engine Configuration (Go-based)
-# Reference: https://github.com/KubeHeal/openshift-coordination-engine
-coordinationEngine:
-  image:
-    repository: quay.io/takinosh/openshift-coordination-engine
-    tag: ocp-4.18-latest
-    pullPolicy: Always
-  replicas: 1
-  logLevel: info
-  kserve:
-    enabled: true
-    namespace: self-healing-platform
-    services:
-      anomaly_detector: "anomaly-detector-predictor"
-      predictive_analytics: "predictive-analytics-predictor"
-  resources:
-    requests:
-      cpu: "200m"
-      memory: "256Mi"
-    limits:
-      cpu: "500m"
-      memory: "512Mi"
-
-# MCP Server Configuration (Go-based)
-# Reference: https://github.com/KubeHeal/openshift-cluster-health-mcp
-mcpServer:
-  enabled: true
-  image:
-    repository: quay.io/takinosh/openshift-cluster-health-mcp
-    tag: 4.18-latest
-    pullPolicy: Always
-  replicas: 1
-  logLevel: info
-  serviceAccount:
-    create: false  # Using existing self-healing-operator SA
-    name: self-healing-operator
-  transport: http
-  coordinationEngine:
-    enabled: true
-    url: http://coordination-engine:8080
-  kserve:
-    enabled: true
-    namespace: self-healing-platform
-  prometheus:
-    enabled: true
-    url: https://prometheus-k8s.openshift-monitoring.svc:9091
-  cache:
-    ttlSeconds: 30
-  resources:
-    requests:
-      memory: "128Mi"
-      cpu: "100m"
-    limits:
-      memory: "256Mi"
-      cpu: "500m"
-  route:
-    enabled: false  # Set to true for external access
-
-# ArgoCD Configuration
-argocd:
-  # Sync policy for notebook validation
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - PruneLast=true
-      - RespectIgnoreDifferences=true
-
-  # Resource tracking for sync waves
-  resourceHealthChecks:
-    # Custom health check for NotebookValidationJob
-    - group: mlops.mlops.dev
-      kind: NotebookValidationJob
-      check: |
-        hs = {}
-        if obj.status ~= nil then
-          if obj.status.phase == "Succeeded" then
-            hs.status = "Healthy"
-            hs.message = "Notebook validation completed successfully"
-          elseif obj.status.phase == "Failed" then
-            hs.status = "Degraded"
-            hs.message = obj.status.message or "Notebook validation failed"
-          elseif obj.status.phase == "Running" then
-            hs.status = "Progressing"
-            hs.message = "Notebook validation in progress"
-          else
-            hs.status = "Progressing"
-            hs.message = "Waiting for validation to start"
-          end
-        else
-          hs.status = "Progressing"
-          hs.message = "Waiting for status"
-        end
-        return hs

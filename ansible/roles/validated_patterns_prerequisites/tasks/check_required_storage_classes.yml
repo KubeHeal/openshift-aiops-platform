@@ -92,11 +92,11 @@
       SNO clusters use CSI storage classes only (ODF not supported)
       Recommended storage classes: gp3-csi (AWS), managed-csi (Azure)
       {% else %}
-      Standard clusters can use ODF + CSI storage classes
+      HA clusters can use ODF + CSI storage classes
       Recommended: Install ODF for RWX storage (CephFS)
       {% endif %}
 
-- name: Fail if required RWX storage is missing (standard clusters only)
+- name: Fail if required RWX storage is missing (HA clusters only)
   fail:
     msg: |
       ❌ CRITICAL: Missing required storage classes for {{ cluster_topology | upper }} cluster
