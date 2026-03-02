@@ -117,7 +117,7 @@ spec:
           limits:
             cpu: "4"
             memory: "16Gi"
-            {{- if .Values.workbench.gpu.enabled }}
+            {{- if and .Values.workbench.gpu.enabled (eq ((.Values.cluster).topology | default "ha") "sno") }}
             nvidia.com/gpu: "1"
             {{- end }}
         env:
