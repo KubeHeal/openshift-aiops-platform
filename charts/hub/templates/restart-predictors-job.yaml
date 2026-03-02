@@ -47,7 +47,7 @@ spec:
         - |
           set -e
           echo "Waiting for PVC model-storage-pvc to be mounted..."
-          MAX_WAIT=300  # 5 minutes
+          MAX_WAIT=60  # 1 minute
           ELAPSED=0
           INTERVAL=10
 
@@ -75,9 +75,9 @@ spec:
         - |
           set -e
           NAMESPACE="{{ .Values.main.namespace }}"
-          MAX_WAIT_PER_MODEL=600  # 10 minutes per model
+          MAX_WAIT_PER_MODEL=30  # Brief check only; Tekton pipeline handles full wait
           POLL_INTERVAL=10
-          RESTART_TIMEOUT=300  # 5 minutes for pod restart
+          RESTART_TIMEOUT=120  # 2 minutes for pod restart
 
           echo "=========================================="
           echo "Restart Predictors After Models Ready"
@@ -109,7 +109,8 @@ spec:
               elapsed=$((elapsed + POLL_INTERVAL))
             done
 
-            echo "✗ ERROR: Model file not found after ${MAX_WAIT_PER_MODEL}s: $model_path"
+            echo "⚠️  Model not found after ${MAX_WAIT_PER_MODEL}s: $model_path"
+            echo "   This is expected on fresh deploys. Tekton training pipeline will handle model deployment."
             return 1
           }
 
@@ -204,6 +205,6 @@ spec:
       - name: model-storage
         persistentVolumeClaim:
           claimName: model-storage-pvc
-  backoffLimit: 3
-  activeDeadlineSeconds: 1800  # 30 minutes total timeout
+  backoffLimit: 1
+  activeDeadlineSeconds: 300  # 5 minutes -- brief check only
 {{- end }}
