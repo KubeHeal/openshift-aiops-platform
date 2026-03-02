@@ -96,7 +96,7 @@ spec:
     # SNO: GPU jobs use model-storage-pvc directly (single node has all CSI drivers)
     # Non-GPU jobs always use model-storage-pvc
     volumeMounts:
-    {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) (ne ($.Values.cluster.topology | default "ha") "sno") }}
+    {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) (ne (.topology | default "ha") "sno") }}
     - name: model-storage-gpu
       mountPath: /mnt/models-gpu
     {{- else }}
@@ -104,7 +104,7 @@ spec:
       mountPath: /mnt/models
     {{- end }}
     volumes:
-    {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) (ne ($.Values.cluster.topology | default "ha") "sno") }}
+    {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) (ne (.topology | default "ha") "sno") }}
     - name: model-storage-gpu
       persistentVolumeClaim:
         claimName: model-storage-gpu-pvc
@@ -161,6 +161,7 @@ spec:
 {{- $gitUrl := .Values.git.repoURL | default .Values.global.repoURL | default .Values.global.git.repoURL | default .Values.notebooks.validation.git.url | default "https://github.com/KubeHeal/openshift-aiops-platform.git" }}
 {{- $gitRef := .Values.git.revision | default .Values.global.targetRevision | default .Values.global.git.revision | default .Values.notebooks.validation.git.ref | default "main" }}
 {{- $enableSyncWaves := .Values.notebooks.validation.enableSyncWaves | default true }}
+{{- $topology := (.Values.cluster).topology | default "ha" }}
 
 {{- if .Values.notebooks.validation.waves }}
 {{- /* Wave 0: Setup & Platform Validation */ -}}
@@ -173,7 +174,7 @@ spec:
 {{- else if eq $tier "tier3" }}{{- $image = $root.Values.notebooks.validation.images.tier3 }}
 {{- else }}{{- $image = $root.Values.notebooks.validation.images.tier2 }}{{- end }}
 ---
-{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "0" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources) }}
+{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "0" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources "topology" $topology) }}
 {{- end }}
 {{- end }}
 
@@ -187,7 +188,7 @@ spec:
 {{- else if eq $tier "tier3" }}{{- $image = $root.Values.notebooks.validation.images.tier3 }}
 {{- else }}{{- $image = $root.Values.notebooks.validation.images.tier2 }}{{- end }}
 ---
-{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "1" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources) }}
+{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "1" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources "topology" $topology) }}
 {{- end }}
 {{- end }}
 
@@ -201,7 +202,7 @@ spec:
 {{- else if eq $tier "tier3" }}{{- $image = $root.Values.notebooks.validation.images.tier3 }}
 {{- else }}{{- $image = $root.Values.notebooks.validation.images.tier2 }}{{- end }}
 ---
-{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "2" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources) }}
+{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "2" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources "topology" $topology) }}
 {{- end }}
 {{- end }}
 
@@ -215,7 +216,7 @@ spec:
 {{- else if eq $tier "tier3" }}{{- $image = $root.Values.notebooks.validation.images.tier3 }}
 {{- else }}{{- $image = $root.Values.notebooks.validation.images.tier2 }}{{- end }}
 ---
-{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "3" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources) }}
+{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "3" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources "topology" $topology) }}
 {{- end }}
 {{- end }}
 
@@ -229,7 +230,7 @@ spec:
 {{- else if eq $tier "tier3" }}{{- $image = $root.Values.notebooks.validation.images.tier3 }}
 {{- else }}{{- $image = $root.Values.notebooks.validation.images.tier2 }}{{- end }}
 ---
-{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "4" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources) }}
+{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "4" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources "topology" $topology) }}
 {{- end }}
 {{- end }}
 
@@ -243,7 +244,7 @@ spec:
 {{- else if eq $tier "tier3" }}{{- $image = $root.Values.notebooks.validation.images.tier3 }}
 {{- else }}{{- $image = $root.Values.notebooks.validation.images.tier2 }}{{- end }}
 ---
-{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "5" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources) }}
+{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "5" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources "topology" $topology) }}
 {{- end }}
 {{- end }}
 
@@ -257,7 +258,7 @@ spec:
 {{- else if eq $tier "tier3" }}{{- $image = $root.Values.notebooks.validation.images.tier3 }}
 {{- else }}{{- $image = $root.Values.notebooks.validation.images.tier2 }}{{- end }}
 ---
-{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "6" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources) }}
+{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "6" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources "topology" $topology) }}
 {{- end }}
 {{- end }}
 
@@ -271,7 +272,7 @@ spec:
 {{- else if eq $tier "tier3" }}{{- $image = $root.Values.notebooks.validation.images.tier3 }}
 {{- else }}{{- $image = $root.Values.notebooks.validation.images.tier2 }}{{- end }}
 ---
-{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "7" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources) }}
+{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "7" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources "topology" $topology) }}
 {{- end }}
 {{- end }}
 
@@ -285,7 +286,7 @@ spec:
 {{- else if eq $tier "tier3" }}{{- $image = $root.Values.notebooks.validation.images.tier3 }}
 {{- else }}{{- $image = $root.Values.notebooks.validation.images.tier2 }}{{- end }}
 ---
-{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "8" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources) }}
+{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "8" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources "topology" $topology) }}
 {{- end }}
 {{- end }}
 
@@ -299,7 +300,7 @@ spec:
 {{- else if eq $tier "tier3" }}{{- $image = $root.Values.notebooks.validation.images.tier3 }}
 {{- else }}{{- $image = $root.Values.notebooks.validation.images.tier2 }}{{- end }}
 ---
-{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "9" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources) }}
+{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "9" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources "topology" $topology) }}
 {{- end }}
 {{- end }}
 
@@ -313,7 +314,7 @@ spec:
 {{- else if eq $tier "tier3" }}{{- $image = $root.Values.notebooks.validation.images.tier3 }}
 {{- else }}{{- $image = $root.Values.notebooks.validation.images.tier2 }}{{- end }}
 ---
-{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "10" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources) }}
+{{ include "notebook.validationJob" (dict "notebook" $notebook "namespace" $namespace "waveNum" "10" "gitRef" $gitRef "gitUrl" $gitUrl "enableSyncWaves" $enableSyncWaves "image" $image "resources" $resources "topology" $topology) }}
 {{- end }}
 {{- end }}
 
