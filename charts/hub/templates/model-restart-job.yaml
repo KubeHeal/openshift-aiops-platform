@@ -34,9 +34,7 @@ metadata:
     app.kubernetes.io/part-of: self-healing-platform
   annotations:
     argocd.argoproj.io/sync-wave: "11"
-    argocd.argoproj.io/hook: PostSync
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
-    description: "Waits for trained models to exist, then restarts InferenceService predictor pods"
+    description: "Waits for trained models to exist, then restarts InferenceService predictor pods. Not a sync hook -- failure does not block ArgoCD sync."
 spec:
   template:
     metadata:
