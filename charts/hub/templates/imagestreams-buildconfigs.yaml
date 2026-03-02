@@ -1,7 +1,7 @@
 {{- if .Values.imageBuilds.enabled }}
 {{- /* Resolve git URL with fallback chain */ -}}
-{{- $gitUrl := .Values.imageBuilds.gitRepository | default .Values.git.repoURL | default .Values.global.git.repoURL | default "" }}
-{{- $gitRef := .Values.imageBuilds.gitRef | default .Values.git.revision | default .Values.global.git.revision | default "main" }}
+{{- $gitUrl := .Values.imageBuilds.gitRepository | default .Values.git.repoURL | default .Values.global.repoURL | default .Values.global.git.repoURL | default "" }}
+{{- $gitRef := .Values.imageBuilds.gitRef | default .Values.git.revision | default .Values.global.targetRevision | default .Values.global.git.revision | default "main" }}
 {{- if $gitUrl }}
 # NOTE: coordination-engine BuildConfig and ImageStream removed
 # See: ADR-038: Go Coordination Engine Migration

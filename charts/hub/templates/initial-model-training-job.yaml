@@ -82,9 +82,9 @@ spec:
               - name: health-check-enabled
                 value: "{{ .Values.tekton.modelTraining.healthCheckEnabled | default "true" }}"
               - name: git-url
-                value: "{{ .Values.global.git.repoURL }}"
+                value: "{{ .Values.global.repoURL | default .Values.global.git.repoURL }}"
               - name: git-ref
-                value: "{{ .Values.global.git.revision | default "main" }}"
+                value: "{{ .Values.global.targetRevision | default .Values.global.git.revision | default "main" }}"
             timeout: 30m
           EOF
           echo "Anomaly detector pipeline triggered"
@@ -117,9 +117,9 @@ spec:
               - name: health-check-enabled
                 value: "{{ .Values.tekton.modelTraining.healthCheckEnabled | default "true" }}"
               - name: git-url
-                value: "{{ .Values.global.git.repoURL }}"
+                value: "{{ .Values.global.repoURL | default .Values.global.git.repoURL }}"
               - name: git-ref
-                value: "{{ .Values.global.git.revision | default "main" }}"
+                value: "{{ .Values.global.targetRevision | default .Values.global.git.revision | default "main" }}"
             timeout: 45m
           EOF
           echo "Predictive analytics pipeline triggered"

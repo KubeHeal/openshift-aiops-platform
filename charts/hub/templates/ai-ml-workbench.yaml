@@ -143,7 +143,7 @@ spec:
           value: image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest
         - name: JUPYTER_ENABLE_LAB
           value: "yes"
-        {{- $gitRepoURL := .Values.git.repoURL | default .Values.global.git.repoURL | default "" }}
+        {{- $gitRepoURL := .Values.git.repoURL | default .Values.global.repoURL | default .Values.global.git.repoURL | default "" }}
         {{- if $gitRepoURL }}
         - name: JUPYTER_PRELOAD_REPOS
           value: {{ $gitRepoURL | quote }}

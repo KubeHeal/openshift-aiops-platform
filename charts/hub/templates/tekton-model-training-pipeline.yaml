@@ -53,11 +53,11 @@ spec:
       description: "Training window in hours (24=1day, 168=1week, 720=30days)"
     - name: git-url
       type: string
-      default: "{{ .Values.git.repoURL | default .Values.global.git.repoURL }}"
+      default: "{{ .Values.git.repoURL | default .Values.global.repoURL | default .Values.global.git.repoURL }}"
       description: "Git repository URL"
     - name: git-ref
       type: string
-      default: "{{ .Values.git.revision | default .Values.global.git.revision | default "main" }}"
+      default: "{{ .Values.git.revision | default .Values.global.targetRevision | default .Values.global.git.revision | default "main" }}"
       description: "Git branch/tag/commit"
 
   results:
@@ -226,11 +226,11 @@ spec:
       description: "Training window in hours (24=1day, 168=1week, 720=30days)"
     - name: git-url
       type: string
-      default: "{{ .Values.git.repoURL | default .Values.global.git.repoURL }}"
+      default: "{{ .Values.git.repoURL | default .Values.global.repoURL | default .Values.global.git.repoURL }}"
       description: "Git repository URL"
     - name: git-ref
       type: string
-      default: "{{ .Values.git.revision | default .Values.global.git.revision | default "main" }}"
+      default: "{{ .Values.git.revision | default .Values.global.targetRevision | default .Values.global.git.revision | default "main" }}"
       description: "Git branch/tag/commit"
 
   results:
