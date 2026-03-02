@@ -1,0 +1,141 @@
+{{- if and .Values.tekton .Values.tekton.enabled .Values.tekton.modelTraining .Values.tekton.modelTraining.enabled }}
+{{- if not (and .Values.tekton.modelTraining.initialTraining (eq (.Values.tekton.modelTraining.initialTraining.enabled | toString) "false")) }}
+---
+# Initial Model Training Job
+# Triggers both Tekton training pipelines on first deployment so KServe
+# InferenceServices get real trained models instead of placeholders.
+# Completes in seconds (just creates PipelineRun CRs); actual training
+# runs asynchronously via Tekton.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: initial-model-training
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/component: model-training
+    app.kubernetes.io/name: initial-model-training
+    app.kubernetes.io/part-of: self-healing-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    description: "One-time trigger for initial model training pipelines"
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 120
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: model-training
+        app.kubernetes.io/name: initial-model-training
+    spec:
+      serviceAccountName: {{ .Values.tekton.modelTraining.serviceAccount | default "pipeline" }}
+      restartPolicy: OnFailure
+      containers:
+      - name: trigger-pipelines
+        image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "=========================================="
+          echo "Initial Model Training Trigger"
+          echo "Time: $(date)"
+          echo "=========================================="
+
+          # Check if training has already run (PipelineRuns exist)
+          EXISTING=$(oc get pipelinerun -n {{ .Values.main.namespace }} --no-headers 2>/dev/null | wc -l)
+          if [ "$EXISTING" -gt 0 ]; then
+            echo "PipelineRuns already exist ($EXISTING found) -- skipping initial trigger"
+            echo "To re-trigger manually:"
+            echo "  tkn pipeline start model-training-pipeline -n {{ .Values.main.namespace }}"
+            echo "  tkn pipeline start model-training-pipeline-gpu -n {{ .Values.main.namespace }}"
+            exit 0
+          fi
+
+          echo ""
+          echo "--- Triggering Anomaly Detector Training ---"
+          cat <<EOF | oc apply -f -
+          apiVersion: tekton.dev/v1beta1
+          kind: PipelineRun
+          metadata:
+            generateName: train-anomaly-detector-
+            namespace: {{ .Values.main.namespace }}
+            labels:
+              model-name: anomaly-detector
+              triggered-by: initial-deploy
+          spec:
+            pipelineRef:
+              name: model-training-pipeline
+            params:
+              - name: model-name
+                value: "anomaly-detector"
+              - name: notebook-path
+                value: "notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb"
+              - name: data-source
+                value: "{{ .Values.tekton.modelTraining.anomalyDetector.dataSource | default "prometheus" }}"
+              - name: training-hours
+                value: "168"
+              - name: inference-service-name
+                value: "anomaly-detector"
+              - name: health-check-enabled
+                value: "{{ .Values.tekton.modelTraining.healthCheckEnabled | default "true" }}"
+              - name: git-url
+                value: "{{ .Values.global.git.repoURL }}"
+              - name: git-ref
+                value: "{{ .Values.global.git.revision | default "main" }}"
+            timeout: 30m
+          EOF
+          echo "Anomaly detector pipeline triggered"
+
+          echo ""
+          echo "--- Triggering Predictive Analytics Training ---"
+          cat <<EOF | oc apply -f -
+          apiVersion: tekton.dev/v1beta1
+          kind: PipelineRun
+          metadata:
+            generateName: train-predictive-analytics-
+            namespace: {{ .Values.main.namespace }}
+            labels:
+              model-name: predictive-analytics
+              triggered-by: initial-deploy
+          spec:
+            pipelineRef:
+              name: model-training-pipeline-gpu
+            params:
+              - name: model-name
+                value: "predictive-analytics"
+              - name: notebook-path
+                value: "notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb"
+              - name: data-source
+                value: "{{ .Values.tekton.modelTraining.predictiveAnalytics.dataSource | default "prometheus" }}"
+              - name: training-hours
+                value: "720"
+              - name: inference-service-name
+                value: "predictive-analytics"
+              - name: health-check-enabled
+                value: "{{ .Values.tekton.modelTraining.healthCheckEnabled | default "true" }}"
+              - name: git-url
+                value: "{{ .Values.global.git.repoURL }}"
+              - name: git-ref
+                value: "{{ .Values.global.git.revision | default "main" }}"
+            timeout: 45m
+          EOF
+          echo "Predictive analytics pipeline triggered"
+
+          echo ""
+          echo "=========================================="
+          echo "Both training pipelines triggered successfully"
+          echo "Monitor progress:"
+          echo "  tkn pipelinerun list -n {{ .Values.main.namespace }}"
+          echo "=========================================="
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+{{- end }}
+{{- end }}

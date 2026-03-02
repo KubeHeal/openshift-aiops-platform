@@ -196,6 +196,34 @@ make argo-healthcheck
 
 # 16. Run Tekton validation pipeline (validates coordination engine + model connectivity)
 tkn pipeline start deployment-validation-pipeline --showlog
+
+# 17. Check model training pipeline status
+# ArgoCD automatically triggers initial training for both models on first deploy.
+# Verify the PipelineRuns were created and are progressing:
+tkn pipelinerun list -n self-healing-platform
+
+# If training failed or was not triggered, manually start the pipelines:
+tkn pipeline start model-training-pipeline \
+  -p model-name=anomaly-detector \
+  -p notebook-path=notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb \
+  -p data-source=prometheus \
+  -p training-hours=168 \
+  -p inference-service-name=anomaly-detector \
+  -p health-check-enabled=true \
+  -p git-url=<your-repo-url> \
+  -p git-ref=main \
+  -n self-healing-platform --showlog
+
+tkn pipeline start model-training-pipeline-gpu \
+  -p model-name=predictive-analytics \
+  -p notebook-path=notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb \
+  -p data-source=prometheus \
+  -p training-hours=720 \
+  -p inference-service-name=predictive-analytics \
+  -p health-check-enabled=true \
+  -p git-url=<your-repo-url> \
+  -p git-ref=main \
+  -n self-healing-platform --showlog
 ```
 
 > **💡 Note**: Step 12 (`make operator-deploy`) automatically runs step 11 (`operator-deploy-prereqs`) as a dependency. However, running them separately helps with troubleshooting and understanding the deployment flow.
