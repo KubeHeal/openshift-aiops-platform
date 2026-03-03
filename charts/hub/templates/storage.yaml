@@ -1,43 +1,9 @@
 {{- $env := .Values.metadata.environment | default "development" }}
 {{- $envSuffix := printf "-%s" (regexFind "[a-z]+" $env) }}
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ printf "self-healing-data%s" $envSuffix }}
-  labels:
-    app.kubernetes.io/component: storage
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.storage.selfHealingData.size | default "10Gi" }}
-  storageClassName: {{ .Values.storage.selfHealingData.storageClass | default "gp3-csi" }}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ printf "model-artifacts%s" $envSuffix }}
-  labels:
-    app.kubernetes.io/component: storage
-  annotations:
-    description: "Model artifacts storage - requires RWX for multi-pod access"
-spec:
-  {{- $maStorageClass := .Values.storage.modelArtifacts.storageClass | default "gp3-csi" }}
-  {{- if eq ((.Values.cluster).topology | default "ha") "sno" }}
-  {{- $maStorageClass = "gp3-csi" }}
-  {{- end }}
-  accessModes:
-    {{- if or (contains "cephfs" $maStorageClass) (contains "nfs" $maStorageClass) (contains "azurefile" $maStorageClass) }}
-    - ReadWriteMany
-    {{- else }}
-    - ReadWriteOnce
-    {{- end }}
-  resources:
-    requests:
-      storage: {{ .Values.storage.modelArtifacts.size | default "50Gi" }}
-  storageClassName: {{ $maStorageClass }}
----
+# Removed orphaned PVCs (never mounted by any workload):
+# - self-healing-data-development (10Gi) - no templates reference it
+# - model-artifacts-development (50Gi) - no templates reference it
+# Only creating PVCs that are actually used by deployments/jobs
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
