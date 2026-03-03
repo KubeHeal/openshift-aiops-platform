@@ -151,11 +151,13 @@ applications:
       grafana: true
 
 # AI/ML Workbench configuration
-# GPU enabled for AI/ML workloads
+# GPU disabled on SNO to allow GPU validation notebooks to run
+# SNO limitation: Only 1 GPU available - workbench would monopolize it
+# GPU-based notebooks can still request GPU via NotebookValidationJob
 workbench:
   enabled: true  # Enable workbench
   gpu:
-    enabled: true  # GPU support enabled for AI/ML model training and inference
+    enabled: false  # GPU support disabled on SNO (enable on HA clusters)
 
 # Storage configuration (generic defaults)
 # See also: "Storage Configuration" section below for PVC-specific settings
