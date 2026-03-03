@@ -8,7 +8,7 @@
 # MCG-only ODF provides NooBaa S3 on SNO (objectStore.enabled stays true)
 # Verify with: make show-cluster-info
 cluster:
-  topology: "sno"  # "ha" = HighlyAvailable multi-node, "sno" = Single Node OpenShift
+  topology: "ha"  # "ha" = HighlyAvailable multi-node, "sno" = Single Node OpenShift
   version: "4.20"       # OpenShift version - auto-detected
 
 # global.clusterDomain is auto-populated by the Validated Patterns operator
@@ -289,22 +289,22 @@ storage:
   # Self-healing data storage
   selfHealingData:
     size: "10Gi"
-    storageClass: "gp3-csi"
+    storageClass: "ocs-storagecluster-cephfs"
 
   # Model artifacts storage (RWX for HA, RWO for SNO)
   modelArtifacts:
     size: "50Gi"
-    storageClass: "gp3-csi"  # SNO: RWO only (no CephFS support)
+    storageClass: "ocs-storagecluster-cephfs"  # HA: RWX with CephFS
 
   # Model Storage PVC (shared between notebooks and KServe)
   modelStorage:
     size: "10Gi"
-    storageClass: "gp3-csi"  # SNO: RWO only (no CephFS support)
+    storageClass: "ocs-storagecluster-cephfs"  # HA: RWX with CephFS
 
   # Workbench data storage
   workbenchData:
     size: "20Gi"
-    storageClass: "gp3-csi"
+    storageClass: "ocs-storagecluster-cephfs"
 
 # Metadata
 metadata:
