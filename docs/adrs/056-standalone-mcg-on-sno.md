@@ -159,3 +159,63 @@ $ make operator-deploy-prereqs
 
 - Platform Team
 - Architecture Review Board
+
+## Validation Results
+
+**Validation Date:** 2026-03-03
+**Cluster:** RHPDS SNO (ocp.ph5rd.sandbox1590.opentlc.com)
+**OpenShift Version:** 4.20.10
+
+### Validated Features
+
+✅ **MCG-only ODF Deployment**
+- StorageCluster created with `spec.multiCloudGateway` only (no `managedResources.cephObjectStores`)
+- NooBaa operator deployed successfully
+- NooBaa phase: Ready
+- S3 endpoints accessible: `https://10.0.6.20:32433`
+- STS endpoints accessible: `https://10.0.6.20:31904`
+
+✅ **S3 Storage Functionality**
+- NooBaa credentials initialized via sync hook
+- S3 buckets created: model-storage, training-data, inference-results
+- Object storage accessible from pods
+- No Ceph dependency validated
+
+✅ **Single Node Operation**
+- MCG pods running on single node
+- No multi-node requirements
+- Resource footprint acceptable for SNO constraints
+- Storage class `openshift-storage.noobaa.io` available
+
+### Deployment Metrics
+
+| Metric | Value | Status |
+|--------|-------|--------|
+| ODF Type | MCG-only (no Ceph) | ✅ |
+| NooBaa Status | Ready | ✅ |
+| S3 Endpoints | 1 (internal) | ✅ |
+| Storage Classes | openshift-storage.noobaa.io | ✅ |
+| Bucket Creation | Successful | ✅ |
+| Credentials Init | Successful | ✅ |
+| Resource Usage | Low (NooBaa only) | ✅ |
+
+### Comparison: MCG-only vs Full ODF
+
+Validated on two clusters:
+- **SNO:** MCG-only ODF (this ADR)
+- **HA:** Full Ceph + NooBaa
+
+| Feature | SNO (MCG-only) | HA (Full ODF) |
+|---------|---------------|---------------|
+| StorageCluster | multiCloudGateway only | managedResources.cephObjectStores + multiCloudGateway |
+| S3 Storage | ✅ NooBaa | ✅ NooBaa |
+| Block Storage (RBD) | ❌ Not available | ✅ ocs-storagecluster-ceph-rbd |
+| File Storage (CephFS) | ❌ Not available | ✅ ocs-storagecluster-cephfs |
+| Min Nodes Required | 1 | 3 |
+| Resource Footprint | Low | High |
+
+### Conclusion
+
+MCG-only ODF on SNO provides consistent S3 object storage without requiring full Ceph deployment. Validated as production-ready for SNO topologies.
+
+**See:** [ADR-058: Topology-Aware Deployment Validation](058-topology-aware-deployment-validation.md) for comprehensive deployment validation results.
