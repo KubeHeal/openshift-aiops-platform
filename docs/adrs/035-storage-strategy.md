@@ -8,20 +8,27 @@
 
 ## Implementation Status
 **Status:** ✅ IMPLEMENTED
-**Verification Date:** 2026-01-25
+**Verification Date:** 2026-03-03
 **Implementation Score:** 10.0/10
 **Verified On:** SNO + HA clusters
-**Evidence:** gp3-csi primary strategy (3 PVCs), OCS CephFS for shared storage (1 PVC), all bound and operational. Topology-aware storage configuration validated.
+
+**Evidence:**
+- **SNO**: 2/2 PVCs Bound and operational (workbench-data-development 20Gi, model-storage-pvc 10Gi)
+- **HA**: 3/3 PVCs Bound and operational (workbench-data-development 20Gi, model-storage-pvc 10Gi RWX, model-storage-gpu-pvc 10Gi RWO)
+- **Storage Classes**: gp3-csi (SNO), ocs-storagecluster-cephfs + gp3-csi (HA)
+- **Topology-Aware**: GPU-specific PVC only on HA clusters per Helm template conditional
+- **Active Usage**: model-storage-pvc used by 3 pods (SNO), 39 pods (HA) including InferenceServices, workbench, training jobs
 
 ## Context
 
 The Self-Healing Platform requires persistent storage for:
-1. **self-healing-data** (10Gi) - Platform configuration and state
-2. **model-artifacts** (50Gi) - ML model files and training data
+1. **workbench-data-development** (20Gi) - Jupyter workbench persistent storage, notebooks, and development artifacts
+2. **model-storage-pvc** (10Gi) - Shared model storage for notebooks and KServe InferenceServices
+3. **model-storage-gpu-pvc** (10Gi, HA only) - GPU-compatible storage (gp3-csi RWO) for training on HA clusters with GPU nodes
 
 OpenShift cluster provides multiple storage options:
-- **gp3-csi** (AWS EBS) - Default, RWO, reliable
-- **ocs-storagecluster-cephfs** (OCS) - RWX, requires node labels
+- **gp3-csi** (AWS EBS) - Default, RWO, reliable, GPU-compatible
+- **ocs-storagecluster-cephfs** (OCS) - RWX, requires node labels, not GPU-compatible
 - **ocs-storagecluster-ceph-rbd** (OCS) - RWO, requires node labels
 
 ### Problem Statement
@@ -75,13 +82,32 @@ Initial design used CephFS (RWX) for model-artifacts to support multi-pod access
 
 ### Configuration
 
+**SNO Topology:**
 ```yaml
-# self-healing-data (10Gi)
+# workbench-data-development (20Gi)
 accessModes:
   - ReadWriteOnce
 storageClassName: gp3-csi
 
-# model-artifacts (50Gi)
+# model-storage-pvc (10Gi)
+accessModes:
+  - ReadWriteOnce
+storageClassName: gp3-csi
+```
+
+**HA Topology:**
+```yaml
+# workbench-data-development (20Gi)
+accessModes:
+  - ReadWriteOnce
+storageClassName: ocs-storagecluster-cephfs
+
+# model-storage-pvc (10Gi)
+accessModes:
+  - ReadWriteMany
+storageClassName: ocs-storagecluster-cephfs
+
+# model-storage-gpu-pvc (10Gi) - GPU training only
 accessModes:
   - ReadWriteOnce
 storageClassName: gp3-csi

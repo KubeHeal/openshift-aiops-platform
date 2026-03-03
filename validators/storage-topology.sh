@@ -58,6 +58,7 @@ validate_adr_034() {
 validate_adr_035() {
     echo "Validating ADR-035: Persistent Volume Claims..." >&2
 
+    local topology=$(detect_topology)
     local pvcs=$(oc get pvc -n self-healing-platform --no-headers 2>/dev/null | wc -l)
     local bound_pvcs=$(oc get pvc -n self-healing-platform --no-headers 2>/dev/null | grep -c "Bound" || echo "0")
     local storage_classes=$(oc get pvc -n self-healing-platform -o json 2>/dev/null | jq -r '[.items[].spec.storageClassName] | unique | length' || echo "0")
@@ -66,12 +67,18 @@ validate_adr_035() {
     local gp3_pvcs=$(oc get pvc -n self-healing-platform -o json 2>/dev/null | jq '[.items[] | select(.spec.storageClassName | contains("gp3"))] | length' || echo "0")
     local ocs_pvcs=$(oc get pvc -n self-healing-platform -o json 2>/dev/null | jq '[.items[] | select(.spec.storageClassName | contains("ocs"))] | length' || echo "0")
 
-    if [[ $bound_pvcs -ge 4 ]]; then
-        add_result "035" "PASS" "4+ PVCs Bound" "Total PVCs: $pvcs, Bound: $bound_pvcs, StorageClasses: $storage_classes (gp3: $gp3_pvcs, ocs: $ocs_pvcs)" "Persistent storage operational"
-    elif [[ $pvcs -ge 2 ]]; then
-        add_result "035" "PARTIAL" "4+ PVCs Bound" "PVCs: $pvcs, Bound: $bound_pvcs" "Partial storage configured"
+    # Topology-aware PVC expectations
+    local expected_pvcs=2  # SNO: workbench-data-development, model-storage-pvc
+    if [[ $topology == "HighlyAvailable" ]] || [[ $topology == "HA" ]]; then
+        expected_pvcs=3  # HA: + model-storage-gpu-pvc
+    fi
+
+    if [[ $pvcs -eq $expected_pvcs ]] && [[ $bound_pvcs -eq $expected_pvcs ]]; then
+        add_result "035" "PASS" "$expected_pvcs PVCs Bound ($topology topology)" "Total PVCs: $pvcs, Bound: $bound_pvcs, StorageClasses: $storage_classes (gp3: $gp3_pvcs, ocs: $ocs_pvcs)" "Persistent storage operational"
+    elif [[ $bound_pvcs -ge 2 ]]; then
+        add_result "035" "PARTIAL" "$expected_pvcs PVCs Bound ($topology topology)" "Expected: $expected_pvcs, Actual PVCs: $pvcs, Bound: $bound_pvcs" "Partial storage configured"
     else
-        add_result "035" "FAIL" "4+ PVCs Bound" "PVCs: $pvcs" "Insufficient storage configured"
+        add_result "035" "FAIL" "$expected_pvcs PVCs Bound ($topology topology)" "Expected: $expected_pvcs, PVCs: $pvcs, Bound: $bound_pvcs" "Insufficient storage configured"
     fi
 }
 
