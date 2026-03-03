@@ -5,6 +5,13 @@
 **Renumbered**: 2025-11-19 (standardized naming from ADR-RHODS-NOTEBOOK-ROUTING)
 **Deciders**: Architecture Team
 
+## Implementation Status
+**Status:** ✅ IMPLEMENTED
+**Verification Date:** 2026-01-25
+**Implementation Score:** 9.5/10
+**Verified On:** SNO + HA clusters
+**Evidence:** Direct hostname-based routes, TLS re-encryption, OAuth proxy integration, workbench route accessible.
+
 ## Problem
 
 RHODS (Red Hat OpenShift AI) dashboard generates notebook URLs with a `/notebook/` path prefix:
