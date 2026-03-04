@@ -7,10 +7,14 @@
 
 ## Implementation Status
 **Status:** ✅ IMPLEMENTED
-**Verification Date:** 2026-01-25
-**Implementation Score:** 9.5/10
+**Verification Date:** 2026-03-04
+**Implementation Score:** 10/10
 **Verified On:** SNO + HA clusters
-**Evidence:** Direct hostname-based routes, TLS re-encryption, OAuth proxy integration, workbench route accessible.
+**Evidence:**
+- **SNO**: `https://data-science-gateway.apps.ocp.ph5rd.sandbox1590.opentlc.com` (TLS reencrypt, OAuth enabled)
+- **HA**: `https://data-science-gateway.apps.cluster-7r4mf.7r4mf.sandbox458.opentlc.com` (TLS reencrypt, OAuth enabled)
+- OpenShift AI 4.20 centralized gateway with OAuth2 proxy
+- Both clusters verified accessible with OpenShift OAuth integration
 
 ## Problem
 
@@ -70,19 +74,33 @@ The RHODS dashboard link will show a 404, but this is a UI routing issue, not a 
 
 ## Implementation
 
-### Current Setup
-- ✅ Notebook Route: `self-healing-workbench-dev-self-healing-platform.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com`
-- ✅ OAuth proxy configured and working
-- ✅ Direct access functional
-- ✅ Pod running on GPU node with proper storage
+### OpenShift AI 4.20 Architecture
+**Note:** OpenShift AI 4.20+ uses a centralized `data-science-gateway` route instead of individual notebook routes.
+
+**Current Setup:**
+- ✅ **SNO Gateway:** `https://data-science-gateway.apps.ocp.ph5rd.sandbox1590.opentlc.com`
+- ✅ **HA Gateway:** `https://data-science-gateway.apps.cluster-7r4mf.7r4mf.sandbox458.opentlc.com`
+- ✅ **TLS:** Re-encryption (end-to-end security)
+- ✅ **OAuth:** Integrated with OpenShift authentication
+- ✅ **Notebooks:** Accessed via centralized gateway (no per-notebook routes)
 
 ### Access Method
 ```bash
-# Direct access (recommended)
-https://self-healing-workbench-dev-self-healing-platform.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/
+# Centralized gateway access (OpenShift AI 4.20+)
+https://data-science-gateway.apps.ocp.ph5rd.sandbox1590.opentlc.com
 
-# After OAuth login, you'll be redirected to JupyterLab
+# Gateway handles:
+# 1. OAuth2 authentication with OpenShift
+# 2. TLS re-encryption
+# 3. Routing to appropriate notebook pod
+# 4. Session management
 ```
+
+### Architecture Benefits
+- ✅ **Centralized Security:** One gateway manages all notebook access
+- ✅ **Platform-Managed:** No manual route configuration needed
+- ✅ **Automatic OAuth:** OpenShift authentication built-in
+- ✅ **Better UX:** Single URL for all notebooks
 
 ### Configuration Files
 - `charts/hub/templates/ai-ml-workbench.yaml` - Notebook resource with OAuth configuration

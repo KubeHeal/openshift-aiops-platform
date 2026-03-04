@@ -41,16 +41,17 @@ detect_topology() {
 validate_adr_034() {
     echo "Validating ADR-034: Secure Notebook Routes..." >&2
 
-    local notebook_routes=$(oc get route -n self-healing-platform --no-headers 2>/dev/null | grep -c "notebook\|workbench" || echo "0")
-    local tls_routes=$(oc get route -n self-healing-platform -o json 2>/dev/null | jq '[.items[] | select(.spec.tls != null)] | length' || echo "0")
-    local oauth_proxy=$(oc get deployment -n self-healing-platform -o json 2>/dev/null | jq '[.items[].spec.template.spec.containers[] | select(.name | contains("oauth-proxy"))] | length' || echo "0")
+    # OpenShift AI 4.20+ uses centralized data-science-gateway route
+    local gateway_route=$(oc get route data-science-gateway -n openshift-ingress --no-headers 2>/dev/null | wc -l)
+    local gateway_tls=$(oc get route data-science-gateway -n openshift-ingress -o json 2>/dev/null | jq -r '.spec.tls.termination' || echo "none")
+    local notebook_exists=$(oc get notebook -n self-healing-platform --no-headers 2>/dev/null | wc -l)
 
-    if [[ $notebook_routes -ge 1 ]] && [[ $tls_routes -ge 1 ]]; then
-        add_result "034" "PASS" "Secure routes with TLS + OAuth" "Routes: $notebook_routes, TLS: $tls_routes, OAuth proxy containers: $oauth_proxy" "Secure access configured"
-    elif [[ $notebook_routes -ge 1 ]]; then
-        add_result "034" "PARTIAL" "Secure routes with TLS + OAuth" "Routes exist but TLS/OAuth may not be fully configured" "Routes partially secured"
+    if [[ $gateway_route -ge 1 ]] && [[ $gateway_tls == "reencrypt" ]] && [[ $notebook_exists -ge 1 ]]; then
+        add_result "034" "PASS" "Secure routes with TLS + OAuth" "Gateway route with TLS: $gateway_tls, Notebooks: $notebook_exists" "OpenShift AI gateway operational"
+    elif [[ $gateway_route -ge 1 ]]; then
+        add_result "034" "PARTIAL" "Secure routes with TLS + OAuth" "Gateway exists but TLS/notebooks may not be configured" "Partial configuration"
     else
-        add_result "034" "FAIL" "Secure routes with TLS + OAuth" "No notebook routes found" "Routes not configured"
+        add_result "034" "FAIL" "Secure routes with TLS + OAuth" "No data-science-gateway route found" "Routes not configured"
     fi
 }
 
