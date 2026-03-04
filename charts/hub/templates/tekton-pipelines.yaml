@@ -8,7 +8,7 @@
 # Reason: Namespaced ArgoCD cannot manage resources in openshift-pipelines namespace
 # If you need these in openshift-pipelines, deploy them via Ansible instead
 
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: validate-s3-connectivity
@@ -42,7 +42,7 @@ spec:
         echo "✅ PASS: Secret found and S3 connectivity validated"
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: upload-placeholder-models
@@ -76,7 +76,7 @@ spec:
         echo "✅ PASS: Models uploaded to S3"
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: reconcile-inferenceservices
@@ -105,7 +105,7 @@ spec:
         echo "✅ PASS: InferenceServices reconciled"
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: s3-configuration-pipeline

@@ -27,7 +27,8 @@ add_result() {
 validate_adr_021() {
     echo "Validating ADR-021: Tekton Pipelines..." >&2
 
-    local pipelines=$(oc get pipeline -n self-healing-platform --no-headers 2>/dev/null | wc -l)
+    # Use pipelines.tekton.dev for Tekton v1 API
+    local pipelines=$(oc get pipelines.tekton.dev -n self-healing-platform --no-headers 2>/dev/null | wc -l)
     local tasks=$(oc get task -n self-healing-platform --no-headers 2>/dev/null | wc -l)
     local recent_runs=$(oc get pipelinerun -n self-healing-platform --no-headers 2>/dev/null | head -5 | wc -l)
     local tekton_operator=$(oc get deployment -n openshift-pipelines openshift-pipelines-operator --no-headers 2>/dev/null | wc -l)
@@ -45,7 +46,8 @@ validate_adr_021() {
 validate_adr_023() {
     echo "Validating ADR-023: S3 Configuration Pipeline..." >&2
 
-    local s3_pipeline=$(oc get pipeline -n self-healing-platform --no-headers 2>/dev/null | grep -c "s3-config\|configure-s3" || echo "0")
+    # Use pipelines.tekton.dev for Tekton v1 API
+    local s3_pipeline=$(oc get pipelines.tekton.dev -n self-healing-platform --no-headers 2>/dev/null | grep -c "s3-config\|configure-s3" || echo "0")
     local s3_tasks=$(oc get task -n self-healing-platform --no-headers 2>/dev/null | grep -c "s3" || echo "0")
     local external_secrets=$(oc get externalsecret -n self-healing-platform --no-headers 2>/dev/null | wc -l)
 
@@ -79,11 +81,10 @@ validate_adr_024() {
 validate_adr_025() {
     echo "Validating ADR-025: S3 ObjectBucketClaim..." >&2
 
-    local obc=$(oc get objectbucketclaim -n self-healing-platform --no-headers 2>/dev/null | wc -l)
-    local obc_bound=$(oc get objectbucketclaim -n self-healing-platform --no-headers 2>/dev/null | grep -c "Bound" || echo "0")
+    local obc=$(sanitize_number "$(oc get objectbucketclaim -n self-healing-platform --no-headers 2>/dev/null | wc -l)")
+    local obc_bound=$(sanitize_number "$(oc get objectbucketclaim -n self-healing-platform --no-headers 2>/dev/null | grep -c Bound || echo 0)")
     local noobaa_endpoint=$(oc get route s3 -n openshift-storage -o jsonpath='{.spec.host}' 2>/dev/null || echo "NotFound")
-    local noobaa_pods=$(oc get pods -n openshift-storage -l app=noobaa --no-headers 2>/dev/null | grep -c "Running" || echo "0")
-
+    local noobaa_pods=$(sanitize_number "$(oc get pods -n openshift-storage -l app=noobaa --no-headers 2>/dev/null | grep -c Running || echo 0)")
     if [[ $obc_bound -ge 1 ]] && [[ $noobaa_pods -ge 4 ]] && [[ $noobaa_endpoint != "NotFound" ]]; then
         add_result "025" "PASS" "OBC Bound with NooBaa S3" "OBC: $obc_bound Bound, NooBaa pods: $noobaa_pods, Endpoint: $noobaa_endpoint" "S3 storage operational"
     elif [[ $obc -ge 1 ]]; then
@@ -97,10 +98,10 @@ validate_adr_025() {
 validate_adr_026() {
     echo "Validating ADR-026: External Secrets Operator..." >&2
 
-    local eso_operator=$(oc get deployment -n external-secrets-operator --no-headers 2>/dev/null | wc -l)
-    local eso_webhook=$(oc get deployment -n external-secrets-operator external-secrets-webhook --no-headers 2>/dev/null | grep -c "1/1" || echo "0")
-    local eso_cert_controller=$(oc get deployment -n external-secrets-operator external-secrets-cert-controller --no-headers 2>/dev/null | grep -c "1/1" || echo "0")
-    local secret_stores=$(oc get secretstore --all-namespaces --no-headers 2>/dev/null | wc -l)
+    local eso_operator=$(sanitize_number "$(oc get deployment -n external-secrets-operator --no-headers 2>/dev/null | wc -l)")
+    local eso_webhook=$(sanitize_number "$(oc get deployment -n external-secrets-operator external-secrets-webhook --no-headers 2>/dev/null | grep -c 1/1 || echo 0)")
+    local eso_cert_controller=$(sanitize_number "$(oc get deployment -n external-secrets-operator external-secrets-cert-controller --no-headers 2>/dev/null | grep -c 1/1 || echo 0)")
+    local secret_stores=$(sanitize_number "$(oc get secretstore --all-namespaces --no-headers 2>/dev/null | wc -l)")
 
     local ready_components=$((eso_webhook + eso_cert_controller))
 
