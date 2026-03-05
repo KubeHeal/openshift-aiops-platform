@@ -66,7 +66,8 @@ validate_adr_024() {
     echo "Validating ADR-024: ExternalSecrets for S3..." >&2
 
     local external_secrets=$(oc get externalsecret -n self-healing-platform --no-headers 2>/dev/null | wc -l)
-    local synced_secrets=$(oc get externalsecret -n self-healing-platform -o json 2>/dev/null | jq '[.items[] | select(.status.conditions[]? | select(.type=="SecretSynced" and .status=="True"))] | length' || echo "0")
+    # Fixed: Check for type=="Ready" with status=="True" (actual ESO v1 API structure)
+    local synced_secrets=$(oc get externalsecret -n self-healing-platform -o json 2>/dev/null | jq '[.items[] | select(.status.conditions[]? | select(.type=="Ready" and .status=="True"))] | length' || echo "0")
     local secret_store=$(oc get secretstore -n self-healing-platform --no-headers 2>/dev/null | wc -l)
 
     if [[ $external_secrets -ge 4 ]] && [[ $synced_secrets -eq $external_secrets ]]; then
@@ -99,9 +100,10 @@ validate_adr_025() {
 validate_adr_026() {
     echo "Validating ADR-026: External Secrets Operator..." >&2
 
-    local eso_operator=$(sanitize_number "$(oc get deployment -n external-secrets-operator --no-headers 2>/dev/null | wc -l)")
-    local eso_webhook=$(sanitize_number "$(oc get deployment -n external-secrets-operator external-secrets-webhook --no-headers 2>/dev/null | grep -c 1/1 || echo 0)")
-    local eso_cert_controller=$(sanitize_number "$(oc get deployment -n external-secrets-operator external-secrets-cert-controller --no-headers 2>/dev/null | grep -c 1/1 || echo 0)")
+    # Fixed: ESO is deployed in external-secrets-system namespace (not external-secrets-operator)
+    local eso_operator=$(sanitize_number "$(oc get deployment -n external-secrets-system --no-headers 2>/dev/null | grep -c external-secrets || echo 0)")
+    local eso_webhook=$(sanitize_number "$(oc get deployment -n external-secrets-system external-secrets-webhook --no-headers 2>/dev/null | grep -c 1/1 || echo 0)")
+    local eso_cert_controller=$(sanitize_number "$(oc get deployment -n external-secrets-system external-secrets-cert-controller --no-headers 2>/dev/null | grep -c 1/1 || echo 0)")
     local secret_stores=$(sanitize_number "$(oc get secretstore --all-namespaces --no-headers 2>/dev/null | wc -l)")
 
     local ready_components=$((eso_webhook + eso_cert_controller))
