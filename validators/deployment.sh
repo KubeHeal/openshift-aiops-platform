@@ -56,22 +56,22 @@ validate_adr_019() {
 validate_adr_030() {
     echo "Validating ADR-030: Namespaced ArgoCD with Cluster RBAC..." >&2
 
-    # Check for namespaced ArgoCD instance
-    local namespaced_argocd=$(oc get argocd -n self-healing-platform --no-headers 2>/dev/null | wc -l)
+    # Fixed: Check self-healing-platform-hub namespace (where hub-gitops ArgoCD instance is deployed)
+    local namespaced_argocd=$(oc get argocd -n self-healing-platform-hub --no-headers 2>/dev/null | wc -l)
 
-    # Check for cluster-scoped RBAC
-    local cluster_roles=$(oc get clusterrole --no-headers 2>/dev/null | grep -c "self-healing\|argocd-application-controller" || echo "0")
-    local cluster_role_bindings=$(oc get clusterrolebinding --no-headers 2>/dev/null | grep -c "self-healing\|argocd" || echo "0")
+    # Check for cluster-scoped RBAC (deployed via Ansible, not ArgoCD)
+    local cluster_roles=$(oc get clusterrole --no-headers 2>/dev/null | grep -c "self-healing" || echo "0")
+    local cluster_role_bindings=$(oc get clusterrolebinding --no-headers 2>/dev/null | grep -c "self-healing\|hub-gitops" || echo "0")
 
-    # Check ArgoCD server deployment
-    local argocd_server=$(oc get deployment -n self-healing-platform --no-headers 2>/dev/null | grep -c "argocd-server" || echo "0")
-    local argocd_controller=$(oc get deployment -n self-healing-platform --no-headers 2>/dev/null | grep -c "argocd-application-controller" || echo "0")
+    # Check ArgoCD server deployment in hub namespace
+    local argocd_server=$(oc get deployment -n self-healing-platform-hub --no-headers 2>/dev/null | grep -c "gitops-server" || echo "0")
+    local argocd_repo=$(oc get deployment -n self-healing-platform-hub --no-headers 2>/dev/null | grep -c "gitops-repo-server" || echo "0")
 
-    # Check for cross-namespace application management
-    local apps_in_other_ns=$(oc get application -n self-healing-platform -o json 2>/dev/null | jq '[.items[] | select(.spec.destination.namespace != "self-healing-platform")] | length' || echo "0")
+    # Check ArgoCD status
+    local argocd_status=$(oc get argocd hub-gitops -n self-healing-platform-hub -o jsonpath='{.status.phase}' 2>/dev/null || echo "NotFound")
 
-    if [[ $namespaced_argocd -ge 1 ]] && [[ $cluster_roles -ge 1 ]] && [[ $argocd_server -ge 1 ]]; then
-        add_result "030" "PASS" "Namespaced ArgoCD with cluster RBAC" "ArgoCD: $namespaced_argocd, ClusterRoles: $cluster_roles, ClusterRoleBindings: $cluster_role_bindings, Cross-NS apps: $apps_in_other_ns" "Namespaced ArgoCD operational"
+    if [[ $namespaced_argocd -ge 1 ]] && [[ $cluster_roles -ge 5 ]] && [[ $argocd_server -ge 1 ]] && [[ "$argocd_status" == "Available" ]]; then
+        add_result "030" "PASS" "Namespaced ArgoCD with cluster RBAC" "ArgoCD: hub-gitops (Available), ClusterRoles: $cluster_roles, ClusterRoleBindings: $cluster_role_bindings" "Hybrid management model operational"
     elif [[ $argocd_server -ge 1 ]] || [[ $cluster_roles -ge 1 ]]; then
         add_result "030" "PARTIAL" "Namespaced ArgoCD with cluster RBAC" "Some components present but not fully configured" "Partial ArgoCD setup"
     else

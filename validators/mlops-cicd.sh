@@ -119,16 +119,17 @@ validate_adr_026() {
 validate_adr_042() {
     echo "Validating ADR-042: ArgoCD Custom Health Checks..." >&2
 
-    local argocd_cm=$(oc get configmap -n openshift-gitops argocd-cm -o json 2>/dev/null | jq -r '.data."resource.customizations"' || echo "NotFound")
-    local health_checks=0
-    if [[ $argocd_cm != "NotFound" ]] && [[ $argocd_cm != "null" ]]; then
-        health_checks=$(echo "$argocd_cm" | grep -c "health.lua" || echo "0")
-    fi
+    # Fixed: Check for resource.customizations.health keys in ConfigMap
+    local cm_health_checks=$(oc get configmap -n openshift-gitops argocd-cm -o json 2>/dev/null | jq -r '.data | keys[]' 2>/dev/null | grep -c "health" || echo "0")
 
+    # Also check ArgoCD CR for resourceHealthChecks
+    local cr_health_checks=$(oc get argocd openshift-gitops -n openshift-gitops -o json 2>/dev/null | jq '.spec.resourceHealthChecks // [] | length' || echo "0")
+
+    local total_health_checks=$((cm_health_checks + cr_health_checks))
     local buildconfig_count=$(oc get buildconfig -n self-healing-platform --no-headers 2>/dev/null | wc -l)
 
-    if [[ $health_checks -ge 1 ]] && [[ $buildconfig_count -ge 1 ]]; then
-        add_result "042" "PASS" "Custom health checks configured" "Health checks: $health_checks, BuildConfigs: $buildconfig_count" "ArgoCD health monitoring operational"
+    if [[ $total_health_checks -ge 1 ]] && [[ $buildconfig_count -ge 1 ]]; then
+        add_result "042" "PASS" "Custom health checks configured" "ConfigMap health: $cm_health_checks, CR health: $cr_health_checks, BuildConfigs: $buildconfig_count" "ArgoCD health monitoring operational"
     elif [[ $buildconfig_count -ge 1 ]]; then
         add_result "042" "PARTIAL" "Custom health checks configured" "BuildConfigs exist but custom health checks may not be configured" "Partial health monitoring"
     else
