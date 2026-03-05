@@ -31,7 +31,8 @@ validate_adr_021() {
     local pipelines=$(oc get pipelines.tekton.dev -n self-healing-platform --no-headers 2>/dev/null | wc -l)
     local tasks=$(oc get task -n self-healing-platform --no-headers 2>/dev/null | wc -l)
     local recent_runs=$(oc get pipelinerun -n self-healing-platform --no-headers 2>/dev/null | head -5 | wc -l)
-    local tekton_operator=$(oc get deployment -n openshift-pipelines openshift-pipelines-operator --no-headers 2>/dev/null | wc -l)
+    # Fixed: Check for tekton-pipelines-controller (actual deployment name in OpenShift Pipelines)
+    local tekton_operator=$(oc get deployment -n openshift-pipelines tekton-pipelines-controller --no-headers 2>/dev/null | wc -l)
 
     if [[ $pipelines -ge 4 ]] && [[ $tekton_operator -ge 1 ]]; then
         add_result "021" "PASS" "4+ pipelines operational" "Pipelines: $pipelines, Tasks: $tasks, Recent runs: $recent_runs" "Tekton CI/CD operational"
