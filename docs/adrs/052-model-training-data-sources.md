@@ -1,7 +1,7 @@
 # ADR-052: Model Training Data Source Selection Strategy
 
 ## Status
-**ACCEPTED** - 2026-01-27
+accepted - 2026-01-27
 
 ## Context
 

@@ -1,10 +1,12 @@
 # ADR-056: Standalone MCG on SNO for Consistent S3 Storage
 
+**Status:** ACCEPTED
+
 ## Status
 ACCEPTED
 
 ## Implementation Status
-**Status:** ✅ IMPLEMENTED
+**Status:** implemented
 **Verification Date:** 2026-03-03
 **Implementation Score:** 10.0/10
 **Verified On:** SNO (ocp.ph5rd.sandbox1590.opentlc.com)

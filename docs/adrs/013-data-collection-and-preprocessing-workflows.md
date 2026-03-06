@@ -1,10 +1,12 @@
 # ADR-013: Data Collection and Preprocessing Workflows for Self-Healing Platform
 
+**Status:** ACCEPTED
+
 ## Status
 **IMPLEMENTED** - 2025-10-13 (Status updated 2026-01-15)
 
 ## Implementation Status
-**Status:** ✅ IMPLEMENTED
+**Status:** implemented
 **Verification Date:** 2026-01-25
 **Implementation Score:** 10.0/10
 **Verified On:** SNO + HA clusters

@@ -168,6 +168,82 @@ my-pattern/
 
 ## Setup Instructions
 
+### RHEL 9/10 Workstation Setup
+
+If you're deploying from a **RHEL 9** or **RHEL 10** workstation, use the automated prerequisites installer script. This is a **one-time setup** that installs all required tools and configures your environment.
+
+**Location**: `scripts/install-prerequisites-rhel.sh`
+
+**Quick Start:**
+
+```bash
+# Run from the cloned repository directory (see Installation steps below)
+./scripts/install-prerequisites-rhel.sh
+
+# Activate environment (start new terminal or run)
+source ~/.bashrc
+```
+
+**What the script installs:**
+
+- **System packages** via `dnf`:
+  - Container runtime: `podman`, `skopeo`
+  - Development tools: `git`, `make`, `jq`, `gcc`, `python3-pip`
+  - Headers: `openssl-devel`, `libcurl-devel`, `python3-devel`
+
+- **Python virtual environment** at `~/.venv/aiops-platform`:
+  - `ansible-navigator` (with ansible-core)
+  - `ansible-builder`
+  - `ansible-lint`, `molecule`
+  - `kubernetes`, `openshift-client`
+
+- **Ansible collections**:
+  - `kubernetes.core`
+  - `community.general`
+  - `ansible.posix`
+
+- **CLI tools** (installed to `/usr/local/bin/`):
+  - `oc` (OpenShift CLI) - version 4.18
+  - `kubectl` (Kubernetes CLI)
+  - `helm` - version v3.16.4
+  - `yq` - version v4.44.6
+  - `tkn` (Tekton CLI) - version 0.38.1
+
+**Script Features:**
+- ✅ Idempotent (safe to run multiple times)
+- ✅ Prompts before reinstalling existing tools
+- ✅ Validates RHEL version (warns on non-RHEL systems)
+- ✅ Auto-configures shell environment (`.bashrc` or `.zshrc`)
+- ✅ Validates all installations at completion
+
+**Requirements:**
+- RHEL 9.x or RHEL 10.x (may work on Fedora/CentOS Stream 9+)
+- sudo access
+- Internet connectivity
+
+**Verification:**
+
+After running the script, verify installation:
+
+```bash
+# Check CLI tools
+oc version
+helm version
+yq --version
+tkn version
+
+# Check Python tools (venv should be auto-activated)
+ansible-navigator --version
+ansible-builder --version
+
+# Check Ansible collections
+ansible-galaxy collection list | grep -E 'kubernetes.core|community.general'
+```
+
+**Reference**: See [README.md lines 92-112](README.md) for the same information in the main quick start guide, and [CLAUDE.md Section 2](CLAUDE.md) for AI agent reference.
+
+**Alternative Setup**: If not using RHEL 9/10, manually install the tools listed in [Prerequisites](#prerequisites) below.
+
 ### Prerequisites
 
 **Cluster Requirements**:

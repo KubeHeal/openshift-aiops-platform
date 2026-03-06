@@ -1,5 +1,7 @@
 # ADR-009: Bootstrap Deployment Automation Architecture
 
+**Status:** ACCEPTED
+
 ## Status
 **SUPERSEDED** - 2025-10-31 by ADR-019 (Validated Patterns Framework Adoption)
 

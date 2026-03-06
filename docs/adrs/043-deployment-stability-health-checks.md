@@ -1,10 +1,12 @@
 # ADR-043: Deployment Stability and Cross-Namespace Health Check Patterns
 
+**Status:** ACCEPTED
+
 ## Status
 **IMPLEMENTED** - 2026-01-24 (status updated 2026-01-26)
 
 ## Implementation Status
-**Status:** ✅ IMPLEMENTED
+**Status:** implemented
 **Verification Date:** 2026-01-25
 **Implementation Score:** 9.5/10
 **Verified On:** SNO + HA clusters

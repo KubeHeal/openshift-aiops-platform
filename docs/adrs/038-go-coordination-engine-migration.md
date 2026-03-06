@@ -1,10 +1,12 @@
 # ADR-038: Migration from Python to Go Coordination Engine
 
+**Status:** ACCEPTED
+
 ## Status
-**ACCEPTED** - 2026-01-07
+accepted - 2026-01-07
 
 ## Implementation Status
-**Status:** ✅ IMPLEMENTED
+**Status:** implemented
 **Verification Date:** 2026-03-05
 **Implementation Score:** 9.0/10
 **Verified On:** SNO + HA clusters

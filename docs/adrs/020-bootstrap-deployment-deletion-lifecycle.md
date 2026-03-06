@@ -1,7 +1,7 @@
 # ADR-020: Bootstrap Deployment and Deletion Lifecycle with Deploy/Delete Modes
 
 ## Status
-**ACCEPTED** - 2025-10-23
+accepted - 2025-10-23
 
 ## Context
 

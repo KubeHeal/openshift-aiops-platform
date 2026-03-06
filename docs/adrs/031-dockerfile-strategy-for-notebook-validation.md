@@ -1,10 +1,12 @@
 # ADR-031: Dockerfile Strategy for Notebook Validation Images
 
+**Status:** ACCEPTED
+
 ## Status
 Proposed
 
 ## Implementation Status
-**Status:** ✅ IMPLEMENTED
+**Status:** implemented
 **Verification Date:** 2026-01-25
 **Implementation Score:** 9.5/10
 **Verified On:** SNO + HA clusters

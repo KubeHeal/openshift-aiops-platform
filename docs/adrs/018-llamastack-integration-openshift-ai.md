@@ -1,7 +1,7 @@
 # ADR-018: LlamaStack Integration on OpenShift AI
 
 ## Status
-**ACCEPTED** - 2025-10-14
+accepted - 2025-10-14
 **RESEARCH** - 2025-10-14 (Architecture research complete, implementation planning)
 
 ## Context

@@ -1,11 +1,13 @@
 # ADR-007: Prometheus-Based Monitoring and Data Collection
 
+**Status:** ACCEPTED
+
 ## Status
 
-Accepted
+accepted
 
 ## Implementation Status
-**Status:** ✅ IMPLEMENTED
+**Status:** implemented
 **Verification Date:** 2026-01-25
 **Implementation Score:** 10.0/10
 **Verified On:** SNO + HA clusters

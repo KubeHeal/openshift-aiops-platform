@@ -1,7 +1,7 @@
 # ADR-051: Predictive Analytics Model Training and Data Strategy
 
 ## Status
-**ACCEPTED** - 2026-01-27
+accepted - 2026-01-27
 
 ## Context
 

@@ -1,10 +1,12 @@
 # ADR-011: Self-Healing Workbench Base Image Selection
 
+**Status:** ACCEPTED
+
 ## Status
 ACCEPTED - 2025-10-13
 
 ## Implementation Status
-**Status:** ✅ IMPLEMENTED
+**Status:** implemented
 **Verification Date:** 2026-01-25
 **Implementation Score:** 9.5/10
 **Verified On:** SNO + HA clusters

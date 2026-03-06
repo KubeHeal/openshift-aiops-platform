@@ -1,11 +1,13 @@
 # ADR-010: OpenShift Data Foundation as Storage Infrastructure Requirement
 
+**Status:** ACCEPTED
+
 ## Status
 
-**ACCEPTED** - 2025-10-13
+accepted - 2025-10-13
 
 ## Implementation Status
-**Status:** ✅ IMPLEMENTED
+**Status:** implemented
 **Verification Date:** 2026-01-25
 **Implementation Score:** 10.0/10
 **Verified On:** SNO + HA clusters

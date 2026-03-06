@@ -1,7 +1,7 @@
 # ADR-016: OpenShift Lightspeed OLSConfig Integration
 
 ## Status
-**ACCEPTED** - 2025-10-14
+accepted - 2025-10-14
 **IN PROGRESS** - 2025-10-14 (Architecture analysis complete, implementation pending)
 
 ## Context

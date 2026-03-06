@@ -1,11 +1,13 @@
 # ADR-057: Topology-Aware GPU Scheduling and Storage
 
+**Status:** ACCEPTED
+
 ## Status
 
-Accepted
+accepted
 
 ## Implementation Status
-**Status:** ✅ IMPLEMENTED
+**Status:** implemented
 **Verification Date:** 2026-03-04
 **Implementation Score:** 10/10
 **Verified On:** HA cluster (SNO validation pending)

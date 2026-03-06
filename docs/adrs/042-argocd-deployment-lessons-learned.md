@@ -1,10 +1,12 @@
 # ADR-042: ArgoCD Deployment Lessons Learned
 
+**Status:** ACCEPTED
+
 ## Status
-**ACCEPTED** - 2025-11-28
+accepted - 2025-11-28
 
 ## Implementation Status
-**Status:** ✅ IMPLEMENTED
+**Status:** implemented
 **Verification Date:** 2026-03-05
 **Implementation Score:** 10/10
 **Verified On:** SNO + HA clusters

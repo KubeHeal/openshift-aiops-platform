@@ -1,12 +1,14 @@
 # ADR-036: Go-Based Standalone MCP Server for OpenShift Cluster Health
 
+**Status:** ACCEPTED
+
 ## Status
-**ACCEPTED** - 2025-12-09
+accepted - 2025-12-09
 **IN PROGRESS** - Phase 1.4 completed (2025-12-10)
 **UPDATED** - 2026-01-07 (Integration with Go Coordination Engine per [ADR-038](038-go-coordination-engine-migration.md))
 
 ## Implementation Status
-**Status:** ✅ IMPLEMENTED
+**Status:** implemented
 **Verification Date:** 2026-03-05
 **Implementation Score:** 9.5/10
 **Verified On:** SNO + HA clusters

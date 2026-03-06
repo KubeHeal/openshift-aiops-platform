@@ -1,11 +1,13 @@
 # ADR-004: KServe for Model Serving Infrastructure
 
+**Status:** ACCEPTED
+
 ## Status
 
-Accepted
+accepted
 
 ## Implementation Status
-**Status:** ✅ IMPLEMENTED
+**Status:** implemented
 **Verification Date:** 2026-01-25
 **Implementation Score:** 9.5/10
 **Verified On:** SNO + HA clusters

@@ -1,7 +1,7 @@
 # ADR-041: Model Storage and Versioning Strategy
 
 ## Status
-**ACCEPTED** - 2025-12-09
+accepted - 2025-12-09
 
 ## Context
 

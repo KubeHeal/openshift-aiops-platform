@@ -1,7 +1,7 @@
 # ADR-017: Gemini Integration for OpenShift Lightspeed
 
 ## Status
-**ACCEPTED** - 2025-10-14
+accepted - 2025-10-14
 **PLANNED** - 2025-10-14 (Architecture defined, implementation pending)
 
 ## Context
