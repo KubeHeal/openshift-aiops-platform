@@ -65,6 +65,45 @@ The platform automatically detects your cluster topology and version. After inst
 
 📖 **See also:** [SNO Deployment Guide](docs/how-to/deploy-on-sno.md)
 
+### RHPDS Deployment Options
+
+You can deploy this platform on **Red Hat Product Demo System (RHPDS)** clusters. Two catalog items are available:
+
+#### Option 1: SNO with OpenShift AI 3 (Recommended for Quick Start)
+
+**Catalog Item:** [Red Hat OpenShift AI 3](https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/published.openshift-ai-v3.prod&utm_source=webapp&utm_medium=share-link)
+
+**What's Included:**
+- Single-Node OpenShift (SNO) with GPU instance
+- OpenShift AI 3 (latest, generally available)
+- Pre-configured and ready for platform deployment
+- Ideal for demos, POCs, and exploration
+
+**Deployment Time:** ~1 hour
+**Topology:** SNO (Single Node OpenShift)
+
+#### Option 2: HA Cluster with NVIDIA GPUs on AWS
+
+**Catalog Item:** [RHOAI on OCP on AWS with NVIDIA GPUs](https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.ocp4-demo-rhods-nvidia-gpu-aws.prod&utm_source=webapp&utm_medium=share-link)
+
+**What's Included:**
+- OpenShift Container Platform 4.18 (HA cluster)
+- Red Hat OpenShift AI 2.25
+- NVIDIA L4 Tensor Core GPUs
+- Full HA deployment with multiple nodes
+
+**Deployment Time:** ~1 hour, 40 minutes
+**Topology:** HA (HighlyAvailable)
+**Note:** Currently on OCP 4.18, update to 4.20 recommended for latest platform support
+
+**Auto-Stop:** 6 hours | **Auto-Destroy:** 48 hours
+
+**Deployment Notes:**
+- Both RHPDS options come with OpenShift AI pre-installed, reducing deployment time
+- Follow the standard deployment workflow (see Installation section below)
+- For SNO clusters (Option 1), ensure you update `values-hub.yaml` with SNO-specific configuration
+- For HA clusters (Option 2), standard HA configuration applies
+
 ### Prerequisites
 
 **HA Cluster Requirements:**
