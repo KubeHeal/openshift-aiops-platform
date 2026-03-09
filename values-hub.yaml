@@ -8,7 +8,7 @@
 # MCG-only ODF provides NooBaa S3 on SNO (objectStore.enabled stays true)
 # Verify with: make show-cluster-info
 cluster:
-  topology: "ha"  # "ha" = HighlyAvailable multi-node, "sno" = Single Node OpenShift
+  topology: "sno"  # "ha" = HighlyAvailable multi-node, "sno" = Single Node OpenShift
   version: "4.20"       # OpenShift version - auto-detected
 
 # global.clusterDomain is auto-populated by the Validated Patterns operator
@@ -115,6 +115,39 @@ clusterGroup:
           jqPathExpressions:
             - .status
 
+  # Operator Subscriptions
+  # Note: Most operators are already installed on the cluster
+  # The clustergroup chart expects 'disabled' field (disabled: true means don't install)
+  # Omit operators that are already installed or managed elsewhere
+  subscriptions:
+    # OpenShift GitOps - Already installed via common/ subtree
+    # gitops:
+    #   disabled: true
+
+    # OpenShift AI - Already installed
+    # openshift-ai:
+    #   disabled: true
+
+    # GPU Operator - Already installed
+    # gpu-operator:
+    #   disabled: true
+
+    # OpenShift Serverless - Already installed
+    # serverless:
+    #   disabled: true
+
+    # OpenShift Pipelines - Already installed
+    # pipelines:
+    #   disabled: true
+
+    # OpenShift Data Foundation - Already installed
+    # odf:
+    #   disabled: true
+
+    # External Secrets Operator - Already installed via Ansible
+    # external-secrets:
+    #   disabled: true
+
 # Applications to deploy
 applications:
   # Self-Healing Platform components
@@ -151,20 +184,24 @@ applications:
       grafana: true
 
 # AI/ML Workbench configuration
-# GPU disabled on SNO to allow GPU validation notebooks to run
-# SNO limitation: Only 1 GPU available - workbench would monopolize it
-# GPU-based notebooks can still request GPU via NotebookValidationJob
+# GPU enabled for AI/ML workloads
 workbench:
   enabled: true  # Enable workbench
   gpu:
-    enabled: false  # GPU support disabled on SNO (enable on HA clusters)
+    enabled: true  # GPU support enabled for AI/ML model training and inference
 
-# Storage configuration (generic defaults)
-# See also: "Storage Configuration" section below for PVC-specific settings
-storageDefaults:
-  storageClass: ""
+# Storage configuration
+storage:
+  # Storage class for persistent volumes
+  storageClass: ""  # Will use default if not specified
+
+  # Data volume size
   dataVolumeSize: 5Gi
+
+  # Models volume size
   modelsVolumeSize: 10Gi
+
+  # Logs volume size
   logsVolumeSize: 5Gi
 
 # Networking configuration
@@ -217,7 +254,7 @@ secrets:
     role: self-healing-platform
 
     # Vault path for secrets
-    secretPath: secret/data/self-healing-platform  # pragma: allowlist secret
+    secretPath: secret/data/self-healing-platform
 
 # Model Serving Configuration (KServe)
 modelServing:
@@ -226,7 +263,9 @@ modelServing:
 
   # sklearn runtime configuration
   sklearn:
-    image: kserve/sklearnserver:latest
+    # Custom image with XGBoost support (fixes predictive-analytics ModuleNotFoundError)
+    # Build: ./scripts/build-sklearn-xgboost-image.sh
+    image: image-registry.openshift-image-registry.svc:5000/self-healing-platform/sklearn-xgboost-server:latest
     resources:
       requests:
         memory: "256Mi"
@@ -283,28 +322,21 @@ features:
   edge: false
 
 # Storage Configuration
-# HA clusters: ocs-storagecluster-cephfs (RWX) for multi-pod access
-# SNO clusters: gp3-csi (RWO, no CephFS available)
 storage:
   # Self-healing data storage
   selfHealingData:
     size: "10Gi"
-    storageClass: "ocs-storagecluster-cephfs"
+    storageClass: "gp3-csi"
 
-  # Model artifacts storage (RWX for HA, RWO for SNO)
+  # Model artifacts storage
   modelArtifacts:
     size: "50Gi"
-    storageClass: "ocs-storagecluster-cephfs"  # HA: RWX with CephFS
-
-  # Model Storage PVC (shared between notebooks and KServe)
-  modelStorage:
-    size: "10Gi"
-    storageClass: "ocs-storagecluster-cephfs"  # HA: RWX with CephFS
+    storageClass: "gp3-csi"
 
   # Workbench data storage
   workbenchData:
     size: "20Gi"
-    storageClass: "ocs-storagecluster-cephfs"
+    storageClass: "gp3-csi"
 
 # Metadata
 metadata:
@@ -323,6 +355,24 @@ metadata:
     managed-by: "validated-patterns"
     version: "1.0.0"
     framework: "openshift-gitops"
+
+
+# Storage configuration - using CSI for SNO (no CephFS available)
+storage:
+  modelArtifacts:
+    storageClass: "gp3-csi"  # SNO: RWO - CSI storage class (no ODF CephFS)
+
+  # Model Storage PVC (shared between notebooks and KServe)
+  modelStorage:
+    size: "10Gi"
+    storageClass: "gp3-csi"  # HA: RWX; SNO: change to "gp3-csi"
+
+  # Model Artifacts PVC (shared model artifacts storage)
+  # HA clusters: ocs-storagecluster-cephfs (RWX) for multi-pod access
+  # SNO clusters: gp3-csi (RWO, no CephFS available)
+  modelArtifacts:
+    size: "50Gi"
+    storageClass: "gp3-csi"  # HA: RWX; SNO: change to "gp3-csi"
 
 # Object Store configuration (NooBaa/ODF S3)
 # HA clusters: full ODF (Ceph + NooBaa S3)
@@ -351,7 +401,7 @@ notebooks:
       ref: "main"
       # GitHub PAT secret (must be created before deployment)
       # See: /tmp/github-pat-quick-start.md or docs/NOTEBOOK-VALIDATION-ARGOCD.md
-      credentialsSecret: "github-pat-credentials"  # pragma: allowlist secret
+      credentialsSecret: "github-pat-credentials"
 
     # Default container image for notebook execution
     # HYBRID APPROACH: RHOAI base + validation tools via BuildConfig
@@ -431,8 +481,8 @@ notebooks:
           limits:
             memory: "12Gi"
             cpu: "6000m"
-        timeout: "45m"
-        gpu:
+    timeout: "45m"
+    gpu:
       enabled: false  # Set to true if GPU-enabled notebooks
       count: "1"
 
