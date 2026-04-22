@@ -18,11 +18,14 @@ KubeHeal suite release train:
 
 ### OpenShift Compatibility Matrix
 
+OCP 4.21 is now GA (April 2026) — active window is 4.19 / 4.20 / 4.21.
+
 | OCP Version | Kubernetes | RHOAI Version | Status |
 |-------------|------------|---------------|--------|
+| 4.21        | 1.34       | 2.20+         | Active (current) |
 | 4.20        | 1.33       | 2.19+         | Active |
 | 4.19        | 1.32       | 2.18+         | Active |
-| 4.18        | 1.31       | 2.17+         | Maintenance |
+| 4.18        | 1.31       | 2.17+         | Maintenance — dropping when 4.22 releases |
 
 ---
 
@@ -31,9 +34,10 @@ KubeHeal suite release train:
 ```
 main          ← integration branch (branch protection required — see issue #49)
 develop       ← feature development (optional long-running features)
-release-4.18  ← OCP 4.18 train patches
-release-4.19  ← OCP 4.19 train patches
+release-4.21  ← OCP 4.21 train patches (current)
 release-4.20  ← OCP 4.20 train patches
+release-4.19  ← OCP 4.19 train patches
+release-4.18  ← OCP 4.18 train patches (maintenance only)
 ```
 
 ---

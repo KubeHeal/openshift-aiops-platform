@@ -1,7 +1,7 @@
 # OpenShift AI Ops Self-Healing Platform
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![OpenShift](https://img.shields.io/badge/OpenShift-4.18+-red.svg)](https://www.openshift.com/)
+[![OpenShift](https://img.shields.io/badge/OpenShift-4.19+-red.svg)](https://www.openshift.com/)
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
 [![CI/CD Pipeline](https://github.com/KubeHeal/openshift-aiops-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/KubeHeal/openshift-aiops-platform/actions/workflows/ci.yml)
 [![Helm Chart Validation](https://github.com/KubeHeal/openshift-aiops-platform/actions/workflows/helm-validation.yml/badge.svg)](https://github.com/KubeHeal/openshift-aiops-platform/actions/workflows/helm-validation.yml)
@@ -55,7 +55,7 @@ This platform supports both HighlyAvailable (HA) and Single Node OpenShift (SNO)
 | **SNO SingleReplica** | 1 (all roles on single node) | CSI only | ❌ No | Edge, development, testing |
 
 **Supported OpenShift Versions:**
-- OpenShift 4.18, 4.19, 4.20
+- OpenShift 4.19, 4.20, 4.21 (active support window; 4.18 maintenance)
 - Auto-detected during deployment
 - Version-specific operator overlays
 
@@ -94,7 +94,7 @@ You can deploy this platform on **Red Hat Product Demo System (RHPDS)** clusters
 
 **Deployment Time:** ~1 hour, 40 minutes
 **Topology:** HA (HighlyAvailable)
-**Note:** Currently on OCP 4.18, update to 4.20 recommended for latest platform support
+**Note:** OCP 4.21 is the current recommended version. Upgrade from 4.18 to 4.19+ recommended — 4.18 is maintenance-only.
 
 **Auto-Stop:** 6 hours | **Auto-Destroy:** 48 hours
 
@@ -107,12 +107,12 @@ You can deploy this platform on **Red Hat Product Demo System (RHPDS)** clusters
 ### Prerequisites
 
 **HA Cluster Requirements:**
-- OpenShift 4.18+ cluster (admin access)
+- OpenShift 4.19+ cluster recommended (4.21 current; admin access)
 - 6+ nodes (3 control-plane, 3+ workers, 1 GPU-enabled recommended)
 - 24+ CPU cores, 96+ GB RAM, 500+ GB storage
 
 **SNO Cluster Requirements:**
-- OpenShift 4.18+ cluster (admin access)
+- OpenShift 4.19+ cluster recommended (4.21 current; admin access)
 - 1 node (all roles: control-plane, master, worker)
 - 8+ CPU cores (16+ recommended), 32+ GB RAM (64+ recommended), 120+ GB storage
 
@@ -655,7 +655,7 @@ curl http://coordination-engine.self-healing-platform.svc.cluster.local:8080/hea
 ### Current Release
 
 - **Version**: 1.0.0
-- **OpenShift**: 4.18.21+
+- **OpenShift**: 4.19+ (tested through 4.21)
 - **Red Hat OpenShift AI**: 2.22.2
 - **Status**: Production-ready
 

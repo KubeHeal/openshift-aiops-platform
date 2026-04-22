@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned — v1.1.0 (Tracked Issues)
 
+#### OCP 4.21 Support
+- Update compatibility matrix to 4.19 / 4.20 / 4.21 active window; move 4.18 to maintenance
+- `values-hub.yaml` `cluster.version` default remains "4.20"; document override to "4.21" for current clusters
+- `charts/hub/Chart.yaml`: bump `operatorhub.io/ui-metadata-max-k8s-version` to 1.34
+
 #### Helm Chart & Image Refs
 - Fix `Chart.yaml` `appVersion` and pin all image references to explicit tags — [#51](https://github.com/KubeHeal/openshift-aiops-platform/issues/51)
 
