@@ -876,6 +876,7 @@ spec:
     # Task 1: Train model using NotebookValidationJob
     - name: train-model
       taskRef:
+        kind: Task
         name: run-notebook-validation
       params:
         - name: model-name
@@ -900,6 +901,7 @@ spec:
       runAfter:
         - train-model
       taskRef:
+        kind: Task
         name: validate-model-health
       params:
         - name: model-name
@@ -910,6 +912,7 @@ spec:
       runAfter:
         - health-check
       taskRef:
+        kind: Task
         name: restart-inference-service
       params:
         - name: inference-service-name
@@ -920,6 +923,7 @@ spec:
       runAfter:
         - deploy-model
       taskRef:
+        kind: Task
         name: test-inference-endpoint
       params:
         - name: inference-service-name
@@ -987,6 +991,7 @@ spec:
     # Task 1: Train model using NotebookValidationJob (GPU)
     - name: train-model
       taskRef:
+        kind: Task
         name: run-notebook-validation-gpu
       params:
         - name: model-name
@@ -1008,6 +1013,7 @@ spec:
       runAfter:
         - train-model
       taskRef:
+        kind: Task
         name: copy-gpu-model-to-shared
       params:
         - name: model-name
@@ -1027,6 +1033,7 @@ spec:
         - train-model
         {{- end }}
       taskRef:
+        kind: Task
         name: validate-model-health
       params:
         - name: model-name
@@ -1037,6 +1044,7 @@ spec:
       runAfter:
         - health-check
       taskRef:
+        kind: Task
         name: restart-inference-service
       params:
         - name: inference-service-name
@@ -1047,6 +1055,7 @@ spec:
       runAfter:
         - deploy-model
       taskRef:
+        kind: Task
         name: test-inference-endpoint
       params:
         - name: inference-service-name

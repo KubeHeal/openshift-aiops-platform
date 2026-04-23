@@ -64,10 +64,23 @@ clusterGroup:
           kind: BuildConfig
           managedFieldsManagers:
             - openshift-apiserver
+        - group: build.openshift.io
+          kind: BuildConfig
+          jqPathExpressions:
+            - .spec.runPolicy
+            - .spec.failedBuildsHistoryLimit
+            - .spec.successfulBuildsHistoryLimit
+            - .spec.postCommit
+            - .spec.strategy.dockerStrategy.forcePull
         - group: kubeflow.org
           kind: Notebook
           managedFieldsManagers:
             - manager
+        - group: kubeflow.org
+          kind: Notebook
+          jqPathExpressions:
+            - .metadata.finalizers
+            - .spec.template.spec.initContainers[].resources
         - group: external-secrets.io
           jqPathExpressions:
             - .status

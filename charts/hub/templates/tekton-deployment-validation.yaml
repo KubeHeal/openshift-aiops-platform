@@ -1368,6 +1368,7 @@ spec:
   tasks:
     - name: validate-prerequisites
       taskRef:
+        kind: Task
         name: validate-prerequisites
       params:
         - name: namespace
@@ -1377,6 +1378,7 @@ spec:
 
     - name: validate-operators
       taskRef:
+        kind: Task
         name: validate-operators
       runAfter:
         - validate-prerequisites
@@ -1386,6 +1388,7 @@ spec:
 
     - name: validate-storage
       taskRef:
+        kind: Task
         name: validate-storage
       runAfter:
         - validate-operators
@@ -1395,6 +1398,7 @@ spec:
 
     - name: validate-model-serving
       taskRef:
+        kind: Task
         name: validate-model-serving
       runAfter:
         - validate-storage
@@ -1404,6 +1408,7 @@ spec:
 
     - name: validate-coordination-engine
       taskRef:
+        kind: Task
         name: validate-coordination-engine
       runAfter:
         - validate-model-serving
@@ -1413,6 +1418,7 @@ spec:
 
     - name: validate-monitoring
       taskRef:
+        kind: Task
         name: validate-monitoring
       runAfter:
         - validate-coordination-engine
@@ -1422,6 +1428,7 @@ spec:
 
     - name: generate-validation-report
       taskRef:
+        kind: Task
         name: generate-validation-report
       runAfter:
         - validate-monitoring
@@ -1432,6 +1439,7 @@ spec:
   finally:
     - name: cleanup-validation-resources
       taskRef:
+        kind: Task
         name: cleanup-validation-resources
       params:
         - name: namespace
