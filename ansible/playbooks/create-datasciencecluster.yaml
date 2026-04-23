@@ -8,19 +8,18 @@
     rhoai_namespace: redhat-ods-operator
 
   tasks:
-    - name: Wait for rhods-operator CSV to be Succeeded
+    - name: Wait for rhods-operator to be installed (CSV Succeeded or subscription AtLatestKnown)
       kubernetes.core.k8s_info:
         api_version: operators.coreos.com/v1alpha1
-        kind: ClusterServiceVersion
+        kind: Subscription
         namespace: "{{ rhoai_namespace }}"
-        label_selectors:
-          - "operators.coreos.com/rhods-operator.{{ rhoai_namespace }}"
-      register: rhods_csv
+        name: rhods-operator
+      register: rhods_sub
       retries: 30
       delay: 20
       until: >
-        rhods_csv.resources | length > 0 and
-        (rhods_csv.resources | selectattr('status.phase', 'equalto', 'Succeeded') | list | length) > 0
+        rhods_sub.resources | length > 0 and
+        (rhods_sub.resources[0].status.state | default('')) in ['AtLatestKnown', 'UpgradePending']
 
     - name: Check if DataScienceCluster already exists
       kubernetes.core.k8s_info:
