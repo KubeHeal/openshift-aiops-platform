@@ -1,0 +1,88 @@
+name: Validate Pattern
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Pattern Deploy Validation
+    runs-on: ubuntu-latest
+    # Requires repository secrets: OCP_API_URL and OCP_TOKEN
+    # Set these in: Settings → Secrets → Actions
+    if: ${{ vars.SKIP_DEPLOY_VALIDATION != 'true' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install oc CLI
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: latest
+
+      - name: Login to OpenShift
+        run: |
+          oc login "${{ secrets.OCP_API_URL }}" \
+            --token="${{ secrets.OCP_TOKEN }}" \
+            --insecure-skip-tls-verify
+          oc whoami
+
+      - name: Install podman (required by pattern.sh)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y podman
+
+      - name: Install pattern
+        run: ./pattern.sh make install
+
+      - name: Wait for ArgoCD convergence
+        timeout-minutes: 30
+        run: |
+          HUB_NS="self-healing-platform-hub"
+          echo "Waiting for ArgoCD applications to converge in $HUB_NS..."
+          for i in $(seq 1 60); do
+            NOT_HEALTHY=$(oc get applications.argoproj.io -n "$HUB_NS" \
+              -o jsonpath='{range .items[*]}{.status.health.status}{"\n"}{end}' \
+              2>/dev/null | grep -v '^Healthy$' | wc -l)
+            NOT_SYNCED=$(oc get applications.argoproj.io -n "$HUB_NS" \
+              -o jsonpath='{range .items[*]}{.status.sync.status}{"\n"}{end}' \
+              2>/dev/null | grep -v '^Synced$' | wc -l)
+            echo "Attempt $i/60: not-healthy=$NOT_HEALTHY not-synced=$NOT_SYNCED"
+            if [ "$NOT_HEALTHY" -eq 0 ] && [ "$NOT_SYNCED" -eq 0 ]; then
+              echo "All ArgoCD applications are Synced/Healthy"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "ERROR: ArgoCD convergence timeout after 30 minutes"
+          oc get applications.argoproj.io -n "$HUB_NS"
+          exit 1
+
+      - name: Validate core workloads running
+        run: |
+          NS="self-healing-platform"
+          echo "Checking core pods in $NS..."
+          for deploy in coordination-engine mcp-server; do
+            READY=$(oc get deployment "$deploy" -n "$NS" \
+              -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo "0")
+            if [ "${READY:-0}" -lt 1 ]; then
+              echo "ERROR: $deploy has no ready replicas"
+              oc get pods -n "$NS" -l "app=$deploy"
+              exit 1
+            fi
+            echo "PASS: $deploy — $READY ready"
+          done
+
+      - name: Report pattern health
+        if: always()
+        run: |
+          echo "=== ArgoCD Applications ==="
+          oc get applications.argoproj.io -n self-healing-platform-hub 2>/dev/null || true
+          echo "=== Core Pods ==="
+          oc get pods -n self-healing-platform 2>/dev/null || true
+          echo "=== Imperative Jobs ==="
+          oc get jobs -n imperative 2>/dev/null || true
