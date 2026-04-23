@@ -91,28 +91,6 @@ spec:
       value: {{ .value | quote }}
     {{- end }}
     {{- end }}
-    # Mount shared model storage for training output
-    # HA: GPU jobs use model-storage-gpu-pvc (gp3-csi) because GPU nodes cannot mount CephFS
-    # SNO: GPU jobs use model-storage-pvc directly (single node has all CSI drivers)
-    # Non-GPU jobs always use model-storage-pvc
-    volumeMounts:
-    {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) (ne (.topology | default "ha") "sno") }}
-    - name: model-storage-gpu
-      mountPath: /mnt/models-gpu
-    {{- else }}
-    - name: model-storage
-      mountPath: /mnt/models
-    {{- end }}
-    volumes:
-    {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) (ne (.topology | default "ha") "sno") }}
-    - name: model-storage-gpu
-      persistentVolumeClaim:
-        claimName: model-storage-gpu-pvc
-    {{- else }}
-    - name: model-storage
-      persistentVolumeClaim:
-        claimName: model-storage-pvc
-    {{- end }}
   timeout: {{ .resources.timeout | default "15m" }}
   {{- if .notebook.modelValidation }}
   # v1.0.5: Model-aware validation (validates against deployed KServe models)
