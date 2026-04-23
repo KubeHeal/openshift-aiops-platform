@@ -1,26 +1,31 @@
 clusterGroup:
   name: hub
+  isHubCluster: true
   namespaces:
     - name: self-healing-platform
       labels:
         openshift.io/cluster-monitoring: "true"
       annotations:
         openshift.io/description: "Self-Healing Platform for AIOps automation"
-    - name: vault
     - name: external-secrets-operator
       operatorGroup: true
       targetNamespaces: []
     - name: external-secrets
+    - name: jupyter-notebook-validator-operator
   subscriptions:
     eso:
       name: openshift-external-secrets-operator
       namespace: external-secrets-operator
       channel: stable-v1
+      source: redhat-operators
+      startingCSV: openshift-external-secrets-operator.v1.1.0
+    jupyter-notebook-validator:
+      name: jupyter-notebook-validator-operator
+      namespace: jupyter-notebook-validator-operator
+      channel: alpha
+      source: community-operators
+      startingCSV: jupyter-notebook-validator-operator.v1.0.2
   applications:
-    hub:
-      name: hub
-      namespace: self-healing-platform
-      path: charts/hub
     openshift-external-secrets:
       name: openshift-external-secrets
       namespace: external-secrets
@@ -69,36 +74,6 @@ clusterGroup:
           - RespectIgnoreDifferences=true
           - ServerSideApply=true
       targetRevision: main
-    vault:
-      name: vault
-      namespace: vault
-      chart: hashicorp-vault
-      chartVersion: 0.1.*
-  isHubCluster: true
-applications:
-  self-healing-platform:
-    coordination-engine:
-      enabled: true
-      image: coordination-engine:latest
-      replicas: 1
-    enabled: true
-    model-serving:
-      enabled: true
-      models:
-        - framework: sklearn
-          name: anomaly-detector
-        - framework: tensorflow
-          name: predictive-analytics
-    monitoring:
-      enabled: true
-      grafana: true
-      prometheus: true
-    namespace: self-healing-platform
-    notebooks:
-      enabled: true
-      workbench:
-        image: jupyter-minimal-notebook:latest
-        name: self-healing-workbench
 cluster:
   topology: sno
   version: "4.20"
@@ -242,11 +217,11 @@ notebooks:
             memory: 6Gi
     timeout: 30m
 objectStore:
+  enabled: false
   buckets:
     inferenceResults: inference-results
     models: model-storage
     trainingData: training-data
-  enabled: true
   endpoint: https://s3.openshift-storage.svc:443
   region: us-east-1
   sslVerify: false
@@ -262,10 +237,6 @@ security:
   networkPolicies: true
   podSecurityPolicies: true
   rbac: true
-  securityContext:
-    fsGroup: 1000
-    runAsNonRoot: true
-    runAsUser: 1000
 storage:
   dataVolumeSize: 5Gi
   logsVolumeSize: 5Gi

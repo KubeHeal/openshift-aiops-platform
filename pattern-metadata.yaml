@@ -1,0 +1,95 @@
+metadata_version: "1.0"
+name: openshift-aiops-platform
+display_name: OpenShift AIOps Self-Healing Platform
+description: >
+  An AIOps platform that automatically detects anomalies, predicts future
+  infrastructure issues, provides CPU/memory right-sizing recommendations,
+  and performs deep root-cause analysis for production incidents on OpenShift
+  clusters. Uses Prometheus, KServe, Red Hat OpenShift AI, and a Coordination
+  Engine to close the detection-to-remediation loop without manual intervention.
+pattern_version: "1.0.0"
+repo_url: https://github.com/KubeHeal/openshift-aiops-platform
+docs_repo_url: https://github.com/KubeHeal/openshift-aiops-platform
+issues_url: https://github.com/KubeHeal/openshift-aiops-platform/issues
+docs_url: https://github.com/KubeHeal/openshift-aiops-platform/blob/main/README.md
+# can be sandbox, tested or maintained
+tier: sandbox
+owners: tosin2013
+
+# Use cases this pattern addresses
+use_cases:
+  - Automatic anomaly detection for cluster and application pod issues (CPU spikes, error rate increases, response time degradation)
+  - Predictive analytics for disk exhaustion, traffic spikes, and memory leak detection
+  - CPU and memory right-sizing recommendations based on historical pod usage
+  - Alert and notification for pods with high CPU throttling
+  - Capacity forecasting for pod and cluster expansion planning
+  - Deep root-cause analysis for production incidents (what broke, where, why, and remediation guidance)
+
+# Industries / domains
+industries:
+  - Enterprise IT Operations
+  - Platform Engineering
+  - Site Reliability Engineering (SRE)
+  - Financial Services
+  - Telecommunications
+  - Healthcare IT
+
+# Key components deployed by this pattern
+key_components:
+  - Red Hat OpenShift AI (RHOAI) — workbench, model serving, pipelines
+  - KServe — ML model serving for anomaly detection and predictive analytics
+  - Coordination Engine — orchestrates AIOps detection-to-remediation workflow
+  - OpenShift Cluster Health MCP — MCP server exposing cluster health data
+  - Jupyter Notebook Validator Operator — validates and runs diagnostic notebooks
+  - External Secrets Operator — secrets management via ESO
+  - OpenShift Pipelines (Tekton) — ML model training pipelines
+  - Prometheus / Thanos Querier — metrics collection via existing OCP monitoring
+
+# Prerequisites for deployment
+prerequisites:
+  openshift_version: "4.19+"
+  topology: "SNO (Single Node OpenShift) or HA"
+  storage_class: "gp3-csi (AWS EBS) or equivalent RWO storage class"
+  pre_installed_operators:
+    - Red Hat OpenShift AI (RHOAI)
+    - Red Hat OpenShift Pipelines
+    - cert-manager (for webhook TLS)
+  gpu: optional (required for accelerated model training in tier2/tier3 notebooks)
+  notes: >
+    objectStore (NooBaa/ODF S3) is optional and disabled by default. Enable
+    objectStore.enabled=true in values-hub.yaml if ODF is available.
+
+requirements:
+  hub:
+    compute:
+      platform:
+        aws:
+          replicas: 1
+          type: m5.2xlarge
+        azure:
+          replicas: 1
+          type: Standard_D8s_v3
+        gcp:
+          replicas: 1
+          type: n1-standard-8
+    controlPlane:
+      platform:
+        aws:
+          replicas: 1
+          type: m5.xlarge
+        azure:
+          replicas: 1
+          type: Standard_D4s_v3
+        gcp:
+          replicas: 1
+          type: n1-standard-4
+
+extra_features:
+  hypershift_support: false
+  spoke_support: false
+  sno_support: true
+  gpu_support: true
+
+external_requirements:
+  - RHOAI pre-installed (or installable via OperatorHub) on the target cluster
+  - Quay.io access for pulling pattern component images (quay.io/takinosh/*)
