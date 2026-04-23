@@ -2,16 +2,16 @@ clusterGroup:
   name: hub
   isHubCluster: true
   namespaces:
-    - name: self-healing-platform
-      labels:
-        openshift.io/cluster-monitoring: "true"
-      annotations:
-        openshift.io/description: "Self-Healing Platform for AIOps automation"
-    - name: external-secrets-operator
-      operatorGroup: true
-      targetNamespaces: []
-    - name: external-secrets
-    - name: jupyter-notebook-validator-operator
+    - self-healing-platform:
+        labels:
+          openshift.io/cluster-monitoring: "true"
+        annotations:
+          openshift.io/description: "Self-Healing Platform for AIOps automation"
+    - external-secrets-operator:
+        operatorGroup: true
+        targetNamespaces: []
+    - external-secrets
+    - jupyter-notebook-validator-operator
   subscriptions:
     eso:
       name: openshift-external-secrets-operator
