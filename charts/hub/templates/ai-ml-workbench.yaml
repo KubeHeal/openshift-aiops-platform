@@ -159,6 +159,7 @@ spec:
           value: "pypi.org pypi.python.org files.pythonhosted.org"
         - name: PROMETHEUS_URL
           value: "https://prometheus-k8s.openshift-monitoring.svc.cluster.local:9091"
+        {{- if .Values.objectStore.enabled }}
         - name: AWS_S3_ENDPOINT
           valueFrom:
             secretKeyRef:
@@ -179,6 +180,7 @@ spec:
             secretKeyRef:
               name: model-storage-config
               key: AWS_SECRET_ACCESS_KEY
+        {{- end }}
         - name: PIP_CERT
           value: /etc/pki/tls/custom-certs/ca-bundle.crt
         - name: REQUESTS_CA_BUNDLE
