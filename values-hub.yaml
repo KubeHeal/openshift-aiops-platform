@@ -81,6 +81,17 @@ clusterGroup:
           jqPathExpressions:
             - .metadata.finalizers
             - .spec.template.spec.initContainers[].resources
+            - .spec.template.spec.containers
+            - .spec.template.spec.volumes
+        - group: tekton.dev
+          kind: Task
+          jqPathExpressions:
+            - .spec.steps[].computeResources
+        - group: serving.kserve.io
+          kind: InferenceService
+          jqPathExpressions:
+            - .metadata.finalizers
+            - .spec.predictor.automountServiceAccountToken
         - group: external-secrets.io
           jqPathExpressions:
             - .status
