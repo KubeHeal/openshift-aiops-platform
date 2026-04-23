@@ -1,17 +1,16 @@
 clusterGroup:
   name: hub
   namespaces:
-    - self-healing-platform
-    - vault
-    - external-secrets-operator:
-        operatorGroup: true
-        targetNamespaces: []
-    - external-secrets
-    - annotations:
-        openshift.io/description: Self-Healing Platform for AIOps automation
+    - name: self-healing-platform
       labels:
         openshift.io/cluster-monitoring: "true"
-      name: self-healing-platform
+      annotations:
+        openshift.io/description: "Self-Healing Platform for AIOps automation"
+    - name: vault
+    - name: external-secrets-operator
+      operatorGroup: true
+      targetNamespaces: []
+    - name: external-secrets
   subscriptions:
     eso:
       name: openshift-external-secrets-operator
@@ -53,7 +52,7 @@ clusterGroup:
           jqPathExpressions:
             - .status
           kind: InferenceService
-      repoURL: https://github.com/tosin2013/openshift-aiops-platform.git
+      repoURL: https://github.com/KubeHeal/openshift-aiops-platform.git
       syncPolicy:
         automated:
           prune: true
