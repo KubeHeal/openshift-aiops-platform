@@ -63,24 +63,11 @@ clusterGroup:
         - group: build.openshift.io
           kind: BuildConfig
           managedFieldsManagers:
-            - openshift-controller-manager
-            - build-controller
+            - openshift-apiserver
         - group: kubeflow.org
           kind: Notebook
           managedFieldsManagers:
-            - notebook-controller
-        - group: tekton.dev
-          kind: Pipeline
-          managedFieldsManagers:
-            - tekton-pipelines-controller
-        - group: tekton.dev
-          kind: Task
-          managedFieldsManagers:
-            - tekton-pipelines-controller
-        - group: monitoring.coreos.com
-          kind: ServiceMonitor
-          managedFieldsManagers:
-            - prometheus-operator
+            - manager
         - group: external-secrets.io
           jqPathExpressions:
             - .status

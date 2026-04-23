@@ -16,7 +16,8 @@ spec:
     scheme: http
     scrapeTimeout: 10s
     metricRelabelings:
-    - sourceLabels: [__name__]
+    - action: replace
+      sourceLabels: [__name__]
       regex: 'mcp_server_.*'
       targetLabel: component
       replacement: 'mcp-server'
@@ -26,7 +27,8 @@ spec:
     scheme: http
     scrapeTimeout: 10s
     metricRelabelings:
-    - sourceLabels: [__name__]
+    - action: replace
+      sourceLabels: [__name__]
       regex: 'coordination_engine_.*'
       targetLabel: component
       replacement: 'coordination-engine'
@@ -49,11 +51,13 @@ spec:
     scheme: http
     scrapeTimeout: 10s
     metricRelabelings:
-    - sourceLabels: [__name__]
+    - action: replace
+      sourceLabels: [__name__]
       regex: 'mcp_server_.*'
       targetLabel: service
       replacement: 'mcp-server'
-    - sourceLabels: [__name__]
+    - action: replace
+      sourceLabels: [__name__]
       regex: 'process_.*|go_.*|nodejs_.*'
       targetLabel: type
       replacement: 'runtime'
@@ -76,11 +80,13 @@ spec:
     scheme: http
     scrapeTimeout: 10s
     metricRelabelings:
-    - sourceLabels: [__name__]
+    - action: replace
+      sourceLabels: [__name__]
       regex: 'coordination_engine_.*'
       targetLabel: service
       replacement: 'coordination-engine'
-    - sourceLabels: [__name__]
+    - action: replace
+      sourceLabels: [__name__]
       regex: 'flask_.*|python_.*'
       targetLabel: type
       replacement: 'runtime'

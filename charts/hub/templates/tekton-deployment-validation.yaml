@@ -8,7 +8,7 @@
 # Reason: Namespaced ArgoCD cannot manage resources in openshift-pipelines namespace
 # If you need these in openshift-pipelines, deploy them via Ansible instead
 
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: validate-prerequisites
@@ -176,7 +176,7 @@ spec:
         echo "  Target namespace active"
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: validate-operators
@@ -338,7 +338,7 @@ spec:
         echo "  OpenShift Data Foundation operator installed"
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: validate-storage
@@ -520,7 +520,7 @@ spec:
         echo "  S3 endpoint accessible"
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: validate-model-serving
@@ -751,7 +751,7 @@ spec:
         echo "  Metrics collection enabled"
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: validate-coordination-engine
@@ -975,7 +975,7 @@ spec:
         echo "  Model inference tested"
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: validate-monitoring
@@ -1153,7 +1153,7 @@ spec:
         echo "  Grafana dashboards available"
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: generate-validation-report
@@ -1212,7 +1212,7 @@ spec:
           }'
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: cleanup-validation-resources
@@ -1333,7 +1333,7 @@ spec:
         echo "Validation reports saved to ConfigMap: validation-reports"
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: deployment-validation-pipeline
