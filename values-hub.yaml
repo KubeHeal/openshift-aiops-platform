@@ -24,31 +24,26 @@ clusterGroup:
       namespace: external-secrets-operator
       channel: stable-v1
       source: redhat-operators
-      startingCSV: openshift-external-secrets-operator.v1.1.0
     jupyter-notebook-validator:
       name: jupyter-notebook-validator-operator
       namespace: jupyter-notebook-validator-operator
       channel: alpha
       source: community-operators
-      startingCSV: jupyter-notebook-validator-operator.v1.0.2
     openshift-ai:
       name: rhods-operator
       namespace: redhat-ods-operator
       channel: stable
       source: redhat-operators
-      startingCSV: rhods-operator.3.3.2
     openshift-pipelines:
       name: openshift-pipelines-operator-rh
       namespace: openshift-operators
       channel: latest
       source: redhat-operators
-      startingCSV: openshift-pipelines-operator-rh.v1.21.1
     serverless:
       name: serverless-operator
       namespace: openshift-serverless
       channel: stable
       source: redhat-operators
-      startingCSV: serverless-operator.v1.37.1
   applications:
     self-healing-platform:
       name: self-healing-platform
@@ -65,6 +60,27 @@ clusterGroup:
           kind: '*'
           managedFieldsManagers:
             - kube-controller-manager
+        - group: build.openshift.io
+          kind: BuildConfig
+          managedFieldsManagers:
+            - openshift-controller-manager
+            - build-controller
+        - group: kubeflow.org
+          kind: Notebook
+          managedFieldsManagers:
+            - notebook-controller
+        - group: tekton.dev
+          kind: Pipeline
+          managedFieldsManagers:
+            - tekton-pipelines-controller
+        - group: tekton.dev
+          kind: Task
+          managedFieldsManagers:
+            - tekton-pipelines-controller
+        - group: monitoring.coreos.com
+          kind: ServiceMonitor
+          managedFieldsManagers:
+            - prometheus-operator
         - group: external-secrets.io
           jqPathExpressions:
             - .status
