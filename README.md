@@ -152,9 +152,9 @@ source ~/.bashrc
 
 ### Installation
 
-#### Option 1: Fork and Deploy (Recommended for Development)
+#### Option 1: Validated Patterns Operator (Recommended)
 
-**⚠️ IMPORTANT**: Always fork the repository first before deploying. This allows you to customize values files and maintain your own deployment configuration.
+This pattern is installed via the [Validated Patterns Operator](https://validatedpatterns.io/). The operator manages the full GitOps lifecycle — no `make load-secrets` step is required for the default public-GitHub configuration.
 
 ```bash
 # 1. Fork the repository on GitHub
@@ -164,117 +164,61 @@ source ~/.bashrc
 git clone https://github.com/YOUR-USERNAME/openshift-aiops-platform.git
 cd openshift-aiops-platform
 
-# 3. Install workstation prerequisites (RHEL 9/10 only - skip if tools already installed)
-./scripts/install-prerequisites-rhel.sh
-source ~/.bashrc
-
-# 4. Log into your OpenShift cluster
+# 3. Log into your OpenShift cluster
 oc login <cluster-api-url>
 
-# 5. Create values files from examples (REQUIRED before any make target)
-cp values-global.yaml.example values-global.yaml
-cp values-hub.yaml.example values-hub.yaml  # if not already present
-
-# 6. Update values files to point to YOUR repository
-# Edit values-global.yaml - Update git.repoURL:
+# 4. Update git.repoURL in values-global.yaml to point to YOUR fork
 vi values-global.yaml
-# Change: repoURL: "https://github.com/YOUR-USERNAME/openshift-aiops-platform.git"
-# To:     repoURL: "https://github.com/<your-github-user>/openshift-aiops-platform.git"
+# Set: git.repoURL: "https://github.com/<your-github-user>/openshift-aiops-platform.git"
 
-# Edit values-hub.yaml - Update repoURL:
-vi values-hub.yaml
-# Change: repoURL: "https://gitea-with-admin-gitea.apps.cluster-pvbs6..."
-# To:     repoURL: "https://github.com/<your-github-user>/openshift-aiops-platform.git"
+# 5. Commit and push the values change to your fork
+git add values-global.yaml && git commit -m "chore: point repoURL to my fork" && git push
 
-# 7. Verify cluster topology and version
-make show-cluster-info
-# Output shows: Topology (ha or sno), OpenShift Version, Platform, ODF Channel
-#
-# IMPORTANT: If topology shows "sno", also update values-hub.yaml:
-#   cluster.topology: "sno"
-#   storage.modelStorage.storageClass: "gp3-csi"
-
-# 8. Configure cluster infrastructure (ODF, node scaling)
-# HA clusters: installs full ODF (Ceph + NooBaa), scales MachineSets (takes 10-15 min)
-# SNO clusters: installs MCG-only ODF (NooBaa S3 without Ceph)
-make configure-cluster
-# Skip ODF on HA clusters with existing storage: ./scripts/configure-cluster-infrastructure.sh --skip-odf
-
-# 9. Get the Execution Environment
-#
-# Option A: Pull pre-built image (Recommended)
-podman pull quay.io/takinosh/openshift-aiops-platform-ee:latest
-podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest \
-  openshift-aiops-platform-ee:latest
-#
-# Option B: Build locally (requires ANSIBLE_HUB_TOKEN)
-# export ANSIBLE_HUB_TOKEN='your-token-here'
-# podman login registry.redhat.io
-# make token
-# make build-ee
-
-# 10. Validate cluster prerequisites
-make check-prerequisites
-
-# 11. Run Ansible prerequisites (creates secrets, RBAC, namespaces)
-make operator-deploy-prereqs
-
-# 12. Deploy the platform via Validated Patterns Operator
-make operator-deploy
-
-# 13. Wait for the ArgoCD Application to be created by the operator
-oc wait --for=jsonpath='{.kind}'=Application \
-  application/self-healing-platform -n self-healing-platform-hub --timeout=120s
-
-# 14. Sync ArgoCD (if needed)
-# A manual sync or refresh may be required for the self-healing-platform-hub ArgoCD project
-oc annotate application self-healing-platform -n self-healing-platform-hub \
-  argocd.argoproj.io/refresh=hard --overwrite
-
-# 15. Validate deployment
-make argo-healthcheck
-
-# 16. Run Tekton validation pipeline (validates coordination engine + model connectivity)
-tkn pipeline start deployment-validation-pipeline --showlog
-
-# 17. Check model training pipeline status
-# ArgoCD automatically triggers initial training for both models on first deploy.
-# Verify the PipelineRuns were created and are progressing:
-tkn pipelinerun list -n self-healing-platform
-
-# If training failed or was not triggered, manually start the pipelines:
-tkn pipeline start model-training-pipeline \
-  -p model-name=anomaly-detector \
-  -p notebook-path=notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb \
-  -p data-source=prometheus \
-  -p training-hours=168 \
-  -p inference-service-name=anomaly-detector \
-  -p health-check-enabled=true \
-  -p git-url=<your-repo-url> \
-  -p git-ref=main \
-  -n self-healing-platform --showlog
-
-tkn pipeline start model-training-pipeline-gpu \
-  -p model-name=predictive-analytics \
-  -p notebook-path=notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb \
-  -p data-source=prometheus \
-  -p training-hours=720 \
-  -p inference-service-name=predictive-analytics \
-  -p health-check-enabled=true \
-  -p git-url=<your-repo-url> \
-  -p git-ref=main \
-  -n self-healing-platform --showlog
+# 6. Install via the VP CLI
+./pattern.sh make install
 ```
 
-> **💡 Note**: Step 12 (`make operator-deploy`) automatically runs step 11 (`operator-deploy-prereqs`) as a dependency. However, running them separately helps with troubleshooting and understanding the deployment flow.
+The VP Operator creates an ArgoCD instance (`self-healing-platform-hub` namespace) and syncs all operators and workloads. Wait for the pattern to converge:
 
-> **⚠️ Critical**: Steps 5-6 (creating and editing values files) are **required before any `make` target**. The Makefile reads `values-global.yaml` on startup, so all `make` commands will fail if the file doesn't exist. Always update both `values-global.yaml` and `values-hub.yaml` to point to YOUR fork's repository URL.
+```bash
+oc get applications.argoproj.io -n self-healing-platform-hub
+# Target state: SYNC STATUS=Synced, HEALTH STATUS=Healthy
+```
 
-> **🖥️ SNO Deployment**: If step 7 (`make show-cluster-info`) shows topology `sno`, edit `values-hub.yaml` before step 12: set `cluster.topology: "sno"` and change `storage.modelStorage.storageClass` to `"gp3-csi"`. Object storage (NooBaa) is automatically provided by MCG-only ODF. See [SNO Deployment Guide](docs/how-to/deploy-on-sno.md) for details.
+**Secrets — only required for optional features:**
 
-#### Option 2: Deploy with Local Gitea (Air-Gapped/Development)
+The default deployment uses public GitHub and requires no source secrets. Create source secrets only if you enable optional features:
 
-For air-gapped environments or local development, you can deploy Gitea on your OpenShift cluster and fork the repository there:
+| Feature | Enable flag | Source secret to create |
+|---|---|---|
+| Self-hosted Gitea mirror | `gitea.enabled: true` | `gitea-credentials-source` |
+| Private notebook repos | `notebookValidation.requiresAuth: true` | `github-pat-credentials-source` |
+| External container registry | `registry.credentials` set | `registry-credentials-source` |
+| External database | `database.credentials` set | `database-credentials-source` |
+
+```bash
+# Example — only if using Gitea (gitea.enabled: true):
+oc create secret generic gitea-credentials-source \
+  --from-literal=username=<gitea-user> \
+  --from-literal=password=<gitea-token> \
+  -n self-healing-platform
+
+# Example — only if using private notebooks (notebookValidation.requiresAuth: true):
+oc create secret generic github-pat-credentials-source \
+  --from-literal=username=<github-user> \
+  --from-literal=password=<github-pat> \
+  -n self-healing-platform
+```
+
+See `values-secret.yaml.template` at the repository root for the full decision matrix.
+
+> **SNO Deployment**: Set `cluster.topology: "sno"` and `storage.modelStorage.storageClass: "gp3-csi"` in `values-hub.yaml` before running `./pattern.sh make install`. Object storage (NooBaa) is automatically provided by MCG-only ODF. See [SNO Deployment Guide](docs/how-to/deploy-on-sno.md) for details.
+
+#### Option 2: Fork and Deploy with Local Gitea (Air-Gapped/Development)
+
+#### Option 3: Deploy with Local Gitea (Air-Gapped/Development)
+
+For air-gapped environments or local development, you can deploy Gitea on your OpenShift cluster and fork the repository there. Set `gitea.enabled: true` in `values-hub.yaml` and create the `gitea-credentials-source` secret as described above.
 
 ```bash
 # 1. Clone the repository

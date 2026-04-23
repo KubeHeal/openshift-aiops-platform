@@ -1,0 +1,72 @@
+---
+- name: Create DataScienceCluster for RHOAI
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    dsc_name: default-dsc
+    rhoai_namespace: redhat-ods-operator
+
+  tasks:
+    - name: Wait for rhods-operator CSV to be Succeeded
+      kubernetes.core.k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        kind: ClusterServiceVersion
+        namespace: "{{ rhoai_namespace }}"
+        label_selectors:
+          - "operators.coreos.com/rhods-operator.{{ rhoai_namespace }}"
+      register: rhods_csv
+      retries: 30
+      delay: 20
+      until: >
+        rhods_csv.resources | length > 0 and
+        (rhods_csv.resources | selectattr('status.phase', 'equalto', 'Succeeded') | list | length) > 0
+
+    - name: Check if DataScienceCluster already exists
+      kubernetes.core.k8s_info:
+        api_version: datasciencecluster.opendatahub.io/v1
+        kind: DataScienceCluster
+        name: "{{ dsc_name }}"
+      register: existing_dsc
+
+    - name: Create DataScienceCluster
+      when: existing_dsc.resources | length == 0
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: datasciencecluster.opendatahub.io/v1
+          kind: DataScienceCluster
+          metadata:
+            name: "{{ dsc_name }}"
+          spec:
+            components:
+              codeflare:
+                managementState: Removed
+              dashboard:
+                managementState: Managed
+              datasciencepipelines:
+                managementState: Managed
+              kserve:
+                managementState: Managed
+                serving:
+                  ingressGateway:
+                    certificate:
+                      type: SelfSigned
+                  managementState: Managed
+                  name: knative-serving
+              modelmeshserving:
+                managementState: Removed
+              ray:
+                managementState: Removed
+              trainingoperator:
+                managementState: Removed
+              trustyai:
+                managementState: Removed
+              workbenches:
+                managementState: Managed
+
+    - name: Report DataScienceCluster status
+      debug:
+        msg: >
+          DataScienceCluster '{{ dsc_name }}' is
+          {{ 'already present' if existing_dsc.resources | length > 0 else 'created' }}.

@@ -1,6 +1,10 @@
 clusterGroup:
   name: hub
   isHubCluster: true
+  imperative:
+    jobs:
+      - name: create-datasciencecluster
+        playbook: ansible/playbooks/create-datasciencecluster.yaml
   namespaces:
     - self-healing-platform:
         labels:
@@ -12,6 +16,8 @@ clusterGroup:
         targetNamespaces: []
     - external-secrets
     - jupyter-notebook-validator-operator
+    - redhat-ods-operator
+    - openshift-serverless
   subscriptions:
     eso:
       name: openshift-external-secrets-operator
@@ -25,6 +31,24 @@ clusterGroup:
       channel: alpha
       source: community-operators
       startingCSV: jupyter-notebook-validator-operator.v1.0.2
+    openshift-ai:
+      name: rhods-operator
+      namespace: redhat-ods-operator
+      channel: stable
+      source: redhat-operators
+      startingCSV: rhods-operator.3.3.2
+    openshift-pipelines:
+      name: openshift-pipelines-operator-rh
+      namespace: openshift-operators
+      channel: latest
+      source: redhat-operators
+      startingCSV: openshift-pipelines-operator-rh.v1.21.1
+    serverless:
+      name: serverless-operator
+      namespace: openshift-serverless
+      channel: stable
+      source: redhat-operators
+      startingCSV: serverless-operator.v1.37.1
   applications:
     openshift-external-secrets:
       name: openshift-external-secrets
@@ -225,14 +249,11 @@ objectStore:
   endpoint: https://s3.openshift-storage.svc:443
   region: us-east-1
   sslVerify: false
+gitea:
+  enabled: false
+
 secrets:
   backend: external-secrets
-  vault:
-    address: ""
-    authMethod: kubernetes
-    namespace: ""
-    role: self-healing-platform
-    secretPath: secret/data/self-healing-platform
 security:
   networkPolicies: true
   podSecurityPolicies: true
