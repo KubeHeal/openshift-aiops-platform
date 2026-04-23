@@ -47,7 +47,10 @@ spec:
             drop:
             - ALL
           runAsNonRoot: true
-      # Wait for ArgoCD to be available before starting
+      # Wait for ArgoCD to be available before starting.
+      # The URL is determined by the GitOps operator in use:
+      #   VP Operator (default): hub-gitops-server.<pattern>-hub.svc:443
+      #   Standalone ArgoCD:     openshift-gitops-server.openshift-gitops.svc:443
       - name: wait-for-argocd
         image: {{ .Values.coordinationEngine.image.repository | default "quay.io/takinosh/openshift-coordination-engine" }}:{{ .Values.coordinationEngine.image.tag | default (include "self-healing-platform.ocpImageTag" $) }}
         command:
@@ -55,7 +58,9 @@ spec:
         - -c
         - |
           echo "Waiting for ArgoCD service to be available..."
-          until curl -k -sf https://openshift-gitops-server.openshift-gitops.svc:443/healthz >/dev/null 2>&1; do
+          ARGOCD_URL="{{ .Values.gitOps.argoCDServerURL | default (printf "https://hub-gitops-server.%s-hub.svc:443" .Values.main.namespace) }}"
+          echo "Polling: ${ARGOCD_URL}/healthz"
+          until curl -k -sf "${ARGOCD_URL}/healthz" >/dev/null 2>&1; do
             echo "ArgoCD not ready yet, retrying in 10s..."
             sleep 10
           done
@@ -110,7 +115,7 @@ spec:
         {{- end }}
         {{- if .Values.coordinationEngine.argocd.enabled }}
         - name: ARGOCD_API_URL
-          value: {{ .Values.coordinationEngine.argocd.url | default "https://openshift-gitops-server.openshift-gitops.svc:443" | quote }}
+          value: {{ .Values.coordinationEngine.argocd.url | default (printf "https://hub-gitops-server.%s-hub.svc:443" .Values.main.namespace) | quote }}
         {{- end }}
         {{- /* Feature Engineering Configuration (Issue #54) */}}
         {{- /* Guide: https://github.com/KubeHeal/openshift-coordination-engine/blob/main/docs/FEATURE-ENGINEERING-GUIDE.md */}}
