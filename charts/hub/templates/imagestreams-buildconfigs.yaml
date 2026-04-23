@@ -38,8 +38,10 @@ spec:
       uri: {{ $gitUrl }}
       ref: {{ $gitRef }}
     contextDir: src/models
+    {{- if .Values.gitea.enabled }}
     sourceSecret:
       name: {{ .Values.imageBuilds.gitCredentialsSecret }}
+    {{- end }}
   strategy:
     type: Docker
     dockerStrategy:
