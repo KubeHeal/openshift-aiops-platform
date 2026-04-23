@@ -68,18 +68,6 @@ spec:
         {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) }}
         nvidia.com/gpu: {{ .resources.gpu.count | default "1" | quote }}
         {{- end }}
-    {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) }}
-    # GPU node tolerations - required to schedule on GPU nodes with nvidia.com/gpu=True:NoSchedule taint
-    tolerations:
-    - key: nvidia.com/gpu
-      operator: Equal
-      value: "True"
-      effect: NoSchedule
-    # Prefer GPU nodes for scheduling
-    nodeSelector:
-      nvidia.com/gpu.present: "true"
-    {{- end }}
-    # Use self-healing-workbench SA for Prometheus access and other cluster permissions
     serviceAccountName: self-healing-workbench
     envFrom:
     - secretRef:
@@ -112,15 +100,6 @@ spec:
       tolerance: {{ .notebook.modelValidation.predictionValidation.tolerance | default "0.1" | quote }}
     {{- end }}
     timeout: {{ .notebook.modelValidation.timeout | default "5m" | quote }}
-  {{- end }}
-  {{- if .notebook.validationConfig }}
-  # v1.0.5: Exit code validation (catches silent failures)
-  validationConfig:
-    level: {{ .notebook.validationConfig.level | default "production" | quote }}
-    strictMode: {{ .notebook.validationConfig.strictMode | default true }}
-    failOnStderr: {{ .notebook.validationConfig.failOnStderr | default false }}
-    detectSilentFailures: {{ .notebook.validationConfig.detectSilentFailures | default true }}
-    checkOutputTypes: {{ .notebook.validationConfig.checkOutputTypes | default true }}
   {{- end }}
   {{- if .notebook.comparisonConfig }}
   # v1.0.5: Advanced comparison (handles ML metric variations)
