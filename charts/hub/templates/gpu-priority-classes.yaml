@@ -1,0 +1,34 @@
+{{- if .Values.workbench.gpu.enabled }}
+---
+# High priority for GPU training and validation jobs
+# These jobs are time-sensitive and should preempt lower-priority workloads
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: gpu-training-priority
+  labels:
+    app.kubernetes.io/name: self-healing-platform
+    app.kubernetes.io/component: gpu-scheduling
+  annotations:
+    argocd.argoproj.io/sync-wave: "-8"
+value: 1000
+preemptionPolicy: PreemptLowerPriority
+globalDefault: false
+description: "High priority for GPU training and validation jobs"
+---
+# Low priority for interactive workbench notebooks
+# Workbench can be preempted when training/validation needs GPU
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: gpu-workbench-priority
+  labels:
+    app.kubernetes.io/name: self-healing-platform
+    app.kubernetes.io/component: gpu-scheduling
+  annotations:
+    argocd.argoproj.io/sync-wave: "-8"
+value: 100
+preemptionPolicy: Never
+globalDefault: false
+description: "Low priority for interactive workbench (can be preempted by training jobs)"
+{{- end }}

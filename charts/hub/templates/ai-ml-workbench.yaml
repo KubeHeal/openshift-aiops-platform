@@ -26,8 +26,8 @@ metadata:
 spec:
   template:
     spec:
-      {{- if and .Values.workbench.gpu.enabled (eq ((.Values.cluster).topology | default "ha") "sno") }}
-      {{- /* SNO: GPU and CephFS coexist on the single node, so prefer GPU scheduling */}}
+      {{- if and .Values.workbench.gpu.enabled (ne ((.Values.cluster).topology | default "ha") "sno") }}
+      {{- /* HA: GPU and CephFS may be on different nodes, prefer GPU scheduling */}}
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -43,7 +43,7 @@ spec:
         value: "True"
         effect: NoSchedule
       {{- end }}
-      {{- /* HA: GPU affinity is NOT applied -- workbench needs CephFS which is only on non-GPU nodes */}}
+      {{- /* SNO: GPU disabled for workbench to avoid contention with training/validation jobs */}}
       # Init container to set up writable Jupyter directories
       initContainers:
       - name: setup-jupyter-dirs
@@ -117,7 +117,7 @@ spec:
           limits:
             cpu: "4"
             memory: "16Gi"
-            {{- if and .Values.workbench.gpu.enabled (eq ((.Values.cluster).topology | default "ha") "sno") }}
+            {{- if and .Values.workbench.gpu.enabled (ne ((.Values.cluster).topology | default "ha") "sno") }}
             nvidia.com/gpu: "1"
             {{- end }}
         env:
@@ -246,6 +246,10 @@ spec:
       # RHOAI 2.x (inject-oauth): oauth-proxy sidecar
       serviceAccountName: self-healing-workbench
       enableServiceLinks: false
+      {{- if and .Values.workbench.gpu.enabled (ne ((.Values.cluster).topology | default "ha") "sno") }}
+      # Low priority on HA clusters - allows training jobs to preempt workbench
+      priorityClassName: gpu-workbench-priority
+      {{- end }}
       volumes:
       - name: data-volume
         persistentVolumeClaim:
