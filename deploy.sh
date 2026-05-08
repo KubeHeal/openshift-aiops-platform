@@ -79,11 +79,12 @@ fi
 
 # Deployment
 echo "==> Starting deployment..."
-echo "Using: ./pattern.sh make install"
+echo "Using: ./pattern.sh make operator-deploy"
+echo "Note: Skipping traditional VP secret loading (using ESO with source secrets)"
 echo ""
 
-# Run deployment via pattern.sh
-./pattern.sh make install
+# Run deployment via pattern.sh (operator-deploy skips load-secrets)
+./pattern.sh make operator-deploy
 
 echo ""
 echo "=========================================="
