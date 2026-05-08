@@ -68,10 +68,6 @@ spec:
         {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) }}
         nvidia.com/gpu: {{ .resources.gpu.count | default "1" | quote }}
         {{- end }}
-    {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) }}
-    # High priority for GPU validation jobs - can preempt workbench
-    priorityClassName: gpu-training-priority
-    {{- end }}
     serviceAccountName: self-healing-workbench
     envFrom:
     - secretRef:
