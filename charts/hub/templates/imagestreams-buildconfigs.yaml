@@ -38,9 +38,9 @@ spec:
       uri: {{ $gitUrl }}
       ref: {{ $gitRef }}
     contextDir: src/models
-    {{- if .Values.gitea.enabled }}
+    {{- if and .Values.git .Values.git.credentials .Values.git.credentials.secretName }}
     sourceSecret:
-      name: {{ .Values.imageBuilds.gitCredentialsSecret }}
+      name: {{ .Values.git.credentials.secretName }}
     {{- end }}
   strategy:
     type: Docker
