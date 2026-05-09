@@ -81,9 +81,9 @@ spec:
       uri: {{ $gitUrl }}
       ref: {{ $gitRef }}
     contextDir: notebooks
-    {{- if .Values.gitea.enabled }}
+    {{- if and .Values.git .Values.git.credentials .Values.git.credentials.secretName }}
     sourceSecret:
-      name: git-credentials
+      name: {{ .Values.git.credentials.secretName }}
     {{- end }}
   strategy:
     type: Docker
