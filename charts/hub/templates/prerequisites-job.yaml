@@ -1,0 +1,177 @@
+{{- if .Values.prerequisites.enabled }}
+---
+# Prerequisites Job for Platform Deployment
+# Runs Ansible playbooks to deploy cluster-scoped resources before ArgoCD
+# deploys pattern components.
+#
+# Workflow:
+# 1. ServiceAccount created (sync-wave -11)
+# 2. This Job runs (sync-wave -10)
+# 3. Job executes Ansible playbooks:
+#    - operator_deploy_prereqs.yml (RBAC, secrets, namespaces)
+#    - configure-odf-storage.yaml (ODF deployment)
+# 4. Job completes successfully
+# 5. ArgoCD deploys platform components (sync-wave 0+)
+#
+# References:
+# - ADR-030: Hybrid Management Model (Ansible + Helm)
+# - Plan: v1.0.0 Prerequisites Job for VP compliance
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: platform-prerequisites
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/name: prerequisites-job
+    app.kubernetes.io/component: prerequisites
+    app.kubernetes.io/part-of: self-healing-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    description: "Runs Ansible prerequisites before pattern deployment"
+spec:
+  # Retry on transient failures
+  backoffLimit: {{ .Values.prerequisites.backoffLimit | default 3 }}
+
+  # 30-minute timeout (ODF can take 10-15 minutes)
+  activeDeadlineSeconds: {{ .Values.prerequisites.timeout | default 1800 }}
+
+  # Clean up completed jobs after 24 hours
+  ttlSecondsAfterFinished: 86400
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: prerequisites-job
+        app.kubernetes.io/component: prerequisites
+        app.kubernetes.io/part-of: self-healing-platform
+    spec:
+      serviceAccountName: platform-prerequisites-runner
+      restartPolicy: OnFailure
+
+      initContainers:
+      # Clone the Git repository to get Ansible playbooks
+      - name: git-clone
+        image: {{ .Values.prerequisites.gitImage | default "registry.redhat.io/openshift4/ose-cli:latest" }}
+        command:
+          - /bin/bash
+          - -c
+          - |
+            set -e
+            echo "Cloning repository..."
+            git clone --depth 1 --branch {{ .Values.global.git.revision | default "main" }} \
+              {{ .Values.global.git.repoURL }} /workspace
+
+            cd /workspace
+            echo "Repository cloned successfully"
+            ls -la ansible/playbooks/
+        volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+        env:
+        - name: GIT_SSL_NO_VERIFY
+          value: "true"
+
+      containers:
+      - name: ansible-runner
+        image: {{ .Values.prerequisites.image }}
+        imagePullPolicy: {{ .Values.prerequisites.imagePullPolicy | default "IfNotPresent" }}
+
+        command:
+          - /bin/bash
+          - -c
+          - |
+            set -e
+
+            echo "========================================"
+            echo "Platform Prerequisites Job Starting"
+            echo "========================================"
+            echo "Date: $(date)"
+            echo "Namespace: {{ .Values.main.namespace }}"
+            echo "========================================"
+
+            cd /workspace
+
+            # Verify required files exist
+            echo ""
+            echo "Verifying Ansible playbooks..."
+            if [ ! -f "ansible/playbooks/operator_deploy_prereqs.yml" ]; then
+              echo "ERROR: operator_deploy_prereqs.yml not found"
+              exit 1
+            fi
+            if [ ! -f "ansible/playbooks/configure-odf-storage.yaml" ]; then
+              echo "ERROR: configure-odf-storage.yaml not found"
+              exit 1
+            fi
+            echo "✓ All required playbooks found"
+
+            # Run RBAC prerequisites
+            echo ""
+            echo "========================================"
+            echo "Step 1: Deploying RBAC Prerequisites"
+            echo "========================================"
+            ansible-playbook ansible/playbooks/operator_deploy_prereqs.yml \
+              -e namespace={{ .Values.main.namespace }} \
+              -e enable_secrets_mgmt=true \
+              -v
+
+            if [ $? -eq 0 ]; then
+              echo "✓ RBAC prerequisites deployed successfully"
+            else
+              echo "✗ RBAC prerequisites failed"
+              exit 1
+            fi
+
+            # Run ODF configuration
+            echo ""
+            echo "========================================"
+            echo "Step 2: Configuring ODF Storage"
+            echo "========================================"
+            ansible-playbook ansible/playbooks/configure-odf-storage.yaml \
+              -e skip_machinesets={{ .Values.prerequisites.skipMachineSets | default "false" }} \
+              -v
+
+            if [ $? -eq 0 ]; then
+              echo "✓ ODF storage configured successfully"
+            else
+              echo "✗ ODF storage configuration failed"
+              exit 1
+            fi
+
+            echo ""
+            echo "========================================"
+            echo "Prerequisites Job Completed Successfully"
+            echo "========================================"
+            echo "Date: $(date)"
+            echo "========================================"
+
+        volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+
+        env:
+        # Ansible configuration
+        - name: ANSIBLE_CONFIG
+          value: /workspace/ansible.cfg
+        - name: ANSIBLE_STDOUT_CALLBACK
+          value: yaml
+        - name: ANSIBLE_FORCE_COLOR
+          value: "true"
+
+        # Kubernetes connection (uses in-cluster config)
+        - name: K8S_AUTH_KUBECONFIG
+          value: /var/run/secrets/kubernetes.io/serviceaccount/token
+
+        resources:
+          requests:
+            memory: {{ .Values.prerequisites.resources.requests.memory | default "512Mi" }}
+            cpu: {{ .Values.prerequisites.resources.requests.cpu | default "250m" }}
+          limits:
+            memory: {{ .Values.prerequisites.resources.limits.memory | default "2Gi" }}
+            cpu: {{ .Values.prerequisites.resources.limits.cpu | default "1000m" }}
+
+      volumes:
+      - name: workspace
+        emptyDir: {}
+{{- end }}

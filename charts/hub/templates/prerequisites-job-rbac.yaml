@@ -1,0 +1,47 @@
+{{- if .Values.prerequisites.enabled }}
+---
+# ServiceAccount for Prerequisites Job
+# Runs Ansible playbooks to deploy cluster-scoped resources (RBAC, ODF, secrets)
+# before pattern components deploy
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: platform-prerequisites-runner
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/name: prerequisites-runner
+    app.kubernetes.io/component: prerequisites
+    app.kubernetes.io/part-of: self-healing-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "-11"
+    description: "ServiceAccount for platform prerequisites Job"
+---
+# ClusterRoleBinding granting cluster-admin to prerequisites runner
+# Required for Job to create cluster-scoped resources:
+# - ClusterRoles, ClusterRoleBindings (ArgoCD permissions)
+# - ODF StorageCluster (openshift-storage namespace)
+# - ExternalSecretsConfig (cluster-scoped)
+#
+# Reference: ADR-030 Hybrid Management Model
+# - Ansible manages cluster-scoped resources
+# - Helm (via this Job) defines the deployment workflow
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: platform-prerequisites-runner-cluster-admin
+  labels:
+    app.kubernetes.io/name: prerequisites-runner
+    app.kubernetes.io/component: prerequisites
+    app.kubernetes.io/part-of: self-healing-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "-11"
+    description: "Grants cluster-admin to prerequisites Job runner"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: platform-prerequisites-runner
+  namespace: {{ .Values.main.namespace }}
+{{- end }}

@@ -11,6 +11,39 @@ cluster:
   topology: "ha"  # "ha" = HighlyAvailable multi-node, "sno" = Single Node OpenShift
   version: "4.18"       # OpenShift version - auto-detected
 
+# Prerequisites Job Configuration
+# Runs Ansible playbooks to deploy cluster-scoped resources before pattern components
+# Enables single-command deployment: ./pattern.sh make install
+# References: ADR-030 (Hybrid Management Model), v1.0.0 Prerequisites Job plan
+prerequisites:
+  # Enable prerequisites job (set to false for manual prerequisite deployment)
+  enabled: true
+
+  # Execution environment image (contains Ansible + collections)
+  image: quay.io/takinosh/openshift-aiops-platform-ee:latest
+  imagePullPolicy: IfNotPresent
+
+  # Git image for cloning repository (initContainer)
+  gitImage: registry.redhat.io/openshift4/ose-cli:latest
+
+  # Job timeout (30 minutes - ODF can take 10-15 min)
+  timeout: 1800
+
+  # Retry attempts on failure
+  backoffLimit: 3
+
+  # Skip MachineSet scaling (set to true if workers already exist)
+  skipMachineSets: false
+
+  # Resource limits for prerequisites job
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+
 # global.clusterDomain is auto-populated by the Validated Patterns operator
 # with the OpenShift baseDomain (e.g. "ocp.example.com").
 # Override only if auto-detection fails:
