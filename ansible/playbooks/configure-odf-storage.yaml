@@ -1,0 +1,209 @@
+---
+# Ansible Playbook: Configure ODF Storage
+# Purpose: Creates topology-aware StorageCluster for ODF
+# Supports: SNO (MCG-only) and HA (full Ceph + NooBaa)
+#
+# Usage:
+#   ansible-navigator run ansible/playbooks/configure-odf-storage.yaml
+#
+# Reference:
+#   - ADR-056: Standalone MCG on SNO
+#   - ADR-055: OpenShift 4.20 Multi-Cluster Topology Support
+
+- name: Configure ODF Storage (Topology-Aware)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    namespace: openshift-storage
+    storage_cluster_name: ocs-storagecluster
+    # Auto-detect OCP version for channel selection
+    ocp_version_query: "{{ lookup('pipe', 'oc version -o json 2>/dev/null | jq -r \".openshiftVersion // \\\"4.20.0\\\"\" | cut -d. -f1-2') }}"
+    odf_channel: "stable-{{ ocp_version_query }}"
+
+  tasks:
+    - name: Detect cluster topology
+      ansible.builtin.shell: |
+        CONTROL_PLANE_TOPOLOGY=$(oc get infrastructure cluster -o jsonpath='{.status.controlPlaneTopology}')
+        if [[ "$CONTROL_PLANE_TOPOLOGY" == "SingleReplica" ]]; then
+          echo "sno"
+        else
+          echo "ha"
+        fi
+      register: topology_result
+      changed_when: false
+
+    - name: Set topology fact
+      ansible.builtin.set_fact:
+        cluster_topology: "{{ topology_result.stdout }}"
+
+    - name: Display detected topology
+      ansible.builtin.debug:
+        msg: "Cluster topology: {{ cluster_topology }} | ODF channel: {{ odf_channel }}"
+
+    - name: Check if StorageCluster already exists
+      kubernetes.core.k8s_info:
+        api_version: ocs.openshift.io/v1
+        kind: StorageCluster
+        name: "{{ storage_cluster_name }}"
+        namespace: "{{ namespace }}"
+      register: existing_storagecluster
+
+    - name: Wait for ODF operator to be ready
+      kubernetes.core.k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        kind: ClusterServiceVersion
+        namespace: "{{ namespace }}"
+      register: csv_list
+      until: csv_list.resources | selectattr('metadata.name', 'match', '^odf-operator.*') | selectattr('status.phase', 'equalto', 'Succeeded') | list | length > 0
+      retries: 30
+      delay: 10
+      when: existing_storagecluster.resources | length == 0
+
+    - name: Create SNO StorageCluster (MCG-only)
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: ocs.openshift.io/v1
+          kind: StorageCluster
+          metadata:
+            name: "{{ storage_cluster_name }}"
+            namespace: "{{ namespace }}"
+            annotations:
+              argocd.argoproj.io/sync-wave: "-2"
+              uninstall.ocs.openshift.io/cleanup-policy: delete
+              uninstall.ocs.openshift.io/mode: graceful
+          spec:
+            # SNO: MCG-only configuration (NooBaa S3 without Ceph)
+            # Ceph components are disabled to avoid resource contention
+            arbiter: {}
+            encryption:
+              kms: {}
+            externalStorage: {}
+            flexibleScaling: true
+            resources:
+              mds:
+                limits:
+                  cpu: "3"
+                  memory: "8Gi"
+                requests:
+                  cpu: "1"
+                  memory: "8Gi"
+            monDataDirHostPath: /var/lib/rook
+            managedResources:
+              cephBlockPools:
+                reconcileStrategy: ignore
+              cephConfig: {}
+              cephDashboard: {}
+              cephFilesystems:
+                reconcileStrategy: ignore
+              cephObjectStoreUsers: {}
+              cephObjectStores:
+                reconcileStrategy: ignore
+            multiCloudGateway:
+              reconcileStrategy: manage
+              dbStorageClassName: gp3-csi
+              endpoints:
+                minCount: 1
+                maxCount: 1
+            nodeTopologies: {}
+            storageDeviceSets: []
+      when:
+        - cluster_topology == 'sno'
+        - existing_storagecluster.resources | length == 0
+
+    - name: Create HA StorageCluster (Full Ceph + NooBaa)
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: ocs.openshift.io/v1
+          kind: StorageCluster
+          metadata:
+            name: "{{ storage_cluster_name }}"
+            namespace: "{{ namespace }}"
+            annotations:
+              argocd.argoproj.io/sync-wave: "-2"
+              uninstall.ocs.openshift.io/cleanup-policy: delete
+              uninstall.ocs.openshift.io/mode: graceful
+          spec:
+            arbiter: {}
+            encryption:
+              kms: {}
+            externalStorage: {}
+            flexibleScaling: true
+            resources:
+              mds:
+                limits:
+                  cpu: "3"
+                  memory: "8Gi"
+                requests:
+                  cpu: "1"
+                  memory: "8Gi"
+            monDataDirHostPath: /var/lib/rook
+            managedResources:
+              cephBlockPools: {}
+              cephConfig: {}
+              cephDashboard: {}
+              cephFilesystems: {}
+              cephObjectStoreUsers: {}
+              cephObjectStores: {}
+            multiCloudGateway:
+              reconcileStrategy: manage
+            nodeTopologies: {}
+            storageDeviceSets:
+              - count: 1
+                dataPVCTemplate:
+                  spec:
+                    accessModes:
+                      - ReadWriteOnce
+                    resources:
+                      requests:
+                        storage: 512Gi
+                    storageClassName: gp3-csi
+                    volumeMode: Block
+                name: ocs-deviceset
+                placement: {}
+                portable: true
+                replica: 3
+                resources:
+                  limits:
+                    cpu: "2"
+                    memory: "5Gi"
+                  requests:
+                    cpu: "1"
+                    memory: "5Gi"
+      when:
+        - cluster_topology == 'ha'
+        - existing_storagecluster.resources | length == 0
+
+    - name: Wait for StorageCluster to be ready
+      kubernetes.core.k8s_info:
+        api_version: ocs.openshift.io/v1
+        kind: StorageCluster
+        name: "{{ storage_cluster_name }}"
+        namespace: "{{ namespace }}"
+      register: storagecluster_status
+      until: storagecluster_status.resources[0].status.phase is defined and storagecluster_status.resources[0].status.phase == "Ready"
+      retries: 60
+      delay: 10
+      when: existing_storagecluster.resources | length == 0
+
+    - name: Wait for NooBaa to be ready
+      kubernetes.core.k8s_info:
+        api_version: noobaa.io/v1alpha1
+        kind: NooBaa
+        name: noobaa
+        namespace: "{{ namespace }}"
+      register: noobaa_status
+      until: noobaa_status.resources | length > 0 and noobaa_status.resources[0].status.phase is defined and noobaa_status.resources[0].status.phase == "Ready"
+      retries: 60
+      delay: 10
+
+    - name: Display storage configuration summary
+      ansible.builtin.debug:
+        msg:
+          - "ODF Storage Configuration Complete"
+          - "Topology: {{ cluster_topology }}"
+          - "StorageCluster: {{ storage_cluster_name }}"
+          - "NooBaa Status: {{ noobaa_status.resources[0].status.phase | default('Not Ready') }}"
+          - "MCG-only: {{ cluster_topology == 'sno' }}"

@@ -3,6 +3,8 @@ clusterGroup:
   isHubCluster: true
   imperative:
     jobs:
+      - name: configure-odf-storage
+        playbook: ansible/playbooks/configure-odf-storage.yaml
       - name: create-datasciencecluster
         playbook: ansible/playbooks/create-datasciencecluster.yaml
   namespaces:
@@ -11,6 +13,11 @@ clusterGroup:
           openshift.io/cluster-monitoring: "true"
         annotations:
           openshift.io/description: "Self-Healing Platform for AIOps automation"
+    - openshift-storage:
+        labels:
+          openshift.io/cluster-monitoring: "true"
+        annotations:
+          openshift.io/description: "OpenShift Data Foundation storage"
     - external-secrets-operator:
         operatorGroup: true
         targetNamespaces: []
@@ -19,6 +26,11 @@ clusterGroup:
     - redhat-ods-operator
     - openshift-serverless
   subscriptions:
+    odf:
+      name: odf-operator
+      namespace: openshift-storage
+      channel: stable-4.20
+      source: redhat-operators
     eso:
       name: openshift-external-secrets-operator
       namespace: external-secrets-operator

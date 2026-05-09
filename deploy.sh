@@ -68,6 +68,42 @@ if [ "$TOPOLOGY" == "sno" ]; then
   fi
 fi
 
+# ODF Storage check and configuration
+echo "==> Checking ODF Storage..."
+if ! oc get namespace openshift-storage &>/dev/null; then
+  echo "INFO: ODF not installed - configuring storage infrastructure"
+  echo "This is required for model storage (S3) and will take 10-15 minutes"
+
+  if [ "$TOPOLOGY" == "sno" ]; then
+    echo "Installing MCG-only ODF (NooBaa S3 without Ceph) for SNO"
+  else
+    echo "Installing full ODF (Ceph + NooBaa) for HA cluster"
+  fi
+
+  read -rp "Proceed with ODF installation? [Y/n] " confirm
+  if [[ "$confirm" =~ ^[Nn]$ ]]; then
+    echo "WARNING: Skipping ODF installation"
+    echo "Platform will fail to deploy without storage - model training requires S3"
+    read -rp "Continue anyway (not recommended)? [y/N] " force_confirm
+    [[ "$force_confirm" =~ ^[Yy]$ ]] || exit 0
+  else
+    ./scripts/configure-cluster-infrastructure.sh
+    echo "✅ ODF configuration complete"
+  fi
+else
+  echo "✅ ODF already installed (openshift-storage namespace exists)"
+  # Verify NooBaa is ready
+  if oc get noobaa noobaa -n openshift-storage &>/dev/null; then
+    NOOBAA_PHASE=$(oc get noobaa noobaa -n openshift-storage -o jsonpath='{.status.phase}' 2>/dev/null || echo "Unknown")
+    echo "NooBaa status: $NOOBAA_PHASE"
+    if [ "$NOOBAA_PHASE" != "Ready" ]; then
+      echo "WARNING: NooBaa is not ready - model storage may not work"
+    fi
+  else
+    echo "WARNING: NooBaa not found - model storage may not work"
+  fi
+fi
+
 # Execution Environment check
 echo "==> Checking Execution Environment..."
 if ! podman images | grep -q "openshift-aiops-platform-ee"; then
@@ -94,8 +130,11 @@ echo ""
 echo "Next steps:"
 echo "  1. Monitor deployment: make argo-healthcheck"
 echo "  2. Watch pods: watch oc get pods -n self-healing-platform"
-echo "  3. View ArgoCD UI: oc get route -n self-healing-platform-hub"
-echo "  4. Run validation: tkn pipeline start deployment-validation-pipeline --showlog"
+echo "  3. Verify storage: oc get noobaa -n openshift-storage"
+echo "  4. Check S3 buckets: oc get objectbucketclaim -n self-healing-platform"
+echo "  5. View ArgoCD UI: oc get route -n self-healing-platform-hub"
+echo "  6. Run validation: tkn pipeline start deployment-validation-pipeline --showlog"
 echo ""
 echo "Deployment typically takes 10-15 minutes to complete."
+echo "ODF installation (if new) takes an additional 10-15 minutes."
 echo ""
