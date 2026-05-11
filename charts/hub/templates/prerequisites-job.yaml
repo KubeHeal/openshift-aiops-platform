@@ -71,6 +71,7 @@ spec:
             # Clone the repository
             echo ""
             echo "Cloning repository..."
+            rm -rf /workspace/*  # Clear workspace if it exists from previous run
             git clone --depth 1 --branch {{ .Values.global.targetRevision | default "main" }} \
               {{ .Values.global.repoURL }} /workspace
 
