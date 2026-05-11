@@ -71,7 +71,8 @@ spec:
             # Clone the repository
             echo ""
             echo "Cloning repository..."
-            rm -rf /workspace/*  # Clear workspace if it exists from previous run
+            # Clear workspace completely (including hidden files) if it exists from previous run
+            find /workspace -mindepth 1 -delete 2>/dev/null || true
             git clone --depth 1 --branch {{ .Values.global.targetRevision | default "main" }} \
               {{ .Values.global.repoURL }} /workspace
 
