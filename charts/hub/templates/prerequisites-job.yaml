@@ -50,29 +50,6 @@ spec:
       serviceAccountName: platform-prerequisites-runner
       restartPolicy: OnFailure
 
-      initContainers:
-      # Clone the Git repository to get Ansible playbooks
-      - name: git-clone
-        image: {{ .Values.prerequisites.gitImage | default "registry.redhat.io/openshift4/ose-cli:latest" }}
-        command:
-          - /bin/bash
-          - -c
-          - |
-            set -e
-            echo "Cloning repository..."
-            git clone --depth 1 --branch {{ .Values.global.git.revision | default "main" }} \
-              {{ .Values.global.git.repoURL }} /workspace
-
-            cd /workspace
-            echo "Repository cloned successfully"
-            ls -la ansible/playbooks/
-        volumeMounts:
-        - name: workspace
-          mountPath: /workspace
-        env:
-        - name: GIT_SSL_NO_VERIFY
-          value: "true"
-
       containers:
       - name: ansible-runner
         image: {{ .Values.prerequisites.image }}
@@ -91,7 +68,14 @@ spec:
             echo "Namespace: {{ .Values.main.namespace }}"
             echo "========================================"
 
+            # Clone the repository
+            echo ""
+            echo "Cloning repository..."
+            git clone --depth 1 --branch {{ .Values.global.git.revision | default "main" }} \
+              {{ .Values.global.git.repoURL }} /workspace
+
             cd /workspace
+            echo "Repository cloned successfully"
 
             # Verify required files exist
             echo ""
