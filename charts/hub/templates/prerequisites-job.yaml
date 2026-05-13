@@ -4,12 +4,13 @@
 # Runs Ansible playbooks to deploy cluster-scoped resources before ArgoCD
 # deploys pattern components.
 #
+# Prerequisite: ODF must be installed before pattern deployment
+#   (run `make configure-cluster` or install ODF operator manually)
+#
 # Workflow:
 # 1. ServiceAccount created (sync-wave -11)
 # 2. This Job runs (sync-wave -10)
-# 3. Job executes Ansible playbooks:
-#    - operator_deploy_prereqs.yml (RBAC, secrets, namespaces)
-#    - configure-odf-storage.yaml (ODF deployment)
+# 3. Job executes operator_deploy_prereqs.yml (RBAC, secrets, namespaces)
 # 4. Job completes successfully
 # 5. ArgoCD deploys platform components (sync-wave 0+)
 #
@@ -86,13 +87,9 @@ spec:
               echo "ERROR: operator_deploy_prereqs.yml not found"
               exit 1
             fi
-            if [ ! -f "ansible/playbooks/configure-odf-storage.yaml" ]; then
-              echo "ERROR: configure-odf-storage.yaml not found"
-              exit 1
-            fi
             echo "✓ All required playbooks found"
 
-            # Run RBAC prerequisites
+            # Run RBAC prerequisites (RBAC, secrets, namespaces)
             echo ""
             echo "========================================"
             echo "Step 1: Deploying RBAC Prerequisites"
@@ -107,22 +104,6 @@ spec:
               echo "✓ RBAC prerequisites deployed successfully"
             else
               echo "✗ RBAC prerequisites failed"
-              exit 1
-            fi
-
-            # Run ODF configuration
-            echo ""
-            echo "========================================"
-            echo "Step 2: Configuring ODF Storage"
-            echo "========================================"
-            ansible-playbook ansible/playbooks/configure-odf-storage.yaml \
-              -e skip_machinesets={{ .Values.prerequisites.skipMachineSets | default "false" }} \
-              -v
-
-            if [ $? -eq 0 ]; then
-              echo "✓ ODF storage configured successfully"
-            else
-              echo "✗ ODF storage configuration failed"
               exit 1
             fi
 
