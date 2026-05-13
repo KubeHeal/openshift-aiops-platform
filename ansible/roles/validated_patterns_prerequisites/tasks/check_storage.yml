@@ -8,11 +8,17 @@
   register: storage_classes
   failed_when: storage_classes.resources | length == 0
 
-- name: Find default storage class
+- name: Build default storage class list
   set_fact:
-    default_storage_class: >-
-      {{ storage_classes.resources |
-         json_query("[?metadata.annotations.\"storageclass.kubernetes.io/is-default-class\"]") }}
+    default_storage_class: "{{ default_storage_class | default([]) + [item] }}"
+  loop: "{{ storage_classes.resources }}"
+  when:
+    - item.metadata.annotations is defined
+    - "'storageclass.kubernetes.io/is-default-class' in item.metadata.annotations"
+
+- name: Initialize default storage class if none found
+  set_fact:
+    default_storage_class: "{{ default_storage_class | default([]) }}"
 
 - name: Display found storage classes
   debug:
