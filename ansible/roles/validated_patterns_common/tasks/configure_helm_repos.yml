@@ -1,6 +1,12 @@
 ---
 # Configure Helm repositories for multisource architecture
 
+- name: Ensure Helm cache directory exists
+  ansible.builtin.file:
+    path: "{{ lookup('env', 'HELM_CACHE_HOME') | default(ansible_env.HOME + '/.cache/helm/repository', true) }}"
+    state: directory
+    mode: '0755'
+
 - name: Add Validated Patterns Helm repository
   kubernetes.core.helm_repository:
     name: validatedpatterns
