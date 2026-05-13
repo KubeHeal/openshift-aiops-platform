@@ -147,6 +147,14 @@ spec:
         - name: ANSIBLE_FORCE_COLOR
           value: "true"
 
+        # Helm writable directories (container user may not have a home dir)
+        - name: HELM_CACHE_HOME
+          value: /tmp/.helm/cache
+        - name: HELM_CONFIG_HOME
+          value: /tmp/.helm/config
+        - name: HELM_DATA_HOME
+          value: /tmp/.helm/data
+
         # Kubernetes connection (uses in-cluster config)
         - name: K8S_AUTH_KUBECONFIG
           value: /var/run/secrets/kubernetes.io/serviceaccount/token
