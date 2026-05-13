@@ -123,7 +123,7 @@
     # ========================================
     - name: Configure secrets management
       role: validated_patterns_secrets
-      when: enable_secrets_mgmt
+      when: enable_secrets_mgmt | bool
       tags: ['secrets']
       vars:
         secrets_namespace: "{{ pattern_namespace }}"
@@ -138,7 +138,7 @@
     # ========================================
     - name: Deploy Jupyter Notebook Validator Operator via Kustomize
       role: validated_patterns_jupyter_validator
-      when: enable_notebooks
+      when: enable_notebooks | bool
       tags: ['notebooks', 'jupyter-validator']
       vars:
         jupyter_validator_operator_enabled: true
