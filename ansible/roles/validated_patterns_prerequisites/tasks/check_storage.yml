@@ -11,13 +11,8 @@
 - name: Find default storage class
   set_fact:
     default_storage_class: >-
-      {% set ns = namespace(found=[]) %}
-      {% for sc in storage_classes.resources %}
-        {% if sc.metadata.annotations is defined and 'storageclass.kubernetes.io/is-default-class' in sc.metadata.annotations %}
-          {% set _ = ns.found.append(sc) %}
-        {% endif %}
-      {% endfor %}
-      {{ ns.found }}
+      {{ storage_classes.resources |
+         json_query("[?metadata.annotations.\"storageclass.kubernetes.io/is-default-class\"]") }}
 
 - name: Display found storage classes
   debug:
