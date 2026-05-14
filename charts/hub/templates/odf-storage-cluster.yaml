@@ -2,13 +2,68 @@
 {{- if index .Values.operators "odf" }}
 {{- if (index .Values.operators "odf").enabled }}
 {{- $topology := (.Values.cluster).topology | default "ha" }}
+{{- if eq $topology "sno" }}
 ---
-# StorageCluster - Topology-aware ODF configuration
-# SNO: MCG-only (NooBaa S3 without Ceph) - lightweight, single-node
-# HA: Full Ceph + NooBaa - distributed storage with block, file, and object
+# NooBaa - MCG-only for SNO (no StorageCluster needed)
+# StorageCluster requires 3 nodes for topology mapping, so on SNO
+# we deploy NooBaa directly for S3 object storage.
+#
+# References: ADR-056 (Standalone MCG on SNO)
+apiVersion: noobaa.io/v1alpha1
+kind: NooBaa
+metadata:
+  name: noobaa
+  namespace: openshift-storage
+  labels:
+    app.kubernetes.io/name: noobaa
+    app.kubernetes.io/component: storage
+    app.kubernetes.io/part-of: {{ .Values.global.pattern | default "self-healing-platform" }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-7"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  dbStorageClass: {{ (index .Values.operators "odf").dbStorageClassName | default "gp3-csi" }}
+  dbType: postgres
+  coreResources:
+    requests:
+      cpu: "1"
+      memory: "4Gi"
+  endpoints:
+    minCount: 1
+    maxCount: 1
+    resources:
+      requests:
+        cpu: "1"
+        memory: "2Gi"
+---
+# PV-backed BackingStore for NooBaa on SNO
+# Uses gp3-csi PVs for object data storage
+apiVersion: noobaa.io/v1alpha1
+kind: BackingStore
+metadata:
+  name: noobaa-pv-backing-store
+  namespace: openshift-storage
+  labels:
+    app.kubernetes.io/name: noobaa-pv-backing-store
+    app.kubernetes.io/component: storage
+    app.kubernetes.io/part-of: {{ .Values.global.pattern | default "self-healing-platform" }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-6"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  type: PV-POOL
+  pvPool:
+    numVolumes: 1
+    resources:
+      requests:
+        storage: 50Gi
+    storageClass: {{ (index .Values.operators "odf").dbStorageClassName | default "gp3-csi" }}
+{{- else }}
+---
+# StorageCluster - Full Ceph + NooBaa for HA clusters
 #
 # ArgoCD will retry until the ODF operator installs and the CRD becomes available.
-# References: ADR-056 (Standalone MCG on SNO), ADR-035 (Storage Strategy)
+# References: ADR-035 (Storage Strategy)
 apiVersion: ocs.openshift.io/v1
 kind: StorageCluster
 metadata:
@@ -39,39 +94,15 @@ spec:
         memory: "8Gi"
   monDataDirHostPath: /var/lib/rook
   managedResources:
-    cephBlockPools:
-      {{- if eq $topology "sno" }}
-      reconcileStrategy: ignore
-      {{- else }}
-      {}
-      {{- end }}
+    cephBlockPools: {}
     cephConfig: {}
     cephDashboard: {}
-    cephFilesystems:
-      {{- if eq $topology "sno" }}
-      reconcileStrategy: ignore
-      {{- else }}
-      {}
-      {{- end }}
+    cephFilesystems: {}
     cephObjectStoreUsers: {}
-    cephObjectStores:
-      {{- if eq $topology "sno" }}
-      reconcileStrategy: ignore
-      {{- else }}
-      {}
-      {{- end }}
+    cephObjectStores: {}
   multiCloudGateway:
     reconcileStrategy: manage
-    {{- if eq $topology "sno" }}
-    dbStorageClassName: {{ (index .Values.operators "odf").dbStorageClassName | default "gp3-csi" }}
-    endpoints:
-      minCount: 1
-      maxCount: 1
-    {{- end }}
   nodeTopologies: {}
-  {{- if eq $topology "sno" }}
-  storageDeviceSets: []
-  {{- else }}
   storageDeviceSets:
     - count: 1
       dataPVCTemplate:
@@ -94,7 +125,7 @@ spec:
         requests:
           cpu: "1"
           memory: "5Gi"
-  {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
