@@ -14,7 +14,7 @@ metadata:
     app.kubernetes.io/part-of: {{ .Values.global.pattern | default "self-healing-platform" }}
     app.kubernetes.io/managed-by: validated-patterns
   annotations:
-    argocd.argoproj.io/sync-wave: "-9"
+    argocd.argoproj.io/sync-wave: "-11"
     openshift.io/description: "OpenShift Data Foundation storage"
 ---
 # ODF Operator - OperatorGroup
@@ -27,7 +27,7 @@ metadata:
     app.kubernetes.io/name: odf-operator
     app.kubernetes.io/part-of: {{ .Values.global.pattern | default "self-healing-platform" }}
   annotations:
-    argocd.argoproj.io/sync-wave: "-9"
+    argocd.argoproj.io/sync-wave: "-11"
 spec:
   targetNamespaces:
   - openshift-storage
@@ -42,7 +42,7 @@ metadata:
     app.kubernetes.io/name: odf-operator
     app.kubernetes.io/part-of: {{ .Values.global.pattern | default "self-healing-platform" }}
   annotations:
-    argocd.argoproj.io/sync-wave: "-9"
+    argocd.argoproj.io/sync-wave: "-11"
 spec:
   channel: {{ (index .Values.operators "odf").channel | default "stable-4.18" }}
   name: odf-operator
