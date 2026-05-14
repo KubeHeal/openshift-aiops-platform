@@ -44,6 +44,29 @@ prerequisites:
       memory: "2Gi"
       cpu: "1000m"
 
+# Operator Subscriptions managed by ArgoCD
+# These operators are installed automatically during pattern deployment.
+# ArgoCD creates the Namespace, OperatorGroup, and Subscription for each.
+operators:
+  odf:
+    enabled: true
+    channel: "stable-4.18"
+    source: redhat-operators
+    storageClusterName: ocs-storagecluster
+    dbStorageClassName: gp3-csi
+    deviceSetSize: "512Gi"
+    deviceSetStorageClass: gp3-csi
+  external-secrets:
+    enabled: true
+    namespace: external-secrets-operator
+    channel: alpha
+    source: community-operators
+    config:
+      concurrent: 1
+      prometheus:
+        enabled: true
+        port: 8080
+
 # global.clusterDomain is auto-populated by the Validated Patterns operator
 # with the OpenShift baseDomain (e.g. "ocp.example.com").
 # Override only if auto-detection fails:

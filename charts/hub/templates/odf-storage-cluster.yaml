@@ -1,0 +1,100 @@
+{{- if .Values.operators }}
+{{- if index .Values.operators "odf" }}
+{{- if (index .Values.operators "odf").enabled }}
+{{- $topology := (.Values.cluster).topology | default "ha" }}
+---
+# StorageCluster - Topology-aware ODF configuration
+# SNO: MCG-only (NooBaa S3 without Ceph) - lightweight, single-node
+# HA: Full Ceph + NooBaa - distributed storage with block, file, and object
+#
+# ArgoCD will retry until the ODF operator installs and the CRD becomes available.
+# References: ADR-056 (Standalone MCG on SNO), ADR-035 (Storage Strategy)
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: {{ (index .Values.operators "odf").storageClusterName | default "ocs-storagecluster" }}
+  namespace: openshift-storage
+  labels:
+    app.kubernetes.io/name: odf-storage-cluster
+    app.kubernetes.io/component: storage
+    app.kubernetes.io/part-of: {{ .Values.global.pattern | default "self-healing-platform" }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-7"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    uninstall.ocs.openshift.io/cleanup-policy: delete
+    uninstall.ocs.openshift.io/mode: graceful
+spec:
+  arbiter: {}
+  encryption:
+    kms: {}
+  externalStorage: {}
+  flexibleScaling: true
+  resources:
+    mds:
+      limits:
+        cpu: "3"
+        memory: "8Gi"
+      requests:
+        cpu: "1"
+        memory: "8Gi"
+  monDataDirHostPath: /var/lib/rook
+  managedResources:
+    cephBlockPools:
+      {{- if eq $topology "sno" }}
+      reconcileStrategy: ignore
+      {{- else }}
+      {}
+      {{- end }}
+    cephConfig: {}
+    cephDashboard: {}
+    cephFilesystems:
+      {{- if eq $topology "sno" }}
+      reconcileStrategy: ignore
+      {{- else }}
+      {}
+      {{- end }}
+    cephObjectStoreUsers: {}
+    cephObjectStores:
+      {{- if eq $topology "sno" }}
+      reconcileStrategy: ignore
+      {{- else }}
+      {}
+      {{- end }}
+  multiCloudGateway:
+    reconcileStrategy: manage
+    {{- if eq $topology "sno" }}
+    dbStorageClassName: {{ (index .Values.operators "odf").dbStorageClassName | default "gp3-csi" }}
+    endpoints:
+      minCount: 1
+      maxCount: 1
+    {{- end }}
+  nodeTopologies: {}
+  {{- if eq $topology "sno" }}
+  storageDeviceSets: []
+  {{- else }}
+  storageDeviceSets:
+    - count: 1
+      dataPVCTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: {{ (index .Values.operators "odf").deviceSetSize | default "512Gi" }}
+          storageClassName: {{ (index .Values.operators "odf").deviceSetStorageClass | default "gp3-csi" }}
+          volumeMode: Block
+      name: ocs-deviceset
+      placement: {}
+      portable: true
+      replica: 3
+      resources:
+        limits:
+          cpu: "2"
+          memory: "5Gi"
+        requests:
+          cpu: "1"
+          memory: "5Gi"
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
