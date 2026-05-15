@@ -30,6 +30,10 @@ spec:
   # Use OpenShift Data Foundation (NooBaa) storage class
   storageClassName: openshift-storage.noobaa.io
 
+  # Specify BucketClass for PV-backed storage (required for SNO MCG-only NooBaa)
+  additionalConfig:
+    bucketclass: noobaa-pv-bucket-class
+
 ---
 # Note: After OBC is created, a secret named "model-storage-obc-secret" will be created
 # in the openshift-storage namespace with the following keys:

@@ -1,0 +1,24 @@
+{{- if .Values.objectStore.enabled }}
+---
+# BucketClass for PV-backed NooBaa storage
+# Required for ObjectBucketClaim to provision buckets on MCG-only NooBaa (SNO)
+# References: ADR-056 (Standalone MCG on SNO), ADR-041 (Model Storage Strategy)
+apiVersion: noobaa.io/v1alpha1
+kind: BucketClass
+metadata:
+  name: noobaa-pv-bucket-class
+  namespace: openshift-storage
+  labels:
+    app.kubernetes.io/name: noobaa-pv-bucket-class
+    app.kubernetes.io/component: object-store
+    app.kubernetes.io/part-of: self-healing-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "-6"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    description: "BucketClass for PV-backed NooBaa storage (SNO MCG-only mode)"
+spec:
+  placementPolicy:
+    tiers:
+    - backingStores:
+      - noobaa-pv-backing-store
+{{- end }}
