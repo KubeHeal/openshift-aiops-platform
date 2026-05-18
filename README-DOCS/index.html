@@ -1539,40 +1539,13 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#directory-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      Directory Structure
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#updating-documentation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Updating Documentation
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Updating Documentation">
+    <nav class="md-nav" aria-label="Duplicated Root Files">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#for-tutorials-how-to-guides-reference-explanation" class="md-nav__link">
+  <a href="#automatic-sync-recommended" class="md-nav__link">
     <span class="md-ellipsis">
-      For Tutorials, How-To Guides, Reference, Explanation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#for-root-level-files" class="md-nav__link">
-    <span class="md-ellipsis">
-      For Root-Level Files
+      Automatic Sync (Recommended)
     </span>
   </a>
   
@@ -1617,13 +1590,78 @@
 <li><code>CODE_OF_CONDUCT.md</code> → Copy of <code>../CODE_OF_CONDUCT.md</code></li>
 <li><code>AGENTS.md</code> → Copy of <code>../AGENTS.md</code></li>
 </ul>
-<p><strong>IMPORTANT</strong>: The <strong>root files are the source of truth</strong>. If you update these files:</p>
-<ol>
-<li>Edit the file in the repository root (e.g., <code>../README.md</code>)</li>
-<li>Copy the updated file to docs/ (e.g., <code>cp ../README.md README.md</code>)</li>
-<li>Commit both files</li>
-</ol>
+<p><strong>IMPORTANT</strong>: The <strong>root files are the source of truth</strong>. When you update these files, they are <strong>automatically synced</strong> to docs/ by a GitHub Actions workflow.</p>
+<h3 id="automatic-sync-recommended">Automatic Sync (Recommended)<a class="headerlink" href="#automatic-sync-recommended" title="Permanent link">&para;</a></h3>
+<p>Just edit the root file and commit - the sync happens automatically:</p>
+<p>```bash</p>
+<h1 id="1-edit-the-root-file">1. Edit the root file<a class="headerlink" href="#1-edit-the-root-file" title="Permanent link">&para;</a></h1>
+<p>vi ../README.md</p>
+<h1 id="2-commit-sync-happens-automatically-via-github-actions">2. Commit (sync happens automatically via GitHub Actions)<a class="headerlink" href="#2-commit-sync-happens-automatically-via-github-actions" title="Permanent link">&para;</a></h1>
+<p>git add ../README.md
+git commit -s -m "docs: Update README"
+git push origin main</p>
+<h1 id="3-github-actions-automatically">3. GitHub Actions automatically:<a class="headerlink" href="#3-github-actions-automatically" title="Permanent link">&para;</a></h1>
+<h1 id="-copies-readmemd-to-docsreadmemd">- Copies ../README.md to docs/README.md<a class="headerlink" href="#-copies-readmemd-to-docsreadmemd" title="Permanent link">&para;</a></h1>
+<h1 id="-commits-the-synced-file">- Commits the synced file<a class="headerlink" href="#-commits-the-synced-file" title="Permanent link">&para;</a></h1>
+<h1 id="-triggers-documentation-deployment">- Triggers documentation deployment<a class="headerlink" href="#-triggers-documentation-deployment" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<p><strong>Workflow</strong>: <code>.github/workflows/sync-docs.yml</code></p>
+<h3 id="manual-sync-alternative">Manual Sync (Alternative)<a class="headerlink" href="#manual-sync-alternative" title="Permanent link">&para;</a></h3>
+<p>If you prefer to sync manually or need immediate local testing:</p>
+<p>```bash</p>
+<h1 id="1-edit-the-root-file_1">1. Edit the root file<a class="headerlink" href="#1-edit-the-root-file_1" title="Permanent link">&para;</a></h1>
+<p>vi ../README.md</p>
+<h1 id="2-run-sync-script">2. Run sync script<a class="headerlink" href="#2-run-sync-script" title="Permanent link">&para;</a></h1>
+<p>../scripts/sync-docs.sh</p>
+<h1 id="3-commit-both-files">3. Commit both files<a class="headerlink" href="#3-commit-both-files" title="Permanent link">&para;</a></h1>
+<p>git add ../README.md docs/README.md
+git commit -s -m "docs: Update README"
+git push origin main
+```</p>
 <p><strong>Why this duplication?</strong> MkDocs design requires all documentation to be within the <code>docs_dir</code> (which is <code>docs/</code> in our case). We cannot use the repository root as <code>docs_dir</code> because it would include all non-documentation files and cause build errors.</p>
+<h2 id="how-automatic-sync-works">How Automatic Sync Works<a class="headerlink" href="#how-automatic-sync-works" title="Permanent link">&para;</a></h2>
+<p><code>┌─────────────────────────────────────────────────────────────────┐
+│ Developer Updates Root File                                      │
+│                                                                   │
+│  $ vim README.md                                                 │
+│  $ git add README.md                                             │
+│  $ git commit -m "docs: Update README"                           │
+│  $ git push origin main                                          │
+└──────────────────────┬────────────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ GitHub Actions: sync-docs.yml (Automatic)                        │
+│                                                                   │
+│  Triggered by: Changes to README.md, DEPLOYMENT.md, etc.        │
+│                                                                   │
+│  Actions:                                                        │
+│   1. cp README.md docs/README.md                                │
+│   2. git commit -m "docs: Auto-sync root files to docs/"        │
+│   3. git push origin main                                        │
+└──────────────────────┬────────────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ GitHub Actions: deploy-docs.yml (Automatic)                      │
+│                                                                   │
+│  Triggered by: Changes to docs/**                               │
+│                                                                   │
+│  Actions:                                                        │
+│   1. pip install -r requirements-docs.txt                        │
+│   2. mkdocs build                                                │
+│   3. mkdocs gh-deploy --force (pushes to gh-pages branch)       │
+└──────────────────────┬────────────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ GitHub Pages: Site Updated                                       │
+│                                                                   │
+│  https://kubeheal.github.io/openshift-aiops-platform/           │
+│                                                                   │
+│  Updated files visible within 1-2 minutes                        │
+└─────────────────────────────────────────────────────────────────┘</code></p>
+<p><strong>Timeline</strong>: Root file update → Auto-sync (30s) → Deploy (2 min) → Live (1 min) = <strong>~3-4 minutes total</strong></p>
 <h2 id="directory-structure">Directory Structure<a class="headerlink" href="#directory-structure" title="Permanent link">&para;</a></h2>
 <p><code>docs/
 ├── index.md                    # Documentation homepage
@@ -1644,7 +1682,7 @@
 <p>Edit files directly in their respective directories. No duplication needed.</p>
 <h3 id="for-root-level-files">For Root-Level Files<a class="headerlink" href="#for-root-level-files" title="Permanent link">&para;</a></h3>
 <p>```bash</p>
-<h1 id="1-edit-the-root-file">1. Edit the root file<a class="headerlink" href="#1-edit-the-root-file" title="Permanent link">&para;</a></h1>
+<h1 id="1-edit-the-root-file_2">1. Edit the root file<a class="headerlink" href="#1-edit-the-root-file_2" title="Permanent link">&para;</a></h1>
 <p>vi ../README.md</p>
 <h1 id="2-copy-to-docs">2. Copy to docs/<a class="headerlink" href="#2-copy-to-docs" title="Permanent link">&para;</a></h1>
 <p>cp ../README.md docs/README.md</p>
