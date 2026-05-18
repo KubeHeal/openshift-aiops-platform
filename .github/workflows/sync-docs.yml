@@ -20,7 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Sync root files to docs/
         run: |
@@ -49,9 +55,6 @@ jobs:
       - name: Commit and push if changed
         if: steps.check_changes.outputs.changed == 'true'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
           git add docs/README.md docs/DEPLOYMENT.md docs/CONTRIBUTING.md docs/CODE_OF_CONDUCT.md docs/AGENTS.md
 
           git commit -m "docs: Auto-sync root files to docs/
@@ -64,6 +67,4 @@ This ensures GitHub Pages shows the latest content.
 Changed files:
 $(git diff --cached --name-only | grep '^docs/' || echo '  (none)')"
 
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git push
