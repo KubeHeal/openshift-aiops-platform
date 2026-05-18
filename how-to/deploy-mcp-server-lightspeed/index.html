@@ -15,6 +15,10 @@
         <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/how-to/deploy-mcp-server-lightspeed/">
       
       
+        <link rel="prev" href="../access-workbench/">
+      
+      
+        <link rel="next" href="../../reference/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -22,7 +26,7 @@
     
     
       
-        <title>How-To: Deploy MCP Server and Configure OpenShift Lightspeed - OpenShift AIOps Self-Healing Platform</title>
+        <title>Deploy MCP Server - OpenShift AIOps Self-Healing Platform</title>
       
     
     
@@ -108,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              How-To: Deploy MCP Server and Configure OpenShift Lightspeed
+              Deploy MCP Server
             
           </span>
         </div>
@@ -268,10 +272,12 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../" class="md-tabs__link">
           
   
@@ -726,8 +732,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -736,14 +744,12 @@
       
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
@@ -757,7 +763,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             How-To Guides
@@ -831,10 +837,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../deploy-mcp-server.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -843,6 +869,434 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Start
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-deploy-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Deploy MCP Server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-llm-provider-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. LLM Provider Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. LLM Provider Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-providers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported Providers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secret-creation-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Secret Creation Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-create-olsconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Create OLSConfig
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Create OLSConfig">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#olsconfig-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      OLSConfig Structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Requirements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#provider-specific-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Provider-Specific Notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-test-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Test Integration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detailed Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Detailed Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mcp-server-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      MCP Server Environment Variables
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#olsconfig-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      OLSConfig Options
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mcp-server-tools-and-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      MCP Server Tools and Resources
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ask-openshift-lightspeed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ask OpenShift Lightspeed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#programmatic-access-from-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Programmatic Access (from Notebooks)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mcp-server-not-starting" class="md-nav__link">
+    <span class="md-ellipsis">
+      MCP Server Not Starting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openshift-lightspeed-not-connecting" class="md-nav__link">
+    <span class="md-ellipsis">
+      OpenShift Lightspeed Not Connecting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm-provider-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLM Provider Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#provider-specific-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Provider-Specific Issues
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interacting-with-mcp-server-via-openshift-lightspeed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interacting with MCP Server via OpenShift Lightspeed
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interacting with MCP Server via OpenShift Lightspeed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessing-openshift-lightspeed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accessing OpenShift Lightspeed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-queries-and-mcp-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Queries and MCP Tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example Queries and MCP Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-cluster-health-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Cluster Health Queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-incident-and-anomaly-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Incident and Anomaly Queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-remediation-workflow-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Remediation Workflow Queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-model-serving-health-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Model Serving Health Queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-advanced-analytics-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Advanced Analytics Queries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iterative-improvement-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Iterative Improvement Workflow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-mcp-server-interactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring MCP Server Interactions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notebook-update-decision-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notebook Update Decision Matrix
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-complete-interaction-notebook-update-cycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example: Complete Interaction → Notebook Update Cycle
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Support
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
