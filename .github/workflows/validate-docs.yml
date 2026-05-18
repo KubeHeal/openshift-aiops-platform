@@ -1,0 +1,44 @@
+name: Validate Documentation
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '*.md'
+  push:
+    branches:
+      - main
+
+jobs:
+  validate-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-docs.txt
+          npm install -g markdown-link-check
+
+      - name: Build documentation (check for errors)
+        run: mkdocs build --strict
+
+      - name: Check internal links
+        run: |
+          find docs -name "*.md" -exec markdown-link-check {} \;
+          markdown-link-check README.md
+          markdown-link-check CONTRIBUTING.md
+
+      - name: Validate Diataxis structure
+        run: |
+          # Ensure Diataxis directories exist
+          test -d docs/tutorials || exit 1
+          test -d docs/how-to || exit 1
+          test -d docs/reference || exit 1
+          test -d docs/explanation || exit 1
+          echo "✅ Diataxis structure validated"
