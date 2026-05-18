@@ -1593,8 +1593,161 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#changes-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changes Made:
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Results
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validation Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sno-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      SNO Cluster:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ha-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      HA Cluster:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipeline-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pipeline Definition
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-was-marked-partial" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why This Was Marked PARTIAL
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Points
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration Points">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#externalsecrets-adr-024" class="md-nav__link">
+    <span class="md-ellipsis">
+      ExternalSecrets (ADR-024):
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#objectbucketclaim-adr-025" class="md-nav__link">
+    <span class="md-ellipsis">
+      ObjectBucketClaim (ADR-025):
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kserve-inferenceservices-adr-004" class="md-nav__link">
+    <span class="md-ellipsis">
+      KServe InferenceServices (ADR-004):
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Enhancements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Future Enhancements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-task-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Task Implementation:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#progress-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      Progress Update
+    </span>
+  </a>
   
 </li>
       
@@ -1669,23 +1822,22 @@
 <strong>Result:</strong> Succeeded ✅
 <strong>Duration:</strong> 34 seconds</p>
 <p><strong>Task Execution:</strong>
-<code>1. validate-s3            → Succeeded (8s)  ✅
+<pre class="highlight"><code>1. validate-s3            → Succeeded (8s)  ✅
 2. upload-models          → Succeeded (4s)  ✅ (runAfter: validate-s3)
-3. reconcile-services     → Succeeded (6s)  ✅ (runAfter: upload-models)</code></p>
+3. reconcile-services     → Succeeded (6s)  ✅ (runAfter: upload-models)</code></pre></p>
 <p><strong>Logs:</strong>
-<code>=== Validating S3 Connectivity ===
-✅ PASS: Secret found and S3 connectivity validated</code></p>
+<pre class="highlight"><code>=== Validating S3 Connectivity ===
+✅ PASS: Secret found and S3 connectivity validated</code></pre></p>
 <hr />
 <h2 id="validator-fixes-applied">Validator Fixes Applied<a class="headerlink" href="#validator-fixes-applied" title="Permanent link">&para;</a></h2>
 <h3 id="problem">Problem:<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="old-doesnt-work-with-tekton-v1">Old (doesn't work with Tekton v1):<a class="headerlink" href="#old-doesnt-work-with-tekton-v1" title="Permanent link">&para;</a></h1>
-<p>oc get pipeline -n self-healing-platform</p>
-<h1 id="result-no-resources-found">Result: No resources found<a class="headerlink" href="#result-no-resources-found" title="Permanent link">&para;</a></h1>
-<h1 id="new-correct-for-tekton-v1">New (correct for Tekton v1):<a class="headerlink" href="#new-correct-for-tekton-v1" title="Permanent link">&para;</a></h1>
-<p>oc get pipelines.tekton.dev -n self-healing-platform</p>
-<h1 id="result-shows-4-pipelines-including-s3-configuration-pipeline">Result: Shows 4 pipelines including s3-configuration-pipeline<a class="headerlink" href="#result-shows-4-pipelines-including-s3-configuration-pipeline" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Old (doesn't work with Tekton v1):
+oc get pipeline -n self-healing-platform
+# Result: No resources found
+
+# New (correct for Tekton v1):
+oc get pipelines.tekton.dev -n self-healing-platform
+# Result: Shows 4 pipelines including s3-configuration-pipeline</code></pre>
 <h3 id="changes-made">Changes Made:<a class="headerlink" href="#changes-made" title="Permanent link">&para;</a></h3>
 <p><strong>1. validators/mlops-cicd.sh</strong>
 - Updated ADR-021 validator to use <code>pipelines.tekton.dev</code>
@@ -1698,29 +1850,26 @@
 <hr />
 <h2 id="validation-results">Validation Results<a class="headerlink" href="#validation-results" title="Permanent link">&para;</a></h2>
 <h3 id="sno-cluster">SNO Cluster:<a class="headerlink" href="#sno-cluster" title="Permanent link">&para;</a></h3>
-<p><code>json
-{
+<pre class="highlight"><code class="language-json">{
   "adr": "023",
   "status": "PASS",
   "expected": "S3 pipeline with ExternalSecrets",
   "actual": "S3 pipeline: 1, Tasks: 1, ExternalSecrets: 4",
   "details": "S3 configuration automated"
-}</code></p>
+}</code></pre>
 <h3 id="ha-cluster">HA Cluster:<a class="headerlink" href="#ha-cluster" title="Permanent link">&para;</a></h3>
-<p><code>json
-{
+<pre class="highlight"><code class="language-json">{
   "adr": "023",
   "status": "PASS",
   "expected": "S3 pipeline with ExternalSecrets",
   "actual": "S3 pipeline: 1, Tasks: 1, ExternalSecrets: 4",
   "details": "S3 configuration automated"
-}</code></p>
+}</code></pre>
 <hr />
 <h2 id="pipeline-definition">Pipeline Definition<a class="headerlink" href="#pipeline-definition" title="Permanent link">&para;</a></h2>
 <p><strong>File:</strong> <code>charts/hub/templates/tekton-pipelines.yaml</code></p>
 <p><strong>Spec:</strong>
-```yaml
-apiVersion: tekton.dev/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: s3-configuration-pipeline
@@ -1728,34 +1877,32 @@ metadata:
 spec:
   description: |
     Tekton pipeline for S3 configuration and model deployment.
-    Handles validation, model upload, and InferenceService reconciliation.</p>
-<p>params:
+    Handles validation, model upload, and InferenceService reconciliation.
+
+  params:
     - name: namespace (default: self-healing-platform)
     - name: secret-name (default: model-storage-config)
     - name: model-bucket (default: model-storage)
-    - name: timeout (default: "300")</p>
-<p>tasks:
+    - name: timeout (default: "300")
+
+  tasks:
     - validate-s3
     - upload-models (runAfter: validate-s3)
-    - reconcile-services (runAfter: upload-models)
-```</p>
+    - reconcile-services (runAfter: upload-models)</code></pre></p>
 <hr />
 <h2 id="why-this-was-marked-partial">Why This Was Marked PARTIAL<a class="headerlink" href="#why-this-was-marked-partial" title="Permanent link">&para;</a></h2>
 <p><strong>Original Validator Logic:</strong>
-```bash
-local s3_pipeline=$(oc get pipeline -n self-healing-platform --no-headers 2&gt;/dev/null | grep -c "s3-config|configure-s3" || echo "0")</p>
-<p>if [[ $s3_pipeline -ge 1 ]] &amp;&amp; [[ $external_secrets -ge 1 ]]; then
+<pre class="highlight"><code class="language-bash">local s3_pipeline=$(oc get pipeline -n self-healing-platform --no-headers 2&gt;/dev/null | grep -c "s3-config\|configure-s3" || echo "0")
+
+if [[ $s3_pipeline -ge 1 ]] &amp;&amp; [[ $external_secrets -ge 1 ]]; then
     status="PASS"
 elif [[ $s3_tasks -ge 1 ]]; then
     status="PARTIAL"  # ← Validator found tasks but no pipeline
-fi
-```</p>
+fi</code></pre></p>
 <p><strong>Result:</strong> <code>s3_pipeline=0</code> (because command was wrong) → status=PARTIAL</p>
 <p><strong>Fix:</strong>
-```bash</p>
-<h1 id="use-correct-api-resource-name-for-tekton-v1">Use correct API resource name for Tekton v1<a class="headerlink" href="#use-correct-api-resource-name-for-tekton-v1" title="Permanent link">&para;</a></h1>
-<p>local s3_pipeline=$(oc get pipelines.tekton.dev -n self-healing-platform --no-headers 2&gt;/dev/null | grep -c "s3-config|configure-s3" || echo "0")
-```</p>
+<pre class="highlight"><code class="language-bash"># Use correct API resource name for Tekton v1
+local s3_pipeline=$(oc get pipelines.tekton.dev -n self-healing-platform --no-headers 2&gt;/dev/null | grep -c "s3-config\|configure-s3" || echo "0")</code></pre></p>
 <p><strong>Result:</strong> <code>s3_pipeline=1</code> → status=PASS ✅</p>
 <hr />
 <h2 id="integration-points">Integration Points<a class="headerlink" href="#integration-points" title="Permanent link">&para;</a></h2>
@@ -1781,24 +1928,21 @@ fi
 <ol>
 <li>
 <p><strong>validate-s3-connectivity:</strong>
-   <code>bash
-   # Current: checks if secret exists
-   # Future: test actual S3 connectivity with aws-cli
-   aws s3 ls s3://$BUCKET --endpoint-url=$ENDPOINT</code></p>
+   <pre class="highlight"><code class="language-bash"># Current: checks if secret exists
+# Future: test actual S3 connectivity with aws-cli
+aws s3 ls s3://$BUCKET --endpoint-url=$ENDPOINT</code></pre></p>
 </li>
 <li>
 <p><strong>upload-placeholder-models:</strong>
-   <code>bash
-   # Current: echo success
-   # Future: actually upload model files
-   aws s3 cp /models/* s3://$BUCKET/models/ --endpoint-url=$ENDPOINT</code></p>
+   <pre class="highlight"><code class="language-bash"># Current: echo success
+# Future: actually upload model files
+aws s3 cp /models/* s3://$BUCKET/models/ --endpoint-url=$ENDPOINT</code></pre></p>
 </li>
 <li>
 <p><strong>reconcile-inferenceservices:</strong>
-   <code>bash
-   # Current: echo success
-   # Future: restart all InferenceServices
-   oc rollout restart deployment -l serving.kserve.io/inferenceservice -n $NAMESPACE</code></p>
+   <pre class="highlight"><code class="language-bash"># Current: echo success
+# Future: restart all InferenceServices
+oc rollout restart deployment -l serving.kserve.io/inferenceservice -n $NAMESPACE</code></pre></p>
 </li>
 </ol>
 <h3 id="recommended">Recommended:<a class="headerlink" href="#recommended" title="Permanent link">&para;</a></h3>

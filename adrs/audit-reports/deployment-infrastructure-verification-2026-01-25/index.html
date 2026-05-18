@@ -1940,20 +1940,18 @@
 <strong>Verification Date</strong>: 2026-01-25</p>
 <h4 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">&para;</a></h4>
 <p><strong>Operator Deployment</strong>:
-<code>bash
-$ oc get csv -A | grep patterns
-patterns-operator.v0.0.64    Validated Patterns Operator    0.0.64    Succeeded</code></p>
+<pre class="highlight"><code class="language-bash">$ oc get csv -A | grep patterns
+patterns-operator.v0.0.64    Validated Patterns Operator    0.0.64    Succeeded</code></pre></p>
 <p><strong>Deployment Verification</strong>:
 - ✅ Validated Patterns Operator v0.0.64 deployed
 - ✅ Operator running in <code>cert-manager</code> namespace
 - ✅ Operator status: <strong>Succeeded</strong>
 - ✅ Deployed across 100+ namespaces</p>
 <p><strong>ArgoCD Integration</strong>:
-<code>bash
-$ oc get argocd -A
+<pre class="highlight"><code class="language-bash">$ oc get argocd -A
 NAMESPACE          NAME   AGE
 openshift-gitops   hub    2d3h
-hub-gitops         hub    2d3h</code></p>
+hub-gitops         hub    2d3h</code></pre></p>
 <p><strong>Makefile Deployment</strong>:
 - ✅ Makefile-based deployment operational (verified in ADR-009 supersession)
 - ✅ Helm charts + ArgoCD structure in place
@@ -1971,13 +1969,12 @@ The Validated Patterns Operator is deployed and operational, ArgoCD integration 
 <strong>Verification Date</strong>: 2026-01-25</p>
 <h4 id="evidence_1">Evidence<a class="headerlink" href="#evidence_1" title="Permanent link">&para;</a></h4>
 <p><strong>ExternalSecrets Deployed</strong>:
-<code>bash
-$ oc get externalsecrets -A
+<pre class="highlight"><code class="language-bash">$ oc get externalsecrets -A
 NAMESPACE               NAME                    STORE                     REFRESH INTERVAL   STATUS          READY
 self-healing-platform   git-credentials         secret-store-self-healing 15s                SecretSynced    True
 self-healing-platform   gitea-credentials       secret-store-self-healing 15s                SecretSynced    True
 self-healing-platform   model-storage-config    secret-store-self-healing 15s                SecretSynced    True
-self-healing-platform   storage-config          secret-store-self-healing 15s                SecretSynced    True</code></p>
+self-healing-platform   storage-config          secret-store-self-healing 15s                SecretSynced    True</code></pre></p>
 <p><strong>Model Storage Configuration</strong>:
 - ✅ <code>model-storage-config</code> ExternalSecret deployed
 - ✅ <code>storage-config</code> ExternalSecret deployed
@@ -1985,12 +1982,11 @@ self-healing-platform   storage-config          secret-store-self-healing 15s   
 - ✅ 15-second refresh interval for near-real-time updates
 - ✅ Connected to <code>secret-store-self-healing</code> SecretStore</p>
 <p><strong>External Secrets Operator</strong>:
-<code>bash
-$ oc get deployment -n external-secrets-system
+<pre class="highlight"><code class="language-bash">$ oc get deployment -n external-secrets-system
 NAME                                READY   UP-TO-DATE   AVAILABLE
 external-secrets                    1/1     1            1
 external-secrets-cert-controller    1/1     1            1
-external-secrets-webhook            1/1     1            1</code></p>
+external-secrets-webhook            1/1     1            1</code></pre></p>
 <p><strong>Gap Analysis</strong> (why 9.0/10 and not 10/10):
 - ⚠️ S3 bucket credentials not yet externalized (may still be in ConfigMaps)
 - ✅ Model storage secrets fully managed via ExternalSecrets</p>
@@ -2003,17 +1999,15 @@ The ADR's primary goal is to use External Secrets for model storage credentials.
 <strong>Verification Date</strong>: 2026-01-25</p>
 <h4 id="evidence_2">Evidence<a class="headerlink" href="#evidence_2" title="Permanent link">&para;</a></h4>
 <p><strong>External Secrets Operator Deployed</strong>:
-<code>bash
-$ oc get deployment -n external-secrets-system
+<pre class="highlight"><code class="language-bash">$ oc get deployment -n external-secrets-system
 NAME                                READY   UP-TO-DATE   AVAILABLE   AGE
 external-secrets                    1/1     1            1           2d3h
 external-secrets-cert-controller    1/1     1            1           2d3h
-external-secrets-webhook            1/1     1            1           2d3h</code></p>
+external-secrets-webhook            1/1     1            1           2d3h</code></pre></p>
 <p><strong>Operator Version</strong>:
-<code>bash
-$ oc get csv -n external-secrets-system
+<pre class="highlight"><code class="language-bash">$ oc get csv -n external-secrets-system
 NAME                            DISPLAY                    VERSION
-external-secrets-operator.v...  External Secrets Operator  [active]</code></p>
+external-secrets-operator.v...  External Secrets Operator  [active]</code></pre></p>
 <p><strong>Secrets Automation in Use</strong>:
 - ✅ 4 ExternalSecrets actively managed
 - ✅ All secrets syncing every 15 seconds
@@ -2035,18 +2029,15 @@ The External Secrets Operator is fully deployed with all three core components (
 <strong>Verification Date</strong>: 2026-01-25</p>
 <h4 id="evidence_3">Evidence<a class="headerlink" href="#evidence_3" title="Permanent link">&para;</a></h4>
 <p><strong>ArgoCD Instances Deployed</strong>:
-<code>bash
-$ oc get argocd -A
+<pre class="highlight"><code class="language-bash">$ oc get argocd -A
 NAMESPACE          NAME   AGE
 openshift-gitops   hub    2d3h
-hub-gitops         hub    2d3h</code></p>
+hub-gitops         hub    2d3h</code></pre></p>
 <p><strong>OpenShift GitOps Operator</strong>:
-<code>bash
-$ oc get csv -A | grep gitops
-openshift-gitops-operator.v1.15.4    Red Hat OpenShift GitOps    1.15.4    Succeeded</code></p>
+<pre class="highlight"><code class="language-bash">$ oc get csv -A | grep gitops
+openshift-gitops-operator.v1.15.4    Red Hat OpenShift GitOps    1.15.4    Succeeded</code></pre></p>
 <p><strong>ArgoCD Deployments</strong>:
-<code>bash
-$ oc get deployment -n openshift-gitops
+<pre class="highlight"><code class="language-bash">$ oc get deployment -n openshift-gitops
 NAME                                         READY   REPLICAS
 cluster                                      1/1     1
 gitops-plugin                                1/1     1
@@ -2054,12 +2045,11 @@ openshift-gitops-applicationset-controller   1/1     1
 openshift-gitops-dex-server                  1/1     1
 openshift-gitops-redis                       1/1     1
 openshift-gitops-repo-server                 1/1     1
-openshift-gitops-server                      1/1     1</code></p>
+openshift-gitops-server                      1/1     1</code></pre></p>
 <p><strong>ArgoCD Route</strong>:
-<code>bash
-$ oc get route -n openshift-gitops
+<pre class="highlight"><code class="language-bash">$ oc get route -n openshift-gitops
 NAME                      HOST
-openshift-gitops-server   openshift-gitops-server-openshift-gitops.apps.cluster-pch5l...</code></p>
+openshift-gitops-server   openshift-gitops-server-openshift-gitops.apps.cluster-pch5l...</code></pre></p>
 <p><strong>Hybrid Model Evidence</strong>:
 - ✅ <strong>Cluster-scoped ArgoCD</strong>: <code>openshift-gitops</code> namespace (platform-wide)
 - ✅ <strong>Namespaced ArgoCD</strong>: <code>hub-gitops</code> namespace (application-specific)
@@ -2079,17 +2069,14 @@ The ADR's core decision is to use a hybrid ArgoCD model with both cluster-scoped
 <strong>Verification Date</strong>: 2026-01-25</p>
 <h4 id="evidence_4">Evidence<a class="headerlink" href="#evidence_4" title="Permanent link">&para;</a></h4>
 <p><strong>Coordination Engine Deployment</strong>:
-<code>bash
-$ oc get deployment coordination-engine -n self-healing-platform
+<pre class="highlight"><code class="language-bash">$ oc get deployment coordination-engine -n self-healing-platform
 NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
-coordination-engine   1/1     1            1           4h</code></p>
+coordination-engine   1/1     1            1           4h</code></pre></p>
 <p><strong>Container Image</strong>:
-<code>yaml
-image: quay.io/takinosh/openshift-coordination-engine:ocp-4.18-latest</code></p>
+<pre class="highlight"><code class="language-yaml">image: quay.io/takinosh/openshift-coordination-engine:ocp-4.18-latest</code></pre></p>
 <p><strong>Health Check</strong>:
-<code>bash
-$ curl http://coordination-engine.self-healing-platform.svc.cluster.local:8080/health
-{"status":"ok","version":"ocp-4.18-93c9718"}</code></p>
+<pre class="highlight"><code class="language-bash">$ curl http://coordination-engine.self-healing-platform.svc.cluster.local:8080/health
+{"status":"ok","version":"ocp-4.18-93c9718"}</code></pre></p>
 <p><strong>Init Containers</strong> (Dependencies):
 - ✅ <code>wait-for-prometheus</code>: Ensures Prometheus is ready
 - ✅ <code>wait-for-argocd</code>: Ensures ArgoCD is ready
@@ -2120,9 +2107,8 @@ The Go-based coordination engine is deployed and responding to health checks, de
 <h3 id="cert-manager-v1180">cert-manager (v1.18.0)<a class="headerlink" href="#cert-manager-v1180" title="Permanent link">&para;</a></h3>
 <p><strong>Status</strong>: Deployed as supporting infrastructure (no dedicated ADR)</p>
 <p><strong>Evidence</strong>:
-<code>bash
-$ oc get csv -n cert-manager-operator
-cert-manager-operator.v1.18.0    cert-manager Operator    1.18.0    Succeeded</code></p>
+<pre class="highlight"><code class="language-bash">$ oc get csv -n cert-manager-operator
+cert-manager-operator.v1.18.0    cert-manager Operator    1.18.0    Succeeded</code></pre></p>
 <p><strong>Certificates Deployed</strong>:
 - ✅ <code>notebook-validator-serving-cert</code> (jupyter-notebook-validator-operator)
 - ✅ <code>cert-manager-api-cert</code> (openshift-config)
@@ -2136,25 +2122,23 @@ cert-manager-operator.v1.18.0    cert-manager Operator    1.18.0    Succeeded</c
 <h3 id="openshift-serverless-v1370">OpenShift Serverless (v1.37.0)<a class="headerlink" href="#openshift-serverless-v1370" title="Permanent link">&para;</a></h3>
 <p><strong>Status</strong>: Deployed as part of KServe infrastructure (ADR-004 already marked implemented)</p>
 <p><strong>Evidence</strong>:
-```bash
-$ oc get csv -A | grep serverless
-serverless-operator.v1.37.0    Red Hat OpenShift Serverless    1.37.0    Succeeded</p>
-<p>$ oc get knativeserving -A
+<pre class="highlight"><code class="language-bash">$ oc get csv -A | grep serverless
+serverless-operator.v1.37.0    Red Hat OpenShift Serverless    1.37.0    Succeeded
+
+$ oc get knativeserving -A
 NAMESPACE         NAME              VERSION   READY
-knative-serving   knative-serving   1.17      True
-```</p>
+knative-serving   knative-serving   1.17      True</code></pre></p>
 <p><strong>Integration</strong>: Required by KServe for serverless model serving. Already accounted for in ADR-004 verification.</p>
 <hr />
 <h3 id="openshift-service-mesh-v2612">OpenShift Service Mesh (v2.6.12)<a class="headerlink" href="#openshift-service-mesh-v2612" title="Permanent link">&para;</a></h3>
 <p><strong>Status</strong>: Deployed as part of OpenShift AI infrastructure (ADR-003 already marked implemented)</p>
 <p><strong>Evidence</strong>:
-```bash
-$ oc get csv -A | grep servicemesh
-servicemeshoperator.v2.6.12    Red Hat OpenShift Service Mesh 2    2.6.12-0    Succeeded</p>
-<p>$ oc get servicemeshcontrolplane -A
+<pre class="highlight"><code class="language-bash">$ oc get csv -A | grep servicemesh
+servicemeshoperator.v2.6.12    Red Hat OpenShift Service Mesh 2    2.6.12-0    Succeeded
+
+$ oc get servicemeshcontrolplane -A
 NAMESPACE      NAME                READY   STATUS            PROFILES
-istio-system   data-science-smcp   5/5     ComponentsReady   ["default"]
-```</p>
+istio-system   data-science-smcp   5/5     ComponentsReady   ["default"]</code></pre></p>
 <p><strong>Integration</strong>: Required by OpenShift AI for data science workload networking and security. Already accounted for in ADR-003 verification.</p>
 <hr />
 <h2 id="cross-validation-with-existing-audits">Cross-Validation with Existing Audits<a class="headerlink" href="#cross-validation-with-existing-audits" title="Permanent link">&para;</a></h2>

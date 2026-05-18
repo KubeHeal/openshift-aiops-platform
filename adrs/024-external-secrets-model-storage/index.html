@@ -1703,6 +1703,117 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check-externalsecret-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check ExternalSecret Status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-secret-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check Secret Contents
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-refresh-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check Refresh Logs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mitigations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-status_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Status
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1754,37 +1865,38 @@
 <hr />
 <h2 id="rationale">Rationale<a class="headerlink" href="#rationale" title="Permanent link">&para;</a></h2>
 <h3 id="the-gitops-conflict">The GitOps Conflict<a class="headerlink" href="#the-gitops-conflict" title="Permanent link">&para;</a></h3>
-<p>```
-Git Repository (Source of Truth)
+<pre class="highlight"><code>Git Repository (Source of Truth)
   └─ model-storage-config Secret
      ├─ AWS_ACCESS_KEY_ID: "admin"
-     └─ AWS_SECRET_ACCESS_KEY: "changeme"</p>
-<p>Cluster State (After Tekton Patch)
+     └─ AWS_SECRET_ACCESS_KEY: "changeme"
+
+Cluster State (After Tekton Patch)
   └─ model-storage-config Secret
      ├─ AWS_ACCESS_KEY_ID: "real_key"
-     └─ AWS_SECRET_ACCESS_KEY: "real_secret"</p>
-<p>ArgoCD Comparison
+     └─ AWS_SECRET_ACCESS_KEY: "real_secret"
+
+ArgoCD Comparison
   └─ Detects DRIFT
   └─ selfHeal: true
   └─ Reverts to Git state
-  └─ ❌ Tekton changes lost
-```</p>
+  └─ ❌ Tekton changes lost</code></pre>
 <h3 id="the-solution">The Solution<a class="headerlink" href="#the-solution" title="Permanent link">&para;</a></h3>
-<p>```
-Git Repository
+<pre class="highlight"><code>Git Repository
   └─ ExternalSecret (managed by ArgoCD)
-     └─ Declarative: "Read from ObjectBucketClaim"</p>
-<p>ObjectBucketClaim Secret (openshift-storage)
-  └─ Real credentials (AWS_ACCESS_KEY_ID, etc.)</p>
-<p>External Secrets Operator
+     └─ Declarative: "Read from ObjectBucketClaim"
+
+ObjectBucketClaim Secret (openshift-storage)
+  └─ Real credentials (AWS_ACCESS_KEY_ID, etc.)
+
+External Secrets Operator
   └─ Operational: Reads ObjectBucketClaim
   └─ Creates model-storage-config Secret
-  └─ Refreshes every 1 hour</p>
-<p>ArgoCD
+  └─ Refreshes every 1 hour
+
+ArgoCD
   └─ Manages ExternalSecret
   └─ Does NOT manage Secret
-  └─ No conflicts
-```</p>
+  └─ No conflicts</code></pre>
 <h3 id="why-this-works">Why This Works<a class="headerlink" href="#why-this-works" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Separation of Concerns</strong></li>
@@ -1837,8 +1949,7 @@ The task automatically handles operator deployment. No manual steps required.</p
 <hr />
 <h3 id="1-create-externalsecret-template">1. Create ExternalSecret Template<a class="headerlink" href="#1-create-externalsecret-template" title="Permanent link">&para;</a></h3>
 <p><strong>File:</strong> <code>charts/hub/templates/externalsecrets-model-storage.yaml</code></p>
-<p><code>yaml
-{{- if eq .Values.secrets.backend "external-secrets" }}
+<pre class="highlight"><code class="language-yaml">{{- if eq .Values.secrets.backend "external-secrets" }}
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
@@ -1872,11 +1983,10 @@ spec:
     secretValue: "us-east-1"
   - secretKey: AWS_S3_BUCKET
     secretValue: "model-storage"
-{{- end }}</code></p>
+{{- end }}</code></pre>
 <h3 id="2-create-secretstore-template">2. Create SecretStore Template<a class="headerlink" href="#2-create-secretstore-template" title="Permanent link">&para;</a></h3>
 <p><strong>File:</strong> <code>charts/hub/templates/secretstore-kubernetes.yaml</code></p>
-<p><code>yaml
-{{- if eq .Values.secrets.backend "external-secrets" }}
+<pre class="highlight"><code class="language-yaml">{{- if eq .Values.secrets.backend "external-secrets" }}
 apiVersion: external-secrets.io/v1beta1
 kind: SecretStore
 metadata:
@@ -1889,19 +1999,19 @@ spec:
         serviceAccount:
           name: external-secrets-sa
       remoteNamespace: openshift-storage
-{{- end }}</code></p>
+{{- end }}</code></pre>
 <h3 id="3-create-rbac">3. Create RBAC<a class="headerlink" href="#3-create-rbac" title="Permanent link">&para;</a></h3>
 <p><strong>File:</strong> <code>charts/hub/templates/externalsecrets-rbac.yaml</code></p>
-<p>```yaml
-{{- if eq .Values.secrets.backend "external-secrets" }}</p>
-<hr />
-<p>apiVersion: v1
+<pre class="highlight"><code class="language-yaml">{{- if eq .Values.secrets.backend "external-secrets" }}
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: external-secrets-sa
-  namespace: {{ .Values.main.namespace }}</p>
-<hr />
-<p>apiVersion: rbac.authorization.k8s.io/v1
+  namespace: {{ .Values.main.namespace }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: external-secrets-reader
@@ -1910,9 +2020,10 @@ rules:
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get", "list", "watch"]
-  resourceNames: ["model-storage-obc-secret"]</p>
-<hr />
-<p>apiVersion: rbac.authorization.k8s.io/v1
+  resourceNames: ["model-storage-obc-secret"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: external-secrets-reader
@@ -1925,18 +2036,16 @@ subjects:
 - kind: ServiceAccount
   name: external-secrets-sa
   namespace: {{ .Values.main.namespace }}
-{{- end }}
-```</p>
+{{- end }}</code></pre>
 <h3 id="4-update-values-globalyaml">4. Update values-global.yaml<a class="headerlink" href="#4-update-values-globalyaml" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-secrets:
+<pre class="highlight"><code class="language-yaml">secrets:
   backend: external-secrets
   externalSecrets:
     enabled: true
     refreshInterval: 1h
     secretStore:
       name: kubernetes-secret-store
-      kind: SecretStore</code></p>
+      kind: SecretStore</code></pre>
 <h3 id="5-remove-hardcoded-secret">5. Remove Hardcoded Secret<a class="headerlink" href="#5-remove-hardcoded-secret" title="Permanent link">&para;</a></h3>
 <p><strong>File:</strong> <code>charts/hub/templates/01-secrets.yaml</code></p>
 <p>Remove the model-storage-config Secret section (keep other secrets).</p>
@@ -1946,27 +2055,23 @@ secrets:
 <hr />
 <h2 id="deployment-prerequisites">Deployment Prerequisites<a class="headerlink" href="#deployment-prerequisites" title="Permanent link">&para;</a></h2>
 <h3 id="external-secrets-operator-must-be-installed">External Secrets Operator Must Be Installed<a class="headerlink" href="#external-secrets-operator-must-be-installed" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="check-if-installed">Check if installed<a class="headerlink" href="#check-if-installed" title="Permanent link">&para;</a></h1>
-<p>oc get deployment -n external-secrets-system</p>
-<h1 id="if-not-installed-install-it">If not installed, install it:<a class="headerlink" href="#if-not-installed-install-it" title="Permanent link">&para;</a></h1>
-<p>helm repo add external-secrets https://charts.external-secrets.io
+<pre class="highlight"><code class="language-bash"># Check if installed
+oc get deployment -n external-secrets-system
+
+# If not installed, install it:
+helm repo add external-secrets https://charts.external-secrets.io
 helm install external-secrets external-secrets/external-secrets \
   -n external-secrets-system \
-  --create-namespace
-```</p>
+  --create-namespace</code></pre>
 <hr />
 <h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
 <h3 id="check-externalsecret-status">Check ExternalSecret Status<a class="headerlink" href="#check-externalsecret-status" title="Permanent link">&para;</a></h3>
-<p><code>bash
-oc get externalsecrets -n self-healing-platform
-oc describe externalsecret model-storage-config -n self-healing-platform</code></p>
+<pre class="highlight"><code class="language-bash">oc get externalsecrets -n self-healing-platform
+oc describe externalsecret model-storage-config -n self-healing-platform</code></pre>
 <h3 id="check-secret-contents">Check Secret Contents<a class="headerlink" href="#check-secret-contents" title="Permanent link">&para;</a></h3>
-<p><code>bash
-oc get secret model-storage-config -n self-healing-platform -o yaml</code></p>
+<pre class="highlight"><code class="language-bash">oc get secret model-storage-config -n self-healing-platform -o yaml</code></pre>
 <h3 id="check-refresh-logs">Check Refresh Logs<a class="headerlink" href="#check-refresh-logs" title="Permanent link">&para;</a></h3>
-<p><code>bash
-oc logs -f deployment/external-secrets -n external-secrets-system</code></p>
+<pre class="highlight"><code class="language-bash">oc logs -f deployment/external-secrets -n external-secrets-system</code></pre>
 <hr />
 <h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>

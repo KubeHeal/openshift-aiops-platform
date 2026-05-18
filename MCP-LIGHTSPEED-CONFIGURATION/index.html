@@ -1578,8 +1578,122 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#step-2-create-llm-provider-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Create LLM Provider Secret
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-create-olsconfig-resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Create OLSConfig Resource
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-verify-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Verify Integration
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-mcp-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Available MCP Tools
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-mcp-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Available MCP Resources
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mcp-server-not-connecting" class="md-nav__link">
+    <span class="md-ellipsis">
+      MCP Server Not Connecting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lightspeed-not-using-mcp-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lightspeed Not Using MCP Tools
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm-provider-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLM Provider Errors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Queries
+    </span>
+  </a>
   
 </li>
       
@@ -1614,7 +1728,7 @@
 - "Show me pods with high CPU usage"
 - "What anomalies have been detected recently?"</p>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
-<p><code>┌─────────────────────────────────────────────────────────────────────┐
+<pre class="highlight"><code>┌─────────────────────────────────────────────────────────────────────┐
 │                     OpenShift Lightspeed UI                         │
 │                    "Show cluster health"                            │
 └────────────────────────────┬────────────────────────────────────────┘
@@ -1638,7 +1752,7 @@
 │  │  - cluster://anomalies   │  - trigger_remediation       │       │
 │  │  - cluster://events      │  - get_anomaly_predictions   │       │
 │  └──────────────────────────────────────────────────────────┘       │
-└─────────────────────────────────────────────────────────────────────┘</code></p>
+└─────────────────────────────────────────────────────────────────────┘</code></pre>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>OpenShift Lightspeed Operator</strong> installed (v1.0.6+)</li>
@@ -1651,31 +1765,28 @@
 - <strong>stdio</strong> (default): For direct spawning
 - <strong>http</strong>: For OLSConfig integration</p>
 <p>Deploy with HTTP transport:</p>
-<p>```bash</p>
-<h1 id="option-1-using-helm">Option 1: Using Helm<a class="headerlink" href="#option-1-using-helm" title="Permanent link">&para;</a></h1>
-<p>helm install mcp-server charts/mcp-server \
+<pre class="highlight"><code class="language-bash"># Option 1: Using Helm
+helm install mcp-server charts/mcp-server \
   --namespace self-healing-platform \
   --set transport=http \
   --set service.enabled=true \
-  --set service.port=3000</p>
-<h1 id="option-2-using-environment-variable">Option 2: Using environment variable<a class="headerlink" href="#option-2-using-environment-variable" title="Permanent link">&para;</a></h1>
-<p>kubectl set env deployment/mcp-server \
+  --set service.port=3000
+
+# Option 2: Using environment variable
+kubectl set env deployment/mcp-server \
   MCP_TRANSPORT=http \
-  -n self-healing-platform
-```</p>
+  -n self-healing-platform</code></pre>
 <p>Verify the MCP server service is running:</p>
-<p>```bash</p>
-<h1 id="check-service-exists">Check service exists<a class="headerlink" href="#check-service-exists" title="Permanent link">&para;</a></h1>
-<p>oc get svc mcp-server -n self-healing-platform</p>
-<h1 id="test-http-endpoint">Test HTTP endpoint<a class="headerlink" href="#test-http-endpoint" title="Permanent link">&para;</a></h1>
-<p>oc exec -it deploy/mcp-server -n self-healing-platform -- \
-  curl -s http://localhost:3000/health
-```</p>
+<pre class="highlight"><code class="language-bash"># Check service exists
+oc get svc mcp-server -n self-healing-platform
+
+# Test HTTP endpoint
+oc exec -it deploy/mcp-server -n self-healing-platform -- \
+  curl -s http://localhost:3000/health</code></pre>
 <h3 id="step-2-create-llm-provider-secret">Step 2: Create LLM Provider Secret<a class="headerlink" href="#step-2-create-llm-provider-secret" title="Permanent link">&para;</a></h3>
 <p>Create a secret with your LLM provider credentials:</p>
-<p>```yaml</p>
-<h1 id="k8solsconfigllm-credentials-secretyaml">k8s/olsconfig/llm-credentials-secret.yaml<a class="headerlink" href="#k8solsconfigllm-credentials-secretyaml" title="Permanent link">&para;</a></h1>
-<p>apiVersion: v1
+<pre class="highlight"><code class="language-yaml"># k8s/olsconfig/llm-credentials-secret.yaml
+apiVersion: v1
 kind: Secret
 metadata:
   name: llm-api-credentials
@@ -1683,27 +1794,26 @@ metadata:
 type: Opaque
 stringData:
   # For OpenAI
-  apiKey: "sk-your-openai-api-key"</p>
-<p># For Azure OpenAI (uncomment if using Azure)
+  apiKey: "sk-your-openai-api-key"
+
+  # For Azure OpenAI (uncomment if using Azure)
   # apiKey: "your-azure-api-key"
-  # endpoint: "https://your-resource.openai.azure.com"
-```</p>
+  # endpoint: "https://your-resource.openai.azure.com"</code></pre>
 <p>Apply the secret:</p>
-<p><code>bash
-oc apply -f k8s/olsconfig/llm-credentials-secret.yaml</code></p>
+<pre class="highlight"><code class="language-bash">oc apply -f k8s/olsconfig/llm-credentials-secret.yaml</code></pre>
 <h3 id="step-3-create-olsconfig-resource">Step 3: Create OLSConfig Resource<a class="headerlink" href="#step-3-create-olsconfig-resource" title="Permanent link">&para;</a></h3>
 <p>Create the OLSConfig custom resource to configure Lightspeed with MCP:</p>
-<p>```yaml</p>
-<h1 id="k8solsconfigcluster-olsconfigyaml">k8s/olsconfig/cluster-olsconfig.yaml<a class="headerlink" href="#k8solsconfigcluster-olsconfigyaml" title="Permanent link">&para;</a></h1>
-<p>apiVersion: ols.openshift.io/v1alpha1
+<pre class="highlight"><code class="language-yaml"># k8s/olsconfig/cluster-olsconfig.yaml
+apiVersion: ols.openshift.io/v1alpha1
 kind: OLSConfig
 metadata:
   name: cluster
 spec:
   # Enable MCP Server feature gate
   featureGates:
-    - MCPServer</p>
-<p># LLM Provider configuration
+    - MCPServer
+
+  # LLM Provider configuration
   llm:
     providers:
       - name: openai
@@ -1712,12 +1822,13 @@ spec:
           name: llm-api-credentials
         models:
           - name: gpt-4
-            url: https://api.openai.com/v1/chat/completions</p>
-<pre><code># Default model selection
-defaultProvider: openai
-defaultModel: gpt-4
-</code></pre>
-<p># MCP Server configuration
+            url: https://api.openai.com/v1/chat/completions
+
+    # Default model selection
+    defaultProvider: openai
+    defaultModel: gpt-4
+
+  # MCP Server configuration
   mcpServers:
     - name: cluster-health
       streamableHTTP:
@@ -1729,28 +1840,25 @@ defaultModel: gpt-4
         enableSSE: false
         # Request headers
         headers:
-          Content-Type: application/json</p>
-<p># OLS deployment configuration
+          Content-Type: application/json
+
+  # OLS deployment configuration
   ols:
     defaultProvider: openai
     defaultModel: gpt-4
     deployment:
-      replicas: 1
-```</p>
+      replicas: 1</code></pre>
 <p>Apply the OLSConfig:</p>
-<p><code>bash
-oc apply -f k8s/olsconfig/cluster-olsconfig.yaml</code></p>
+<pre class="highlight"><code class="language-bash">oc apply -f k8s/olsconfig/cluster-olsconfig.yaml</code></pre>
 <h3 id="step-4-verify-integration">Step 4: Verify Integration<a class="headerlink" href="#step-4-verify-integration" title="Permanent link">&para;</a></h3>
 <ol>
 <li>
 <p><strong>Check OLSConfig status:</strong>
-   <code>bash
-   oc get olsconfig cluster -o yaml</code></p>
+   <pre class="highlight"><code class="language-bash">oc get olsconfig cluster -o yaml</code></pre></p>
 </li>
 <li>
 <p><strong>Check Lightspeed pods:</strong>
-   <code>bash
-   oc get pods -n openshift-lightspeed</code></p>
+   <pre class="highlight"><code class="language-bash">oc get pods -n openshift-lightspeed</code></pre></p>
 </li>
 <li>
 <p><strong>Test the integration:</strong></p>
@@ -1833,13 +1941,12 @@ oc apply -f k8s/olsconfig/cluster-olsconfig.yaml</code></p>
 </table>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="mcp-server-not-connecting">MCP Server Not Connecting<a class="headerlink" href="#mcp-server-not-connecting" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="check-mcp-server-logs">Check MCP server logs<a class="headerlink" href="#check-mcp-server-logs" title="Permanent link">&para;</a></h1>
-<p>oc logs -l app=mcp-server -n self-healing-platform</p>
-<h1 id="verify-http-endpoint-is-accessible">Verify HTTP endpoint is accessible<a class="headerlink" href="#verify-http-endpoint-is-accessible" title="Permanent link">&para;</a></h1>
-<p>oc exec -it deploy/lightspeed-operator -n openshift-lightspeed -- \
-  curl -v http://mcp-server.self-healing-platform.svc:3000/health
-```</p>
+<pre class="highlight"><code class="language-bash"># Check MCP server logs
+oc logs -l app=mcp-server -n self-healing-platform
+
+# Verify HTTP endpoint is accessible
+oc exec -it deploy/lightspeed-operator -n openshift-lightspeed -- \
+  curl -v http://mcp-server.self-healing-platform.svc:3000/health</code></pre>
 <h3 id="lightspeed-not-using-mcp-tools">Lightspeed Not Using MCP Tools<a class="headerlink" href="#lightspeed-not-using-mcp-tools" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Verify the <code>MCPServer</code> feature gate is enabled in OLSConfig</li>
@@ -1847,10 +1954,8 @@ oc apply -f k8s/olsconfig/cluster-olsconfig.yaml</code></p>
 <li>Verify network policies allow traffic between namespaces</li>
 </ol>
 <h3 id="llm-provider-errors">LLM Provider Errors<a class="headerlink" href="#llm-provider-errors" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="check-lightspeed-logs-for-api-errors">Check Lightspeed logs for API errors<a class="headerlink" href="#check-lightspeed-logs-for-api-errors" title="Permanent link">&para;</a></h1>
-<p>oc logs -l app=lightspeed -n openshift-lightspeed | grep -i error
-```</p>
+<pre class="highlight"><code class="language-bash"># Check Lightspeed logs for API errors
+oc logs -l app=lightspeed -n openshift-lightspeed | grep -i error</code></pre>
 <h2 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
 <ol>
 <li>
@@ -1858,21 +1963,17 @@ oc apply -f k8s/olsconfig/cluster-olsconfig.yaml</code></p>
 </li>
 <li>
 <p><strong>RBAC</strong>: The MCP server service account needs appropriate permissions:
-   ```yaml
-   apiVersion: rbac.authorization.k8s.io/v1
-   kind: ClusterRole
-   metadata:
-     name: mcp-server-cluster-reader
-   rules:</p>
-</li>
-<li>apiGroups: [""]
-     resources: ["pods", "nodes", "events", "namespaces"]
-     verbs: ["get", "list", "watch"]</li>
-<li>
-<p>apiGroups: ["metrics.k8s.io"]
-     resources: ["pods", "nodes"]
-     verbs: ["get", "list"]
-   ```</p>
+   <pre class="highlight"><code class="language-yaml">apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mcp-server-cluster-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods", "nodes", "events", "namespaces"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]</code></pre></p>
 </li>
 <li>
 <p><strong>Secrets</strong>: Never commit LLM API keys to git. Use External Secrets Operator or sealed secrets.</p>

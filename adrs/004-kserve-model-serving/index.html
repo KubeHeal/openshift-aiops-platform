@@ -1920,8 +1920,7 @@
 </ul>
 <h2 id="implementation-architecture">Implementation Architecture<a class="headerlink" href="#implementation-architecture" title="Permanent link">&para;</a></h2>
 <h3 id="model-storage-configuration">Model Storage Configuration<a class="headerlink" href="#model-storage-configuration" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-apiVersion: v1
+<pre class="highlight"><code class="language-yaml">apiVersion: v1
 kind: Secret
 metadata:
   name: storage-config
@@ -1930,10 +1929,9 @@ stringData:
   AWS_ACCESS_KEY_ID: "storage-access-key"
   AWS_SECRET_ACCESS_KEY: "storage-secret-key"
   AWS_S3_ENDPOINT: "https://s3.openshift-storage.svc:443"
-  AWS_S3_BUCKET: "model-storage"</code></p>
+  AWS_S3_BUCKET: "model-storage"</code></pre>
 <h3 id="anomaly-detection-inferenceservice">Anomaly Detection InferenceService<a class="headerlink" href="#anomaly-detection-inferenceservice" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-apiVersion: serving.kserve.io/v1beta1
+<pre class="highlight"><code class="language-yaml">apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   name: anomaly-detector
@@ -1948,36 +1946,35 @@ spec:
           memory: "2Gi"
         limits:
           cpu: "2"
-          memory: "4Gi"</code></p>
+          memory: "4Gi"</code></pre>
 <h3 id="custom-predictor-for-complex-models">Custom Predictor for Complex Models<a class="headerlink" href="#custom-predictor-for-complex-models" title="Permanent link">&para;</a></h3>
-<p>```python
-import kserve
+<pre class="highlight"><code class="language-python">import kserve
 import joblib
 import numpy as np
-from typing import Dict</p>
-<p>class AnomalyDetectorModel(kserve.Model):
-    def <strong>init</strong>(self, name: str):
-        super().<strong>init</strong>(name)
+from typing import Dict
+
+class AnomalyDetectorModel(kserve.Model):
+    def __init__(self, name: str):
+        super().__init__(name)
         self.model = None
         self.scaler = None
-        self.ready = False</p>
-<pre><code>def load(self):
-    self.model = joblib.load('/mnt/models/anomaly_detector.pkl')
-    self.scaler = joblib.load('/mnt/models/scaler.pkl')
-    self.ready = True
+        self.ready = False
 
-def predict(self, payload: Dict) -&gt; Dict:
-    inputs = np.array(payload["instances"])
-    scaled_inputs = self.scaler.transform(inputs)
-    predictions = self.model.predict(scaled_inputs)
-    scores = self.model.decision_function(scaled_inputs)
+    def load(self):
+        self.model = joblib.load('/mnt/models/anomaly_detector.pkl')
+        self.scaler = joblib.load('/mnt/models/scaler.pkl')
+        self.ready = True
 
-    return {
-        "predictions": predictions.tolist(),
-        "anomaly_scores": scores.tolist()
-    }
-</code></pre>
-<p>```</p>
+    def predict(self, payload: Dict) -&gt; Dict:
+        inputs = np.array(payload["instances"])
+        scaled_inputs = self.scaler.transform(inputs)
+        predictions = self.model.predict(scaled_inputs)
+        scores = self.model.decision_function(scaled_inputs)
+
+        return {
+            "predictions": predictions.tolist(),
+            "anomaly_scores": scores.tolist()
+        }</code></pre>
 <h2 id="performance-requirements">Performance Requirements<a class="headerlink" href="#performance-requirements" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Latency</strong>: &lt;100ms for anomaly detection inference</li>

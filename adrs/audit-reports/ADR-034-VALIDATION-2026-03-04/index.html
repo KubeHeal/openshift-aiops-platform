@@ -1593,8 +1593,80 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#ha-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      HA Cluster:
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gateway-route-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gateway Route Details
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notebook-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notebook Configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validator-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validator Updates
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-is-pass-not-just-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why This is PASS (Not Just Documentation)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adr-documentation-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR Documentation Updates
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#progress-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      Progress Update
+    </span>
+  </a>
   
 </li>
       
@@ -1651,24 +1723,20 @@
 <hr />
 <h2 id="validation-results">Validation Results<a class="headerlink" href="#validation-results" title="Permanent link">&para;</a></h2>
 <h3 id="sno-cluster">SNO Cluster:<a class="headerlink" href="#sno-cluster" title="Permanent link">&para;</a></h3>
-<p><code>json
-{
+<pre class="highlight"><code class="language-json">{
   "adr": "034",
   "status": "PASS",
   "route": "https://data-science-gateway.apps.ocp.ph5rd.sandbox1590.opentlc.com",
   "tls_termination": "reencrypt",
   "oauth_integration": "yes",
   "notebooks": 1
-}</code></p>
+}</code></pre>
 <p><strong>Verification:</strong>
-```bash
-curl -k -I https://data-science-gateway.apps.ocp.ph5rd.sandbox1590.opentlc.com</p>
-<h1 id="result-302-redirect-to-oauth-openshift-oauth-working">Result: 302 redirect to oauth-openshift (OAuth working ✅)<a class="headerlink" href="#result-302-redirect-to-oauth-openshift-oauth-working" title="Permanent link">&para;</a></h1>
-<h1 id="tls-secure-re-encryption">TLS: Secure re-encryption ✅<a class="headerlink" href="#tls-secure-re-encryption" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash">curl -k -I https://data-science-gateway.apps.ocp.ph5rd.sandbox1590.opentlc.com
+# Result: 302 redirect to oauth-openshift (OAuth working ✅)
+# TLS: Secure re-encryption ✅</code></pre></p>
 <h3 id="ha-cluster">HA Cluster:<a class="headerlink" href="#ha-cluster" title="Permanent link">&para;</a></h3>
-<p><code>json
-{
+<pre class="highlight"><code class="language-json">{
   "adr": "034",
   "status": "PASS",
   "route": "https://data-science-gateway.apps.cluster-7r4mf.7r4mf.sandbox458.opentlc.com",
@@ -1676,13 +1744,11 @@ curl -k -I https://data-science-gateway.apps.ocp.ph5rd.sandbox1590.opentlc.com</
   "oauth_integration": "yes",
   "notebooks": 1,
   "platform_version": "OpenShift AI Self-Managed 3.2.0"
-}</code></p>
+}</code></pre>
 <p><strong>Verification:</strong>
-```bash
-curl -k -I https://data-science-gateway.apps.cluster-7r4mf.7r4mf.sandbox458.opentlc.com</p>
-<h1 id="result-302-redirect-to-oauth-openshift-oauth-working_1">Result: 302 redirect to oauth-openshift (OAuth working ✅)<a class="headerlink" href="#result-302-redirect-to-oauth-openshift-oauth-working_1" title="Permanent link">&para;</a></h1>
-<h1 id="tls-secure-re-encryption_1">TLS: Secure re-encryption ✅<a class="headerlink" href="#tls-secure-re-encryption_1" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash">curl -k -I https://data-science-gateway.apps.cluster-7r4mf.7r4mf.sandbox458.opentlc.com
+# Result: 302 redirect to oauth-openshift (OAuth working ✅)
+# TLS: Secure re-encryption ✅</code></pre></p>
 <hr />
 <h2 id="gateway-route-details">Gateway Route Details<a class="headerlink" href="#gateway-route-details" title="Permanent link">&para;</a></h2>
 <p><strong>Namespace:</strong> <code>openshift-ingress</code>
@@ -1699,12 +1765,11 @@ curl -k -I https://data-science-gateway.apps.cluster-7r4mf.7r4mf.sandbox458.open
 <h2 id="notebook-configuration">Notebook Configuration<a class="headerlink" href="#notebook-configuration" title="Permanent link">&para;</a></h2>
 <p><strong>Notebook CR:</strong> <code>self-healing-workbench</code> in <code>self-healing-platform</code> namespace</p>
 <p><strong>Pod Structure:</strong>
-<code>yaml
-containers:
+<pre class="highlight"><code class="language-yaml">containers:
   - name: self-healing-workbench
     image: pytorch-runtime
   - name: kube-rbac-proxy
-    # OpenShift AI 4.20 uses kube-rbac-proxy instead of oauth-proxy sidecar</code></p>
+    # OpenShift AI 4.20 uses kube-rbac-proxy instead of oauth-proxy sidecar</code></pre></p>
 <p><strong>Access Method:</strong>
 1. User navigates to <code>https://data-science-gateway.apps.ocp.ph5rd.sandbox1590.opentlc.com</code>
 2. Gateway redirects to OpenShift OAuth (<code>oauth-openshift.apps...</code>)
@@ -1715,18 +1780,16 @@ containers:
 <p><strong>File:</strong> <code>validators/storage-topology.sh</code></p>
 <p><strong>Old Logic:</strong> Checked for individual notebook routes in <code>self-healing-platform</code> namespace
 <strong>New Logic:</strong> Validates centralized <code>data-science-gateway</code> route in <code>openshift-ingress</code> namespace</p>
-<p>```bash
-validate_adr_034() {
+<pre class="highlight"><code class="language-bash">validate_adr_034() {
     # OpenShift AI 4.20+ uses centralized data-science-gateway route
     local gateway_route=$(oc get route data-science-gateway -n openshift-ingress --no-headers 2&gt;/dev/null | wc -l)
     local gateway_tls=$(oc get route data-science-gateway -n openshift-ingress -o json 2&gt;/dev/null | jq -r '.spec.tls.termination')
-    local notebook_exists=$(oc get notebook -n self-healing-platform --no-headers 2&gt;/dev/null | wc -l)</p>
-<pre><code>if [[ $gateway_route -ge 1 ]] &amp;&amp; [[ $gateway_tls == "reencrypt" ]] &amp;&amp; [[ $notebook_exists -ge 1 ]]; then
-    add_result "034" "PASS" ...
-fi
-</code></pre>
-<p>}
-```</p>
+    local notebook_exists=$(oc get notebook -n self-healing-platform --no-headers 2&gt;/dev/null | wc -l)
+
+    if [[ $gateway_route -ge 1 ]] &amp;&amp; [[ $gateway_tls == "reencrypt" ]] &amp;&amp; [[ $notebook_exists -ge 1 ]]; then
+        add_result "034" "PASS" ...
+    fi
+}</code></pre>
 <hr />
 <h2 id="why-this-is-pass-not-just-documentation">Why This is PASS (Not Just Documentation)<a class="headerlink" href="#why-this-is-pass-not-just-documentation" title="Permanent link">&para;</a></h2>
 <p>ADR-034's core decision was: <strong>"Use secure, direct access to notebooks with OAuth and TLS"</strong></p>

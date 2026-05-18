@@ -1602,8 +1602,71 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#step-4-verify-pattern-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Verify Pattern Deployment
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#permanent-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permanent Fix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternative-apply-during-operator-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alternative: Apply During Operator Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      Impact
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notes
+    </span>
+  </a>
   
 </li>
       
@@ -1648,17 +1711,15 @@
 <h2 id="solution">Solution<a class="headerlink" href="#solution" title="Permanent link">&para;</a></h2>
 <p>Patch the Pattern operator deployment to increase resources and extend health probe timeouts.</p>
 <h3 id="step-1-apply-resource-patch">Step 1: Apply Resource Patch<a class="headerlink" href="#step-1-apply-resource-patch" title="Permanent link">&para;</a></h3>
-<p><code>bash
-oc patch deployment patterns-operator-controller-manager \
+<pre class="highlight"><code class="language-bash">oc patch deployment patterns-operator-controller-manager \
   -n openshift-operators \
   --type='json' \
   -p='[
     {"op": "replace", "path": "/spec/template/spec/containers/0/resources/limits/memory", "value":"2Gi"},
     {"op": "replace", "path": "/spec/template/spec/containers/0/resources/requests/memory", "value":"256Mi"}
-  ]'</code></p>
+  ]'</code></pre>
 <h3 id="step-2-apply-health-probe-patch">Step 2: Apply Health Probe Patch<a class="headerlink" href="#step-2-apply-health-probe-patch" title="Permanent link">&para;</a></h3>
-<p><code>bash
-oc patch deployment patterns-operator-controller-manager \
+<pre class="highlight"><code class="language-bash">oc patch deployment patterns-operator-controller-manager \
   -n openshift-operators \
   --type='json' \
   -p='[
@@ -1668,33 +1729,33 @@ oc patch deployment patterns-operator-controller-manager \
     {"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe/initialDelaySeconds", "value":30},
     {"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe/timeoutSeconds", "value":10},
     {"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe/periodSeconds", "value":30}
-  ]'</code></p>
+  ]'</code></pre>
 <h3 id="step-3-verify-deployment">Step 3: Verify Deployment<a class="headerlink" href="#step-3-verify-deployment" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="check-pod-is-running-without-restarts">Check pod is running without restarts<a class="headerlink" href="#check-pod-is-running-without-restarts" title="Permanent link">&para;</a></h1>
-<p>oc get pods -n openshift-operators | grep pattern</p>
-<h1 id="expected-output-0-restarts-running-status">Expected output: 0 restarts, Running status<a class="headerlink" href="#expected-output-0-restarts-running-status" title="Permanent link">&para;</a></h1>
-<h1 id="patterns-operator-controller-manager-xxxxx-11-running-0-5m">patterns-operator-controller-manager-XXXXX   1/1     Running   0          5m<a class="headerlink" href="#patterns-operator-controller-manager-xxxxx-11-running-0-5m" title="Permanent link">&para;</a></h1>
-<h1 id="check-pattern-operator-logs-for-successful-clone">Check Pattern operator logs for successful clone<a class="headerlink" href="#check-pattern-operator-logs-for-successful-clone" title="Permanent link">&para;</a></h1>
-<p>oc logs -n openshift-operators deployment/patterns-operator-controller-manager --tail=50</p>
-<h1 id="expected-output-reconcile-step-create-application-complete-and-pattern-completed">Expected output: "Reconcile step 'create application' complete" and "Pattern completed"<a class="headerlink" href="#expected-output-reconcile-step-create-application-complete-and-pattern-completed" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Check pod is running without restarts
+oc get pods -n openshift-operators | grep pattern
+
+# Expected output: 0 restarts, Running status
+# patterns-operator-controller-manager-XXXXX   1/1     Running   0          5m
+
+# Check Pattern operator logs for successful clone
+oc logs -n openshift-operators deployment/patterns-operator-controller-manager --tail=50
+
+# Expected output: "Reconcile step 'create application' complete" and "Pattern completed"</code></pre>
 <h3 id="step-4-verify-pattern-deployment">Step 4: Verify Pattern Deployment<a class="headerlink" href="#step-4-verify-pattern-deployment" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="check-pattern-cr-status">Check Pattern CR status<a class="headerlink" href="#check-pattern-cr-status" title="Permanent link">&para;</a></h1>
-<p>oc get pattern -n openshift-operators</p>
-<h1 id="check-argocd-application">Check ArgoCD application<a class="headerlink" href="#check-argocd-application" title="Permanent link">&para;</a></h1>
-<p>oc get applications.argoproj.io -n openshift-gitops</p>
-<h1 id="expected-output">Expected output:<a class="headerlink" href="#expected-output" title="Permanent link">&para;</a></h1>
-<h1 id="name-sync-status-health-status">NAME                        SYNC STATUS   HEALTH STATUS<a class="headerlink" href="#name-sync-status-health-status" title="Permanent link">&para;</a></h1>
-<h1 id="self-healing-platform-hub-synced-healthy">self-healing-platform-hub   Synced        Healthy<a class="headerlink" href="#self-healing-platform-hub-synced-healthy" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Check Pattern CR status
+oc get pattern -n openshift-operators
+
+# Check ArgoCD application
+oc get applications.argoproj.io -n openshift-gitops
+
+# Expected output:
+# NAME                        SYNC STATUS   HEALTH STATUS
+# self-healing-platform-hub   Synced        Healthy</code></pre>
 <h2 id="permanent-fix">Permanent Fix<a class="headerlink" href="#permanent-fix" title="Permanent link">&para;</a></h2>
 <p>To make this fix permanent for new deployments, apply the patch configuration:</p>
-<p><code>bash
-oc patch deployment patterns-operator-controller-manager \
+<pre class="highlight"><code class="language-bash">oc patch deployment patterns-operator-controller-manager \
   -n openshift-operators \
-  --patch-file k8s/operator-patches/patterns-operator-resources.yaml</code></p>
+  --patch-file k8s/operator-patches/patterns-operator-resources.yaml</code></pre>
 <h2 id="alternative-apply-during-operator-installation">Alternative: Apply During Operator Installation<a class="headerlink" href="#alternative-apply-during-operator-installation" title="Permanent link">&para;</a></h2>
 <p>If installing the operator for the first time, modify the operator subscription or deployment YAML to include these resource limits before deployment.</p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>

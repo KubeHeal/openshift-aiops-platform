@@ -1653,8 +1653,104 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#helm-chart-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helm Chart Changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#argocd-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArgoCD Configuration
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#neutral" class="md-nav__link">
+    <span class="md-ellipsis">
+      Neutral
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Checklist
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approval" class="md-nav__link">
+    <span class="md-ellipsis">
+      Approval
+    </span>
+  </a>
   
 </li>
       
@@ -1706,7 +1802,7 @@
 </ol>
 <h3 id="the-problem">The Problem<a class="headerlink" href="#the-problem" title="Permanent link">&para;</a></h3>
 <p><strong>Namespaced ArgoCD controllers cannot manage cluster-scoped resources</strong>. This is an architectural limitation, not a configuration issue. When ArgoCD attempts to sync resources that include cluster-scoped dependencies, it fails with errors like:</p>
-<p><code>Failed to load live state: Cluster level ClusterRole "self-healing-operator-cluster" can not be managed when in namespaced mode</code></p>
+<pre class="highlight"><code>Failed to load live state: Cluster level ClusterRole "self-healing-operator-cluster" can not be managed when in namespaced mode</code></pre>
 <h3 id="attempted-solutions-rejected">Attempted Solutions (Rejected)<a class="headerlink" href="#attempted-solutions-rejected" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>ignoreDifferences Configuration</strong>: Attempted to ignore cluster-scoped resources using <code>spec.ignoreDifferences</code>. <strong>Rejected</strong> because:</li>
@@ -1762,18 +1858,19 @@
 <p><strong>ArgoCD Application</strong>: Manages only namespaced resources (InferenceService, ConfigMap, ServiceAccount, Deployment, etc.)</p>
 <p><strong>ArgoCD CR Configuration</strong>: <code>spec.sourceNamespaces: ["self-healing-platform"]</code> (Key 2)</p>
 <h3 id="deployment-sequence">Deployment Sequence<a class="headerlink" href="#deployment-sequence" title="Permanent link">&para;</a></h3>
-<p><code>1. Prerequisites Validation
+<pre class="highlight"><code>1. Prerequisites Validation
 2. Common Infrastructure (Helm, ArgoCD, ESO)
 3. Secrets Management Configuration
 4. Cluster-Scoped Resources Deployment (NEW - Ansible role)
 5. Pattern Deployment (Namespaced Resources via ArgoCD)
-6. Post-Deployment Validation</code></p>
+6. Post-Deployment Validation</code></pre>
 <h3 id="updated-playbook-structure">Updated Playbook Structure<a class="headerlink" href="#updated-playbook-structure" title="Permanent link">&para;</a></h3>
-<p>```yaml</p>
-<h1 id="ansibleplaybooksdeploy_complete_patternyml">ansible/playbooks/deploy_complete_pattern.yml<a class="headerlink" href="#ansibleplaybooksdeploy_complete_patternyml" title="Permanent link">&para;</a></h1>
-<p>roles:
-  # ... existing roles ...</p>
-<p># Step 4.5: Deploy Cluster-Scoped Resources
+<pre class="highlight"><code class="language-yaml"># ansible/playbooks/deploy_complete_pattern.yml
+
+roles:
+  # ... existing roles ...
+
+  # Step 4.5: Deploy Cluster-Scoped Resources
   - name: Deploy cluster-scoped resources
     role: validated_patterns_deploy_cluster_resources
     vars:
@@ -1794,39 +1891,33 @@
         argocd:
           enabled: true
       kserve:
-        enabled: true</p>
-<p># Step 5: Pattern Deployment (Namespaced Resources via ArgoCD)
+        enabled: true
+
+  # Step 5: Pattern Deployment (Namespaced Resources via ArgoCD)
   - name: Deploy pattern application
     role: validated_patterns_deploy
-    # ... existing configuration ...
-```</p>
+    # ... existing configuration ...</code></pre>
 <h3 id="helm-chart-changes">Helm Chart Changes<a class="headerlink" href="#helm-chart-changes" title="Permanent link">&para;</a></h3>
 <p><strong>values-global.yaml</strong>:
-<code>yaml
-rbac:
+<pre class="highlight"><code class="language-yaml">rbac:
   enabled: true
   # Enable cluster-scoped RBAC resources (ClusterRole, ClusterRoleBinding)
   # Set to false when deploying via namespaced ArgoCD (cannot manage cluster-scoped resources)
   clusterScoped:
-    enabled: false  # Cluster resources deployed via Ansible role</code></p>
+    enabled: false  # Cluster resources deployed via Ansible role</code></pre></p>
 <p><strong>charts/hub/templates/rbac.yaml</strong>:
-```yaml
-{{- if .Values.rbac.clusterScoped.enabled }}</p>
-<h1 id="clusterrole-and-clusterrolebinding-definitions">ClusterRole and ClusterRoleBinding definitions<a class="headerlink" href="#clusterrole-and-clusterrolebinding-definitions" title="Permanent link">&para;</a></h1>
-<p>{{- end }}
-```</p>
+<pre class="highlight"><code class="language-yaml">{{- if .Values.rbac.clusterScoped.enabled }}
+# ClusterRole and ClusterRoleBinding definitions
+{{- end }}</code></pre></p>
 <p><strong>charts/hub/templates/secretstore.yaml</strong>:
-```yaml
-{{- if .Values.rbac.clusterScoped.enabled }}</p>
-<h1 id="external-secrets-operator-clusterroleclusterrolebinding">External Secrets Operator ClusterRole/ClusterRoleBinding<a class="headerlink" href="#external-secrets-operator-clusterroleclusterrolebinding" title="Permanent link">&para;</a></h1>
-<p>{{- end }}
-```</p>
+<pre class="highlight"><code class="language-yaml">{{- if .Values.rbac.clusterScoped.enabled }}
+# External Secrets Operator ClusterRole/ClusterRoleBinding
+{{- end }}</code></pre></p>
 <h3 id="argocd-configuration">ArgoCD Configuration<a class="headerlink" href="#argocd-configuration" title="Permanent link">&para;</a></h3>
 <p><strong>ArgoCD CR</strong> (<code>hub-gitops</code>):
-<code>yaml
-spec:
+<pre class="highlight"><code class="language-yaml">spec:
   sourceNamespaces:
-    - self-healing-platform  # Key 2: Allow controller to manage this namespace</code></p>
+    - self-healing-platform  # Key 2: Allow controller to manage this namespace</code></pre></p>
 <p><strong>ArgoCD Application</strong> (<code>self-healing-platform</code>):
 - Manages only namespaced resources
 - References cluster-scoped resources (already deployed by Ansible)

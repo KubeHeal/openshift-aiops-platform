@@ -1710,8 +1710,146 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#phase-2-values-configuration-day-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Values Configuration (Day 1)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-deployment-validation-day-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Deployment &amp; Validation (Day 1)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-documentation-updates-day-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Documentation Updates (Day 2)
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-contract-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Contract Compatibility
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Contract Compatibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#health-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      Health Check
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remediation-trigger" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remediation Trigger
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#incidents-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      Incidents List
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metrics
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#external" class="md-nav__link">
+    <span class="md-ellipsis">
+      External
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Internal
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision Metadata
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Criteria
+    </span>
+  </a>
   
 </li>
       
@@ -1847,16 +1985,15 @@
 </table>
 <h3 id="deployment-aware-remediation">Deployment-Aware Remediation<a class="headerlink" href="#deployment-aware-remediation" title="Permanent link">&para;</a></h3>
 <p>The Go implementation adds <strong>deployment method detection</strong>:</p>
-<p>```go
-type DeploymentMethod int</p>
-<p>const (
+<pre class="highlight"><code class="language-go">type DeploymentMethod int
+
+const (
     Unknown DeploymentMethod = iota
     ArgoCD                   // GitOps-managed, modify Git, wait for sync
     Helm                     // Helm-managed, use helm upgrade
     Operator                 // Operator-managed, modify CR
     Manual                   // Manually deployed, direct kubectl apply
-)
-```</p>
+)</code></pre>
 <p><strong>Benefits</strong>:
 - <strong>ArgoCD deployments</strong>: Modifies Git repository instead of direct cluster changes
 - <strong>Helm deployments</strong>: Uses <code>helm upgrade</code> with value overrides
@@ -1865,12 +2002,12 @@ type DeploymentMethod int</p>
 <p>This prevents <strong>configuration drift</strong> and maintains GitOps principles.</p>
 <h3 id="ml-service-integration">ML Service Integration<a class="headerlink" href="#ml-service-integration" title="Permanent link">&para;</a></h3>
 <p>The Go implementation maintains ML integration via HTTP:</p>
-<p>```go
-type MLServiceClient struct {
+<pre class="highlight"><code class="language-go">type MLServiceClient struct {
     BaseURL    string
     HTTPClient *http.Client
-}</p>
-<p>func (c <em>MLServiceClient) DetectAnomaly(data AnomalyRequest) (</em>AnomalyResponse, error) {
+}
+
+func (c *MLServiceClient) DetectAnomaly(data AnomalyRequest) (*AnomalyResponse, error) {
     // POST to Python ML service
     resp, err := c.HTTPClient.Post(
         fmt.Sprintf("%s/api/v1/detect", c.BaseURL),
@@ -1878,8 +2015,7 @@ type MLServiceClient struct {
         bytes.NewBuffer(jsonData),
     )
     // ...
-}
-```</p>
+}</code></pre>
 <p><strong>Advantage</strong>: Separation of concerns - ML stays in Python (best ecosystem), coordination in Go (best for K8s)</p>
 <h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
@@ -1972,13 +2108,14 @@ type MLServiceClient struct {
 <h3 id="phase-1-helm-template-updates-day-1">Phase 1: Helm Template Updates (Day 1)<a class="headerlink" href="#phase-1-helm-template-updates-day-1" title="Permanent link">&para;</a></h3>
 <p><strong>File</strong>: <code>charts/hub/templates/coordination-engine.yaml</code></p>
 <p><strong>Changes</strong>:
-```yaml</p>
-<h1 id="before-python">Before (Python)<a class="headerlink" href="#before-python" title="Permanent link">&para;</a></h1>
-<p>image: image-registry.openshift-image-registry.svc:5000/self-healing-platform/coordination-engine:latest</p>
-<h1 id="after-go">After (Go)<a class="headerlink" href="#after-go" title="Permanent link">&para;</a></h1>
-<p>image: quay.io/takinosh/openshift-coordination-engine:ocp-4.18-latest</p>
-<h1 id="update-environment-variables">Update environment variables<a class="headerlink" href="#update-environment-variables" title="Permanent link">&para;</a></h1>
-<p>env:
+<pre class="highlight"><code class="language-yaml"># Before (Python)
+image: image-registry.openshift-image-registry.svc:5000/self-healing-platform/coordination-engine:latest
+
+# After (Go)
+image: quay.io/takinosh/openshift-coordination-engine:ocp-4.18-latest
+
+# Update environment variables
+env:
   - name: ML_SERVICE_URL
     value: http://aiops-ml-service:8080
   - name: SERVER_PORT
@@ -1986,16 +2123,15 @@ type MLServiceClient struct {
   - name: METRICS_PORT
     value: "9090"
   - name: LOG_LEVEL
-    value: "info"</p>
-<h1 id="remove-pvc-mounts-go-is-stateless">Remove PVC mounts (Go is stateless)<a class="headerlink" href="#remove-pvc-mounts-go-is-stateless" title="Permanent link">&para;</a></h1>
-<h1 id="volumemounts">volumeMounts: []<a class="headerlink" href="#volumemounts" title="Permanent link">&para;</a></h1>
-<h1 id="volumes">volumes: []<a class="headerlink" href="#volumes" title="Permanent link">&para;</a></h1>
-<p>```</p>
+    value: "info"
+
+# Remove PVC mounts (Go is stateless)
+# volumeMounts: []
+# volumes: []</code></pre></p>
 <h3 id="phase-2-values-configuration-day-1">Phase 2: Values Configuration (Day 1)<a class="headerlink" href="#phase-2-values-configuration-day-1" title="Permanent link">&para;</a></h3>
 <p><strong>File</strong>: <code>values-hub.yaml</code></p>
 <p><strong>Add</strong>:
-<code>yaml
-coordinationEngine:
+<pre class="highlight"><code class="language-yaml">coordinationEngine:
   image:
     repository: quay.io/takinosh/openshift-coordination-engine
     tag: ocp-4.18-latest
@@ -2011,22 +2147,23 @@ coordinationEngine:
       memory: "256Mi"
     limits:
       cpu: "500m"
-      memory: "512Mi"</code></p>
+      memory: "512Mi"</code></pre></p>
 <h3 id="phase-3-deployment-validation-day-1">Phase 3: Deployment &amp; Validation (Day 1)<a class="headerlink" href="#phase-3-deployment-validation-day-1" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="1-update-helm-templates-and-values">1. Update Helm templates and values<a class="headerlink" href="#1-update-helm-templates-and-values" title="Permanent link">&para;</a></h1>
-<p>git add charts/hub/templates/coordination-engine.yaml values-hub.yaml
-git commit -m "feat(coordination-engine): migrate to Go implementation"</p>
-<h1 id="2-deploy-via-argocd">2. Deploy via ArgoCD<a class="headerlink" href="#2-deploy-via-argocd" title="Permanent link">&para;</a></h1>
-<p>git push origin main
-oc get applications -n openshift-gitops</p>
-<h1 id="3-validate-health">3. Validate health<a class="headerlink" href="#3-validate-health" title="Permanent link">&para;</a></h1>
-<p>oc exec -it deployment/coordination-engine -n self-healing-platform -- \
-  curl http://localhost:8080/health</p>
-<h1 id="4-test-api-endpoints">4. Test API endpoints<a class="headerlink" href="#4-test-api-endpoints" title="Permanent link">&para;</a></h1>
-<p>oc exec -it deployment/coordination-engine -n self-healing-platform -- \
-  curl http://localhost:8080/api/v1/status
-```</p>
+<pre class="highlight"><code class="language-bash"># 1. Update Helm templates and values
+git add charts/hub/templates/coordination-engine.yaml values-hub.yaml
+git commit -m "feat(coordination-engine): migrate to Go implementation"
+
+# 2. Deploy via ArgoCD
+git push origin main
+oc get applications -n openshift-gitops
+
+# 3. Validate health
+oc exec -it deployment/coordination-engine -n self-healing-platform -- \
+  curl http://localhost:8080/health
+
+# 4. Test API endpoints
+oc exec -it deployment/coordination-engine -n self-healing-platform -- \
+  curl http://localhost:8080/api/v1/status</code></pre>
 <h3 id="phase-4-documentation-updates-day-2">Phase 4: Documentation Updates (Day 2)<a class="headerlink" href="#phase-4-documentation-updates-day-2" title="Permanent link">&para;</a></h3>
 <p><strong>Files</strong>:
 - <code>src/coordination-engine/README.md</code> - Add deprecation notice
@@ -2036,28 +2173,22 @@ oc get applications -n openshift-gitops</p>
 <h2 id="api-contract-compatibility">API Contract Compatibility<a class="headerlink" href="#api-contract-compatibility" title="Permanent link">&para;</a></h2>
 <p>The Go implementation maintains <strong>100% API compatibility</strong> with the Python version:</p>
 <h3 id="health-check">Health Check<a class="headerlink" href="#health-check" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="python-get-health">Python: GET /health<a class="headerlink" href="#python-get-health" title="Permanent link">&para;</a></h1>
-<h1 id="go-get-health-same">Go:     GET /health (same)<a class="headerlink" href="#go-get-health-same" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Python: GET /health
+# Go:     GET /health (same)</code></pre>
 <h3 id="remediation-trigger">Remediation Trigger<a class="headerlink" href="#remediation-trigger" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="python-post-apiv1remediate">Python: POST /api/v1/remediate<a class="headerlink" href="#python-post-apiv1remediate" title="Permanent link">&para;</a></h1>
-<h1 id="go-post-apiv1remediationtrigger">Go:     POST /api/v1/remediation/trigger<a class="headerlink" href="#go-post-apiv1remediationtrigger" title="Permanent link">&para;</a></h1>
-<h1 id="request-body-format-identical">Request body format: identical<a class="headerlink" href="#request-body-format-identical" title="Permanent link">&para;</a></h1>
-<h1 id="response-format-identical">Response format: identical<a class="headerlink" href="#response-format-identical" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Python: POST /api/v1/remediate
+# Go:     POST /api/v1/remediation/trigger
+
+# Request body format: identical
+# Response format: identical</code></pre>
 <h3 id="incidents-list">Incidents List<a class="headerlink" href="#incidents-list" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="python-get-apiv1anomalies">Python: GET /api/v1/anomalies<a class="headerlink" href="#python-get-apiv1anomalies" title="Permanent link">&para;</a></h1>
-<h1 id="go-get-apiv1incidents">Go:     GET /api/v1/incidents<a class="headerlink" href="#go-get-apiv1incidents" title="Permanent link">&para;</a></h1>
-<h1 id="response-format-compatible-same-fields">Response format: compatible (same fields)<a class="headerlink" href="#response-format-compatible-same-fields" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Python: GET /api/v1/anomalies
+# Go:     GET /api/v1/incidents
+
+# Response format: compatible (same fields)</code></pre>
 <h3 id="metrics">Metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="python-get-metrics-prometheus-format">Python: GET /metrics (Prometheus format)<a class="headerlink" href="#python-get-metrics-prometheus-format" title="Permanent link">&para;</a></h1>
-<h1 id="go-get-metrics-prometheus-format-identical">Go:     GET /metrics (Prometheus format, identical)<a class="headerlink" href="#go-get-metrics-prometheus-format-identical" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Python: GET /metrics (Prometheus format)
+# Go:     GET /metrics (Prometheus format, identical)</code></pre>
 <h2 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>ADR-002</strong>: <a href="../002-hybrid-self-healing-approach/">Hybrid Deterministic-AI Self-Healing Approach</a> - <strong>STILL VALID</strong> - Coordination engine remains central to hybrid approach</li>

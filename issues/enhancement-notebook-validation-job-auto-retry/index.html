@@ -1551,8 +1551,146 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#expected-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      Expected Behavior
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-case" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Case
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proposed-solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proposed Solution
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Proposed Solution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-spec-change-detection-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 1: Spec Change Detection (Recommended)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-configurable-retry-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 2: Configurable Retry Policy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-status-reconciliation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 3: Status Reconciliation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#files-to-modify" class="md-nav__link">
+    <span class="md-ellipsis">
+      Files to Modify
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Breaking Changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Path
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Issues
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acceptance-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acceptance Criteria
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional Context
+    </span>
+  </a>
   
 </li>
       
@@ -1588,16 +1726,15 @@
 <li><strong>Transient failures occur</strong> (e.g., network timeouts, temporary resource constraints)</li>
 </ol>
 <h3 id="current-behavior">Current Behavior<a class="headerlink" href="#current-behavior" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="job-fails-with-oomkilled">Job fails with OOMKilled<a class="headerlink" href="#job-fails-with-oomkilled" title="Permanent link">&para;</a></h1>
-<p>oc get notebookvalidationjob predictive-analytics-kserve-validation -n self-healing-platform</p>
-<h1 id="status-failed">STATUS: Failed<a class="headerlink" href="#status-failed" title="Permanent link">&para;</a></h1>
-<h1 id="phase-failed">PHASE: Failed<a class="headerlink" href="#phase-failed" title="Permanent link">&para;</a></h1>
-<h1 id="message-validation-failed-after-3-retries-oomkilled">MESSAGE: Validation failed after 3 retries: OOMKilled<a class="headerlink" href="#message-validation-failed-after-3-retries-oomkilled" title="Permanent link">&para;</a></h1>
-<h1 id="even-after-fixing-the-issue-enabling-gpu-increasing-memory-the-job-remains-failed">Even after fixing the issue (enabling GPU, increasing memory), the job remains Failed<a class="headerlink" href="#even-after-fixing-the-issue-enabling-gpu-increasing-memory-the-job-remains-failed" title="Permanent link">&para;</a></h1>
-<h1 id="manual-deletion-required">Manual deletion required:<a class="headerlink" href="#manual-deletion-required" title="Permanent link">&para;</a></h1>
-<p>oc delete notebookvalidationjob predictive-analytics-kserve-validation -n self-healing-platform
-```</p>
+<pre class="highlight"><code class="language-bash"># Job fails with OOMKilled
+oc get notebookvalidationjob predictive-analytics-kserve-validation -n self-healing-platform
+# STATUS: Failed
+# PHASE: Failed
+# MESSAGE: Validation failed after 3 retries: OOMKilled
+
+# Even after fixing the issue (enabling GPU, increasing memory), the job remains Failed
+# Manual deletion required:
+oc delete notebookvalidationjob predictive-analytics-kserve-validation -n self-healing-platform</code></pre>
 <h3 id="expected-behavior">Expected Behavior<a class="headerlink" href="#expected-behavior" title="Permanent link">&para;</a></h3>
 <p>The operator should intelligently handle failed jobs by:
 1. <strong>Detecting spec changes</strong> and automatically recreating the job
@@ -1624,29 +1761,26 @@
 - Image or notebook path changes
 - Any other spec field that affects job execution</p>
 <p><strong>Implementation</strong>:
-```go
-// Pseudo-code
+<pre class="highlight"><code class="language-go">// Pseudo-code
 func (r *NotebookValidationJobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
     job := &amp;mlopsv1alpha1.NotebookValidationJob{}
     if err := r.Get(ctx, req.NamespacedName, job); err != nil {
         return ctrl.Result{}, client.IgnoreNotFound(err)
-    }</p>
-<pre><code>// If job failed and spec changed, recreate
-if job.Status.Phase == "Failed" {
-    if r.hasSpecChanged(job) {
-        // Delete existing job and let reconciliation recreate it
-        return r.recreateJob(ctx, job)
     }
-}
 
-// ... existing reconciliation logic
-</code></pre>
-<p>}
-```</p>
+    // If job failed and spec changed, recreate
+    if job.Status.Phase == "Failed" {
+        if r.hasSpecChanged(job) {
+            // Delete existing job and let reconciliation recreate it
+            return r.recreateJob(ctx, job)
+        }
+    }
+
+    // ... existing reconciliation logic
+}</code></pre></p>
 <h3 id="option-2-configurable-retry-policy">Option 2: Configurable Retry Policy<a class="headerlink" href="#option-2-configurable-retry-policy" title="Permanent link">&para;</a></h3>
 <p>Add a <code>retryPolicy</code> field to the <code>NotebookValidationJob</code> spec:</p>
-<p><code>yaml
-apiVersion: mlops.mlops.dev/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: mlops.mlops.dev/v1alpha1
 kind: NotebookValidationJob
 metadata:
   name: predictive-analytics-kserve-validation
@@ -1659,7 +1793,7 @@ spec:
     backoffBaseSeconds: 60
     maxBackoffSeconds: 3600
     retryOnSpecChange: true  # Retry when spec changes
-    autoCleanupAfterHours: 24  # Delete failed job after 24h</code></p>
+    autoCleanupAfterHours: 24  # Delete failed job after 24h</code></pre>
 <h3 id="option-3-status-reconciliation">Option 3: Status Reconciliation<a class="headerlink" href="#option-3-status-reconciliation" title="Permanent link">&para;</a></h3>
 <p>Periodically check if conditions that caused failure have been resolved:
 - Resource availability (GPU nodes, storage)

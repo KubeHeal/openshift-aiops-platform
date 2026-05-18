@@ -1662,8 +1662,122 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#step-2-run-tekton-validation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Run Tekton Validation Pipeline
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-execute-notebooks-for-model-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Execute Notebooks for Model Training
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-final-validation-with-model-serving" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Final Validation with Model Serving
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Points
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration Points">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gitea-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gitea Repository
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eventlistener" class="md-nav__link">
+    <span class="md-ellipsis">
+      EventListener
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tekton-pipelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tekton Pipelines
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Metrics
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#time-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      Time Tracking
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lessons-learned" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lessons Learned
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
   
 </li>
       
@@ -1795,12 +1909,11 @@
 <h2 id="correct-deployment-workflow">Correct Deployment Workflow<a class="headerlink" href="#correct-deployment-workflow" title="Permanent link">&para;</a></h2>
 <p>The webhook automation revealed the correct workflow order:</p>
 <h3 id="step-1-deploy-platform-infrastructure-next-task">Step 1: Deploy Platform Infrastructure (NEXT TASK)<a class="headerlink" href="#step-1-deploy-platform-infrastructure-next-task" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="create-namespace">Create namespace<a class="headerlink" href="#create-namespace" title="Permanent link">&para;</a></h1>
-<p>oc create namespace self-healing-platform</p>
-<h1 id="deploy-platform-via-validated-patterns-framework">Deploy platform via Validated Patterns framework<a class="headerlink" href="#deploy-platform-via-validated-patterns-framework" title="Permanent link">&para;</a></h1>
-<p>make end2end-deployment
-```</p>
+<pre class="highlight"><code class="language-bash"># Create namespace
+oc create namespace self-healing-platform
+
+# Deploy platform via Validated Patterns framework
+make end2end-deployment</code></pre>
 <p><strong>What Gets Deployed:</strong>
 - Common infrastructure (Helm, ArgoCD)
 - Secrets management (External Secrets Operator)
@@ -1809,16 +1922,15 @@
 - Coordination engine (deployment, service, database)
 - Monitoring stack (Prometheus, Grafana, alerts)</p>
 <h3 id="step-2-run-tekton-validation-pipeline">Step 2: Run Tekton Validation Pipeline<a class="headerlink" href="#step-2-run-tekton-validation-pipeline" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="trigger-validation-manually">Trigger validation manually<a class="headerlink" href="#trigger-validation-manually" title="Permanent link">&para;</a></h1>
-<p>tkn pipeline start deployment-validation-pipeline \
+<pre class="highlight"><code class="language-bash"># Trigger validation manually
+tkn pipeline start deployment-validation-pipeline \
   -p namespace=self-healing-platform \
   -p cluster-version=4.18 \
-  -n openshift-pipelines</p>
-<h1 id="or-trigger-via-webhook-automatic-on-git-push">Or trigger via webhook (automatic on git push)<a class="headerlink" href="#or-trigger-via-webhook-automatic-on-git-push" title="Permanent link">&para;</a></h1>
-<p>git commit -m "trigger validation"
-git push gitea main
-```</p>
+  -n openshift-pipelines
+
+# Or trigger via webhook (automatic on git push)
+git commit -m "trigger validation"
+git push gitea main</code></pre>
 <p><strong>What Gets Validated:</strong>
 - Prerequisites (cluster connectivity, version, tools, RBAC)
 - Operators (GitOps, Pipelines, AI, KServe, GPU, ODF, ESO)
@@ -1842,17 +1954,16 @@ git push gitea main
 - <code>lstm_scaler.pkl</code> - LSTM data scaler
 - <code>ensemble_config.pkl</code> - Ensemble configuration</p>
 <h3 id="step-4-final-validation-with-model-serving">Step 4: Final Validation with Model Serving<a class="headerlink" href="#step-4-final-validation-with-model-serving" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="run-model-serving-validation-pipeline">Run model-serving-validation-pipeline<a class="headerlink" href="#run-model-serving-validation-pipeline" title="Permanent link">&para;</a></h1>
-<p>tkn pipeline start model-serving-validation-pipeline \
+<pre class="highlight"><code class="language-bash"># Run model-serving-validation-pipeline
+tkn pipeline start model-serving-validation-pipeline \
   -p namespace=self-healing-platform \
-  -n openshift-pipelines</p>
-<h1 id="or-run-full-validation-pipeline">Or run full validation pipeline<a class="headerlink" href="#or-run-full-validation-pipeline" title="Permanent link">&para;</a></h1>
-<p>tkn pipeline start deployment-validation-pipeline \
+  -n openshift-pipelines
+
+# Or run full validation pipeline
+tkn pipeline start deployment-validation-pipeline \
   -p namespace=self-healing-platform \
   -p cluster-version=4.18 \
-  -n openshift-pipelines
-```</p>
+  -n openshift-pipelines</code></pre>
 <p><strong>What Gets Validated:</strong>
 - InferenceServices are ready
 - Model endpoints accessible

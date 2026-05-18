@@ -1647,8 +1647,95 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#architecture-benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Benefits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Files
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mitigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mitigation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Considerations
+    </span>
+  </a>
   
 </li>
       
@@ -1692,9 +1779,9 @@
 - Both clusters verified accessible with OpenShift OAuth integration</p>
 <h2 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h2>
 <p>RHODS (Red Hat OpenShift AI) dashboard generates notebook URLs with a <code>/notebook/</code> path prefix:
-<code>https://rhods-dashboard-redhat-ods-applications.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/notebook/self-healing-platform/self-healing-workbench-dev</code></p>
+<pre class="highlight"><code>https://rhods-dashboard-redhat-ods-applications.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/notebook/self-healing-platform/self-healing-workbench-dev</code></pre></p>
 <p>However, the Notebook Route created by the notebook controller uses a different hostname:
-<code>https://self-healing-workbench-dev-self-healing-platform.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/</code></p>
+<pre class="highlight"><code>https://self-healing-workbench-dev-self-healing-platform.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/</code></pre></p>
 <p>This causes a 404 error when accessing the notebook from the RHODS dashboard.</p>
 <h2 id="root-cause">Root Cause<a class="headerlink" href="#root-cause" title="Permanent link">&para;</a></h2>
 <p>RHODS dashboard uses path-based routing (<code>/notebook/{namespace}/{notebook-name}</code>) for UI navigation, but the notebook controller creates a hostname-based Route. The two routing mechanisms are incompatible without additional configuration.</p>
@@ -1738,15 +1825,14 @@
 - ✅ <strong>OAuth:</strong> Integrated with OpenShift authentication
 - ✅ <strong>Notebooks:</strong> Accessed via centralized gateway (no per-notebook routes)</p>
 <h3 id="access-method">Access Method<a class="headerlink" href="#access-method" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="centralized-gateway-access-openshift-ai-420">Centralized gateway access (OpenShift AI 4.20+)<a class="headerlink" href="#centralized-gateway-access-openshift-ai-420" title="Permanent link">&para;</a></h1>
-<p>https://data-science-gateway.apps.ocp.ph5rd.sandbox1590.opentlc.com</p>
-<h1 id="gateway-handles">Gateway handles:<a class="headerlink" href="#gateway-handles" title="Permanent link">&para;</a></h1>
-<h1 id="1-oauth2-authentication-with-openshift">1. OAuth2 authentication with OpenShift<a class="headerlink" href="#1-oauth2-authentication-with-openshift" title="Permanent link">&para;</a></h1>
-<h1 id="2-tls-re-encryption">2. TLS re-encryption<a class="headerlink" href="#2-tls-re-encryption" title="Permanent link">&para;</a></h1>
-<h1 id="3-routing-to-appropriate-notebook-pod">3. Routing to appropriate notebook pod<a class="headerlink" href="#3-routing-to-appropriate-notebook-pod" title="Permanent link">&para;</a></h1>
-<h1 id="4-session-management">4. Session management<a class="headerlink" href="#4-session-management" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Centralized gateway access (OpenShift AI 4.20+)
+https://data-science-gateway.apps.ocp.ph5rd.sandbox1590.opentlc.com
+
+# Gateway handles:
+# 1. OAuth2 authentication with OpenShift
+# 2. TLS re-encryption
+# 3. Routing to appropriate notebook pod
+# 4. Session management</code></pre>
 <h3 id="architecture-benefits">Architecture Benefits<a class="headerlink" href="#architecture-benefits" title="Permanent link">&para;</a></h3>
 <ul>
 <li>✅ <strong>Centralized Security:</strong> One gateway manages all notebook access</li>
@@ -1785,16 +1871,17 @@
 <li>ADR-GPU-SCHEDULING: GPU node toleration configuration</li>
 </ul>
 <h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
-<p>```bash</p>
-<h1 id="test-direct-access">Test direct access<a class="headerlink" href="#test-direct-access" title="Permanent link">&para;</a></h1>
-<p>curl -k -I https://self-healing-workbench-dev-self-healing-platform.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/</p>
-<h1 id="expected-302-redirect-to-oauth-login">Expected: 302 redirect to OAuth login<a class="headerlink" href="#expected-302-redirect-to-oauth-login" title="Permanent link">&para;</a></h1>
-<h1 id="after-oauth-200-ok-with-jupyterlab-content">After OAuth: 200 OK with JupyterLab content<a class="headerlink" href="#after-oauth-200-ok-with-jupyterlab-content" title="Permanent link">&para;</a></h1>
-<h1 id="check-notebook-pod">Check notebook pod<a class="headerlink" href="#check-notebook-pod" title="Permanent link">&para;</a></h1>
-<p>oc get pod -n self-healing-platform self-healing-workbench-dev-0 -o wide</p>
-<h1 id="check-route">Check Route<a class="headerlink" href="#check-route" title="Permanent link">&para;</a></h1>
-<p>oc get route -n self-healing-platform self-healing-workbench-dev -o yaml
-```</p>
+<pre class="highlight"><code class="language-bash"># Test direct access
+curl -k -I https://self-healing-workbench-dev-self-healing-platform.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/
+
+# Expected: 302 redirect to OAuth login
+# After OAuth: 200 OK with JupyterLab content
+
+# Check notebook pod
+oc get pod -n self-healing-platform self-healing-workbench-dev-0 -o wide
+
+# Check Route
+oc get route -n self-healing-platform self-healing-workbench-dev -o yaml</code></pre>
 <h2 id="future-considerations">Future Considerations<a class="headerlink" href="#future-considerations" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>RHODS Dashboard Integration</strong>: If RHODS dashboard access becomes important, implement path-based routing</li>

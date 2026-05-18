@@ -1808,6 +1808,66 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#external" class="md-nav__link">
+    <span class="md-ellipsis">
+      External
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Internal
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Criteria
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1866,7 +1926,7 @@
 <li><strong>Works on both</strong> vanilla Kubernetes (with KServe operator) and OpenShift (with OpenShift AI)</li>
 </ol>
 <h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h3>
-<p><code>┌──────────────────────────────────────────────────────┐
+<pre class="highlight"><code>┌──────────────────────────────────────────────────────┐
 │ USER RESPONSIBILITY: Model Training &amp; Deployment    │
 │                                                       │
 │  1. Train models in OpenShift AI workbenches/locally │
@@ -1885,26 +1945,23 @@
 │  - KServe Infrastructure (model serving)             │
 │  - Monitoring &amp; Observability (Prometheus/Grafana)   │
 │  - Storage (PVC/S3 for models)                       │
-└──────────────────────────────────────────────────────┘</code></p>
+└──────────────────────────────────────────────────────┘</code></pre>
 <h3 id="configuration-changes">Configuration Changes<a class="headerlink" href="#configuration-changes" title="Permanent link">&para;</a></h3>
 <p><strong>Before (ADR-038 Initial)</strong>:
-<code>yaml
-coordinationEngine:
+<pre class="highlight"><code class="language-yaml">coordinationEngine:
   mlService:
     enabled: true
-    url: http://aiops-ml-service:8080  # Service never deployed</code></p>
+    url: http://aiops-ml-service:8080  # Service never deployed</code></pre></p>
 <p><strong>After (This ADR)</strong>:
-<code>yaml
-coordinationEngine:
+<pre class="highlight"><code class="language-yaml">coordinationEngine:
   kserve:
     enabled: true
     namespace: self-healing-platform
     services:
       anomaly_detector: "anomaly-detector-predictor"
-      predictive_analytics: "predictive-analytics-predictor"</code></p>
+      predictive_analytics: "predictive-analytics-predictor"</code></pre></p>
 <p><strong>Environment Variables</strong>:
-<code>yaml
-env:
+<pre class="highlight"><code class="language-yaml">env:
   - name: ENABLE_KSERVE_INTEGRATION
     value: "true"
   - name: KSERVE_NAMESPACE
@@ -1912,7 +1969,7 @@ env:
   - name: KSERVE_ANOMALY_DETECTOR_SERVICE
     value: "anomaly-detector-predictor"
   - name: KSERVE_PREDICTIVE_ANALYTICS_SERVICE
-    value: "predictive-analytics-predictor"</code></p>
+    value: "predictive-analytics-predictor"</code></pre></p>
 <h2 id="rationale">Rationale<a class="headerlink" href="#rationale" title="Permanent link">&para;</a></h2>
 <h3 id="why-user-deployed-models">Why User-Deployed Models?<a class="headerlink" href="#why-user-deployed-models" title="Permanent link">&para;</a></h3>
 <ol>
@@ -2060,15 +2117,14 @@ env:
 - <code>charts/hub/templates/coordination-engine.yaml</code> - Removed <code>ML_SERVICE_URL</code>, added <code>KSERVE_*</code> env vars
 - <code>values-hub.yaml</code> - Replaced <code>mlService</code> with <code>kserve</code> section</p>
 <p><strong>Environment Variables</strong>:
-<code>yaml
-- name: ENABLE_KSERVE_INTEGRATION
+<pre class="highlight"><code class="language-yaml">- name: ENABLE_KSERVE_INTEGRATION
   value: "true"
 - name: KSERVE_NAMESPACE
   value: "self-healing-platform"
 - name: KSERVE_ANOMALY_DETECTOR_SERVICE
   value: "anomaly-detector-predictor"
 - name: KSERVE_PREDICTIVE_ANALYTICS_SERVICE
-  value: "predictive-analytics-predictor"</code></p>
+  value: "predictive-analytics-predictor"</code></pre></p>
 <h3 id="phase-2-documentation-completed">Phase 2: Documentation ✅ COMPLETED<a class="headerlink" href="#phase-2-documentation-completed" title="Permanent link">&para;</a></h3>
 <p><strong>Files Created</strong>:
 - <code>docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md</code> - Comprehensive guide for deploying models
@@ -2127,47 +2183,44 @@ env:
 <h2 id="model-api-contract">Model API Contract<a class="headerlink" href="#model-api-contract" title="Permanent link">&para;</a></h2>
 <p>Users deploying models MUST implement the KServe v1 prediction API:</p>
 <h3 id="required-endpoints">Required Endpoints<a class="headerlink" href="#required-endpoints" title="Permanent link">&para;</a></h3>
-<p><code>GET  /v1/models/&lt;model&gt;           # Model metadata
+<pre class="highlight"><code>GET  /v1/models/&lt;model&gt;           # Model metadata
 POST /v1/models/&lt;model&gt;:predict   # Inference
-GET  /v1/models                   # List models</code></p>
+GET  /v1/models                   # List models</code></pre>
 <h3 id="request-format">Request Format<a class="headerlink" href="#request-format" title="Permanent link">&para;</a></h3>
-<p>```json
-POST /v1/models/anomaly-detector:predict</p>
-<p>{
+<pre class="highlight"><code class="language-json">POST /v1/models/anomaly-detector:predict
+
+{
   "instances": [
     [0.5, 1.2, 0.8],
     [0.3, 0.9, 1.1]
   ]
-}
-```</p>
+}</code></pre>
 <h3 id="response-format">Response Format<a class="headerlink" href="#response-format" title="Permanent link">&para;</a></h3>
-<p><code>json
-{
+<pre class="highlight"><code class="language-json">{
   "predictions": [-1, 1],  # -1=anomaly, 1=normal
   "model_name": "anomaly-detector",
   "model_version": "v2"
-}</code></p>
+}</code></pre>
 <h2 id="migration-path">Migration Path<a class="headerlink" href="#migration-path" title="Permanent link">&para;</a></h2>
 <h3 id="from-adr-038-initial-go-migration">From ADR-038 (Initial Go Migration)<a class="headerlink" href="#from-adr-038-initial-go-migration" title="Permanent link">&para;</a></h3>
 <p><strong>No Breaking Changes</strong> - Existing KServe InferenceServices continue to work:
 - <code>anomaly-detector</code> InferenceService remains deployed
 - <code>predictive-analytics</code> InferenceService remains deployed</p>
 <p><strong>Configuration Update Required</strong>:
-```yaml</p>
-<h1 id="update-values-hubyaml">Update values-hub.yaml<a class="headerlink" href="#update-values-hubyaml" title="Permanent link">&para;</a></h1>
-<p>coordinationEngine:
+<pre class="highlight"><code class="language-yaml"># Update values-hub.yaml
+coordinationEngine:
   # OLD (remove):
   # mlService:
   #   enabled: true
-  #   url: http://aiops-ml-service:8080</p>
-<p># NEW (add):
+  #   url: http://aiops-ml-service:8080
+
+  # NEW (add):
   kserve:
     enabled: true
     namespace: self-healing-platform
     services:
       anomaly_detector: "anomaly-detector-predictor"
-      predictive_analytics: "predictive-analytics-predictor"
-```</p>
+      predictive_analytics: "predictive-analytics-predictor"</code></pre></p>
 <p><strong>Coordination Engine Update</strong>: Once upstream coordination engine adds KServe support, update to new version.</p>
 <h2 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h2>
 <ul>

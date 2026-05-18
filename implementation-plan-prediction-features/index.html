@@ -1743,6 +1743,141 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#end-to-end-tests-with-lightspeed" class="md-nav__link">
+    <span class="md-ellipsis">
+      End-to-End Tests with Lightspeed
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rollout-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rollout Plan
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rollout Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-mcp-server-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: MCP Server Changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-coordination-engine-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Coordination Engine Changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternative-interim-solution-low-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alternative: Interim Solution (Low Code)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alternative: Interim Solution (Low Code)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-simplify-blog-part-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option A: Simplify Blog Part 3
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommendation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files-to-createmodify-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Files to Create/Modify Summary
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Files to Create/Modify Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mcp-server-repository-openshift-cluster-health-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      MCP Server Repository (openshift-cluster-health-mcp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coordination-engine-repository-openshift-coordination-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Coordination Engine Repository (openshift-coordination-engine)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platform-repository-openshift-aiops-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Platform Repository (openshift-aiops-platform)
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1809,16 +1944,16 @@
 <p><strong>New Tool</strong>: <code>predict-resource-usage</code></p>
 <p><strong>Location</strong>: <code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/predict_resource_usage.go</code></p>
 <p><strong>Functionality</strong>:
-```go
-// Input schema
+<pre class="highlight"><code class="language-go">// Input schema
 {
   "target_time": "15:00",           // Optional: specific time (HH:MM) - defaults to current time
   "target_date": "2026-01-12",      // Optional: specific date - defaults to today
   "namespace": "self-healing-platform",
   "deployment": "sample-flask-app", // Optional: specific deployment
   "metric": "cpu_usage",            // cpu_usage, memory_usage, both
-}</p>
-<p>// Output
+}
+
+// Output
 {
   "status": "success",
   "current_metrics": {
@@ -1834,8 +1969,7 @@
   },
   "recommendation": "Memory approaching 85% threshold...",
   "model_used": "predictive-analytics"
-}
-```</p>
+}</code></pre></p>
 <p><strong>Implementation</strong>:
 1. Parse target time (default to current hour + 1)
 2. Extract hour and day_of_week from target_time
@@ -1843,23 +1977,23 @@
 4. Call coordination engine <code>/api/v1/predict</code> endpoint
 5. Format natural language response</p>
 <p><strong>Files to Create</strong>:
-<code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/predict_resource_usage.go
-/home/lab-user/openshift-cluster-health-mcp/internal/tools/predict_resource_usage_test.go</code></p>
+<pre class="highlight"><code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/predict_resource_usage.go
+/home/lab-user/openshift-cluster-health-mcp/internal/tools/predict_resource_usage_test.go</code></pre></p>
 <hr />
 <h3 id="phase-2-scaling-impact-analysis-tool-mcp-server">Phase 2: Scaling Impact Analysis Tool (MCP Server)<a class="headerlink" href="#phase-2-scaling-impact-analysis-tool-mcp-server" title="Permanent link">&para;</a></h3>
 <p><strong>New Tool</strong>: <code>analyze-scaling-impact</code></p>
 <p><strong>Location</strong>: <code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/analyze_scaling_impact.go</code></p>
 <p><strong>Functionality</strong>:
-```go
-// Input schema
+<pre class="highlight"><code class="language-go">// Input schema
 {
   "deployment": "sample-flask-app",
   "namespace": "self-healing-platform",
   "current_replicas": 2,           // Optional: auto-detected if not provided
   "target_replicas": 5,
   "predict_at": "17:00"            // Optional: specific time for prediction
-}</p>
-<p>// Output
+}
+
+// Output
 {
   "status": "success",
   "current_state": {
@@ -1887,8 +2021,7 @@
     {"replicas": 4, "projected_usage": 86.7},
     {"replicas": 3, "projected_usage": 80.1}
   ]
-}
-```</p>
+}</code></pre></p>
 <p><strong>Implementation</strong>:
 1. Query current deployment state via Kubernetes API
 2. Get current pod resource usage from Prometheus
@@ -1898,15 +2031,14 @@
 6. Generate warnings if approaching thresholds
 7. Optionally call prediction model for time-specific forecast</p>
 <p><strong>Files to Create</strong>:
-<code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/analyze_scaling_impact.go
-/home/lab-user/openshift-cluster-health-mcp/internal/tools/analyze_scaling_impact_test.go</code></p>
+<pre class="highlight"><code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/analyze_scaling_impact.go
+/home/lab-user/openshift-cluster-health-mcp/internal/tools/analyze_scaling_impact_test.go</code></pre></p>
 <hr />
 <h3 id="phase-3-capacity-planning-tool-mcp-server">Phase 3: Capacity Planning Tool (MCP Server)<a class="headerlink" href="#phase-3-capacity-planning-tool-mcp-server" title="Permanent link">&para;</a></h3>
 <p><strong>New Tool</strong>: <code>calculate-pod-capacity</code></p>
 <p><strong>Location</strong>: <code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/calculate_pod_capacity.go</code></p>
 <p><strong>Functionality</strong>:
-```go
-// Input schema
+<pre class="highlight"><code class="language-go">// Input schema
 {
   "namespace": "self-healing-platform",
   "pod_profile": "medium",         // small, medium, large, custom
@@ -1915,8 +2047,9 @@
     "memory": "128Mi"
   },
   "safety_margin": 15              // Percentage of headroom to preserve (default: 15)
-}</p>
-<p>// Output
+}
+
+// Output
 {
   "status": "success",
   "namespace_quota": {
@@ -1950,8 +2083,7 @@
     "days_until_85_percent": 5
   },
   "recommendation": "Can safely run 5 more medium-sized pods. Keep &lt;85% memory for stability."
-}
-```</p>
+}</code></pre></p>
 <p><strong>Implementation</strong>:
 1. Query namespace ResourceQuota via Kubernetes API
 2. Sum current pod resource usage from Prometheus
@@ -1961,24 +2093,24 @@
 6. Query Prometheus for usage trend (last 7 days)
 7. Calculate time-to-capacity</p>
 <p><strong>Files to Create</strong>:
-<code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/calculate_pod_capacity.go
+<pre class="highlight"><code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/calculate_pod_capacity.go
 /home/lab-user/openshift-cluster-health-mcp/internal/tools/calculate_pod_capacity_test.go
 /home/lab-user/openshift-cluster-health-mcp/pkg/capacity/calculator.go
-/home/lab-user/openshift-cluster-health-mcp/pkg/capacity/calculator_test.go</code></p>
+/home/lab-user/openshift-cluster-health-mcp/pkg/capacity/calculator_test.go</code></pre></p>
 <hr />
 <h3 id="phase-4-coordination-engine-api-extensions">Phase 4: Coordination Engine API Extensions<a class="headerlink" href="#phase-4-coordination-engine-api-extensions" title="Permanent link">&para;</a></h3>
 <p><strong>Location</strong>: <code>https://github.com/KubeHeal/openshift-coordination-engine</code></p>
 <p><strong>New Endpoints</strong>:</p>
 <h4 id="1-apiv1predict-time-specific-prediction">1. <code>/api/v1/predict</code> - Time-specific prediction<a class="headerlink" href="#1-apiv1predict-time-specific-prediction" title="Permanent link">&para;</a></h4>
-<p>```go
-// Request
+<pre class="highlight"><code class="language-go">// Request
 {
   "hour": 15,                    // 0-23
   "day_of_week": 3,              // 0=Mon, 6=Sun
   "namespace": "self-healing-platform",
   "model": "predictive-analytics"
-}</p>
-<p>// Response
+}
+
+// Response
 {
   "predictions": {
     "cpu_percent": 74.5,
@@ -1990,15 +2122,14 @@
   },
   "confidence": 0.92,
   "model_version": "v1"
-}
-```</p>
+}</code></pre>
 <h4 id="2-apiv1capacitynamespace-namespace-capacity-info">2. <code>/api/v1/capacity/namespace</code> - Namespace capacity info<a class="headerlink" href="#2-apiv1capacitynamespace-namespace-capacity-info" title="Permanent link">&para;</a></h4>
-<p>```go
-// Request
+<pre class="highlight"><code class="language-go">// Request
 {
   "namespace": "self-healing-platform"
-}</p>
-<p>// Response
+}
+
+// Response
 {
   "quota": {
     "cpu": "10000m",
@@ -2017,39 +2148,38 @@
     "cpu_daily_change_percent": 1.5,
     "memory_daily_change_percent": 2.0
   }
-}
-```</p>
+}</code></pre>
 <p><strong>Files to Modify</strong>:
-<code>pkg/api/routes.go - Add new endpoints
+<pre class="highlight"><code>pkg/api/routes.go - Add new endpoints
 pkg/handlers/prediction.go - Time-specific prediction handler
 pkg/handlers/capacity.go - Capacity analysis handler
-pkg/clients/prometheus.go - Add trend calculation methods</code></p>
+pkg/clients/prometheus.go - Add trend calculation methods</code></pre></p>
 <hr />
 <h3 id="phase-5-pod-specific-query-enhancements">Phase 5: Pod-Specific Query Enhancements<a class="headerlink" href="#phase-5-pod-specific-query-enhancements" title="Permanent link">&para;</a></h3>
 <p><strong>Enhance Existing Tools</strong>:</p>
 <h4 id="analyze-anomalies-enhancement"><code>analyze-anomalies</code> Enhancement<a class="headerlink" href="#analyze-anomalies-enhancement" title="Permanent link">&para;</a></h4>
 <p>Add optional <code>deployment</code> parameter:</p>
-<p>```go
-// Enhanced input schema
+<pre class="highlight"><code class="language-go">// Enhanced input schema
 {
   "metric": "cpu_usage",
   "namespace": "self-healing-platform",
   "deployment": "sample-flask-app",  // NEW: filter to specific deployment
   "time_range": "24h"
-}</p>
-<p>// Prometheus query changes from:
-// avg(rate(container_cpu_usage_seconds_total{namespace="X"}[24h]))</p>
-<p>// To:
+}
+
+// Prometheus query changes from:
+// avg(rate(container_cpu_usage_seconds_total{namespace="X"}[24h]))
+
+// To:
 // avg(rate(container_cpu_usage_seconds_total{
 //   namespace="X",
 //   pod=~"sample-flask-app-.*"
-// }[24h]))
-```</p>
+// }[24h]))</code></pre>
 <h4 id="list-pods-enhancement"><code>list-pods</code> Enhancement<a class="headerlink" href="#list-pods-enhancement" title="Permanent link">&para;</a></h4>
 <p>Already supports label selectors, document it better for deployment filtering.</p>
 <p><strong>Files to Modify</strong>:
-<code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/analyze_anomalies.go
-/home/lab-user/openshift-cluster-health-mcp/pkg/clients/kserve.go</code></p>
+<pre class="highlight"><code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/analyze_anomalies.go
+/home/lab-user/openshift-cluster-health-mcp/pkg/clients/kserve.go</code></pre></p>
 <hr />
 <h2 id="implementation-priority">Implementation Priority<a class="headerlink" href="#implementation-priority" title="Permanent link">&para;</a></h2>
 <h3 id="phase-1-quick-wins-1-2-days">Phase 1: Quick Wins (1-2 days)<a class="headerlink" href="#phase-1-quick-wins-1-2-days" title="Permanent link">&para;</a></h3>
@@ -2084,8 +2214,7 @@ pkg/clients/prometheus.go - Add trend calculation methods</code></p>
 <hr />
 <h2 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h2>
 <h3 id="unit-tests">Unit Tests<a class="headerlink" href="#unit-tests" title="Permanent link">&para;</a></h3>
-<p><code>go
-// Example test structure
+<pre class="highlight"><code class="language-go">// Example test structure
 func TestPredictResourceUsage(t *testing.T) {
   tests := []struct {
     name           string
@@ -2115,46 +2244,46 @@ func TestPredictResourceUsage(t *testing.T) {
       },
     },
   }
-}</code></p>
+}</code></pre>
 <h3 id="integration-tests">Integration Tests<a class="headerlink" href="#integration-tests" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="test-predict-resource-usage-tool">Test predict-resource-usage tool<a class="headerlink" href="#test-predict-resource-usage-tool" title="Permanent link">&para;</a></h1>
-<p>curl -X POST http://mcp-server:8080/mcp \
+<pre class="highlight"><code class="language-bash"># Test predict-resource-usage tool
+curl -X POST http://mcp-server:8080/mcp \
   -d '{
     "tool": "predict-resource-usage",
     "arguments": {
       "target_time": "15:00",
       "namespace": "self-healing-platform"
     }
-  }'</p>
-<h1 id="test-scaling-impact-analysis">Test scaling impact analysis<a class="headerlink" href="#test-scaling-impact-analysis" title="Permanent link">&para;</a></h1>
-<p>curl -X POST http://mcp-server:8080/mcp \
+  }'
+
+# Test scaling impact analysis
+curl -X POST http://mcp-server:8080/mcp \
   -d '{
     "tool": "analyze-scaling-impact",
     "arguments": {
       "deployment": "sample-flask-app",
       "target_replicas": 5
     }
-  }'</p>
-<h1 id="test-capacity-calculation">Test capacity calculation<a class="headerlink" href="#test-capacity-calculation" title="Permanent link">&para;</a></h1>
-<p>curl -X POST http://mcp-server:8080/mcp \
+  }'
+
+# Test capacity calculation
+curl -X POST http://mcp-server:8080/mcp \
   -d '{
     "tool": "calculate-pod-capacity",
     "arguments": {
       "namespace": "self-healing-platform",
       "pod_profile": "medium"
     }
-  }'
-```</p>
+  }'</code></pre>
 <h3 id="end-to-end-tests-with-lightspeed">End-to-End Tests with Lightspeed<a class="headerlink" href="#end-to-end-tests-with-lightspeed" title="Permanent link">&para;</a></h3>
-<p>```
-User: "What will CPU be at 3 PM today?"
-Expected: Lightspeed calls predict-resource-usage, returns forecast</p>
-<p>User: "If I scale sample-flask-app to 5 replicas, what happens?"
-Expected: Lightspeed calls analyze-scaling-impact, returns impact analysis</p>
-<p>User: "How many more pods can I run?"
-Expected: Lightspeed calls calculate-pod-capacity, returns capacity estimate
-```</p>
+<pre class="highlight"><code>User: "What will CPU be at 3 PM today?"
+Expected: Lightspeed calls predict-resource-usage, returns forecast
+
+User: "If I scale sample-flask-app to 5 replicas, what happens?"
+Expected: Lightspeed calls analyze-scaling-impact, returns impact analysis
+
+User: "How many more pods can I run?"
+Expected: Lightspeed calls calculate-pod-capacity, returns capacity estimate</code></pre>
 <hr />
 <h2 id="rollout-plan">Rollout Plan<a class="headerlink" href="#rollout-plan" title="Permanent link">&para;</a></h2>
 <h3 id="step-1-mcp-server-changes">Step 1: MCP Server Changes<a class="headerlink" href="#step-1-mcp-server-changes" title="Permanent link">&para;</a></h3>
@@ -2195,24 +2324,28 @@ Expected: Lightspeed calls calculate-pod-capacity, returns capacity estimate
 <p>If we want the blog to work <strong>immediately</strong> without waiting for full implementation:</p>
 <h3 id="option-a-simplify-blog-part-3">Option A: Simplify Blog Part 3<a class="headerlink" href="#option-a-simplify-blog-part-3" title="Permanent link">&para;</a></h3>
 <p>Update blog to show what <strong>currently works</strong>:</p>
-<p>```markdown</p>
-<h2 id="part-3-analyzing-historical-metrics">Part 3: Analyzing Historical Metrics<a class="headerlink" href="#part-3-analyzing-historical-metrics" title="Permanent link">&para;</a></h2>
-<p><strong>You type:</strong>
-<code>Analyze CPU usage in self-healing-platform over the last 24 hours</code></p>
-<p><strong>Lightspeed responds:</strong>
-<code>ML Analysis (anomaly-detector):
+<p><pre class="highlight"><code class="language-markdown">## Part 3: Analyzing Historical Metrics
+
+**You type:**</code></pre>
+Analyze CPU usage in self-healing-platform over the last 24 hours
+<pre class="highlight"><code>
+**Lightspeed responds:**</code></pre>
+ML Analysis (anomaly-detector):
 - Time range: Last 24 hours
 - Average CPU: 68.2%
 - Peak CPU: 87.3% (at 15:23 UTC)
 - Anomalies detected: 2 (scores: 0.82, 0.91)
-- Recommendation: Monitor during afternoon peak hours</code></p>
-<h3 id="option-b-rely-on-lightspeeds-intelligence">Option B: Rely on Lightspeed's Intelligence<a class="headerlink" href="#option-b-rely-on-lightspeeds-intelligence" title="Permanent link">&para;</a></h3>
-<p>Add a note that Lightspeed <strong>translates</strong> natural language to tool calls:</p>
-<p><code>markdown
+- Recommendation: Monitor during afternoon peak hours
+<pre class="highlight"><code>
+### Option B: Rely on Lightspeed's Intelligence
+
+Add a note that Lightspeed **translates** natural language to tool calls:
+
+```markdown
 **Note**: When you ask "What will CPU be at 3 PM?", Lightspeed's AI
 understands your intent and translates it to the appropriate tool
 calls (analyze-anomalies, list-pods, etc.) to provide the best
-possible answer based on historical patterns.</code></p>
+possible answer based on historical patterns.</code></pre></p>
 <p>This is <strong>partially true</strong> - Lightspeed will try to answer, but won't have time-specific predictions without the tools.</p>
 <hr />
 <h2 id="recommendation">Recommendation<a class="headerlink" href="#recommendation" title="Permanent link">&para;</a></h2>

@@ -1719,8 +1719,119 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#gpu-resource-allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      GPU Resource Allocation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openshift-ai-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      OpenShift AI Integration
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-and-alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring and Alerting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring and Alerting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gpu-metrics-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      GPU Metrics Available
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alert-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alert Rules
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-planning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resource Planning
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource Planning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-gpu-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current GPU Resources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scaling-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scaling Considerations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Metrics
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
   
 </li>
       
@@ -1863,20 +1974,15 @@
 </ul>
 <h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">&para;</a></h2>
 <h3 id="current-deployment-status">Current Deployment Status<a class="headerlink" href="#current-deployment-status" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="gpu-operator-pods-running-in-nvidia-gpu-operator-namespace">GPU Operator pods running in nvidia-gpu-operator namespace:<a class="headerlink" href="#gpu-operator-pods-running-in-nvidia-gpu-operator-namespace" title="Permanent link">&para;</a></h1>
-<ul>
-<li>gpu-operator-554b748fdc-rv9gm (GPU Operator controller)</li>
-<li>nvidia-driver-daemonset-418.94.202507221927-0-g5q9p (Driver DaemonSet)</li>
-<li>nvidia-device-plugin-daemonset-qvkb2 (Device Plugin)</li>
-<li>nvidia-dcgm-exporter-n2gzs (Metrics Exporter)</li>
-<li>gpu-feature-discovery-5cjff (Feature Discovery)</li>
-<li>nvidia-container-toolkit-daemonset-rz2xk (Container Toolkit)
-```</li>
-</ul>
+<pre class="highlight"><code class="language-bash"># GPU Operator pods running in nvidia-gpu-operator namespace:
+- gpu-operator-554b748fdc-rv9gm (GPU Operator controller)
+- nvidia-driver-daemonset-418.94.202507221927-0-g5q9p (Driver DaemonSet)
+- nvidia-device-plugin-daemonset-qvkb2 (Device Plugin)
+- nvidia-dcgm-exporter-n2gzs (Metrics Exporter)
+- gpu-feature-discovery-5cjff (Feature Discovery)
+- nvidia-container-toolkit-daemonset-rz2xk (Container Toolkit)</code></pre>
 <h3 id="gpu-resource-allocation">GPU Resource Allocation<a class="headerlink" href="#gpu-resource-allocation" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-apiVersion: v1
+<pre class="highlight"><code class="language-yaml">apiVersion: v1
 kind: Pod
 metadata:
   name: gpu-workload
@@ -1888,10 +1994,9 @@ spec:
       limits:
         nvidia.com/gpu: 1
       requests:
-        nvidia.com/gpu: 1</code></p>
+        nvidia.com/gpu: 1</code></pre>
 <h3 id="openshift-ai-integration">OpenShift AI Integration<a class="headerlink" href="#openshift-ai-integration" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-apiVersion: kubeflow.org/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: kubeflow.org/v1
 kind: Notebook
 metadata:
   name: gpu-notebook
@@ -1904,7 +2009,7 @@ spec:
           limits:
             nvidia.com/gpu: 1
           requests:
-            nvidia.com/gpu: 1</code></p>
+            nvidia.com/gpu: 1</code></pre>
 <h2 id="monitoring-and-alerting">Monitoring and Alerting<a class="headerlink" href="#monitoring-and-alerting" title="Permanent link">&para;</a></h2>
 <h3 id="gpu-metrics-available">GPU Metrics Available<a class="headerlink" href="#gpu-metrics-available" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1915,8 +2020,7 @@ spec:
 <li><code>DCGM_FI_DEV_PCIE_REPLAY_COUNTER</code>: PCIe error counters</li>
 </ul>
 <h3 id="alert-rules">Alert Rules<a class="headerlink" href="#alert-rules" title="Permanent link">&para;</a></h3>
-<p>```yaml
-apiVersion: monitoring.coreos.com/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: gpu-alerts
@@ -1930,16 +2034,15 @@ spec:
       labels:
         severity: warning
       annotations:
-        summary: "GPU utilization is high"</p>
-<pre><code>- alert: GPUHighTemperature
-  expr: DCGM_FI_DEV_GPU_TEMP &gt; 80
-  for: 5m
-  labels:
-    severity: critical
-  annotations:
-    summary: "GPU temperature is critically high"
-</code></pre>
-<p>```</p>
+        summary: "GPU utilization is high"
+
+    - alert: GPUHighTemperature
+      expr: DCGM_FI_DEV_GPU_TEMP &gt; 80
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "GPU temperature is critically high"</code></pre>
 <h2 id="resource-planning">Resource Planning<a class="headerlink" href="#resource-planning" title="Permanent link">&para;</a></h2>
 <h3 id="current-gpu-resources">Current GPU Resources<a class="headerlink" href="#current-gpu-resources" title="Permanent link">&para;</a></h3>
 <ul>

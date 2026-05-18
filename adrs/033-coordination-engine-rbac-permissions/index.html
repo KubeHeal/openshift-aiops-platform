@@ -1593,8 +1593,113 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#step-2-test-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Test Permissions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-monitor-coordination-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Monitor Coordination Engine
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mitigation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternatives-considered" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alternatives Considered
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Strategy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Checklist
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
   
 </li>
       
@@ -1633,8 +1738,8 @@
 </blockquote>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link">&para;</a></h2>
 <p>The coordination engine pod (<code>coordination-engine-678b76f77c-zwmct</code>) is receiving HTTP 403 Forbidden errors when attempting to access the Kubernetes API:</p>
-<p><code>2025-10-17 18:52:29,541 - __main__ - WARNING - K8s API connectivity check failed: (403)
-Reason: Forbidden</code></p>
+<pre class="highlight"><code>2025-10-17 18:52:29,541 - __main__ - WARNING - K8s API connectivity check failed: (403)
+Reason: Forbidden</code></pre>
 <p>This prevents the coordination engine from:
 - Querying pod status and metrics
 - Monitoring cluster health
@@ -1689,107 +1794,92 @@ Reason: Forbidden</code></p>
 <h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
 <h3 id="step-1-update-rbac-role">Step 1: Update RBAC Role<a class="headerlink" href="#step-1-update-rbac-role" title="Permanent link">&para;</a></h3>
 <p>Update <code>charts/hub/templates/rbac.yaml</code> and <code>k8s/base/rbac.yaml</code>:</p>
-<p>```yaml
-apiVersion: rbac.authorization.k8s.io/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: self-healing-operator
-rules:</p>
-<h1 id="core-api-resources">Core API resources<a class="headerlink" href="#core-api-resources" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: [""]
+rules:
+# Core API resources
+- apiGroups: [""]
   resources: ["pods", "services", "configmaps", "secrets", "events"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]</li>
-<li>apiGroups: [""]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
   resources: ["namespaces", "nodes", "endpoints"]
-  verbs: ["get", "list", "watch"]</li>
-<li>apiGroups: [""]
-  resources: ["persistentvolumes", "persistentvolumeclaims"]
-  verbs: ["get", "list", "watch"]</li>
-<li>apiGroups: [""]
-  resources: ["leases"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]</li>
-</ul>
-<h1 id="apps-api-resources">Apps API resources<a class="headerlink" href="#apps-api-resources" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: ["apps"]
-  resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]</li>
-</ul>
-<h1 id="batch-api-resources">Batch API resources<a class="headerlink" href="#batch-api-resources" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: ["batch"]
-  resources: ["jobs", "cronjobs"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]</li>
-</ul>
-<h1 id="autoscaling-resources">Autoscaling resources<a class="headerlink" href="#autoscaling-resources" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: ["autoscaling"]
-  resources: ["horizontalpodautoscalers"]
-  verbs: ["get", "list", "watch"]</li>
-</ul>
-<h1 id="policy-resources">Policy resources<a class="headerlink" href="#policy-resources" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: ["policy"]
-  resources: ["poddisruptionbudgets"]
-  verbs: ["get", "list", "watch"]</li>
-</ul>
-<h1 id="networking-resources">Networking resources<a class="headerlink" href="#networking-resources" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: ["networking.k8s.io"]
-  resources: ["networkpolicies"]
-  verbs: ["get", "list", "watch"]</li>
-</ul>
-<h1 id="storage-resources">Storage resources<a class="headerlink" href="#storage-resources" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: ["storage.k8s.io"]
-  resources: ["storageclasses"]
-  verbs: ["get", "list", "watch"]</li>
-</ul>
-<h1 id="monitoring-resources">Monitoring resources<a class="headerlink" href="#monitoring-resources" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: ["monitoring.coreos.com"]
-  resources: ["servicemonitors", "prometheusrules"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]</li>
-</ul>
-<h1 id="kserve-resources">KServe resources<a class="headerlink" href="#kserve-resources" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: ["serving.kserve.io"]
-  resources: ["inferenceservices"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]</li>
-</ul>
-<h1 id="kubeflow-resources">Kubeflow resources<a class="headerlink" href="#kubeflow-resources" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: ["kubeflow.org"]
-  resources: ["notebooks"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]</li>
-</ul>
-<h1 id="machine-configuration-resources">Machine configuration resources<a class="headerlink" href="#machine-configuration-resources" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: ["machineconfiguration.openshift.io"]
-  resources: ["machineconfigs", "machineconfigpools"]
   verbs: ["get", "list", "watch"]
-```</li>
-</ul>
+- apiGroups: [""]
+  resources: ["persistentvolumes", "persistentvolumeclaims"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["leases"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+# Apps API resources
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+# Batch API resources
+- apiGroups: ["batch"]
+  resources: ["jobs", "cronjobs"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+# Autoscaling resources
+- apiGroups: ["autoscaling"]
+  resources: ["horizontalpodautoscalers"]
+  verbs: ["get", "list", "watch"]
+
+# Policy resources
+- apiGroups: ["policy"]
+  resources: ["poddisruptionbudgets"]
+  verbs: ["get", "list", "watch"]
+
+# Networking resources
+- apiGroups: ["networking.k8s.io"]
+  resources: ["networkpolicies"]
+  verbs: ["get", "list", "watch"]
+
+# Storage resources
+- apiGroups: ["storage.k8s.io"]
+  resources: ["storageclasses"]
+  verbs: ["get", "list", "watch"]
+
+# Monitoring resources
+- apiGroups: ["monitoring.coreos.com"]
+  resources: ["servicemonitors", "prometheusrules"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+# KServe resources
+- apiGroups: ["serving.kserve.io"]
+  resources: ["inferenceservices"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+# Kubeflow resources
+- apiGroups: ["kubeflow.org"]
+  resources: ["notebooks"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+# Machine configuration resources
+- apiGroups: ["machineconfiguration.openshift.io"]
+  resources: ["machineconfigs", "machineconfigpools"]
+  verbs: ["get", "list", "watch"]</code></pre>
 <h3 id="step-2-test-permissions">Step 2: Test Permissions<a class="headerlink" href="#step-2-test-permissions" title="Permanent link">&para;</a></h3>
 <p>After applying the updated RBAC:</p>
-<p>```bash</p>
-<h1 id="test-pod-access">Test pod access<a class="headerlink" href="#test-pod-access" title="Permanent link">&para;</a></h1>
-<p>kubectl auth can-i get pods --as=system:serviceaccount:self-healing-platform:self-healing-operator -n self-healing-platform</p>
-<h1 id="test-deployment-access">Test deployment access<a class="headerlink" href="#test-deployment-access" title="Permanent link">&para;</a></h1>
-<p>kubectl auth can-i patch deployments --as=system:serviceaccount:self-healing-platform:self-healing-operator -n self-healing-platform</p>
-<h1 id="test-job-access">Test job access<a class="headerlink" href="#test-job-access" title="Permanent link">&para;</a></h1>
-<p>kubectl auth can-i create jobs --as=system:serviceaccount:self-healing-platform:self-healing-operator -n self-healing-platform
-```</p>
+<pre class="highlight"><code class="language-bash"># Test pod access
+kubectl auth can-i get pods --as=system:serviceaccount:self-healing-platform:self-healing-operator -n self-healing-platform
+
+# Test deployment access
+kubectl auth can-i patch deployments --as=system:serviceaccount:self-healing-platform:self-healing-operator -n self-healing-platform
+
+# Test job access
+kubectl auth can-i create jobs --as=system:serviceaccount:self-healing-platform:self-healing-operator -n self-healing-platform</code></pre>
 <h3 id="step-3-monitor-coordination-engine">Step 3: Monitor Coordination Engine<a class="headerlink" href="#step-3-monitor-coordination-engine" title="Permanent link">&para;</a></h3>
 <p>After applying RBAC changes:</p>
-<p>```bash</p>
-<h1 id="check-coordination-engine-logs">Check coordination engine logs<a class="headerlink" href="#check-coordination-engine-logs" title="Permanent link">&para;</a></h1>
-<p>kubectl logs -f deployment/coordination-engine -n self-healing-platform</p>
-<h1 id="verify-health-endpoint">Verify health endpoint<a class="headerlink" href="#verify-health-endpoint" title="Permanent link">&para;</a></h1>
-<p>kubectl port-forward svc/coordination-engine 8080:8080 -n self-healing-platform
-curl http://localhost:8080/health
-```</p>
+<pre class="highlight"><code class="language-bash"># Check coordination engine logs
+kubectl logs -f deployment/coordination-engine -n self-healing-platform
+
+# Verify health endpoint
+kubectl port-forward svc/coordination-engine 8080:8080 -n self-healing-platform
+curl http://localhost:8080/health</code></pre>
 <h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
 <ul>

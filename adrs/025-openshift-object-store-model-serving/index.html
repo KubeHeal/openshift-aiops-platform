@@ -1694,6 +1694,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1753,15 +1762,13 @@
 </ol>
 <h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
 <h3 id="1-odf-operator-subscription-values-hubyaml">1. ODF Operator Subscription (values-hub.yaml)<a class="headerlink" href="#1-odf-operator-subscription-values-hubyaml" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-operators:
+<pre class="highlight"><code class="language-yaml">operators:
   - name: odf-operator
     namespace: openshift-storage
     channel: stable
-    installPlanApproval: Automatic</code></p>
+    installPlanApproval: Automatic</code></pre>
 <h3 id="2-noobaa-object-store-k8sbaseobject-storeyaml">2. NooBaa Object Store (k8s/base/object-store.yaml)<a class="headerlink" href="#2-noobaa-object-store-k8sbaseobject-storeyaml" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-apiVersion: noobaa.io/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: noobaa.io/v1alpha1
 kind: NooBaa
 metadata:
   name: noobaa
@@ -1774,28 +1781,25 @@ spec:
   coreResources:
     requests:
       cpu: 500m
-      memory: 1Gi</code></p>
+      memory: 1Gi</code></pre>
 <h3 id="3-s3-bucket-configuration-k8sbases3-bucketyaml">3. S3 Bucket Configuration (k8s/base/s3-bucket.yaml)<a class="headerlink" href="#3-s3-bucket-configuration-k8sbases3-bucketyaml" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-apiVersion: objectbucket.io/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: objectbucket.io/v1alpha1
 kind: ObjectBucketClaim
 metadata:
   name: model-storage
   namespace: self-healing-platform
 spec:
   generateBucketName: model-storage
-  storageClassName: openshift-storage.noobaa.io</code></p>
+  storageClassName: openshift-storage.noobaa.io</code></pre>
 <h3 id="4-secret-management-values-secretyamltemplate">4. Secret Management (values-secret.yaml.template)<a class="headerlink" href="#4-secret-management-values-secretyamltemplate" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-objectStore:
+<pre class="highlight"><code class="language-yaml">objectStore:
   endpoint: "https://s3.openshift-storage.svc.cluster.local"
   accessKey: "REDACTED"
   secretKey: "REDACTED"
-  bucketName: "model-storage"</code></p>
+  bucketName: "model-storage"</code></pre>
 <h3 id="5-kserve-integration-chartshubtemplatesmodel-servingyaml">5. KServe Integration (charts/hub/templates/model-serving.yaml)<a class="headerlink" href="#5-kserve-integration-chartshubtemplatesmodel-servingyaml" title="Permanent link">&para;</a></h3>
 <p>Update to use ODF endpoint:</p>
-<p><code>yaml
-spec:
+<pre class="highlight"><code class="language-yaml">spec:
   predictor:
     sklearn:
       storageUri: "s3://model-storage/anomaly-detector/"
@@ -1804,7 +1808,7 @@ spec:
         valueFrom:
           secretKeyRef:
             name: model-storage-config
-            key: AWS_S3_ENDPOINT</code></p>
+            key: AWS_S3_ENDPOINT</code></pre>
 <h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1828,16 +1832,17 @@ spec:
 <li>Monitor ODF health via Prometheus</li>
 </ul>
 <h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
-<p>```bash</p>
-<h1 id="verify-odf-installation">Verify ODF installation<a class="headerlink" href="#verify-odf-installation" title="Permanent link">&para;</a></h1>
-<p>oc get storagecluster -n openshift-storage</p>
-<h1 id="verify-noobaa">Verify NooBaa<a class="headerlink" href="#verify-noobaa" title="Permanent link">&para;</a></h1>
-<p>oc get noobaa -n openshift-storage</p>
-<h1 id="verify-bucket">Verify bucket<a class="headerlink" href="#verify-bucket" title="Permanent link">&para;</a></h1>
-<p>oc get objectbucketclaim -n self-healing-platform</p>
-<h1 id="test-s3-access">Test S3 access<a class="headerlink" href="#test-s3-access" title="Permanent link">&para;</a></h1>
-<p>aws s3 ls s3://model-storage/ --endpoint-url $S3_ENDPOINT
-```</p>
+<pre class="highlight"><code class="language-bash"># Verify ODF installation
+oc get storagecluster -n openshift-storage
+
+# Verify NooBaa
+oc get noobaa -n openshift-storage
+
+# Verify bucket
+oc get objectbucketclaim -n self-healing-platform
+
+# Test S3 access
+aws s3 ls s3://model-storage/ --endpoint-url $S3_ENDPOINT</code></pre>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
 <li>ADR-010: OpenShift Data Foundation Requirement</li>

@@ -1671,8 +1671,44 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#configuration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Files
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lessons-learned" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lessons Learned
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
   
 </li>
       
@@ -1762,19 +1798,18 @@
 - Validation Notebooks: 33 Succeeded, 2 Failed
 - Success Rate: 94.3%</p>
 <p><strong>Storage Validation:</strong>
-```yaml
-PVCs (SNO):
+<pre class="highlight"><code class="language-yaml">PVCs (SNO):
   model-storage-pvc:
     status: Bound
     capacity: 10Gi
     storageClass: gp3-csi
-    accessModes: [ReadWriteOnce]  # RWO as expected</p>
-<p>workbench-data-development:
+    accessModes: [ReadWriteOnce]  # RWO as expected
+
+  workbench-data-development:
     status: Bound
     capacity: 20Gi
     storageClass: gp3-csi
-    accessModes: [ReadWriteOnce]  # RWO as expected
-```</p>
+    accessModes: [ReadWriteOnce]  # RWO as expected</code></pre></p>
 <p><strong>Git Commits:</strong>
 - <code>ec294ae</code>: SNO configuration with topology validation
 - <code>55e9b7e</code>: GPU fix - disable workbench GPU on SNO</p>
@@ -1793,24 +1828,24 @@ PVCs (SNO):
 - Validation Notebooks: 31 Succeeded, 2 Failed
 - Success Rate: 93.9%</p>
 <p><strong>Storage Validation:</strong>
-```yaml
-PVCs (HA):
+<pre class="highlight"><code class="language-yaml">PVCs (HA):
   model-storage-pvc:
     status: Bound
     capacity: 10Gi
     storageClass: ocs-storagecluster-cephfs
-    accessModes: [ReadWriteMany]  # RWX as expected ✅</p>
-<p>model-artifacts-development:
+    accessModes: [ReadWriteMany]  # RWX as expected ✅
+
+  model-artifacts-development:
     status: Bound
     capacity: 50Gi
     storageClass: ocs-storagecluster-cephfs
-    accessModes: [ReadWriteMany]  # RWX as expected ✅</p>
-<p>workbench-data-development:
+    accessModes: [ReadWriteMany]  # RWX as expected ✅
+
+  workbench-data-development:
     status: Bound
     capacity: 20Gi
     storageClass: ocs-storagecluster-cephfs
-    accessModes: [ReadWriteOnce]  # RWO sufficient
-```</p>
+    accessModes: [ReadWriteOnce]  # RWO sufficient</code></pre></p>
 <p><strong>Git Commits:</strong>
 - <code>087c28f</code>: HA configuration (ocs-storagecluster-cephfs storage classes)</p>
 <h3 id="topology-comparison-matrix">Topology Comparison Matrix<a class="headerlink" href="#topology-comparison-matrix" title="Permanent link">&para;</a></h3>
@@ -1904,7 +1939,7 @@ PVCs (HA):
 1. <code>end-to-end-troubleshooting-workflow-validation</code>
 2. <code>kserve-model-onboarding-validation</code></p>
 <p><strong>Root Cause:</strong>
-<code>ValueError: No kernel name found in notebook and no override provided</code></p>
+<pre class="highlight"><code>ValueError: No kernel name found in notebook and no override provided</code></pre></p>
 <p><strong>Analysis:</strong>
 - Notebooks executed successfully (100% cell success rate)
 - All code cells ran without errors
@@ -1994,31 +2029,32 @@ Add kernelspec metadata to notebooks or configure validator to use default kerne
 </ol>
 <h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
 <h3 id="validation-workflow">Validation Workflow<a class="headerlink" href="#validation-workflow" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="1-sno-cluster-deployment">1. SNO Cluster Deployment<a class="headerlink" href="#1-sno-cluster-deployment" title="Permanent link">&para;</a></h1>
-<p>oc login <sno-cluster>
+<pre class="highlight"><code class="language-bash"># 1. SNO Cluster Deployment
+oc login &lt;sno-cluster&gt;
 make show-cluster-info                    # Verify topology: sno
 ./scripts/validate-topology-match.sh      # Validate config matches
 make configure-cluster                    # Deploy MCG-only ODF
-make operator-deploy                      # Deploy platform</p>
-<h1 id="2-ha-cluster-deployment">2. HA Cluster Deployment<a class="headerlink" href="#2-ha-cluster-deployment" title="Permanent link">&para;</a></h1>
-<p>oc login <ha-cluster>
+make operator-deploy                      # Deploy platform
+
+# 2. HA Cluster Deployment
+oc login &lt;ha-cluster&gt;
 make show-cluster-info                    # Verify topology: ha
 ./scripts/validate-topology-match.sh      # Validate config matches
 make configure-cluster                    # Deploy full ODF, scale workers
-make operator-deploy                      # Deploy platform</p>
-<h1 id="3-compare-deployments">3. Compare Deployments<a class="headerlink" href="#3-compare-deployments" title="Permanent link">&para;</a></h1>
-<h1 id="check-storage-classes">Check storage classes<a class="headerlink" href="#check-storage-classes" title="Permanent link">&para;</a></h1>
-<p>oc get pvc -n self-healing-platform -o custom-columns=NAME:...</p>
-<h1 id="check-validation-results">Check validation results<a class="headerlink" href="#check-validation-results" title="Permanent link">&para;</a></h1>
-<p>oc get notebookvalidationjob -n self-healing-platform</p>
-<h1 id="check-core-services">Check core services<a class="headerlink" href="#check-core-services" title="Permanent link">&para;</a></h1>
-<p>oc get pods,inferenceservice -n self-healing-platform
-```</p>
+make operator-deploy                      # Deploy platform
+
+# 3. Compare Deployments
+# Check storage classes
+oc get pvc -n self-healing-platform -o custom-columns=NAME:...
+
+# Check validation results
+oc get notebookvalidationjob -n self-healing-platform
+
+# Check core services
+oc get pods,inferenceservice -n self-healing-platform</code></pre>
 <h3 id="configuration-files">Configuration Files<a class="headerlink" href="#configuration-files" title="Permanent link">&para;</a></h3>
 <p><strong>SNO (<code>values-hub.yaml</code>):</strong>
-<code>yaml
-cluster:
+<pre class="highlight"><code class="language-yaml">cluster:
   topology: "sno"
 storage:
   modelStorage:
@@ -2027,10 +2063,9 @@ storage:
     storageClass: "gp3-csi"  # RWO
 workbench:
   gpu:
-    enabled: false  # 1 GPU - don't monopolize</code></p>
+    enabled: false  # 1 GPU - don't monopolize</code></pre></p>
 <p><strong>HA (<code>values-hub.yaml</code>):</strong>
-<code>yaml
-cluster:
+<pre class="highlight"><code class="language-yaml">cluster:
   topology: "ha"
 storage:
   modelStorage:
@@ -2039,7 +2074,7 @@ storage:
     storageClass: "ocs-storagecluster-cephfs"  # Can use RWX
 workbench:
   gpu:
-    enabled: false  # RHPDS has 1 GPU - same limitation</code></p>
+    enabled: false  # RHPDS has 1 GPU - same limitation</code></pre></p>
 <h2 id="lessons-learned">Lessons Learned<a class="headerlink" href="#lessons-learned" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>Topology Validation is Critical</strong></li>

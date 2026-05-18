@@ -1783,8 +1783,7 @@
 </ul>
 <h2 id="actual-job-configuration">Actual Job Configuration<a class="headerlink" href="#actual-job-configuration" title="Permanent link">&para;</a></h2>
 <p><strong>Current Job</strong>: <code>predictive-analytics-kserve-validation</code></p>
-<p><code>yaml
-spec:
+<pre class="highlight"><code class="language-yaml">spec:
   # ❌ NO modelValidation field configured
   validationConfig:
     level: production
@@ -1793,13 +1792,12 @@ spec:
   comparisonConfig:
     strategy: normalized
     floatingPointTolerance: "0.01"
-    ignoreTimestamps: true</code></p>
+    ignoreTimestamps: true</code></pre>
 <p><strong>Status</strong>:
-<code>yaml
-status:
+<pre class="highlight"><code class="language-yaml">status:
   # ❌ NO modelValidationResult field present
   phase: Failed
-  message: "Validation failed after 3 retries: OOMKilled"</code></p>
+  message: "Validation failed after 3 retries: OOMKilled"</code></pre></p>
 <h2 id="investigation-questions">Investigation Questions<a class="headerlink" href="#investigation-questions" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>Is modelValidation implemented in the operator?</strong></li>
@@ -1872,30 +1870,27 @@ status:
 <ol>
 <li>
 <p><strong>Check Operator Source Code</strong>
-   <code>bash
-   # Find the operator repository
-   # Search for "modelValidation" in Go code
-   # Check if there's actual implementation</code></p>
+   <pre class="highlight"><code class="language-bash"># Find the operator repository
+# Search for "modelValidation" in Go code
+# Check if there's actual implementation</code></pre></p>
 </li>
 <li>
 <p><strong>Test with Explicit Configuration</strong>
-   <code>yaml
-   spec:
-     modelValidation:
-       enabled: true
-       platform: kserve
-       phase: both
-       targetModels:
-         - predictive-analytics
-       predictionValidation:
-         enabled: true
-         testData: '{"instances": [[0.5, 0.6, 0.4, 100, 80]]}'
-         expectedOutput: '{"predictions": [[...]]}'</code></p>
+   <pre class="highlight"><code class="language-yaml">spec:
+  modelValidation:
+    enabled: true
+    platform: kserve
+    phase: both
+    targetModels:
+      - predictive-analytics
+    predictionValidation:
+      enabled: true
+      testData: '{"instances": [[0.5, 0.6, 0.4, 100, 80]]}'
+      expectedOutput: '{"predictions": [[...]]}'</code></pre></p>
 </li>
 <li>
 <p><strong>Check Operator Logs</strong>
-   <code>bash
-   oc logs -n openshift-operators -l control-plane=controller-manager | grep -i model</code></p>
+   <pre class="highlight"><code class="language-bash">oc logs -n openshift-operators -l control-plane=controller-manager | grep -i model</code></pre></p>
 </li>
 <li>
 <p><strong>Review Operator Documentation</strong></p>
@@ -1932,14 +1927,13 @@ The pod only executes the notebook via Papermill. There is no evidence of modelV
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>Test with explicit modelValidation config</strong>:
-   <code>yaml
-   spec:
-     modelValidation:
-       enabled: true
-       platform: kserve
-       phase: both
-       targetModels:
-         - predictive-analytics</code>
+   <pre class="highlight"><code class="language-yaml">spec:
+  modelValidation:
+    enabled: true
+    platform: kserve
+    phase: both
+    targetModels:
+      - predictive-analytics</code></pre>
    Then check if:</li>
 <li>Additional init containers appear</li>
 <li>modelValidationResult appears in status</li>
@@ -1948,8 +1942,7 @@ The pod only executes the notebook via Papermill. There is no evidence of modelV
 </li>
 <li>
 <p><strong>Check operator controller logs</strong> for modelValidation processing:
-   <code>bash
-   oc logs -n openshift-operators -l control-plane=controller-manager | grep -i model</code></p>
+   <pre class="highlight"><code class="language-bash">oc logs -n openshift-operators -l control-plane=controller-manager | grep -i model</code></pre></p>
 </li>
 <li>
 <p><strong>Create GitHub issue</strong> for operator repository with findings:</p>
@@ -1967,8 +1960,7 @@ The pod only executes the notebook via Papermill. There is no evidence of modelV
 <h2 id="test-configuration-added">Test Configuration Added<a class="headerlink" href="#test-configuration-added" title="Permanent link">&para;</a></h2>
 <p><strong>Date</strong>: 2026-02-06
 <strong>Action</strong>: Added explicit <code>modelValidation</code> configuration to <code>predictive-analytics-kserve</code> notebook in <code>values-hub.yaml</code>:</p>
-<p><code>yaml
-modelValidation:
+<pre class="highlight"><code class="language-yaml">modelValidation:
   enabled: true
   platform: kserve
   phase: both
@@ -1978,7 +1970,7 @@ modelValidation:
     enabled: true
     testData: '{"instances": [[0.5, 0.6, 0.4, 100, 80]]}'
     tolerance: "0.1"
-  timeout: "10m"</code></p>
+  timeout: "10m"</code></pre>
 <p><strong>Test Plan</strong>:
 1. ✅ Configuration added and committed
 2. ✅ ArgoCD synced - modelValidation config in job spec
@@ -1989,15 +1981,14 @@ modelValidation:
 <p>✅ <strong>modelValidation IS IMPLEMENTED!</strong></p>
 <p><strong>Evidence</strong>:
 1. <strong>ArgoCD Sync</strong>: ✅ modelValidation config successfully synced to job spec
-   <code>yaml
-   modelValidation:
-     enabled: true
-     platform: kserve
-     phase: both
-     targetModels: [predictive-analytics]
-     predictionValidation:
-       enabled: true
-       testData: '{"instances": [[0.5, 0.6, 0.4, 100, 80]]}'</code></p>
+   <pre class="highlight"><code class="language-yaml">modelValidation:
+  enabled: true
+  platform: kserve
+  phase: both
+  targetModels: [predictive-analytics]
+  predictionValidation:
+    enabled: true
+    testData: '{"instances": [[0.5, 0.6, 0.4, 100, 80]]}'</code></pre></p>
 <ol>
 <li><strong>Operator Implementation</strong>: ✅ Operator sets MODEL_VALIDATION_* environment variables in pod:</li>
 <li><code>MODEL_VALIDATION_ENABLED=true</code></li>

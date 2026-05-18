@@ -1733,6 +1733,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1761,8 +1788,8 @@
 <p>accepted - 2025-12-09</p>
 <h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
 <p>KServe InferenceServices using the sklearn serving runtime require <strong>exactly ONE model file</strong> per <code>storageUri</code> directory. When multiple model files exist in the same directory, the sklearn server raises a <code>RuntimeError</code>:</p>
-<p><code>RuntimeError: More than one model file detected in /mnt/models/, Only one is allowed within model_dir
-Found: ['arima_model.pkl', 'prophet_model.pkl']</code></p>
+<pre class="highlight"><code>RuntimeError: More than one model file detected in /mnt/models/, Only one is allowed within model_dir
+Found: ['arima_model.pkl', 'prophet_model.pkl']</code></pre>
 <h3 id="problem-scenario">Problem Scenario<a class="headerlink" href="#problem-scenario" title="Permanent link">&para;</a></h3>
 <p>Prior to this ADR, notebooks saved multiple models to shared directories:</p>
 <ul>
@@ -1782,7 +1809,7 @@ Found: ['arima_model.pkl', 'prophet_model.pkl']</code></p>
 <h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
 <p>Implement <strong>one directory per InferenceService</strong> storage strategy:</p>
 <h3 id="directory-structure">Directory Structure<a class="headerlink" href="#directory-structure" title="Permanent link">&para;</a></h3>
-<p><code>/mnt/models/
+<pre class="highlight"><code>/mnt/models/
 ├── predictive-analytics/       # Isolation Forest models
 │   ├── isolation_forest_model.pkl
 │   └── isolation_forest_scaler.pkl
@@ -1795,40 +1822,37 @@ Found: ['arima_model.pkl', 'prophet_model.pkl']</code></p>
 │   └── lstm_scaler.pkl
 ├── ensemble-predictor/          # Ensemble configuration
 │   └── ensemble_config.pkl
-└── anomaly-detector/            # Legacy (for backward compatibility)</code></p>
+└── anomaly-detector/            # Legacy (for backward compatibility)</code></pre>
 <h3 id="implementation-rules">Implementation Rules<a class="headerlink" href="#implementation-rules" title="Permanent link">&para;</a></h3>
 <ol>
 <li>
 <p><strong>Notebook Storage Pattern</strong>:
-   <code>python
-   # Each notebook uses dedicated directory matching InferenceService name
-   MODELS_DIR = Path('/mnt/models/{inferenceservice-name}')
-   MODELS_DIR.mkdir(parents=True, exist_ok=True)</code></p>
+   <pre class="highlight"><code class="language-python"># Each notebook uses dedicated directory matching InferenceService name
+MODELS_DIR = Path('/mnt/models/{inferenceservice-name}')
+MODELS_DIR.mkdir(parents=True, exist_ok=True)</code></pre></p>
 </li>
 <li>
 <p><strong>InferenceService Configuration</strong>:
-   <code>yaml
-   spec:
-     predictor:
-       model:
-         storageUri: "pvc://model-storage-pvc/{inferenceservice-name}"</code></p>
+   <pre class="highlight"><code class="language-yaml">spec:
+  predictor:
+    model:
+      storageUri: "pvc://model-storage-pvc/{inferenceservice-name}"</code></pre></p>
 </li>
 <li>
 <p><strong>Init Job</strong>: Create all directories during deployment:
-   <code>bash
-   mkdir -p /mnt/models/predictive-analytics
-   mkdir -p /mnt/models/arima-predictor
-   mkdir -p /mnt/models/prophet-predictor
-   mkdir -p /mnt/models/lstm-predictor
-   mkdir -p /mnt/models/ensemble-predictor</code></p>
+   <pre class="highlight"><code class="language-bash">mkdir -p /mnt/models/predictive-analytics
+mkdir -p /mnt/models/arima-predictor
+mkdir -p /mnt/models/prophet-predictor
+mkdir -p /mnt/models/lstm-predictor
+mkdir -p /mnt/models/ensemble-predictor</code></pre></p>
 </li>
 </ol>
 <h3 id="future-model-versioning-placeholder">Future Model Versioning (Placeholder)<a class="headerlink" href="#future-model-versioning-placeholder" title="Permanent link">&para;</a></h3>
 <p>Directory structure supports future versioning:</p>
-<p><code>/mnt/models/{inferenceservice-name}/{version}/
+<pre class="highlight"><code>/mnt/models/{inferenceservice-name}/{version}/
 Example:
 /mnt/models/predictive-analytics/v1/
-/mnt/models/predictive-analytics/v2/</code></p>
+/mnt/models/predictive-analytics/v2/</code></pre>
 <p>This will require:
 - Updates to notebooks to include version in path
 - Updates to InferenceService <code>storageUri</code> to specify version
@@ -1905,16 +1929,16 @@ Example:
 <li><code>charts/hub/templates/model-serving.yaml</code> → Update <code>storageUri</code> paths (if needed)</li>
 </ol>
 <h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="verify-directory-structure">Verify directory structure<a class="headerlink" href="#verify-directory-structure" title="Permanent link">&para;</a></h1>
-<p>oc exec -it self-healing-workbench-0 -n self-healing-platform -- \
-  ls -la /mnt/models/</p>
-<h1 id="check-inferenceservice-health">Check InferenceService health<a class="headerlink" href="#check-inferenceservice-health" title="Permanent link">&para;</a></h1>
-<p>oc get inferenceservices -n self-healing-platform</p>
-<h1 id="test-inference-endpoint">Test inference endpoint<a class="headerlink" href="#test-inference-endpoint" title="Permanent link">&para;</a></h1>
-<p>curl -X POST http://predictive-analytics-predictor:8080/v1/models/predictive-analytics:predict \
-  -d '{"instances": [[0.5, 0.3, 0.8]]}'
-```</p>
+<pre class="highlight"><code class="language-bash"># Verify directory structure
+oc exec -it self-healing-workbench-0 -n self-healing-platform -- \
+  ls -la /mnt/models/
+
+# Check InferenceService health
+oc get inferenceservices -n self-healing-platform
+
+# Test inference endpoint
+curl -X POST http://predictive-analytics-predictor:8080/v1/models/predictive-analytics:predict \
+  -d '{"instances": [[0.5, 0.3, 0.8]]}'</code></pre>
 <h2 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../004-kserve-model-serving/">ADR-004: KServe for Model Serving Infrastructure</a></li>

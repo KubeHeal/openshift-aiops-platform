@@ -1640,6 +1640,84 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#operator-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operator Status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-logs-success-indicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operator Logs (Success Indicators)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crd-installed" class="md-nav__link">
+    <span class="md-ellipsis">
+      CRD Installed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#webhooks-configured" class="md-nav__link">
+    <span class="md-ellipsis">
+      Webhooks Configured
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lessons-learned" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lessons Learned
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1691,8 +1769,7 @@
 <ol>
 <li>
 <p><strong>Extracted Bundle Manifests</strong>:
-   <code>bash
-   skopeo copy docker://quay.io/takinosh/jupyter-notebook-validator-operator-bundle:v1.0.4-ocp4.18 dir:/tmp/jupyter-bundle-4.18</code></p>
+   <pre class="highlight"><code class="language-bash">skopeo copy docker://quay.io/takinosh/jupyter-notebook-validator-operator-bundle:v1.0.4-ocp4.18 dir:/tmp/jupyter-bundle-4.18</code></pre></p>
 </li>
 <li>
 <p><strong>Created Direct Deployment Manifests</strong>:</p>
@@ -1714,8 +1791,7 @@
 </li>
 <li>
 <p><strong>Applied CRD</strong>:
-   <code>bash
-   oc apply -f /tmp/jupyter-bundle-4.18/manifests/mlops.mlops.dev_notebookvalidationjobs.yaml</code></p>
+   <pre class="highlight"><code class="language-bash">oc apply -f /tmp/jupyter-bundle-4.18/manifests/mlops.mlops.dev_notebookvalidationjobs.yaml</code></pre></p>
 </li>
 </ol>
 <h2 id="installation-files">Installation Files<a class="headerlink" href="#installation-files" title="Permanent link">&para;</a></h2>
@@ -1725,46 +1801,42 @@
 <li><code>manifests/jupyter-operator-webhook-config.yaml</code> - Webhook and certificate configuration</li>
 </ul>
 <h3 id="key-configuration">Key Configuration<a class="headerlink" href="#key-configuration" title="Permanent link">&para;</a></h3>
-<p>```yaml</p>
-<h1 id="operator-image">Operator image<a class="headerlink" href="#operator-image" title="Permanent link">&para;</a></h1>
-<p>image: quay.io/takinosh/jupyter-notebook-validator-operator:1.0.4-ocp4.18</p>
-<h1 id="webhooks-enabled">Webhooks enabled<a class="headerlink" href="#webhooks-enabled" title="Permanent link">&para;</a></h1>
-<p>env:
+<pre class="highlight"><code class="language-yaml"># Operator image
+image: quay.io/takinosh/jupyter-notebook-validator-operator:1.0.4-ocp4.18
+
+# Webhooks enabled
+env:
 - name: ENABLE_WEBHOOKS
   value: "true"
 - name: PLATFORM
-  value: "openshift"
-```</p>
+  value: "openshift"</code></pre>
 <h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
 <h3 id="operator-status">Operator Status<a class="headerlink" href="#operator-status" title="Permanent link">&para;</a></h3>
-<p>```bash
-$ oc get deployment -n jupyter-notebook-validator-system
+<pre class="highlight"><code class="language-bash">$ oc get deployment -n jupyter-notebook-validator-system
 NAME                                    READY   UP-TO-DATE   AVAILABLE   AGE
-notebook-validator-controller-manager   1/1     1            1           6m</p>
-<p>$ oc get pods -n jupyter-notebook-validator-system
+notebook-validator-controller-manager   1/1     1            1           6m
+
+$ oc get pods -n jupyter-notebook-validator-system
 NAME                                                     READY   STATUS    RESTARTS   AGE
-notebook-validator-controller-manager-6f57978c89-6hw4n   2/2     Running   0          2m
-```</p>
+notebook-validator-controller-manager-6f57978c89-6hw4n   2/2     Running   0          2m</code></pre>
 <h3 id="operator-logs-success-indicators">Operator Logs (Success Indicators)<a class="headerlink" href="#operator-logs-success-indicators" title="Permanent link">&para;</a></h3>
-<p><code>✅ successfully acquired lease jupyter-notebook-validator-system/16681bfb.mlops.dev
+<pre class="highlight"><code>✅ successfully acquired lease jupyter-notebook-validator-system/16681bfb.mlops.dev
 ✅ Starting Controller {"controller": "notebookvalidationjob"}
 ✅ Starting workers {"worker count": 1}
 ✅ Updated current TLS certificate
-✅ Serving webhook server {"host": "", "port": 9443}</code></p>
+✅ Serving webhook server {"host": "", "port": 9443}</code></pre>
 <h3 id="crd-installed">CRD Installed<a class="headerlink" href="#crd-installed" title="Permanent link">&para;</a></h3>
-<p><code>bash
-$ oc get crd notebookvalidationjobs.mlops.mlops.dev
+<pre class="highlight"><code class="language-bash">$ oc get crd notebookvalidationjobs.mlops.mlops.dev
 NAME                                     CREATED AT
-notebookvalidationjobs.mlops.mlops.dev   2025-11-28T04:33:57Z</code></p>
+notebookvalidationjobs.mlops.mlops.dev   2025-11-28T04:33:57Z</code></pre>
 <h3 id="webhooks-configured">Webhooks Configured<a class="headerlink" href="#webhooks-configured" title="Permanent link">&para;</a></h3>
-<p>```bash
-$ oc get validatingwebhookconfiguration notebook-validator-validating-webhook-configuration
+<pre class="highlight"><code class="language-bash">$ oc get validatingwebhookconfiguration notebook-validator-validating-webhook-configuration
 NAME                                                  WEBHOOKS   AGE
-notebook-validator-validating-webhook-configuration   1          2m</p>
-<p>$ oc get mutatingwebhookconfiguration notebook-validator-mutating-webhook-configuration
+notebook-validator-validating-webhook-configuration   1          2m
+
+$ oc get mutatingwebhookconfiguration notebook-validator-mutating-webhook-configuration
 NAME                                                WEBHOOKS   AGE
-notebook-validator-mutating-webhook-configuration   1          2m
-```</p>
+notebook-validator-mutating-webhook-configuration   1          2m</code></pre>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>Test the Operator</strong>: Create a NotebookValidationJob to verify functionality</li>

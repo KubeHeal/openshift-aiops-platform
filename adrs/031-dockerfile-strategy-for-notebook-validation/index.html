@@ -1634,6 +1634,141 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommendation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommendation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-single-shared-dockerfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option A: Single Shared Dockerfile ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alternative-option-d-if-operator-supports-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alternative: Option D (if operator supports --target)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive-option-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive (Option A)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative-option-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative (Option A)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#neutral" class="md-nav__link">
+    <span class="md-ellipsis">
+      Neutral
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-dockerfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Dockerfile
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notebookvalidationjob-all-tiers-use-same-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      NotebookValidationJob (all tiers use same image)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#future-migration-path-if-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Migration Path (if needed)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1737,20 +1872,21 @@
 <h3 id="option-d-multi-stage-dockerfile-with-base-tier-layers">Option D: Multi-Stage Dockerfile with Base + Tier Layers<a class="headerlink" href="#option-d-multi-stage-dockerfile-with-base-tier-layers" title="Permanent link">&para;</a></h3>
 <p><strong>File</strong>: <code>notebooks/Dockerfile</code> (multi-stage)
 <strong>Strategy</strong>: Base image + tier-specific layers</p>
-<p>```dockerfile</p>
-<h1 id="stage-1-base-shared-by-all-tiers">Stage 1: Base (shared by all tiers)<a class="headerlink" href="#stage-1-base-shared-by-all-tiers" title="Permanent link">&para;</a></h1>
-<p>FROM rhoai/pytorch:2025.1 AS base
-RUN pip install papermill nbformat nbconvert kubernetes</p>
-<h1 id="stage-2-tier-1-minimal">Stage 2: Tier 1 (minimal)<a class="headerlink" href="#stage-2-tier-1-minimal" title="Permanent link">&para;</a></h1>
-<p>FROM base AS tier1
-RUN pip install prometheus-api-client pyyaml</p>
-<h1 id="stage-3-tier-2-ml-training">Stage 3: Tier 2 (ML training)<a class="headerlink" href="#stage-3-tier-2-ml-training" title="Permanent link">&para;</a></h1>
-<p>FROM base AS tier2
-RUN pip install seaborn joblib prometheus-api-client</p>
-<h1 id="stage-4-tier-3-model-serving">Stage 4: Tier 3 (model serving)<a class="headerlink" href="#stage-4-tier-3-model-serving" title="Permanent link">&para;</a></h1>
-<p>FROM base AS tier3
-RUN pip install requests grpcio tritonclient
-```</p>
+<pre class="highlight"><code class="language-dockerfile"># Stage 1: Base (shared by all tiers)
+FROM rhoai/pytorch:2025.1 AS base
+RUN pip install papermill nbformat nbconvert kubernetes
+
+# Stage 2: Tier 1 (minimal)
+FROM base AS tier1
+RUN pip install prometheus-api-client pyyaml
+
+# Stage 3: Tier 2 (ML training)
+FROM base AS tier2
+RUN pip install seaborn joblib prometheus-api-client
+
+# Stage 4: Tier 3 (model serving)
+FROM base AS tier3
+RUN pip install requests grpcio tritonclient</code></pre>
 <p><strong>Operator usage</strong>: <code>buildConfig.dockerfile: "Dockerfile" buildConfig.target: "tier2"</code></p>
 <p><strong>Pros</strong>:
 - ✅ <strong>Single file maintenance</strong>: One Dockerfile with stages
@@ -1805,22 +1941,20 @@ RUN pip install requests grpcio tritonclient
 <hr />
 <h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
 <h3 id="current-dockerfile">Current Dockerfile<a class="headerlink" href="#current-dockerfile" title="Permanent link">&para;</a></h3>
-<p>```dockerfile
-FROM image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.1</p>
-<h1 id="install-all-dependencies-for-all-tiers">Install ALL dependencies for ALL tiers<a class="headerlink" href="#install-all-dependencies-for-all-tiers" title="Permanent link">&para;</a></h1>
-<p>RUN pip install --no-cache-dir \
+<pre class="highlight"><code class="language-dockerfile">FROM image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.1
+
+# Install ALL dependencies for ALL tiers
+RUN pip install --no-cache-dir \
     papermill nbformat nbconvert \
     kubernetes openshift prometheus-api-client \
-    seaborn joblib requests pyyaml
-```</p>
+    seaborn joblib requests pyyaml</code></pre>
 <h3 id="notebookvalidationjob-all-tiers-use-same-image">NotebookValidationJob (all tiers use same image)<a class="headerlink" href="#notebookvalidationjob-all-tiers-use-same-image" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-podConfig:
+<pre class="highlight"><code class="language-yaml">podConfig:
   buildConfig:
     enabled: true
     strategy: tekton
     dockerfile: "Dockerfile"  # Same for all tiers
-    baseImage: "image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.1"</code></p>
+    baseImage: "image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.1"</code></pre>
 <h3 id="future-migration-path-if-needed">Future Migration Path (if needed)<a class="headerlink" href="#future-migration-path-if-needed" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Add multi-stage support to Dockerfile</li>

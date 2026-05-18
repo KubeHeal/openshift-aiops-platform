@@ -1583,6 +1583,159 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#e2e-testing-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      E2E Testing Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="E2E Testing Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mandatory-cleanup-before-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mandatory Cleanup Before Testing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-retain-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Retain Infrastructure?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resources-to-clean-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resources to Clean (Checklist)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-subtree-management-critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Subtree Management (CRITICAL)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Subtree Management (CRITICAL)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#update-procedure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Update Procedure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      When to Update
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development-workflow-granular-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Workflow (Granular Control)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-user-workflow-simplified-recommended-for-end-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      End-User Workflow (Simplified) - RECOMMENDED FOR END USERS
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commit-pull-request-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Commit &amp; Pull Request Guidelines
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approval" class="md-nav__link">
+    <span class="md-ellipsis">
+      Approval
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1635,53 +1788,37 @@
 </ol>
 <h3 id="3-role-task-modularity">3. Role Task Modularity<a class="headerlink" href="#3-role-task-modularity" title="Permanent link">&para;</a></h3>
 <p>Each role uses <code>include_tasks</code> for modular, reusable task files:</p>
-<p>```yaml</p>
-<h1 id="good-reuse-specific-validation-task-in-e2e-tests">Good: Reuse specific validation task in E2E tests<a class="headerlink" href="#good-reuse-specific-validation-task-in-e2e-tests" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_tasks: ../../ansible/roles/validated_patterns_prerequisites/tasks/check_openshift_version.yml</li>
-</ul>
-<h1 id="avoid-re-running-entire-role-when-only-one-check-needed">Avoid: Re-running entire role when only one check needed<a class="headerlink" href="#avoid-re-running-entire-role-when-only-one-check-needed" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_role:
-    name: validated_patterns_prerequisites  # Runs ALL checks unnecessarily
-```</li>
-</ul>
+<pre class="highlight"><code class="language-yaml"># Good: Reuse specific validation task in E2E tests
+- include_tasks: ../../ansible/roles/validated_patterns_prerequisites/tasks/check_openshift_version.yml
+
+# Avoid: Re-running entire role when only one check needed
+- include_role:
+    name: validated_patterns_prerequisites  # Runs ALL checks unnecessarily</code></pre>
 <h2 id="e2e-testing-best-practices">E2E Testing Best Practices<a class="headerlink" href="#e2e-testing-best-practices" title="Permanent link">&para;</a></h2>
 <h3 id="mandatory-cleanup-before-testing">Mandatory Cleanup Before Testing<a class="headerlink" href="#mandatory-cleanup-before-testing" title="Permanent link">&para;</a></h3>
 <p><strong>CRITICAL</strong>: Always clean up before running e2e tests to ensure fresh state and avoid conflicts.</p>
-<p>```yaml</p>
-<h1 id="e2e-test-template">E2E Test Template<a class="headerlink" href="#e2e-test-template" title="Permanent link">&para;</a></h1>
-<ul>
-<li>
-<p>name: E2E Test with Role-Based Approach
+<pre class="highlight"><code class="language-yaml"># E2E Test Template
+- name: E2E Test with Role-Based Approach
   hosts: localhost
   tasks:
-    # 1. Pre-test cleanup using role (MANDATORY)</p>
-<ul>
-<li>include_role:
-    name: validated_patterns_cleanup
-  # Default behavior retains shared infrastructure:
-  # cleanup_gitops: false   # Keep ArgoCD (from common/ subtree)
-  # cleanup_gitea: false    # Keep Gitea (for development)
-  # cleanup_operator: false # Keep operator (reusable)</li>
-</ul>
-<h1 id="2-deploy-using-role">2. Deploy using role<a class="headerlink" href="#2-deploy-using-role" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_role:
-    name: validated_patterns_operator</li>
-</ul>
-<h1 id="3-validate-using-specific-task-files-not-entire-roles">3. Validate using specific task files (not entire roles)<a class="headerlink" href="#3-validate-using-specific-task-files-not-entire-roles" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_tasks: ../../ansible/roles/validated_patterns_validate/tasks/validate_health.yml</li>
-</ul>
-<h1 id="4-post-test-cleanup-using-role">4. Post-test cleanup using role<a class="headerlink" href="#4-post-test-cleanup-using-role" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_role:
-    name: validated_patterns_cleanup
-```</li>
-</ul>
-</li>
-</ul>
+    # 1. Pre-test cleanup using role (MANDATORY)
+    - include_role:
+        name: validated_patterns_cleanup
+      # Default behavior retains shared infrastructure:
+      # cleanup_gitops: false   # Keep ArgoCD (from common/ subtree)
+      # cleanup_gitea: false    # Keep Gitea (for development)
+      # cleanup_operator: false # Keep operator (reusable)
+
+    # 2. Deploy using role
+    - include_role:
+        name: validated_patterns_operator
+
+    # 3. Validate using specific task files (not entire roles)
+    - include_tasks: ../../ansible/roles/validated_patterns_validate/tasks/validate_health.yml
+
+    # 4. Post-test cleanup using role
+    - include_role:
+        name: validated_patterns_cleanup</code></pre>
 <h3 id="why-retain-infrastructure">Why Retain Infrastructure?<a class="headerlink" href="#why-retain-infrastructure" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>GitOps/ArgoCD</strong>: Deployed by <code>common/</code> subtree and shared across patterns</li>
@@ -1705,13 +1842,12 @@
 <p>The <code>common/</code> directory is a <strong>git subtree</strong> imported from <a href="https://github.com/validatedpatterns/common.git">validatedpatterns/common.git</a>.</p>
 <p><strong>⚠️ IMPORTANT</strong>: This repository updates frequently. Keep in sync before major development work.</p>
 <h3 id="update-procedure">Update Procedure<a class="headerlink" href="#update-procedure" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="option-1-using-utilities-script-recommended">Option 1: Using utilities script (recommended)<a class="headerlink" href="#option-1-using-utilities-script-recommended" title="Permanent link">&para;</a></h1>
-<p>curl -s https://raw.githubusercontent.com/validatedpatterns/utilities/main/scripts/update-common-everywhere.sh | bash</p>
-<h1 id="option-2-manual-update">Option 2: Manual update<a class="headerlink" href="#option-2-manual-update" title="Permanent link">&para;</a></h1>
-<p>git remote add -f common-upstream https://github.com/validatedpatterns/common.git
-git merge -s subtree -Xtheirs -Xsubtree=common common-upstream/main
-```</p>
+<pre class="highlight"><code class="language-bash"># Option 1: Using utilities script (recommended)
+curl -s https://raw.githubusercontent.com/validatedpatterns/utilities/main/scripts/update-common-everywhere.sh | bash
+
+# Option 2: Manual update
+git remote add -f common-upstream https://github.com/validatedpatterns/common.git
+git merge -s subtree -Xtheirs -Xsubtree=common common-upstream/main</code></pre>
 <h3 id="when-to-update">When to Update<a class="headerlink" href="#when-to-update" title="Permanent link">&para;</a></h3>
 <ul>
 <li>✅ Before starting new feature development</li>
@@ -1724,8 +1860,7 @@ git merge -s subtree -Xtheirs -Xsubtree=common common-upstream/main
 <h3 id="development-workflow-granular-control">Development Workflow (Granular Control)<a class="headerlink" href="#development-workflow-granular-control" title="Permanent link">&para;</a></h3>
 <p><strong>Audience</strong>: Pattern developers, maintainers, advanced users</p>
 <p>Uses roles 1-2, 4-7 for step-by-step deployment with full control:</p>
-<p><code>bash
-ansible-playbook ansible/playbooks/deploy_complete_pattern.yml</code></p>
+<pre class="highlight"><code class="language-bash">ansible-playbook ansible/playbooks/deploy_complete_pattern.yml</code></pre>
 <p><strong>Best for</strong>:
 - Pattern development and customization
 - Debugging deployment issues
@@ -1734,8 +1869,7 @@ ansible-playbook ansible/playbooks/deploy_complete_pattern.yml</code></p>
 <h3 id="end-user-workflow-simplified-recommended-for-end-users">End-User Workflow (Simplified) - <strong>RECOMMENDED FOR END USERS</strong><a class="headerlink" href="#end-user-workflow-simplified-recommended-for-end-users" title="Permanent link">&para;</a></h3>
 <p><strong>Audience</strong>: End users, production deployments, operations teams</p>
 <p>Uses role 3 (VP Operator) for simplified, one-command deployment:</p>
-<p><code>bash
-make -f common/Makefile operator-deploy</code></p>
+<pre class="highlight"><code class="language-bash">make -f common/Makefile operator-deploy</code></pre>
 <p><strong>Key Benefits for End Users</strong>:
 - ✅ Single command deployment
 - ✅ Automatic prerequisite validation

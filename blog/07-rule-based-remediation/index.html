@@ -1851,8 +1851,44 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#dry-run-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dry Run Mode
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Resources
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#found-an-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      Found an Issue?
+    </span>
+  </a>
   
 </li>
       
@@ -1912,11 +1948,11 @@
 - ✅ <strong>Fast response</strong>: No ML inference delay
 - ✅ <strong>Audit requirements</strong>: Clear, traceable decisions</p>
 <h3 id="rule-structure">Rule Structure<a class="headerlink" href="#rule-structure" title="Permanent link">&para;</a></h3>
-<p><code>IF (condition) THEN (action)
+<pre class="highlight"><code>IF (condition) THEN (action)
   - Condition: Anomaly type + severity + context
   - Action: Kubernetes operation (scale, restart, update)
   - Validation: Verify action succeeded
-  - Tracking: Log outcome for learning</code></p>
+  - Tracking: Log outcome for learning</code></pre>
 <hr />
 <h2 id="step-1-define-remediation-rules">Step 1: Define Remediation Rules<a class="headerlink" href="#step-1-define-remediation-rules" title="Permanent link">&para;</a></h2>
 <h3 id="open-the-rule-based-remediation-notebook">Open the Rule-Based Remediation Notebook<a class="headerlink" href="#open-the-rule-based-remediation-notebook" title="Permanent link">&para;</a></h3>
@@ -1925,8 +1961,7 @@
 <li>Open <code>rule-based-remediation.ipynb</code></li>
 </ol>
 <h3 id="define-rule-set">Define Rule Set<a class="headerlink" href="#define-rule-set" title="Permanent link">&para;</a></h3>
-<p><code>python
-REMEDIATION_RULES = [
+<pre class="highlight"><code class="language-python">REMEDIATION_RULES = [
     {
         'name': 'cpu_high_scale_up',
         'condition': {
@@ -1986,259 +2021,246 @@ REMEDIATION_RULES = [
         },
         'priority': 2
     }
-]</code></p>
+]</code></pre>
 <hr />
 <h2 id="step-2-evaluate-rules-against-anomalies">Step 2: Evaluate Rules Against Anomalies<a class="headerlink" href="#step-2-evaluate-rules-against-anomalies" title="Permanent link">&para;</a></h2>
 <h3 id="match-anomalies-to-rules">Match Anomalies to Rules<a class="headerlink" href="#match-anomalies-to-rules" title="Permanent link">&para;</a></h3>
-<p>```python
-def evaluate_rules(anomaly, rules):
+<pre class="highlight"><code class="language-python">def evaluate_rules(anomaly, rules):
     """
-    Evaluate which rules match an anomaly.</p>
-<pre><code>Args:
-    anomaly: Detected anomaly with metrics
-    rules: List of remediation rules
+    Evaluate which rules match an anomaly.
 
-Returns:
-    List of matching rules sorted by priority
-"""
-matching_rules = []
+    Args:
+        anomaly: Detected anomaly with metrics
+        rules: List of remediation rules
 
-for rule in rules:
-    condition = rule['condition']
+    Returns:
+        List of matching rules sorted by priority
+    """
+    matching_rules = []
 
-    # Check if condition matches
-    if condition['metric'] in anomaly['metrics']:
-        value = anomaly['metrics'][condition['metric']]
-        threshold = condition['threshold']
-        operator = condition['operator']
+    for rule in rules:
+        condition = rule['condition']
 
-        # Evaluate condition
-        if operator == '&gt;':
-            matches = value &gt; threshold
-        elif operator == '&gt;=':
-            matches = value &gt;= threshold
-        elif operator == '&lt;':
-            matches = value &lt; threshold
-        elif operator == '==':
-            matches = value == threshold
-        else:
-            matches = False
+        # Check if condition matches
+        if condition['metric'] in anomaly['metrics']:
+            value = anomaly['metrics'][condition['metric']]
+            threshold = condition['threshold']
+            operator = condition['operator']
 
-        if matches:
-            matching_rules.append(rule)
+            # Evaluate condition
+            if operator == '&gt;':
+                matches = value &gt; threshold
+            elif operator == '&gt;=':
+                matches = value &gt;= threshold
+            elif operator == '&lt;':
+                matches = value &lt; threshold
+            elif operator == '==':
+                matches = value == threshold
+            else:
+                matches = False
 
-# Sort by priority (lower number = higher priority)
-matching_rules.sort(key=lambda r: r['priority'])
+            if matches:
+                matching_rules.append(rule)
 
-return matching_rules
-</code></pre>
-<p>```</p>
+    # Sort by priority (lower number = higher priority)
+    matching_rules.sort(key=lambda r: r['priority'])
+
+    return matching_rules</code></pre>
 <h3 id="check-rate-limits">Check Rate Limits<a class="headerlink" href="#check-rate-limits" title="Permanent link">&para;</a></h3>
-<p>```python
-def check_rate_limit(rule, action_history):
+<pre class="highlight"><code class="language-python">def check_rate_limit(rule, action_history):
     """
-    Check if rule has exceeded rate limit.</p>
-<pre><code>Args:
-    rule: Remediation rule
-    action_history: List of past actions
+    Check if rule has exceeded rate limit.
 
-Returns:
-    True if action allowed, False if rate limited
-"""
-if 'max_actions_per_hour' not in rule:
-    return True  # No rate limit
+    Args:
+        rule: Remediation rule
+        action_history: List of past actions
 
-# Count actions in last hour
-one_hour_ago = datetime.now() - timedelta(hours=1)
-recent_actions = [
-    a for a in action_history
-    if a['rule'] == rule['name'] and a['timestamp'] &gt; one_hour_ago
-]
+    Returns:
+        True if action allowed, False if rate limited
+    """
+    if 'max_actions_per_hour' not in rule:
+        return True  # No rate limit
 
-return len(recent_actions) &lt; rule['max_actions_per_hour']
-</code></pre>
-<p>```</p>
+    # Count actions in last hour
+    one_hour_ago = datetime.now() - timedelta(hours=1)
+    recent_actions = [
+        a for a in action_history
+        if a['rule'] == rule['name'] and a['timestamp'] &gt; one_hour_ago
+    ]
+
+    return len(recent_actions) &lt; rule['max_actions_per_hour']</code></pre>
 <hr />
 <h2 id="step-3-execute-remediation-actions">Step 3: Execute Remediation Actions<a class="headerlink" href="#step-3-execute-remediation-actions" title="Permanent link">&para;</a></h2>
 <h3 id="scale-deployment">Scale Deployment<a class="headerlink" href="#scale-deployment" title="Permanent link">&para;</a></h3>
-<p>```python
-from kubernetes import client, config</p>
-<p>def scale_deployment(deployment_name, namespace, factor, direction='up'):
+<pre class="highlight"><code class="language-python">from kubernetes import client, config
+
+def scale_deployment(deployment_name, namespace, factor, direction='up'):
     """
-    Scale deployment up or down.</p>
-<pre><code>Args:
-    deployment_name: Deployment name
-    namespace: Kubernetes namespace
-    factor: Scaling factor (e.g., 1.5 = 50% increase)
-    direction: 'up' or 'down'
-"""
-config.load_incluster_config()
-apps_v1 = client.AppsV1Api()
+    Scale deployment up or down.
 
-# Get current deployment
-deployment = apps_v1.read_namespaced_deployment(deployment_name, namespace)
-current_replicas = deployment.spec.replicas
+    Args:
+        deployment_name: Deployment name
+        namespace: Kubernetes namespace
+        factor: Scaling factor (e.g., 1.5 = 50% increase)
+        direction: 'up' or 'down'
+    """
+    config.load_incluster_config()
+    apps_v1 = client.AppsV1Api()
 
-# Calculate new replica count
-if direction == 'up':
-    new_replicas = int(np.ceil(current_replicas * factor))
-else:
-    new_replicas = int(np.floor(current_replicas / factor))
+    # Get current deployment
+    deployment = apps_v1.read_namespaced_deployment(deployment_name, namespace)
+    current_replicas = deployment.spec.replicas
 
-# Update deployment
-deployment.spec.replicas = new_replicas
-apps_v1.patch_namespaced_deployment(deployment_name, namespace, deployment)
+    # Calculate new replica count
+    if direction == 'up':
+        new_replicas = int(np.ceil(current_replicas * factor))
+    else:
+        new_replicas = int(np.floor(current_replicas / factor))
 
-print(f"✅ Scaled {deployment_name} from {current_replicas} to {new_replicas} replicas")
-return new_replicas
-</code></pre>
-<p>```</p>
+    # Update deployment
+    deployment.spec.replicas = new_replicas
+    apps_v1.patch_namespaced_deployment(deployment_name, namespace, deployment)
+
+    print(f"✅ Scaled {deployment_name} from {current_replicas} to {new_replicas} replicas")
+    return new_replicas</code></pre>
 <h3 id="restart-pod">Restart Pod<a class="headerlink" href="#restart-pod" title="Permanent link">&para;</a></h3>
-<p>```python
-def restart_pod(pod_name, namespace):
+<pre class="highlight"><code class="language-python">def restart_pod(pod_name, namespace):
     """Delete pod to trigger restart"""
     config.load_incluster_config()
-    v1 = client.CoreV1Api()</p>
-<pre><code>v1.delete_namespaced_pod(pod_name, namespace)
-print(f"✅ Restarted pod: {pod_name}")
-</code></pre>
-<p>```</p>
+    v1 = client.CoreV1Api()
+
+    v1.delete_namespaced_pod(pod_name, namespace)
+    print(f"✅ Restarted pod: {pod_name}")</code></pre>
 <h3 id="update-image">Update Image<a class="headerlink" href="#update-image" title="Permanent link">&para;</a></h3>
-<p>```python
-def update_image(deployment_name, namespace, new_image):
+<pre class="highlight"><code class="language-python">def update_image(deployment_name, namespace, new_image):
     """Update container image in deployment"""
     config.load_incluster_config()
-    apps_v1 = client.AppsV1Api()</p>
-<pre><code>deployment = apps_v1.read_namespaced_deployment(deployment_name, namespace)
+    apps_v1 = client.AppsV1Api()
 
-# Update image
-for container in deployment.spec.template.spec.containers:
-    container.image = new_image
+    deployment = apps_v1.read_namespaced_deployment(deployment_name, namespace)
 
-apps_v1.patch_namespaced_deployment(deployment_name, namespace, deployment)
-print(f"✅ Updated image for {deployment_name}")
-</code></pre>
-<p>```</p>
+    # Update image
+    for container in deployment.spec.template.spec.containers:
+        container.image = new_image
+
+    apps_v1.patch_namespaced_deployment(deployment_name, namespace, deployment)
+    print(f"✅ Updated image for {deployment_name}")</code></pre>
 <hr />
 <h2 id="step-4-execute-via-coordination-engine">Step 4: Execute via Coordination Engine<a class="headerlink" href="#step-4-execute-via-coordination-engine" title="Permanent link">&para;</a></h2>
 <blockquote>
 <p><strong>💡 Architecture Note</strong>: The Coordination Engine is a <strong>Go service</strong> that orchestrates remediation. Your Python notebooks call it via REST API—you don't need to write Go code!</p>
 </blockquote>
 <h3 id="trigger-remediation">Trigger Remediation<a class="headerlink" href="#trigger-remediation" title="Permanent link">&para;</a></h3>
-<p>```python
-from coordination_engine_client import get_client</p>
-<p>client = get_client()  # Python client calling Go service at http://coordination-engine:8080</p>
-<p>def execute_remediation(anomaly, rule):
+<pre class="highlight"><code class="language-python">from coordination_engine_client import get_client
+
+client = get_client()  # Python client calling Go service at http://coordination-engine:8080
+
+def execute_remediation(anomaly, rule):
     """
-    Execute remediation action via Coordination Engine.</p>
-<pre><code>Args:
-    anomaly: Detected anomaly
-    rule: Matching remediation rule
-"""
-# Create incident
-incident = client.create_incident({
-    'title': f"Anomaly: {anomaly['type']}",
-    'description': f"Detected {anomaly['type']} in {anomaly['target']}",
-    'severity': anomaly['severity'],
-    'source': 'rule-based',
-    'labels': {
-        'rule': rule['name'],
-        'metric': rule['condition']['metric']
-    }
-})
+    Execute remediation action via Coordination Engine.
 
-# Trigger remediation
-remediation = client.trigger_remediation({
-    'incident_id': incident.incident_id,
-    'action': rule['action']['type'],
-    'target': anomaly['target'],
-    'namespace': anomaly['namespace'],
-    'parameters': rule['action'],
-    'priority': rule['priority']
-})
+    Args:
+        anomaly: Detected anomaly
+        rule: Matching remediation rule
+    """
+    # Create incident
+    incident = client.create_incident({
+        'title': f"Anomaly: {anomaly['type']}",
+        'description': f"Detected {anomaly['type']} in {anomaly['target']}",
+        'severity': anomaly['severity'],
+        'source': 'rule-based',
+        'labels': {
+            'rule': rule['name'],
+            'metric': rule['condition']['metric']
+        }
+    })
 
-return remediation
-</code></pre>
-<p>```</p>
+    # Trigger remediation
+    remediation = client.trigger_remediation({
+        'incident_id': incident.incident_id,
+        'action': rule['action']['type'],
+        'target': anomaly['target'],
+        'namespace': anomaly['namespace'],
+        'parameters': rule['action'],
+        'priority': rule['priority']
+    })
+
+    return remediation</code></pre>
 <hr />
 <h2 id="step-5-validate-remediation-success">Step 5: Validate Remediation Success<a class="headerlink" href="#step-5-validate-remediation-success" title="Permanent link">&para;</a></h2>
 <h3 id="monitor-action-results">Monitor Action Results<a class="headerlink" href="#monitor-action-results" title="Permanent link">&para;</a></h3>
-<p>```python
-def validate_remediation(anomaly, rule, action_id, timeout=300):
+<pre class="highlight"><code class="language-python">def validate_remediation(anomaly, rule, action_id, timeout=300):
     """
-    Validate that remediation was successful.</p>
-<pre><code>Args:
-    anomaly: Original anomaly
-    rule: Remediation rule
-    action_id: Action ID from Coordination Engine
-    timeout: Maximum time to wait (seconds)
+    Validate that remediation was successful.
 
-Returns:
-    True if remediation successful, False otherwise
-"""
-import time
+    Args:
+        anomaly: Original anomaly
+        rule: Remediation rule
+        action_id: Action ID from Coordination Engine
+        timeout: Maximum time to wait (seconds)
 
-start_time = time.time()
+    Returns:
+        True if remediation successful, False otherwise
+    """
+    import time
 
-while time.time() - start_time &lt; timeout:
-    # Check if metric improved
-    current_metrics = get_current_metrics(anomaly['target'], anomaly['namespace'])
+    start_time = time.time()
 
-    metric_name = rule['condition']['metric']
-    current_value = current_metrics[metric_name]
-    threshold = rule['condition']['threshold']
+    while time.time() - start_time &lt; timeout:
+        # Check if metric improved
+        current_metrics = get_current_metrics(anomaly['target'], anomaly['namespace'])
 
-    # Check if condition resolved
-    if rule['condition']['operator'] == '&gt;':
-        resolved = current_value &lt; threshold * 0.9  # 10% below threshold
-    elif rule['condition']['operator'] == '&gt;=':
-        resolved = current_value &lt; threshold
-    else:
-        resolved = False
+        metric_name = rule['condition']['metric']
+        current_value = current_metrics[metric_name]
+        threshold = rule['condition']['threshold']
 
-    if resolved:
-        print(f"✅ Remediation successful: {metric_name} reduced to {current_value:.2f}")
-        return True
+        # Check if condition resolved
+        if rule['condition']['operator'] == '&gt;':
+            resolved = current_value &lt; threshold * 0.9  # 10% below threshold
+        elif rule['condition']['operator'] == '&gt;=':
+            resolved = current_value &lt; threshold
+        else:
+            resolved = False
 
-    time.sleep(10)  # Check every 10 seconds
+        if resolved:
+            print(f"✅ Remediation successful: {metric_name} reduced to {current_value:.2f}")
+            return True
 
-print(f"⚠️ Remediation did not resolve within {timeout}s")
-return False
-</code></pre>
-<p>```</p>
+        time.sleep(10)  # Check every 10 seconds
+
+    print(f"⚠️ Remediation did not resolve within {timeout}s")
+    return False</code></pre>
 <hr />
 <h2 id="step-6-track-remediation-outcomes">Step 6: Track Remediation Outcomes<a class="headerlink" href="#step-6-track-remediation-outcomes" title="Permanent link">&para;</a></h2>
 <h3 id="log-actions">Log Actions<a class="headerlink" href="#log-actions" title="Permanent link">&para;</a></h3>
-<p>```python
-def track_remediation(anomaly, rule, action_id, success):
+<pre class="highlight"><code class="language-python">def track_remediation(anomaly, rule, action_id, success):
     """
-    Track remediation outcome for learning.</p>
-<pre><code>Args:
-    anomaly: Original anomaly
-    rule: Remediation rule
-    action_id: Action ID
-    success: Whether remediation succeeded
-"""
-outcome = {
-    'timestamp': datetime.now().isoformat(),
-    'anomaly_id': anomaly.get('id'),
-    'rule': rule['name'],
-    'action_id': action_id,
-    'action_type': rule['action']['type'],
-    'target': anomaly['target'],
-    'success': success,
-    'metrics_before': anomaly['metrics'],
-    'metrics_after': get_current_metrics(anomaly['target'], anomaly['namespace'])
-}
+    Track remediation outcome for learning.
 
-# Save to persistent storage
-outcomes_file = '/opt/app-root/src/data/processed/remediation_outcomes.jsonl'
-with open(outcomes_file, 'a') as f:
-    f.write(json.dumps(outcome) + '\n')
+    Args:
+        anomaly: Original anomaly
+        rule: Remediation rule
+        action_id: Action ID
+        success: Whether remediation succeeded
+    """
+    outcome = {
+        'timestamp': datetime.now().isoformat(),
+        'anomaly_id': anomaly.get('id'),
+        'rule': rule['name'],
+        'action_id': action_id,
+        'action_type': rule['action']['type'],
+        'target': anomaly['target'],
+        'success': success,
+        'metrics_before': anomaly['metrics'],
+        'metrics_after': get_current_metrics(anomaly['target'], anomaly['namespace'])
+    }
 
-print(f"📊 Remediation tracked: {rule['name']} - {'Success' if success else 'Failed'}")
-</code></pre>
-<p>```</p>
+    # Save to persistent storage
+    outcomes_file = '/opt/app-root/src/data/processed/remediation_outcomes.jsonl'
+    with open(outcomes_file, 'a') as f:
+        f.write(json.dumps(outcome) + '\n')
+
+    print(f"📊 Remediation tracked: {rule['name']} - {'Success' if success else 'Failed'}")</code></pre>
 <hr />
 <h2 id="what-just-happened">What Just Happened?<a class="headerlink" href="#what-just-happened" title="Permanent link">&para;</a></h2>
 <p>You've implemented rule-based remediation:</p>
@@ -2271,29 +2293,26 @@ print(f"📊 Remediation tracked: {rule['name']} - {'Success' if success else 'F
 <h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
 <h3 id="circuit-breakers">Circuit Breakers<a class="headerlink" href="#circuit-breakers" title="Permanent link">&para;</a></h3>
 <p>Prevent cascading failures:</p>
-<p><code>python
-CIRCUIT_BREAKER = {
+<pre class="highlight"><code class="language-python">CIRCUIT_BREAKER = {
     'max_failures': 3,
     'reset_timeout': 300,  # 5 minutes
     'state': 'closed'  # closed, open, half-open
-}</code></p>
+}</code></pre>
 <h3 id="rate-limiting">Rate Limiting<a class="headerlink" href="#rate-limiting" title="Permanent link">&para;</a></h3>
 <p>Prevent action storms:</p>
-<p>```python</p>
-<h1 id="per-rule-rate-limits">Per-rule rate limits<a class="headerlink" href="#per-rule-rate-limits" title="Permanent link">&para;</a></h1>
-<p>'max_actions_per_hour': 3</p>
-<h1 id="global-rate-limits">Global rate limits<a class="headerlink" href="#global-rate-limits" title="Permanent link">&para;</a></h1>
-<p>'max_total_actions_per_hour': 20
-```</p>
+<pre class="highlight"><code class="language-python"># Per-rule rate limits
+'max_actions_per_hour': 3
+
+# Global rate limits
+'max_total_actions_per_hour': 20</code></pre>
 <h3 id="dry-run-mode">Dry Run Mode<a class="headerlink" href="#dry-run-mode" title="Permanent link">&para;</a></h3>
 <p>Test rules without executing:</p>
-<p>```python
-DRY_RUN = True  # Set to False for production</p>
-<p>if not DRY_RUN:
+<pre class="highlight"><code class="language-python">DRY_RUN = True  # Set to False for production
+
+if not DRY_RUN:
     execute_remediation(anomaly, rule)
 else:
-    print(f"[DRY RUN] Would execute: {rule['action']['type']}")
-```</p>
+    print(f"[DRY RUN] Would execute: {rule['action']['type']}")</code></pre>
 <hr />
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <p>Explore AI-driven remediation:</p>

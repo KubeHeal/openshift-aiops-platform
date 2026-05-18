@@ -1629,8 +1629,170 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#forecasting-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Forecasting Workflow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automated Workflow
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rationale" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rationale
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rationale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-random-forest-for-forecasting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Random Forest for Forecasting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-1-hour-forecast-horizon" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why 1-Hour Forecast Horizon
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-30-day-historical-lookback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why 30-Day Historical Lookback
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#neutral" class="md-nav__link">
+    <span class="md-ellipsis">
+      Neutral
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#files-createdmodified" class="md-nav__link">
+    <span class="md-ellipsis">
+      Files Created/Modified
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
   
 </li>
       
@@ -1790,8 +1952,7 @@
 Historical range: <strong>30 days</strong> (captures monthly seasonality patterns)</p>
 <h3 id="training-configuration">Training Configuration<a class="headerlink" href="#training-configuration" title="Permanent link">&para;</a></h3>
 <p><strong>NotebookValidationJob Settings</strong> (already configured):
-<code>yaml
-name: predictive-analytics-kserve-validation
+<pre class="highlight"><code class="language-yaml">name: predictive-analytics-kserve-validation
 notebook: notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb
 tier: tier3  # Higher tier due to computational requirements
 blockNextWave: true  # Ensure forecasting works before dependent services
@@ -1804,10 +1965,9 @@ validationConfig:
 comparisonConfig:
   strategy: normalized
   floatingPointTolerance: 0.01
-  ignoreTimestamps: true</code></p>
+  ignoreTimestamps: true</code></pre></p>
 <p><strong>Environment Variables</strong> (to be added):
-<code>yaml
-env:
+<pre class="highlight"><code class="language-yaml">env:
   - name: DATA_SOURCE
     value: "hybrid"  # synthetic|prometheus|hybrid
   - name: PROMETHEUS_URL
@@ -1817,18 +1977,17 @@ env:
   - name: FORECAST_HORIZON
     value: "12"  # Number of future time steps (1 hour)
   - name: LOOKBACK_WINDOW
-    value: "24"  # Number of historical time steps (2 hours)</code></p>
+    value: "24"  # Number of historical time steps (2 hours)</code></pre></p>
 <h3 id="model-parameters">Model Parameters<a class="headerlink" href="#model-parameters" title="Permanent link">&para;</a></h3>
 <p><strong>Random Forest Hyperparameters</strong>:
-<code>python
-RandomForestRegressor(
+<pre class="highlight"><code class="language-python">RandomForestRegressor(
     n_estimators=100,          # Number of trees in forest
     max_depth=20,              # Maximum tree depth
     min_samples_split=5,       # Minimum samples to split node
     min_samples_leaf=2,        # Minimum samples at leaf node
     random_state=42,           # Reproducibility
     n_jobs=-1                  # Parallel processing
-)</code></p>
+)</code></pre></p>
 <p><strong>Feature Engineering</strong>:
 - Lookback window: 24 samples (2 hours)
 - Rolling statistics: mean, std, min, max over [6, 12, 24] windows
@@ -1837,24 +1996,20 @@ RandomForestRegressor(
 - Trend features: linear trend over lookback window
 - Total features: ~40 per predicted metric</p>
 <p><strong>Multi-Output Strategy</strong>:
-```python</p>
-<h1 id="train-separate-model-for-each-forecast-time-step">Train separate model for each forecast time step<a class="headerlink" href="#train-separate-model-for-each-forecast-time-step" title="Permanent link">&para;</a></h1>
-<p>models = {}
+<pre class="highlight"><code class="language-python"># Train separate model for each forecast time step
+models = {}
 for horizon in range(1, 13):  # 12 time steps ahead
     models[f'horizon_{horizon}'] = RandomForestRegressor(...)
-    models[f'horizon_{horizon}'].fit(X_train, y_train[:, horizon-1])
-```</p>
+    models[f'horizon_{horizon}'].fit(X_train, y_train[:, horizon-1])</code></pre></p>
 <h3 id="forecasting-workflow">Forecasting Workflow<a class="headerlink" href="#forecasting-workflow" title="Permanent link">&para;</a></h3>
 <p><strong>Input</strong>: Current metrics (last 2 hours, 24 samples)
-<code>json
-{
+<pre class="highlight"><code class="language-json">{
   "instances": [
     [0.45, 0.62, 0.38, 1024.5, 512.8, ...]  // 24 samples × 5 metrics = 120 values
   ]
-}</code></p>
+}</code></pre></p>
 <p><strong>Output</strong>: Future predictions (next 1 hour, 12 samples)
-<code>json
-{
+<pre class="highlight"><code class="language-json">{
   "predictions": [
     {
       "cpu": [0.47, 0.48, 0.50, 0.52, 0.54, 0.56, 0.58, 0.59, 0.60, 0.61, 0.62, 0.63],
@@ -1864,7 +2019,7 @@ for horizon in range(1, 13):  # 12 time steps ahead
       "network_out": [...]
     }
   ]
-}</code></p>
+}</code></pre></p>
 <h3 id="automated-workflow">Automated Workflow<a class="headerlink" href="#automated-workflow" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Weekly Trigger</strong>: NotebookValidationJob scheduled via CronJob</li>
@@ -1983,28 +2138,32 @@ for horizon in range(1, 13):  # 12 time steps ahead
 <li>Add troubleshooting runbook</li>
 </ol>
 <h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="verify-notebookvalidationjob-exists-should-already-exist">Verify NotebookValidationJob exists (should already exist)<a class="headerlink" href="#verify-notebookvalidationjob-exists-should-already-exist" title="Permanent link">&para;</a></h1>
-<p>oc get notebookvalidationjobs -n self-healing-platform | grep predictive-analytics</p>
-<h1 id="manually-trigger-training">Manually trigger training<a class="headerlink" href="#manually-trigger-training" title="Permanent link">&para;</a></h1>
-<p>oc create job --from=notebookvalidationjob/predictive-analytics-kserve-validation \
-  manual-train-$(date +%s) -n self-healing-platform</p>
-<h1 id="monitor-training-progress">Monitor training progress<a class="headerlink" href="#monitor-training-progress" title="Permanent link">&para;</a></h1>
-<p>oc logs -f job/manual-train-* -n self-healing-platform</p>
-<h1 id="verify-model-file-updated">Verify model file updated<a class="headerlink" href="#verify-model-file-updated" title="Permanent link">&para;</a></h1>
-<p>oc exec deployment/model-troubleshooting-utilities -n self-healing-platform -- \
-  ls -lh /mnt/models/predictive-analytics/model.pkl</p>
-<h1 id="verify-inferenceservice-restarted">Verify InferenceService restarted<a class="headerlink" href="#verify-inferenceservice-restarted" title="Permanent link">&para;</a></h1>
-<p>oc get pods -l serving.kserve.io/inferenceservice=predictive-analytics \
-  -n self-healing-platform --sort-by=.metadata.creationTimestamp</p>
-<h1 id="test-forecast-endpoint">Test forecast endpoint<a class="headerlink" href="#test-forecast-endpoint" title="Permanent link">&para;</a></h1>
-<p>PREDICTOR_IP=$(oc get pod -l serving.kserve.io/inferenceservice=predictive-analytics \
+<pre class="highlight"><code class="language-bash"># Verify NotebookValidationJob exists (should already exist)
+oc get notebookvalidationjobs -n self-healing-platform | grep predictive-analytics
+
+# Manually trigger training
+oc create job --from=notebookvalidationjob/predictive-analytics-kserve-validation \
+  manual-train-$(date +%s) -n self-healing-platform
+
+# Monitor training progress
+oc logs -f job/manual-train-* -n self-healing-platform
+
+# Verify model file updated
+oc exec deployment/model-troubleshooting-utilities -n self-healing-platform -- \
+  ls -lh /mnt/models/predictive-analytics/model.pkl
+
+# Verify InferenceService restarted
+oc get pods -l serving.kserve.io/inferenceservice=predictive-analytics \
+  -n self-healing-platform --sort-by=.metadata.creationTimestamp
+
+# Test forecast endpoint
+PREDICTOR_IP=$(oc get pod -l serving.kserve.io/inferenceservice=predictive-analytics \
   -o jsonpath='{.items[0].status.podIP}')
 curl -X POST http://${PREDICTOR_IP}:8080/v1/models/predictive-analytics:predict \
   -H 'Content-Type: application/json' \
-  -d '{"instances": [[0.45, 0.62, 0.38, ...]]}'  # 120 values (24 samples × 5 metrics)</p>
-<h1 id="expected-12-step-forecast-for-each-metric">Expected: 12-step forecast for each metric<a class="headerlink" href="#expected-12-step-forecast-for-each-metric" title="Permanent link">&para;</a></h1>
-<p>```</p>
+  -d '{"instances": [[0.45, 0.62, 0.38, ...]]}'  # 120 values (24 samples × 5 metrics)
+
+# Expected: 12-step forecast for each metric</code></pre>
 <h2 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../004-kserve-model-serving/">ADR-004: KServe for Model Serving Infrastructure</a></li>

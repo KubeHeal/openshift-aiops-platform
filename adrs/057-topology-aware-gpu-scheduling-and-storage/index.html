@@ -1676,6 +1676,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1738,13 +1747,13 @@
 <h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
 <p>All Helm templates that reference GPU scheduling, <code>model-storage-gpu-pvc</code>, or CephFS are gated on <code>cluster.topology</code> (default: <code>ha</code>). The two topologies follow distinct model training and storage flows:</p>
 <h3 id="ha-flow-dual-pvc">HA Flow (dual-PVC)<a class="headerlink" href="#ha-flow-dual-pvc" title="Permanent link">&para;</a></h3>
-<p><code>GPU Training → model-storage-gpu-pvc (gp3-csi, GPU node)
+<pre class="highlight"><code>GPU Training → model-storage-gpu-pvc (gp3-csi, GPU node)
                     ↓
           gpu-model-copy Job (ODF node)
                     ↓
-          model-storage-pvc (CephFS, ODF nodes) → KServe</code></p>
+          model-storage-pvc (CephFS, ODF nodes) → KServe</code></pre>
 <h3 id="sno-flow-single-pvc">SNO Flow (single-PVC)<a class="headerlink" href="#sno-flow-single-pvc" title="Permanent link">&para;</a></h3>
-<p><code>GPU Training → model-storage-pvc (gp3-csi, single node) → KServe</code></p>
+<pre class="highlight"><code>GPU Training → model-storage-pvc (gp3-csi, single node) → KServe</code></pre>
 <h3 id="template-changes">Template Changes<a class="headerlink" href="#template-changes" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -1839,12 +1848,11 @@
 <li>KServe InferenceService configuration remains the same; only the underlying PVC differs</li>
 </ul>
 <h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
-<p>```bash</p>
-<h1 id="verify-ha-rendering">Verify HA rendering<a class="headerlink" href="#verify-ha-rendering" title="Permanent link">&para;</a></h1>
-<p>helm template test charts/hub --set cluster.topology=ha | grep -E 'model-storage|gpu|cephfs|gp3'</p>
-<h1 id="verify-sno-rendering-should-have-no-model-storage-gpu-pvc-no-gpu-model-copy-job">Verify SNO rendering -- should have NO model-storage-gpu-pvc, no gpu-model-copy Job<a class="headerlink" href="#verify-sno-rendering-should-have-no-model-storage-gpu-pvc-no-gpu-model-copy-job" title="Permanent link">&para;</a></h1>
-<p>helm template test charts/hub --set cluster.topology=sno | grep -E 'model-storage|gpu|cephfs|gp3'
-```</p>
+<pre class="highlight"><code class="language-bash"># Verify HA rendering
+helm template test charts/hub --set cluster.topology=ha | grep -E 'model-storage|gpu|cephfs|gp3'
+
+# Verify SNO rendering -- should have NO model-storage-gpu-pvc, no gpu-model-copy Job
+helm template test charts/hub --set cluster.topology=sno | grep -E 'model-storage|gpu|cephfs|gp3'</code></pre>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../035-storage-strategy/">ADR-035: Storage Strategy</a></li>

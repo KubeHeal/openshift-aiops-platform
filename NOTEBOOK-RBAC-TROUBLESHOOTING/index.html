@@ -1551,8 +1551,140 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#error-2-cannot-get-resource-podslog" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error 2: Cannot get resource "pods/log"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-3-cannot-access-resource-in-different-namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error 3: Cannot access resource in different namespace
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-4-cannot-access-cluster-scoped-resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error 4: Cannot access cluster-scoped resource
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Steps
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-check-serviceaccount-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Check ServiceAccount exists
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-check-roles-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Check Roles exist
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-check-rolebindings-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Check RoleBindings exist
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-check-clusterroles-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Check ClusterRoles exist
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-check-clusterrolebindings-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 5: Check ClusterRoleBindings exist
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-view-full-role-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 6: View full Role definition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-test-specific-permission" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 7: Test specific permission
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-fix-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Fix Workflow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-rbac-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current RBAC Status
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prevention-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prevention Tips
+    </span>
+  </a>
   
 </li>
       
@@ -1584,121 +1716,106 @@
 <hr />
 <h2 id="common-403-forbidden-errors-solutions">Common 403 Forbidden Errors &amp; Solutions<a class="headerlink" href="#common-403-forbidden-errors-solutions" title="Permanent link">&para;</a></h2>
 <h3 id="error-1-cannot-list-resource-pods">Error 1: Cannot list resource "pods"<a class="headerlink" href="#error-1-cannot-list-resource-pods" title="Permanent link">&para;</a></h3>
-<p><code>pods is forbidden: User "system:serviceaccount:self-healing-platform:self-healing-workbench-dev"
-cannot list resource "pods" in API group "" in the namespace "self-healing-platform"</code></p>
+<pre class="highlight"><code>pods is forbidden: User "system:serviceaccount:self-healing-platform:self-healing-workbench-dev"
+cannot list resource "pods" in API group "" in the namespace "self-healing-platform"</code></pre>
 <p><strong>Solution</strong>:
-```bash</p>
-<h1 id="verify-permission">Verify permission<a class="headerlink" href="#verify-permission" title="Permanent link">&para;</a></h1>
-<p>kubectl auth can-i list pods --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n self-healing-platform</p>
-<h1 id="should-return-yes">Should return: yes<a class="headerlink" href="#should-return-yes" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Verify permission
+kubectl auth can-i list pods --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n self-healing-platform
+
+# Should return: yes</code></pre></p>
 <p><strong>If NO</strong>: Add to Role in k8s/base/rbac.yaml:
-<code>yaml
-- apiGroups: [""]
+<pre class="highlight"><code class="language-yaml">- apiGroups: [""]
   resources: ["pods"]
-  verbs: ["get", "list", "watch"]</code></p>
+  verbs: ["get", "list", "watch"]</code></pre></p>
 <hr />
 <h3 id="error-2-cannot-get-resource-podslog">Error 2: Cannot get resource "pods/log"<a class="headerlink" href="#error-2-cannot-get-resource-podslog" title="Permanent link">&para;</a></h3>
-<p><code>pods "pod-name" is forbidden: User "system:serviceaccount:self-healing-platform:self-healing-workbench-dev"
-cannot get resource "pods/log" in API group "" in the namespace "self-healing-platform"</code></p>
+<pre class="highlight"><code>pods "pod-name" is forbidden: User "system:serviceaccount:self-healing-platform:self-healing-workbench-dev"
+cannot get resource "pods/log" in API group "" in the namespace "self-healing-platform"</code></pre>
 <p><strong>Solution</strong>:
-```bash</p>
-<h1 id="verify-permission_1">Verify permission<a class="headerlink" href="#verify-permission_1" title="Permanent link">&para;</a></h1>
-<p>kubectl auth can-i get pods/log --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n self-healing-platform</p>
-<h1 id="should-return-yes_1">Should return: yes<a class="headerlink" href="#should-return-yes_1" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Verify permission
+kubectl auth can-i get pods/log --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n self-healing-platform
+
+# Should return: yes</code></pre></p>
 <p><strong>If NO</strong>: Add to Role in k8s/base/rbac.yaml:
-<code>yaml
-- apiGroups: [""]
+<pre class="highlight"><code class="language-yaml">- apiGroups: [""]
   resources: ["pods/log"]
-  verbs: ["get"]</code></p>
+  verbs: ["get"]</code></pre></p>
 <hr />
 <h3 id="error-3-cannot-access-resource-in-different-namespace">Error 3: Cannot access resource in different namespace<a class="headerlink" href="#error-3-cannot-access-resource-in-different-namespace" title="Permanent link">&para;</a></h3>
-<p><code>pods is forbidden: User "system:serviceaccount:self-healing-platform:self-healing-workbench-dev"
-cannot list resource "pods" in API group "" in the namespace "openshift-monitoring"</code></p>
+<pre class="highlight"><code>pods is forbidden: User "system:serviceaccount:self-healing-platform:self-healing-workbench-dev"
+cannot list resource "pods" in API group "" in the namespace "openshift-monitoring"</code></pre>
 <p><strong>Solution</strong>:
-```bash</p>
-<h1 id="verify-permission-in-target-namespace">Verify permission in target namespace<a class="headerlink" href="#verify-permission-in-target-namespace" title="Permanent link">&para;</a></h1>
-<p>kubectl auth can-i list pods --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n openshift-monitoring</p>
-<h1 id="should-return-yes_2">Should return: yes<a class="headerlink" href="#should-return-yes_2" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Verify permission in target namespace
+kubectl auth can-i list pods --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n openshift-monitoring
+
+# Should return: yes</code></pre></p>
 <p><strong>If NO</strong>: Create Role/RoleBinding in target namespace:
-```yaml
-apiVersion: rbac.authorization.k8s.io/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: self-healing-workbench-dev-<namespace>
-  namespace: <namespace>
+  name: self-healing-workbench-dev-&lt;namespace&gt;
+  namespace: &lt;namespace&gt;
 rules:
 - apiGroups: [""]
   resources: ["pods", "events", "services"]
-  verbs: ["get", "list", "watch"]</p>
-<hr />
-<p>apiVersion: rbac.authorization.k8s.io/v1
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: self-healing-workbench-dev-<namespace>
-  namespace: <namespace>
+  name: self-healing-workbench-dev-&lt;namespace&gt;
+  namespace: &lt;namespace&gt;
 subjects:
 - kind: ServiceAccount
   name: self-healing-workbench-dev
   namespace: self-healing-platform
 roleRef:
   kind: Role
-  name: self-healing-workbench-dev-<namespace>
-  apiGroup: rbac.authorization.k8s.io
-```</p>
+  name: self-healing-workbench-dev-&lt;namespace&gt;
+  apiGroup: rbac.authorization.k8s.io</code></pre></p>
 <hr />
 <h3 id="error-4-cannot-access-cluster-scoped-resource">Error 4: Cannot access cluster-scoped resource<a class="headerlink" href="#error-4-cannot-access-cluster-scoped-resource" title="Permanent link">&para;</a></h3>
-<p><code>namespaces is forbidden: User "system:serviceaccount:self-healing-platform:self-healing-workbench-dev"
-cannot list resource "namespaces" in API group "" at the cluster scope</code></p>
+<pre class="highlight"><code>namespaces is forbidden: User "system:serviceaccount:self-healing-platform:self-healing-workbench-dev"
+cannot list resource "namespaces" in API group "" at the cluster scope</code></pre>
 <p><strong>Solution</strong>:
-```bash</p>
-<h1 id="verify-permission_2">Verify permission<a class="headerlink" href="#verify-permission_2" title="Permanent link">&para;</a></h1>
-<p>kubectl auth can-i list namespaces --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev</p>
-<h1 id="should-return-yes_3">Should return: yes<a class="headerlink" href="#should-return-yes_3" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Verify permission
+kubectl auth can-i list namespaces --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev
+
+# Should return: yes</code></pre></p>
 <p><strong>If NO</strong>: Add to ClusterRole in k8s/base/rbac.yaml:
-<code>yaml
-apiVersion: rbac.authorization.k8s.io/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: self-healing-workbench-dev-cluster
 rules:
 - apiGroups: [""]
   resources: ["namespaces", "nodes"]
-  verbs: ["get", "list", "watch"]</code></p>
+  verbs: ["get", "list", "watch"]</code></pre></p>
 <hr />
 <h2 id="debugging-steps">Debugging Steps<a class="headerlink" href="#debugging-steps" title="Permanent link">&para;</a></h2>
 <h3 id="step-1-check-serviceaccount-exists">Step 1: Check ServiceAccount exists<a class="headerlink" href="#step-1-check-serviceaccount-exists" title="Permanent link">&para;</a></h3>
-<p><code>bash
-kubectl get sa self-healing-workbench-dev -n self-healing-platform</code></p>
+<pre class="highlight"><code class="language-bash">kubectl get sa self-healing-workbench-dev -n self-healing-platform</code></pre>
 <h3 id="step-2-check-roles-exist">Step 2: Check Roles exist<a class="headerlink" href="#step-2-check-roles-exist" title="Permanent link">&para;</a></h3>
-<p><code>bash
-kubectl get role -n self-healing-platform | grep workbench
-kubectl get role -n openshift-monitoring | grep workbench</code></p>
+<pre class="highlight"><code class="language-bash">kubectl get role -n self-healing-platform | grep workbench
+kubectl get role -n openshift-monitoring | grep workbench</code></pre>
 <h3 id="step-3-check-rolebindings-exist">Step 3: Check RoleBindings exist<a class="headerlink" href="#step-3-check-rolebindings-exist" title="Permanent link">&para;</a></h3>
-<p><code>bash
-kubectl get rolebinding -n self-healing-platform | grep workbench
-kubectl get rolebinding -n openshift-monitoring | grep workbench</code></p>
+<pre class="highlight"><code class="language-bash">kubectl get rolebinding -n self-healing-platform | grep workbench
+kubectl get rolebinding -n openshift-monitoring | grep workbench</code></pre>
 <h3 id="step-4-check-clusterroles-exist">Step 4: Check ClusterRoles exist<a class="headerlink" href="#step-4-check-clusterroles-exist" title="Permanent link">&para;</a></h3>
-<p><code>bash
-kubectl get clusterrole | grep workbench</code></p>
+<pre class="highlight"><code class="language-bash">kubectl get clusterrole | grep workbench</code></pre>
 <h3 id="step-5-check-clusterrolebindings-exist">Step 5: Check ClusterRoleBindings exist<a class="headerlink" href="#step-5-check-clusterrolebindings-exist" title="Permanent link">&para;</a></h3>
-<p><code>bash
-kubectl get clusterrolebinding | grep workbench</code></p>
+<pre class="highlight"><code class="language-bash">kubectl get clusterrolebinding | grep workbench</code></pre>
 <h3 id="step-6-view-full-role-definition">Step 6: View full Role definition<a class="headerlink" href="#step-6-view-full-role-definition" title="Permanent link">&para;</a></h3>
-<p><code>bash
-kubectl get role self-healing-workbench-dev -n self-healing-platform -o yaml</code></p>
+<pre class="highlight"><code class="language-bash">kubectl get role self-healing-workbench-dev -n self-healing-platform -o yaml</code></pre>
 <h3 id="step-7-test-specific-permission">Step 7: Test specific permission<a class="headerlink" href="#step-7-test-specific-permission" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="test-list-pods">Test list pods<a class="headerlink" href="#test-list-pods" title="Permanent link">&para;</a></h1>
-<p>kubectl auth can-i list pods --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n self-healing-platform</p>
-<h1 id="test-get-pod-logs">Test get pod logs<a class="headerlink" href="#test-get-pod-logs" title="Permanent link">&para;</a></h1>
-<p>kubectl auth can-i get pods/log --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n self-healing-platform</p>
-<h1 id="test-list-namespaces-cluster-scoped">Test list namespaces (cluster-scoped)<a class="headerlink" href="#test-list-namespaces-cluster-scoped" title="Permanent link">&para;</a></h1>
-<p>kubectl auth can-i list namespaces --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev
-```</p>
+<pre class="highlight"><code class="language-bash"># Test list pods
+kubectl auth can-i list pods --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n self-healing-platform
+
+# Test get pod logs
+kubectl auth can-i get pods/log --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n self-healing-platform
+
+# Test list namespaces (cluster-scoped)
+kubectl auth can-i list namespaces --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev</code></pre>
 <hr />
 <h2 id="quick-fix-workflow">Quick Fix Workflow<a class="headerlink" href="#quick-fix-workflow" title="Permanent link">&para;</a></h2>
 <ol>
@@ -1706,15 +1823,12 @@ kubectl get role self-healing-workbench-dev -n self-healing-platform -o yaml</co
 <li><strong>Extract the resource</strong> (e.g., "pods", "pods/log", "namespaces")</li>
 <li><strong>Extract the namespace</strong> (e.g., "self-healing-platform", "openshift-monitoring", or cluster-scoped)</li>
 <li><strong>Check if permission exists</strong>:
-   <code>bash
-   kubectl auth can-i &lt;verb&gt; &lt;resource&gt; --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n &lt;namespace&gt;</code></li>
+   <pre class="highlight"><code class="language-bash">kubectl auth can-i &lt;verb&gt; &lt;resource&gt; --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n &lt;namespace&gt;</code></pre></li>
 <li><strong>If NO</strong>: Add rule to appropriate Role/ClusterRole</li>
 <li><strong>Apply changes</strong>:
-   <code>bash
-   kubectl apply -f k8s/base/rbac.yaml</code></li>
+   <pre class="highlight"><code class="language-bash">kubectl apply -f k8s/base/rbac.yaml</code></pre></li>
 <li><strong>Verify fix</strong>:
-   <code>bash
-   kubectl auth can-i &lt;verb&gt; &lt;resource&gt; --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n &lt;namespace&gt;</code></li>
+   <pre class="highlight"><code class="language-bash">kubectl auth can-i &lt;verb&gt; &lt;resource&gt; --as=system:serviceaccount:self-healing-platform:self-healing-workbench-dev -n &lt;namespace&gt;</code></pre></li>
 <li><strong>Re-run notebook cell</strong></li>
 </ol>
 <hr />

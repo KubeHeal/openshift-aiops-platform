@@ -1719,8 +1719,143 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#key-metrics-for-ai-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Metrics for AI Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-pipeline-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Pipeline Integration
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alert-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alert Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alert Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#self-healing-platform-alerts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Healing Platform Alerts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-retention-and-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Retention and Storage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Retention and Storage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-prometheus-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Local Prometheus Storage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thanos-long-term-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Thanos Long-term Storage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Optimization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#query-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Optimization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resource-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resource Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Metrics
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
   
 </li>
       
@@ -1865,9 +2000,8 @@
 </ul>
 <h2 id="implementation-architecture">Implementation Architecture<a class="headerlink" href="#implementation-architecture" title="Permanent link">&para;</a></h2>
 <h3 id="data-collection-strategy">Data Collection Strategy<a class="headerlink" href="#data-collection-strategy" title="Permanent link">&para;</a></h3>
-<p>```yaml</p>
-<h1 id="servicemonitor-for-self-healing-platform-components">ServiceMonitor for Self-Healing Platform components<a class="headerlink" href="#servicemonitor-for-self-healing-platform-components" title="Permanent link">&para;</a></h1>
-<p>apiVersion: monitoring.coreos.com/v1
+<pre class="highlight"><code class="language-yaml"># ServiceMonitor for Self-Healing Platform components
+apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: self-healing-platform
@@ -1879,58 +2013,59 @@ spec:
   endpoints:
   - port: metrics
     interval: 30s
-    path: /metrics
-```</p>
+    path: /metrics</code></pre>
 <h3 id="key-metrics-for-ai-models">Key Metrics for AI Models<a class="headerlink" href="#key-metrics-for-ai-models" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>Node Metrics</strong>
-   ```promql
-   # CPU utilization rate
-   rate(node_cpu_seconds_total[5m])</li>
+<li>
+<p><strong>Node Metrics</strong>
+   <pre class="highlight"><code class="language-promql"># CPU utilization rate
+rate(node_cpu_seconds_total[5m])
+
+# Memory usage
+node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes
+
+# Network I/O rate
+rate(node_network_receive_bytes_total[5m])</code></pre></p>
+</li>
+<li>
+<p><strong>Container Metrics</strong>
+   <pre class="highlight"><code class="language-promql"># Container CPU usage
+rate(container_cpu_usage_seconds_total[5m])
+
+# Container memory working set
+container_memory_working_set_bytes
+
+# Container restart count
+increase(kube_pod_container_status_restarts_total[1h])</code></pre></p>
+</li>
+<li>
+<p><strong>GPU Metrics</strong>
+   <pre class="highlight"><code class="language-promql"># GPU utilization
+DCGM_FI_DEV_GPU_UTIL
+
+# GPU memory utilization
+DCGM_FI_DEV_MEM_COPY_UTIL
+
+# GPU temperature
+DCGM_FI_DEV_GPU_TEMP</code></pre></p>
+</li>
 </ol>
-<p># Memory usage
-   node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes</p>
-<p># Network I/O rate
-   rate(node_network_receive_bytes_total[5m])
-   ```</p>
-<ol>
-<li><strong>Container Metrics</strong>
-   ```promql
-   # Container CPU usage
-   rate(container_cpu_usage_seconds_total[5m])</li>
-</ol>
-<p># Container memory working set
-   container_memory_working_set_bytes</p>
-<p># Container restart count
-   increase(kube_pod_container_status_restarts_total[1h])
-   ```</p>
-<ol>
-<li><strong>GPU Metrics</strong>
-   ```promql
-   # GPU utilization
-   DCGM_FI_DEV_GPU_UTIL</li>
-</ol>
-<p># GPU memory utilization
-   DCGM_FI_DEV_MEM_COPY_UTIL</p>
-<p># GPU temperature
-   DCGM_FI_DEV_GPU_TEMP
-   ```</p>
 <h3 id="data-pipeline-integration">Data Pipeline Integration<a class="headerlink" href="#data-pipeline-integration" title="Permanent link">&para;</a></h3>
-<p>```python</p>
-<h1 id="python-client-for-prometheus-data-access">Python client for Prometheus data access<a class="headerlink" href="#python-client-for-prometheus-data-access" title="Permanent link">&para;</a></h1>
-<p>from prometheus_api_client import PrometheusConnect</p>
-<p>prom = PrometheusConnect(url="http://prometheus.openshift-monitoring.svc:9090")</p>
-<h1 id="query-for-anomaly-detection-model">Query for anomaly detection model<a class="headerlink" href="#query-for-anomaly-detection-model" title="Permanent link">&para;</a></h1>
-<p>cpu_query = 'rate(container_cpu_usage_seconds_total[5m])'
+<pre class="highlight"><code class="language-python"># Python client for Prometheus data access
+from prometheus_api_client import PrometheusConnect
+
+prom = PrometheusConnect(url="http://prometheus.openshift-monitoring.svc:9090")
+
+# Query for anomaly detection model
+cpu_query = 'rate(container_cpu_usage_seconds_total[5m])'
 memory_query = 'container_memory_working_set_bytes'
-network_query = 'rate(container_network_receive_bytes_total[5m])'</p>
-<h1 id="collect-time-series-data-for-model-training">Collect time series data for model training<a class="headerlink" href="#collect-time-series-data-for-model-training" title="Permanent link">&para;</a></h1>
-<p>cpu_data = prom.get_metric_range_data(cpu_query, start_time=start, end_time=end)
-```</p>
+network_query = 'rate(container_network_receive_bytes_total[5m])'
+
+# Collect time series data for model training
+cpu_data = prom.get_metric_range_data(cpu_query, start_time=start, end_time=end)</code></pre>
 <h2 id="alert-configuration">Alert Configuration<a class="headerlink" href="#alert-configuration" title="Permanent link">&para;</a></h2>
 <h3 id="self-healing-platform-alerts">Self-Healing Platform Alerts<a class="headerlink" href="#self-healing-platform-alerts" title="Permanent link">&para;</a></h3>
-<p>```yaml
-apiVersion: monitoring.coreos.com/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: self-healing-platform-alerts
@@ -1944,24 +2079,23 @@ spec:
       labels:
         severity: critical
       annotations:
-        summary: "Anomaly detection model is down"</p>
-<pre><code>- alert: HighNodeCPUUsage
-  expr: (1 - rate(node_cpu_seconds_total{mode="idle"}[5m])) &gt; 0.8
-  for: 10m
-  labels:
-    severity: warning
-  annotations:
-    summary: "High CPU usage detected on node {{ $labels.instance }}"
+        summary: "Anomaly detection model is down"
 
-- alert: PredictiveModelAccuracyDrop
-  expr: model_accuracy &lt; 0.8
-  for: 15m
-  labels:
-    severity: warning
-  annotations:
-    summary: "Model accuracy has dropped below threshold"
-</code></pre>
-<p>```</p>
+    - alert: HighNodeCPUUsage
+      expr: (1 - rate(node_cpu_seconds_total{mode="idle"}[5m])) &gt; 0.8
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High CPU usage detected on node {{ $labels.instance }}"
+
+    - alert: PredictiveModelAccuracyDrop
+      expr: model_accuracy &lt; 0.8
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Model accuracy has dropped below threshold"</code></pre>
 <h2 id="data-retention-and-storage">Data Retention and Storage<a class="headerlink" href="#data-retention-and-storage" title="Permanent link">&para;</a></h2>
 <h3 id="local-prometheus-storage">Local Prometheus Storage<a class="headerlink" href="#local-prometheus-storage" title="Permanent link">&para;</a></h3>
 <ul>

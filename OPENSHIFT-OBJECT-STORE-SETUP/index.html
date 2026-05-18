@@ -1559,6 +1559,102 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#step-2-deploy-object-store-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Deploy Object Store Infrastructure
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-extract-s3-credentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Extract S3 Credentials
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-configure-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Configure Secrets
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-deploy-with-helm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 5: Deploy with Helm
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-verify-model-serving" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 6: Verify Model Serving
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#objectbucketclaim-stuck-in-pending" class="md-nav__link">
+    <span class="md-ellipsis">
+      ObjectBucketClaim stuck in Pending
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kserve-cant-access-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      KServe can't access S3
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3-endpoint-not-accessible" class="md-nav__link">
+    <span class="md-ellipsis">
+      S3 endpoint not accessible
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1585,7 +1681,7 @@
 <h1 id="openshift-object-store-setup-for-model-serving">OpenShift Object Store Setup for Model Serving<a class="headerlink" href="#openshift-object-store-setup-for-model-serving" title="Permanent link">&para;</a></h1>
 <p>This guide explains how to set up OpenShift Data Foundation (ODF) with NooBaa for model artifact storage, following the Validated Patterns framework.</p>
 <h2 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
-<p><code>┌─────────────────────────────────────────────────────────┐
+<pre class="highlight"><code>┌─────────────────────────────────────────────────────────┐
 │         OpenShift Cluster                               │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
@@ -1608,7 +1704,7 @@
 │  │  (accesses models via S3 endpoint)               │  │
 │  └──────────────────────────────────────────────────┘  │
 │                                                         │
-└─────────────────────────────────────────────────────────┘</code></p>
+└─────────────────────────────────────────────────────────┘</code></pre>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>OpenShift Cluster</strong>: 4.16+ with ODF operator available</li>
@@ -1618,56 +1714,53 @@
 </ol>
 <h2 id="step-1-verify-odf-installation">Step 1: Verify ODF Installation<a class="headerlink" href="#step-1-verify-odf-installation" title="Permanent link">&para;</a></h2>
 <p>Check if ODF is already installed:</p>
-<p>```bash</p>
-<h1 id="check-for-odf-operator">Check for ODF operator<a class="headerlink" href="#check-for-odf-operator" title="Permanent link">&para;</a></h1>
-<p>oc get operators | grep odf</p>
-<h1 id="check-for-storage-cluster">Check for storage cluster<a class="headerlink" href="#check-for-storage-cluster" title="Permanent link">&para;</a></h1>
-<p>oc get storagecluster -n openshift-storage</p>
-<h1 id="check-for-noobaa">Check for NooBaa<a class="headerlink" href="#check-for-noobaa" title="Permanent link">&para;</a></h1>
-<p>oc get noobaa -n openshift-storage
-```</p>
+<pre class="highlight"><code class="language-bash"># Check for ODF operator
+oc get operators | grep odf
+
+# Check for storage cluster
+oc get storagecluster -n openshift-storage
+
+# Check for NooBaa
+oc get noobaa -n openshift-storage</code></pre>
 <p>If ODF is not installed, install it via OperatorHub:</p>
-<p>```bash</p>
-<h1 id="create-openshift-storage-namespace">Create openshift-storage namespace<a class="headerlink" href="#create-openshift-storage-namespace" title="Permanent link">&para;</a></h1>
-<p>oc create namespace openshift-storage</p>
-<h1 id="install-odf-operator-via-operatorhub-ui-or-cli">Install ODF operator (via OperatorHub UI or CLI)<a class="headerlink" href="#install-odf-operator-via-operatorhub-ui-or-cli" title="Permanent link">&para;</a></h1>
-<h1 id="the-operator-will-automatically-create-storage-cluster">The operator will automatically create storage cluster<a class="headerlink" href="#the-operator-will-automatically-create-storage-cluster" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Create openshift-storage namespace
+oc create namespace openshift-storage
+
+# Install ODF operator (via OperatorHub UI or CLI)
+# The operator will automatically create storage cluster</code></pre>
 <h2 id="step-2-deploy-object-store-infrastructure">Step 2: Deploy Object Store Infrastructure<a class="headerlink" href="#step-2-deploy-object-store-infrastructure" title="Permanent link">&para;</a></h2>
 <p>Apply the object store manifests:</p>
-<p>```bash</p>
-<h1 id="deploy-noobaa-and-objectbucketclaims">Deploy NooBaa and ObjectBucketClaims<a class="headerlink" href="#deploy-noobaa-and-objectbucketclaims" title="Permanent link">&para;</a></h1>
-<p>oc apply -f k8s/base/object-store.yaml</p>
-<h1 id="verify-deployment">Verify deployment<a class="headerlink" href="#verify-deployment" title="Permanent link">&para;</a></h1>
-<p>oc get noobaa -n openshift-storage
-oc get objectbucketclaim -n self-healing-platform
-```</p>
+<pre class="highlight"><code class="language-bash"># Deploy NooBaa and ObjectBucketClaims
+oc apply -f k8s/base/object-store.yaml
+
+# Verify deployment
+oc get noobaa -n openshift-storage
+oc get objectbucketclaim -n self-healing-platform</code></pre>
 <p>Wait for ObjectBucketClaims to be bound:</p>
-<p>```bash</p>
-<h1 id="watch-status">Watch status<a class="headerlink" href="#watch-status" title="Permanent link">&para;</a></h1>
-<p>oc get objectbucketclaim -n self-healing-platform -w</p>
-<h1 id="should-show-status-bound">Should show: STATUS = Bound<a class="headerlink" href="#should-show-status-bound" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Watch status
+oc get objectbucketclaim -n self-healing-platform -w
+
+# Should show: STATUS = Bound</code></pre>
 <h2 id="step-3-extract-s3-credentials">Step 3: Extract S3 Credentials<a class="headerlink" href="#step-3-extract-s3-credentials" title="Permanent link">&para;</a></h2>
 <p>Once buckets are created, extract credentials:</p>
-<p>```bash</p>
-<h1 id="get-s3-endpoint">Get S3 endpoint<a class="headerlink" href="#get-s3-endpoint" title="Permanent link">&para;</a></h1>
-<p>S3_ENDPOINT=$(oc get route s3 -n openshift-storage -o jsonpath='{.spec.host}')
-echo "S3 Endpoint: https://$S3_ENDPOINT"</p>
-<h1 id="get-access-key">Get access key<a class="headerlink" href="#get-access-key" title="Permanent link">&para;</a></h1>
-<p>ACCESS_KEY=$(oc get secret model-storage -n self-healing-platform -o jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 -d)
-echo "Access Key: $ACCESS_KEY"</p>
-<h1 id="get-secret-key">Get secret key<a class="headerlink" href="#get-secret-key" title="Permanent link">&para;</a></h1>
-<p>SECRET_KEY=$(oc get secret model-storage -n self-healing-platform -o jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 -d)
-echo "Secret Key: $SECRET_KEY"</p>
-<h1 id="get-bucket-name">Get bucket name<a class="headerlink" href="#get-bucket-name" title="Permanent link">&para;</a></h1>
-<p>BUCKET_NAME=$(oc get objectbucketclaim model-storage -n self-healing-platform -o jsonpath='{.spec.generateBucketName}')
-echo "Bucket Name: $BUCKET_NAME"
-```</p>
+<pre class="highlight"><code class="language-bash"># Get S3 endpoint
+S3_ENDPOINT=$(oc get route s3 -n openshift-storage -o jsonpath='{.spec.host}')
+echo "S3 Endpoint: https://$S3_ENDPOINT"
+
+# Get access key
+ACCESS_KEY=$(oc get secret model-storage -n self-healing-platform -o jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 -d)
+echo "Access Key: $ACCESS_KEY"
+
+# Get secret key
+SECRET_KEY=$(oc get secret model-storage -n self-healing-platform -o jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 -d)
+echo "Secret Key: $SECRET_KEY"
+
+# Get bucket name
+BUCKET_NAME=$(oc get objectbucketclaim model-storage -n self-healing-platform -o jsonpath='{.spec.generateBucketName}')
+echo "Bucket Name: $BUCKET_NAME"</code></pre>
 <h2 id="step-4-configure-secrets">Step 4: Configure Secrets<a class="headerlink" href="#step-4-configure-secrets" title="Permanent link">&para;</a></h2>
 <p>Update <code>values-secret.yaml.template</code>:</p>
-<p><code>yaml
-objectStore:
+<pre class="highlight"><code class="language-yaml">objectStore:
   endpoint: "https://s3.openshift-storage.svc.cluster.local"
   accessKey: "&lt;ACCESS_KEY_FROM_STEP_3&gt;"
   secretKey: "&lt;SECRET_KEY_FROM_STEP_3&gt;"
@@ -1676,71 +1769,70 @@ objectStore:
     trainingData: "training-data"
     inferenceResults: "inference-results"
   region: "us-east-1"
-  sslVerify: false</code></p>
+  sslVerify: false</code></pre>
 <p>Copy to secure location:</p>
-<p>```bash</p>
-<h1 id="create-config-directory">Create config directory<a class="headerlink" href="#create-config-directory" title="Permanent link">&para;</a></h1>
-<p>mkdir -p ~/.config/validatedpatterns</p>
-<h1 id="copy-template">Copy template<a class="headerlink" href="#copy-template" title="Permanent link">&para;</a></h1>
-<p>cp values-secret.yaml.template ~/.config/validatedpatterns/values-secret-openshift-aiops-platform.yaml</p>
-<h1 id="edit-with-actual-values">Edit with actual values<a class="headerlink" href="#edit-with-actual-values" title="Permanent link">&para;</a></h1>
-<p>vi ~/.config/validatedpatterns/values-secret-openshift-aiops-platform.yaml</p>
-<h1 id="encrypt-with-ansible-vault-optional-but-recommended">Encrypt with ansible-vault (optional but recommended)<a class="headerlink" href="#encrypt-with-ansible-vault-optional-but-recommended" title="Permanent link">&para;</a></h1>
-<p>ansible-vault encrypt ~/.config/validatedpatterns/values-secret-openshift-aiops-platform.yaml
-```</p>
+<pre class="highlight"><code class="language-bash"># Create config directory
+mkdir -p ~/.config/validatedpatterns
+
+# Copy template
+cp values-secret.yaml.template ~/.config/validatedpatterns/values-secret-openshift-aiops-platform.yaml
+
+# Edit with actual values
+vi ~/.config/validatedpatterns/values-secret-openshift-aiops-platform.yaml
+
+# Encrypt with ansible-vault (optional but recommended)
+ansible-vault encrypt ~/.config/validatedpatterns/values-secret-openshift-aiops-platform.yaml</code></pre>
 <h2 id="step-5-deploy-with-helm">Step 5: Deploy with Helm<a class="headerlink" href="#step-5-deploy-with-helm" title="Permanent link">&para;</a></h2>
 <p>Deploy the platform with object store configuration:</p>
-<p>```bash</p>
-<h1 id="using-make-validated-patterns-way">Using make (Validated Patterns way)<a class="headerlink" href="#using-make-validated-patterns-way" title="Permanent link">&para;</a></h1>
-<p>make install</p>
-<h1 id="or-using-helm-directly">Or using helm directly<a class="headerlink" href="#or-using-helm-directly" title="Permanent link">&para;</a></h1>
-<p>helm install self-healing-platform ./charts/hub \
+<pre class="highlight"><code class="language-bash"># Using make (Validated Patterns way)
+make install
+
+# Or using helm directly
+helm install self-healing-platform ./charts/hub \
   -f values-global.yaml \
   -f values-hub.yaml \
   -f ~/.config/validatedpatterns/values-secret-openshift-aiops-platform.yaml \
   -n self-healing-platform \
-  --create-namespace
-```</p>
+  --create-namespace</code></pre>
 <h2 id="step-6-verify-model-serving">Step 6: Verify Model Serving<a class="headerlink" href="#step-6-verify-model-serving" title="Permanent link">&para;</a></h2>
 <p>Test KServe access to S3:</p>
-<p>```bash</p>
-<h1 id="check-inferenceservice">Check InferenceService<a class="headerlink" href="#check-inferenceservice" title="Permanent link">&para;</a></h1>
-<p>oc get inferenceservice -n self-healing-platform</p>
-<h1 id="check-model-serving-pod-logs">Check model serving pod logs<a class="headerlink" href="#check-model-serving-pod-logs" title="Permanent link">&para;</a></h1>
-<p>oc logs -n self-healing-platform -l app=anomaly-detector -f</p>
-<h1 id="test-s3-access">Test S3 access<a class="headerlink" href="#test-s3-access" title="Permanent link">&para;</a></h1>
-<p>aws s3 ls s3://model-storage/ \
+<pre class="highlight"><code class="language-bash"># Check InferenceService
+oc get inferenceservice -n self-healing-platform
+
+# Check model serving pod logs
+oc logs -n self-healing-platform -l app=anomaly-detector -f
+
+# Test S3 access
+aws s3 ls s3://model-storage/ \
   --endpoint-url https://s3.openshift-storage.svc.cluster.local \
   --access-key $ACCESS_KEY \
-  --secret-key $SECRET_KEY
-```</p>
+  --secret-key $SECRET_KEY</code></pre>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="objectbucketclaim-stuck-in-pending">ObjectBucketClaim stuck in Pending<a class="headerlink" href="#objectbucketclaim-stuck-in-pending" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="check-odf-status">Check ODF status<a class="headerlink" href="#check-odf-status" title="Permanent link">&para;</a></h1>
-<p>oc get storagecluster -n openshift-storage</p>
-<h1 id="check-noobaa-status">Check NooBaa status<a class="headerlink" href="#check-noobaa-status" title="Permanent link">&para;</a></h1>
-<p>oc describe noobaa -n openshift-storage</p>
-<h1 id="check-events">Check events<a class="headerlink" href="#check-events" title="Permanent link">&para;</a></h1>
-<p>oc describe objectbucketclaim model-storage -n self-healing-platform
-```</p>
+<pre class="highlight"><code class="language-bash"># Check ODF status
+oc get storagecluster -n openshift-storage
+
+# Check NooBaa status
+oc describe noobaa -n openshift-storage
+
+# Check events
+oc describe objectbucketclaim model-storage -n self-healing-platform</code></pre>
 <h3 id="kserve-cant-access-s3">KServe can't access S3<a class="headerlink" href="#kserve-cant-access-s3" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="verify-secret-exists">Verify secret exists<a class="headerlink" href="#verify-secret-exists" title="Permanent link">&para;</a></h1>
-<p>oc get secret model-storage-config -n self-healing-platform</p>
-<h1 id="check-inferenceservice-events">Check InferenceService events<a class="headerlink" href="#check-inferenceservice-events" title="Permanent link">&para;</a></h1>
-<p>oc describe inferenceservice anomaly-detector -n self-healing-platform</p>
-<h1 id="check-model-serving-pod-logs_1">Check model serving pod logs<a class="headerlink" href="#check-model-serving-pod-logs_1" title="Permanent link">&para;</a></h1>
-<p>oc logs -n self-healing-platform -l app=anomaly-detector --tail=50
-```</p>
+<pre class="highlight"><code class="language-bash"># Verify secret exists
+oc get secret model-storage-config -n self-healing-platform
+
+# Check InferenceService events
+oc describe inferenceservice anomaly-detector -n self-healing-platform
+
+# Check model serving pod logs
+oc logs -n self-healing-platform -l app=anomaly-detector --tail=50</code></pre>
 <h3 id="s3-endpoint-not-accessible">S3 endpoint not accessible<a class="headerlink" href="#s3-endpoint-not-accessible" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="verify-noobaa-s3-service">Verify NooBaa S3 service<a class="headerlink" href="#verify-noobaa-s3-service" title="Permanent link">&para;</a></h1>
-<p>oc get svc -n openshift-storage | grep s3</p>
-<h1 id="test-connectivity-from-pod">Test connectivity from pod<a class="headerlink" href="#test-connectivity-from-pod" title="Permanent link">&para;</a></h1>
-<p>oc run -it --rm debug --image=curlimages/curl --restart=Never -- \
-  curl -k https://s3.openshift-storage.svc.cluster.local
-```</p>
+<pre class="highlight"><code class="language-bash"># Verify NooBaa S3 service
+oc get svc -n openshift-storage | grep s3
+
+# Test connectivity from pod
+oc run -it --rm debug --image=curlimages/curl --restart=Never -- \
+  curl -k https://s3.openshift-storage.svc.cluster.local</code></pre>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="docs/adrs/020-openshift-object-store-model-serving.md">ADR-020: OpenShift Object Store for Model Serving</a></li>

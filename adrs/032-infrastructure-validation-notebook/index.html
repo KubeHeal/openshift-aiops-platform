@@ -1733,6 +1733,99 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tekton-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tekton Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-helpers-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Helpers Module
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#positive-consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive Consequences
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#negative-consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Negative Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mitigation-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mitigation Strategies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#links" class="md-nav__link">
+    <span class="md-ellipsis">
+      Links
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acceptance-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acceptance Criteria
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Metrics
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1930,8 +2023,7 @@
 </ul>
 <h3 id="validation-report-format">Validation Report Format<a class="headerlink" href="#validation-report-format" title="Permanent link">&para;</a></h3>
 <p><strong>JSON Output</strong> (<code>/opt/app-root/src/.config/validation-report.json</code>):
-<code>json
-{
+<pre class="highlight"><code class="language-json">{
   "validation_date": "2025-11-04T10:30:00Z",
   "validation_status": "PASSED",
   "summary": {
@@ -1958,82 +2050,53 @@
       "details": "GPU not available, will use CPU (acceptable for most notebooks)"
     }
   ]
-}</code></p>
+}</code></pre></p>
 <p><strong>Markdown Output</strong> (displayed in notebook):
-```markdown</p>
-<h1 id="platform-readiness-validation-report">🚀 Platform Readiness Validation Report<a class="headerlink" href="#platform-readiness-validation-report" title="Permanent link">&para;</a></h1>
-<p><strong>Status</strong>: ✅ PASSED
-<strong>Date</strong>: 2025-11-04 10:30:00 UTC
-<strong>Checks</strong>: 33/35 PASSED, 0 FAILED, 2 WARNINGS</p>
-<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Category</th>
-<th>Passed</th>
-<th>Failed</th>
-<th>Warnings</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Basic Environment</td>
-<td>5/6</td>
-<td>0</td>
-<td>1 (GPU)</td>
-</tr>
-<tr>
-<td>Platform Infrastructure</td>
-<td>12/12</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr>
-<td>OpenShift Components</td>
-<td>10/10</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr>
-<td>Network Connectivity</td>
-<td>6/7</td>
-<td>0</td>
-<td>1 (External Route)</td>
-</tr>
-</tbody>
-</table>
-<h2 id="component-status">Component Status<a class="headerlink" href="#component-status" title="Permanent link">&para;</a></h2>
-<h3 id="basic-environment_1">✅ Basic Environment<a class="headerlink" href="#basic-environment_1" title="Permanent link">&para;</a></h3>
-<ul>
-<li>✅ Python 3.11.5</li>
-<li>✅ PyTorch 2025.1</li>
-<li>⚠️  GPU: Not available (acceptable)</li>
-<li>✅ Data Volume: 20Gi mounted</li>
-<li>✅ Models Volume: 50Gi mounted</li>
-<li>✅ Config Directory: writable</li>
-</ul>
-<h3 id="platform-infrastructure_1">✅ Platform Infrastructure<a class="headerlink" href="#platform-infrastructure_1" title="Permanent link">&para;</a></h3>
-<ul>
-<li>✅ Coordination Engine: http://coordination-engine... (45ms)</li>
-<li>✅ Model Serving: anomaly-detector (READY), predictive-analytics (READY)</li>
-<li>✅ Object Storage: s3://model-storage (accessible, 10MB test OK)</li>
-<li>✅ Monitoring: Prometheus query API (responsive)</li>
-<li>✅ MCP Server: http://cluster-health-mcp-server... (3 tools available)</li>
-</ul>
-<p>... (detailed component checks)</p>
-<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
-<p>✅ Platform is ready for notebook execution!</p>
-<ol>
-<li>Start with Phase 01: Data Collection</li>
-<li>Follow notebook execution order (01 → 08)</li>
-<li>Refer to notebooks/README.md for complete guide
-```</li>
-</ol>
+<pre class="highlight"><code class="language-markdown"># 🚀 Platform Readiness Validation Report
+
+**Status**: ✅ PASSED
+**Date**: 2025-11-04 10:30:00 UTC
+**Checks**: 33/35 PASSED, 0 FAILED, 2 WARNINGS
+
+## Summary
+
+| Category | Passed | Failed | Warnings |
+|----------|--------|--------|----------|
+| Basic Environment | 5/6 | 0 | 1 (GPU) |
+| Platform Infrastructure | 12/12 | 0 | 0 |
+| OpenShift Components | 10/10 | 0 | 0 |
+| Network Connectivity | 6/7 | 0 | 1 (External Route) |
+
+## Component Status
+
+### ✅ Basic Environment
+- ✅ Python 3.11.5
+- ✅ PyTorch 2025.1
+- ⚠️  GPU: Not available (acceptable)
+- ✅ Data Volume: 20Gi mounted
+- ✅ Models Volume: 50Gi mounted
+- ✅ Config Directory: writable
+
+### ✅ Platform Infrastructure
+- ✅ Coordination Engine: http://coordination-engine... (45ms)
+- ✅ Model Serving: anomaly-detector (READY), predictive-analytics (READY)
+- ✅ Object Storage: s3://model-storage (accessible, 10MB test OK)
+- ✅ Monitoring: Prometheus query API (responsive)
+- ✅ MCP Server: http://cluster-health-mcp-server... (3 tools available)
+
+... (detailed component checks)
+
+## Next Steps
+
+✅ Platform is ready for notebook execution!
+
+1. Start with Phase 01: Data Collection
+2. Follow notebook execution order (01 → 08)
+3. Refer to notebooks/README.md for complete guide</code></pre></p>
 <h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">&para;</a></h2>
 <h3 id="tekton-integration">Tekton Integration<a class="headerlink" href="#tekton-integration" title="Permanent link">&para;</a></h3>
 <p><strong>Tekton Task</strong>: <code>tekton/tasks/platform-readiness-validation-task.yaml</code></p>
-<p>```yaml
-apiVersion: tekton.dev/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: platform-readiness-validation
@@ -2051,53 +2114,51 @@ spec:
       image: quay.io/modh/runtime-images:jupyter-datascience-ubi9-python-3.11-2025.1
       script: |
         #!/bin/bash
-        pip install papermill nbconvert</p>
-<pre><code>- name: execute-notebook
-  image: quay.io/modh/runtime-images:jupyter-datascience-ubi9-python-3.11-2025.1
-  script: |
-    #!/bin/bash
-    set -e
+        pip install papermill nbconvert
 
-    papermill \
-      $(params.notebook-path) \
-      /tmp/validation-output.ipynb \
-      --log-output \
-      --log-level INFO
+    - name: execute-notebook
+      image: quay.io/modh/runtime-images:jupyter-datascience-ubi9-python-3.11-2025.1
+      script: |
+        #!/bin/bash
+        set -e
 
-    # Convert to HTML for artifact storage
-    jupyter nbconvert \
-      --to html \
-      /tmp/validation-output.ipynb \
-      --output /workspace/validation-report.html
+        papermill \
+          $(params.notebook-path) \
+          /tmp/validation-output.ipynb \
+          --log-output \
+          --log-level INFO
 
-    # Extract JSON report
-    cat /opt/app-root/src/.config/validation-report.json &gt; $(params.output-path)
+        # Convert to HTML for artifact storage
+        jupyter nbconvert \
+          --to html \
+          /tmp/validation-output.ipynb \
+          --output /workspace/validation-report.html
 
-- name: check-validation-status
-  image: registry.access.redhat.com/ubi9/ubi-minimal
-  script: |
-    #!/bin/bash
-    STATUS=$(jq -r '.validation_status' $(params.output-path))
+        # Extract JSON report
+        cat /opt/app-root/src/.config/validation-report.json &gt; $(params.output-path)
 
-    if [ "$STATUS" != "PASSED" ]; then
-      echo "❌ Platform validation FAILED"
-      jq '.checks[] | select(.status == "FAILED")' $(params.output-path)
-      exit 1
-    fi
+    - name: check-validation-status
+      image: registry.access.redhat.com/ubi9/ubi-minimal
+      script: |
+        #!/bin/bash
+        STATUS=$(jq -r '.validation_status' $(params.output-path))
 
-    echo "✅ Platform validation PASSED"
-</code></pre>
-<p>results:
+        if [ "$STATUS" != "PASSED" ]; then
+          echo "❌ Platform validation FAILED"
+          jq '.checks[] | select(.status == "FAILED")' $(params.output-path)
+          exit 1
+        fi
+
+        echo "✅ Platform validation PASSED"
+  results:
     - name: validation-status
       description: Overall validation status (PASSED/FAILED)
     - name: checks-passed
       description: Number of checks passed
     - name: checks-failed
-      description: Number of checks failed
-```</p>
+      description: Number of checks failed</code></pre>
 <p><strong>Tekton Pipeline</strong>: <code>tekton/pipelines/platform-readiness-validation-pipeline.yaml</code></p>
-<p><code>yaml
-apiVersion: tekton.dev/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: platform-readiness-validation-pipeline
@@ -2109,20 +2170,21 @@ spec:
         name: platform-readiness-validation
       params:
         - name: notebook-path
-          value: "notebooks/00-setup/00-platform-readiness-validation.ipynb"</code></p>
+          value: "notebooks/00-setup/00-platform-readiness-validation.ipynb"</code></pre>
 <h3 id="validation-helpers-module">Validation Helpers Module<a class="headerlink" href="#validation-helpers-module" title="Permanent link">&para;</a></h3>
 <p><strong>File</strong>: <code>notebooks/utils/validation_helpers.py</code></p>
-<p>```python
-"""
+<pre class="highlight"><code class="language-python">"""
 Platform validation helpers for Self-Healing Platform
 Provides comprehensive infrastructure validation functions
-"""</p>
-<p>import requests
+"""
+
+import requests
 import os
 import json
 from typing import Dict, Any, List, Tuple
-from datetime import datetime</p>
-<p>def validate_coordination_engine() -&gt; Dict[str, Any]:
+from datetime import datetime
+
+def validate_coordination_engine() -&gt; Dict[str, Any]:
     """Validate coordination engine health and accessibility"""
     url = "http://coordination-engine.self-healing-platform.svc.cluster.local:8080/health"
     try:
@@ -2138,38 +2200,42 @@ from datetime import datetime</p>
             "status": "FAILED",
             "url": url,
             "details": str(e)
-        }</p>
-<p>def validate_model_serving() -&gt; Dict[str, Any]:
+        }
+
+def validate_model_serving() -&gt; Dict[str, Any]:
     """Validate KServe InferenceServices"""
     # Implementation using OpenShift API
-    pass</p>
-<p>def validate_object_storage() -&gt; Dict[str, Any]:
+    pass
+
+def validate_object_storage() -&gt; Dict[str, Any]:
     """Validate S3/ODF accessibility"""
     # Implementation with boto3
-    pass</p>
-<p>def validate_mcp_server() -&gt; Dict[str, Any]:
+    pass
+
+def validate_mcp_server() -&gt; Dict[str, Any]:
     """Validate MCP server connectivity"""
     # Implementation using MCP client
-    pass</p>
-<h1 id="additional-validation-functions">... (additional validation functions)<a class="headerlink" href="#additional-validation-functions" title="Permanent link">&para;</a></h1>
-<p>def generate_validation_report(checks: List[Dict[str, Any]]) -&gt; Dict[str, Any]:
+    pass
+
+# ... (additional validation functions)
+
+def generate_validation_report(checks: List[Dict[str, Any]]) -&gt; Dict[str, Any]:
     """Generate comprehensive validation report"""
     passed = sum(1 for c in checks if c['status'] == 'PASSED')
     failed = sum(1 for c in checks if c['status'] == 'FAILED')
-    warnings = sum(1 for c in checks if c['status'] == 'WARNING')</p>
-<pre><code>return {
-    "validation_date": datetime.utcnow().isoformat() + "Z",
-    "validation_status": "PASSED" if failed == 0 else "FAILED",
-    "summary": {
-        "total_checks": len(checks),
-        "passed": passed,
-        "failed": failed,
-        "warnings": warnings
-    },
-    "checks": checks
-}
-</code></pre>
-<p>```</p>
+    warnings = sum(1 for c in checks if c['status'] == 'WARNING')
+
+    return {
+        "validation_date": datetime.utcnow().isoformat() + "Z",
+        "validation_status": "PASSED" if failed == 0 else "FAILED",
+        "summary": {
+            "total_checks": len(checks),
+            "passed": passed,
+            "failed": failed,
+            "warnings": warnings
+        },
+        "checks": checks
+    }</code></pre>
 <h2 id="positive-consequences">Positive Consequences<a class="headerlink" href="#positive-consequences" title="Permanent link">&para;</a></h2>
 <ul>
 <li>✅ <strong>Early Detection</strong>: Catch infrastructure issues before notebook execution</li>

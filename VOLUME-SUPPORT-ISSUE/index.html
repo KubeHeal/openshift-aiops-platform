@@ -1720,8 +1720,7 @@
 <h2 id="test-results">Test Results<a class="headerlink" href="#test-results" title="Permanent link">&para;</a></h2>
 <h3 id="test-configuration">Test Configuration<a class="headerlink" href="#test-configuration" title="Permanent link">&para;</a></h3>
 <p>Created a NotebookValidationJob with custom volumes:</p>
-<p><code>yaml
-apiVersion: mlops.mlops.dev/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: mlops.mlops.dev/v1alpha1
 kind: NotebookValidationJob
 metadata:
   name: test-volume-simple
@@ -1737,7 +1736,7 @@ spec:
     - name: test-data
       mountPath: /mnt/data
     - name: test-models
-      mountPath: /mnt/models</code></p>
+      mountPath: /mnt/models</code></pre>
 <h3 id="expected-behavior">Expected Behavior<a class="headerlink" href="#expected-behavior" title="Permanent link">&para;</a></h3>
 <p>The validation pod should have the custom volumes mounted at <code>/mnt/data</code> and <code>/mnt/models</code>.</p>
 <h3 id="actual-behavior">Actual Behavior<a class="headerlink" href="#actual-behavior" title="Permanent link">&para;</a></h3>
@@ -1748,8 +1747,7 @@ spec:
 <p><strong>Custom volumes (<code>test-data</code>, <code>test-models</code>) were NOT present in the pod.</strong></p>
 <h3 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">&para;</a></h3>
 <h4 id="pod-volume-configuration">Pod Volume Configuration<a class="headerlink" href="#pod-volume-configuration" title="Permanent link">&para;</a></h4>
-<p><code>bash
-$ oc get pod test-volume-simple-validation -n jupyter-notebook-validator-system -o yaml | grep -A 30 "volumes:"
+<pre class="highlight"><code class="language-bash">$ oc get pod test-volume-simple-validation -n jupyter-notebook-validator-system -o yaml | grep -A 30 "volumes:"
 volumes:
   - emptyDir: {}
     name: workspace
@@ -1757,10 +1755,9 @@ volumes:
     name: jovyan-home
   - name: kube-api-access-mcstc
     projected:
-      ...</code></p>
+      ...</code></pre>
 <h4 id="pod-volume-mounts">Pod Volume Mounts<a class="headerlink" href="#pod-volume-mounts" title="Permanent link">&para;</a></h4>
-<p><code>bash
-$ oc get pod test-volume-simple-validation -n jupyter-notebook-validator-system -o yaml | grep -A 15 "volumeMounts:"
+<pre class="highlight"><code class="language-bash">$ oc get pod test-volume-simple-validation -n jupyter-notebook-validator-system -o yaml | grep -A 15 "volumeMounts:"
 volumeMounts:
 - mountPath: /workspace
   name: workspace
@@ -1768,7 +1765,7 @@ volumeMounts:
   name: jovyan-home
 - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
   name: kube-api-access-mcstc
-  readOnly: true</code></p>
+  readOnly: true</code></pre>
 <p><strong>No <code>/mnt/data</code> or <code>/mnt/models</code> mounts present.</strong></p>
 <h4 id="operator-logs">Operator Logs<a class="headerlink" href="#operator-logs" title="Permanent link">&para;</a></h4>
 <p>No errors or warnings about volume configuration. The operator logs show normal reconciliation but no mention of processing custom volumes.</p>
@@ -1791,21 +1788,18 @@ volumeMounts:
 <ol>
 <li>
 <p><strong>Parse volume configuration</strong> from NotebookValidationJob spec:
-   <code>go
-   volumes := nvj.Spec.PodConfig.Volumes
-   volumeMounts := nvj.Spec.PodConfig.VolumeMounts</code></p>
+   <pre class="highlight"><code class="language-go">volumes := nvj.Spec.PodConfig.Volumes
+volumeMounts := nvj.Spec.PodConfig.VolumeMounts</code></pre></p>
 </li>
 <li>
 <p><strong>Merge with default volumes</strong>:
-   <code>go
-   podSpec.Volumes = append(defaultVolumes, volumes...)</code></p>
+   <pre class="highlight"><code class="language-go">podSpec.Volumes = append(defaultVolumes, volumes...)</code></pre></p>
 </li>
 <li>
 <p><strong>Add volume mounts to containers</strong>:
-   <code>go
-   for _, container := range podSpec.Containers {
-       container.VolumeMounts = append(container.VolumeMounts, volumeMounts...)
-   }</code></p>
+   <pre class="highlight"><code class="language-go">for _, container := range podSpec.Containers {
+    container.VolumeMounts = append(container.VolumeMounts, volumeMounts...)
+}</code></pre></p>
 </li>
 <li>
 <p><strong>Validate volume references</strong>:</p>

@@ -1906,20 +1906,17 @@
 <h3 id="bug-location">Bug Location<a class="headerlink" href="#bug-location" title="Permanent link">&para;</a></h3>
 <p>File: <code>pkg/kserve/proxy.go</code></p>
 <p><strong>Lines 306-309</strong> (Predict method):
-<code>go
-// Build endpoint URL - KServe v1 protocol: /v1/models/&lt;model&gt;:predict
+<pre class="highlight"><code class="language-go">// Build endpoint URL - KServe v1 protocol: /v1/models/&lt;model&gt;:predict
 // Note: KServe defaults to model name "model" when spec.predictor.model.name is not set
 // We use the hardcoded "model" name for KServe API paths, while keeping the logical
 // model name (e.g., "anomaly-detector") for user-facing APIs and service resolution
-endpoint := fmt.Sprintf("%s/v1/models/model:predict", model.URL)</code></p>
+endpoint := fmt.Sprintf("%s/v1/models/model:predict", model.URL)</code></pre></p>
 <p><strong>Line 412</strong> (PredictFlexible method):
-<code>go
-endpoint := fmt.Sprintf("%s/v1/models/model:predict", model.URL)</code></p>
+<pre class="highlight"><code class="language-go">endpoint := fmt.Sprintf("%s/v1/models/model:predict", model.URL)</code></pre></p>
 <p><strong>Lines 690-692</strong> (CheckModelHealth method):
-<code>go
-// KServe v1 health endpoint: GET /v1/models/&lt;model&gt;
+<pre class="highlight"><code class="language-go">// KServe v1 health endpoint: GET /v1/models/&lt;model&gt;
 // Note: KServe defaults to model name "model" when spec.predictor.model.name is not set
-endpoint := fmt.Sprintf("%s/v1/models/model", model.URL)</code></p>
+endpoint := fmt.Sprintf("%s/v1/models/model", model.URL)</code></pre></p>
 <h3 id="incorrect-assumption">Incorrect Assumption<a class="headerlink" href="#incorrect-assumption" title="Permanent link">&para;</a></h3>
 <p>The code comment states:</p>
 <blockquote>
@@ -1933,31 +1930,26 @@ endpoint := fmt.Sprintf("%s/v1/models/model", model.URL)</code></p>
 <p>The code should use the model name from the environment variable <code>KSERVE_{MODEL}_MODEL</code>, not the hardcoded string <code>"model"</code>.</p>
 <h3 id="actual-vs-expected-api-calls">Actual vs Expected API Calls<a class="headerlink" href="#actual-vs-expected-api-calls" title="Permanent link">&para;</a></h3>
 <p><strong>Current (WRONG)</strong>:
-<code>http://anomaly-detector-stable:8080/v1/models/model:predict
-http://anomaly-detector-stable:8080/v1/models/model</code></p>
+<pre class="highlight"><code>http://anomaly-detector-stable:8080/v1/models/model:predict
+http://anomaly-detector-stable:8080/v1/models/model</code></pre></p>
 <p><strong>Expected (CORRECT)</strong>:
-<code>http://anomaly-detector-stable:8080/v1/models/anomaly-detector:predict
-http://anomaly-detector-stable:8080/v1/models/anomaly-detector</code></p>
+<pre class="highlight"><code>http://anomaly-detector-stable:8080/v1/models/anomaly-detector:predict
+http://anomaly-detector-stable:8080/v1/models/anomaly-detector</code></pre></p>
 <h2 id="reproduction-steps">Reproduction Steps<a class="headerlink" href="#reproduction-steps" title="Permanent link">&para;</a></h2>
 <ol>
 <li>
 <p>Deploy the coordination engine with environment variables:
-   ```yaml
-   env:</p>
-<ul>
-<li>name: KSERVE_ANOMALY_DETECTOR_SERVICE
-   value: anomaly-detector-stable</li>
-<li>name: KSERVE_ANOMALY_DETECTOR_MODEL
-   value: anomaly-detector
-   ```</li>
-</ul>
+   <pre class="highlight"><code class="language-yaml">env:
+  - name: KSERVE_ANOMALY_DETECTOR_SERVICE
+    value: anomaly-detector-stable
+  - name: KSERVE_ANOMALY_DETECTOR_MODEL
+    value: anomaly-detector</code></pre></p>
 </li>
 <li>
 <p>Query the MCP server for anomaly detection:
-   <code>bash
-   curl -X POST http://mcp-server:8080/mcp \
-     -H "Content-Type: application/json" \
-     -d '{"tool":"analyze-anomalies","arguments":{"namespace":"default"}}'</code></p>
+   <pre class="highlight"><code class="language-bash">curl -X POST http://mcp-server:8080/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"tool":"analyze-anomalies","arguments":{"namespace":"default"}}'</code></pre></p>
 </li>
 <li>
 <p><strong>Expected</strong>: Anomaly analysis results</p>
@@ -1966,72 +1958,63 @@ http://anomaly-detector-stable:8080/v1/models/anomaly-detector</code></p>
 </ol>
 <h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
 <h3 id="model-is-trained-and-loaded">Model is trained and loaded:<a class="headerlink" href="#model-is-trained-and-loaded" title="Permanent link">&para;</a></h3>
-<p>```bash
-$ oc exec -n self-healing-platform anomaly-detector-predictor-xxx -- \
-    curl -s http://localhost:8080/v2/models</p>
-<p>{"models":["anomaly-detector"]}  # ✅ Model exists with correct name
-```</p>
+<pre class="highlight"><code class="language-bash">$ oc exec -n self-healing-platform anomaly-detector-predictor-xxx -- \
+    curl -s http://localhost:8080/v2/models
+
+{"models":["anomaly-detector"]}  # ✅ Model exists with correct name</code></pre>
 <h3 id="direct-api-call-works-with-correct-name">Direct API call works with correct name:<a class="headerlink" href="#direct-api-call-works-with-correct-name" title="Permanent link">&para;</a></h3>
-<p>```bash
-$ oc exec -n self-healing-platform coordination-engine-xxx -- \
-    curl -s http://anomaly-detector-stable:8080/v1/models/anomaly-detector</p>
-<p>{"name":"anomaly-detector","versions":null,"platform":"","inputs":[],"outputs":[]}  # ✅ Works!
-```</p>
+<pre class="highlight"><code class="language-bash">$ oc exec -n self-healing-platform coordination-engine-xxx -- \
+    curl -s http://anomaly-detector-stable:8080/v1/models/anomaly-detector
+
+{"name":"anomaly-detector","versions":null,"platform":"","inputs":[],"outputs":[]}  # ✅ Works!</code></pre>
 <h3 id="but-fails-with-hardcoded-model">But fails with hardcoded "model":<a class="headerlink" href="#but-fails-with-hardcoded-model" title="Permanent link">&para;</a></h3>
-<p>```bash
-$ oc exec -n self-healing-platform coordination-engine-xxx -- \
-    curl -s http://anomaly-detector-stable:8080/v1/models/model</p>
-<p>{"error":"Model with name model does not exist."}  # ❌ Fails!
-```</p>
+<pre class="highlight"><code class="language-bash">$ oc exec -n self-healing-platform coordination-engine-xxx -- \
+    curl -s http://anomaly-detector-stable:8080/v1/models/model
+
+{"error":"Model with name model does not exist."}  # ❌ Fails!</code></pre>
 <h2 id="solution">Solution<a class="headerlink" href="#solution" title="Permanent link">&para;</a></h2>
 <h3 id="option-1-read-model-name-from-environment-recommended">Option 1: Read Model Name from Environment (Recommended)<a class="headerlink" href="#option-1-read-model-name-from-environment-recommended" title="Permanent link">&para;</a></h3>
 <p>Add a field to <code>ModelInfo</code> struct to store the KServe model name:</p>
-<p><code>go
-type ModelInfo struct {
+<pre class="highlight"><code class="language-go">type ModelInfo struct {
     Name        string `json:"name"`         // Logical name (e.g., "anomaly-detector")
     ServiceName string `json:"service_name"` // Service DNS (e.g., "anomaly-detector-stable")
     ModelName   string `json:"model_name"`   // KServe model name (e.g., "anomaly-detector")
     Namespace   string `json:"namespace"`
     URL         string `json:"url"`
-}</code></p>
+}</code></pre>
 <p>Update <code>loadModelsFromEnv()</code> to read <code>KSERVE_{MODEL}_MODEL</code>:</p>
-<p>```go
-func (c *ProxyClient) loadModelsFromEnv() {
-    // ... existing code ...</p>
-<pre><code>// After finding serviceName from KSERVE_ANOMALY_DETECTOR_SERVICE
-// Look for KSERVE_ANOMALY_DETECTOR_MODEL
-modelEnvKey := strings.TrimSuffix(envKey, "_SERVICE") + "_MODEL"
-kserveModelName := os.Getenv(modelEnvKey)
-if kserveModelName == "" {
-    // Fallback to logical model name if MODEL env var not set
-    kserveModelName = modelName
-}
+<pre class="highlight"><code class="language-go">func (c *ProxyClient) loadModelsFromEnv() {
+    // ... existing code ...
 
-c.models[modelName] = &amp;ModelInfo{
-    Name:        modelName,
-    ServiceName: serviceName,
-    ModelName:   kserveModelName,  // ← Use this in API calls
-    Namespace:   c.namespace,
-    URL:         url,
-}
-</code></pre>
-<p>}
-```</p>
+    // After finding serviceName from KSERVE_ANOMALY_DETECTOR_SERVICE
+    // Look for KSERVE_ANOMALY_DETECTOR_MODEL
+    modelEnvKey := strings.TrimSuffix(envKey, "_SERVICE") + "_MODEL"
+    kserveModelName := os.Getenv(modelEnvKey)
+    if kserveModelName == "" {
+        // Fallback to logical model name if MODEL env var not set
+        kserveModelName = modelName
+    }
+
+    c.models[modelName] = &amp;ModelInfo{
+        Name:        modelName,
+        ServiceName: serviceName,
+        ModelName:   kserveModelName,  // ← Use this in API calls
+        Namespace:   c.namespace,
+        URL:         url,
+    }
+}</code></pre>
 <p>Update API endpoint construction:</p>
-<p>```go
-// Lines 309, 412
-endpoint := fmt.Sprintf("%s/v1/models/%s:predict", model.URL, model.ModelName)</p>
-<p>// Line 692
-endpoint := fmt.Sprintf("%s/v1/models/%s", model.URL, model.ModelName)
-```</p>
+<pre class="highlight"><code class="language-go">// Lines 309, 412
+endpoint := fmt.Sprintf("%s/v1/models/%s:predict", model.URL, model.ModelName)
+
+// Line 692
+endpoint := fmt.Sprintf("%s/v1/models/%s", model.URL, model.ModelName)</code></pre>
 <h3 id="option-2-use-logical-model-name-as-fallback">Option 2: Use Logical Model Name as Fallback<a class="headerlink" href="#option-2-use-logical-model-name-as-fallback" title="Permanent link">&para;</a></h3>
 <p>If the model name should match the logical name, simply use <code>modelName</code> instead of hardcoded <code>"model"</code>:</p>
-<p><code>go
-endpoint := fmt.Sprintf("%s/v1/models/%s:predict", model.URL, modelName)</code></p>
+<pre class="highlight"><code class="language-go">endpoint := fmt.Sprintf("%s/v1/models/%s:predict", model.URL, modelName)</code></pre>
 <h2 id="configuration-reference">Configuration Reference<a class="headerlink" href="#configuration-reference" title="Permanent link">&para;</a></h2>
 <p>Current environment variables in deployment:
-<code>yaml
-- name: KSERVE_NAMESPACE
+<pre class="highlight"><code class="language-yaml">- name: KSERVE_NAMESPACE
   value: self-healing-platform
 - name: KSERVE_PREDICTOR_PORT
   value: "8080"
@@ -2044,46 +2027,41 @@ endpoint := fmt.Sprintf("%s/v1/models/%s:predict", model.URL, modelName)</code><
 - name: KSERVE_PREDICTIVE_ANALYTICS_MODEL  # ← Currently IGNORED by code
   value: predictive-analytics
 - name: KSERVE_TIMEOUT
-  value: "10s"</code></p>
+  value: "10s"</code></pre></p>
 <h2 id="error-logs">Error Logs<a class="headerlink" href="#error-logs" title="Permanent link">&para;</a></h2>
 <h3 id="coordination-engine-logs">Coordination Engine Logs:<a class="headerlink" href="#coordination-engine-logs" title="Permanent link">&para;</a></h3>
-<p><code>json
-{
+<pre class="highlight"><code class="language-json">{
   "level": "error",
   "model": "anomaly-detector",
   "msg": "KServe anomaly detection failed",
   "error": "model anomaly-detector not found (HTTP 404): KServe InferenceService may not be deployed or model files missing. Backend response: {\"error\":\"Model with name model does not exist.\"}",
   "time": "2026-01-28T02:20:35Z"
-}</code></p>
+}</code></pre>
 <h3 id="mcp-server-logs">MCP Server Logs:<a class="headerlink" href="#mcp-server-logs" title="Permanent link">&para;</a></h3>
-<p><code>json
-{
+<pre class="highlight"><code class="language-json">{
   "event": "tool_result",
   "tool_id": "call_RgUBFMtICLzyZNBdgZp9aPnY",
   "status": "error",
   "output_snippet": "Error executing tool 'analyze-anomalies': failed to get anomaly predictions: unexpected status code 503"
-}</code></p>
+}</code></pre>
 <h2 id="testing-after-fix">Testing After Fix<a class="headerlink" href="#testing-after-fix" title="Permanent link">&para;</a></h2>
 <ol>
 <li>
 <p>Verify model name is read from environment:
-   <code>bash
-   oc logs coordination-engine-xxx | grep "Registered KServe model"
-   # Should show: model_name=anomaly-detector</code></p>
+   <pre class="highlight"><code class="language-bash">oc logs coordination-engine-xxx | grep "Registered KServe model"
+# Should show: model_name=anomaly-detector</code></pre></p>
 </li>
 <li>
 <p>Test MCP server query:
-   <code>bash
-   # Should return anomaly analysis without errors
-   curl -X POST http://mcp-server:8080/mcp -d '{"tool":"analyze-anomalies"}'</code></p>
+   <pre class="highlight"><code class="language-bash"># Should return anomaly analysis without errors
+curl -X POST http://mcp-server:8080/mcp -d '{"tool":"analyze-anomalies"}'</code></pre></p>
 </li>
 <li>
 <p>Test coordination engine directly:
-   <code>bash
-   oc exec coordination-engine-xxx -- \
-     curl -X POST http://localhost:8080/api/v1/anomalies/analyze \
-     -d '{"model":"anomaly-detector","namespace":"default","time_range":"1h"}'
-   # Should return HTTP 200 with anomaly analysis</code></p>
+   <pre class="highlight"><code class="language-bash">oc exec coordination-engine-xxx -- \
+  curl -X POST http://localhost:8080/api/v1/anomalies/analyze \
+  -d '{"model":"anomaly-detector","namespace":"default","time_range":"1h"}'
+# Should return HTTP 200 with anomaly analysis</code></pre></p>
 </li>
 </ol>
 <h2 id="related-files">Related Files<a class="headerlink" href="#related-files" title="Permanent link">&para;</a></h2>
@@ -2114,41 +2092,37 @@ endpoint := fmt.Sprintf("%s/v1/models/%s:predict", model.URL, modelName)</code><
 <h3 id="fix-applied">Fix Applied<a class="headerlink" href="#fix-applied" title="Permanent link">&para;</a></h3>
 <p>The developers created a new image with the fix implemented. The coordination engine now correctly uses the model name from the <code>KSERVE_{MODEL}_MODEL</code> environment variable instead of the hardcoded <code>"model"</code> string.</p>
 <h3 id="new-image-details">New Image Details<a class="headerlink" href="#new-image-details" title="Permanent link">&para;</a></h3>
-<p><code>Image: quay.io/takinosh/openshift-coordination-engine:ocp-4.18-latest
+<pre class="highlight"><code>Image: quay.io/takinosh/openshift-coordination-engine:ocp-4.18-latest
 SHA: sha256:bbf0319d308be56539466ae05581582b67be1bbc02e664d4e9e9649c5f73c55e
-Pull Date: 2026-01-28T02:52:02Z</code></p>
+Pull Date: 2026-01-28T02:52:02Z</code></pre>
 <h3 id="verification-steps-performed">Verification Steps Performed<a class="headerlink" href="#verification-steps-performed" title="Permanent link">&para;</a></h3>
 <ol>
 <li>
 <p><strong>Pod Restart with New Image</strong>:
-   <code>bash
-   oc delete pod -l app.kubernetes.io/component=coordination-engine -n self-healing-platform
-   # imagePullPolicy: Always ensured latest image was pulled</code></p>
+   <pre class="highlight"><code class="language-bash">oc delete pod -l app.kubernetes.io/component=coordination-engine -n self-healing-platform
+# imagePullPolicy: Always ensured latest image was pulled</code></pre></p>
 </li>
 <li>
 <p><strong>Logs Verification</strong>:
-   <code>json
-   {"level":"info","model":"anomaly-detector","msg":"KServe model is healthy and ready"}</code>
+   <pre class="highlight"><code class="language-json">{"level":"info","model":"anomaly-detector","msg":"KServe model is healthy and ready"}</code></pre>
    ✅ No more "Model with name model does not exist" errors</p>
 </li>
 <li>
 <p><strong>API Endpoint Test</strong>:
-   <code>bash
-   curl -X POST http://localhost:8080/api/v1/anomalies/analyze \
-     -d '{"model":"anomaly-detector","namespace":"self-healing-platform","time_range":"1h"}'</code></p>
+   <pre class="highlight"><code class="language-bash">curl -X POST http://localhost:8080/api/v1/anomalies/analyze \
+  -d '{"model":"anomaly-detector","namespace":"self-healing-platform","time_range":"1h"}'</code></pre></p>
 </li>
 </ol>
 <p><strong>Result</strong>: ✅ HTTP 200 Success
-   <code>json
-   {
-     "status": "success",
-     "model_used": "anomaly-detector",
-     "anomalies_detected": 0,
-     "summary": {
-       "metrics_analyzed": 5,
-       "features_generated": 45
-     }
-   }</code></p>
+   <pre class="highlight"><code class="language-json">{
+  "status": "success",
+  "model_used": "anomaly-detector",
+  "anomalies_detected": 0,
+  "summary": {
+    "metrics_analyzed": 5,
+    "features_generated": 45
+  }
+}</code></pre></p>
 <ol>
 <li><strong>MCP Server Integration</strong>:</li>
 <li>✅ MCP server can now successfully query anomaly detection</li>
@@ -2194,21 +2168,19 @@ Pull Date: 2026-01-28T02:52:02Z</code></p>
 </table>
 <h3 id="logs-comparison">Logs Comparison<a class="headerlink" href="#logs-comparison" title="Permanent link">&para;</a></h3>
 <p><strong>Before Fix</strong>:
-<code>json
-{
+<pre class="highlight"><code class="language-json">{
   "level": "error",
   "model": "anomaly-detector",
   "error": "model anomaly-detector not found (HTTP 404): Backend response: {\"error\":\"Model with name model does not exist.\"}"
-}</code></p>
+}</code></pre></p>
 <p><strong>After Fix</strong>:
-<code>json
-{
+<pre class="highlight"><code class="language-json">{
   "level": "info",
   "model": "anomaly-detector",
   "msg": "Anomaly analysis completed successfully",
   "anomalies_detected": 0,
   "status": 200
-}</code></p>
+}</code></pre></p>
 <h3 id="issue-status">Issue Status<a class="headerlink" href="#issue-status" title="Permanent link">&para;</a></h3>
 <p><strong>CLOSED</strong> - Fix verified and working in production</p>
 <h3 id="credits">Credits<a class="headerlink" href="#credits" title="Permanent link">&para;</a></h3>

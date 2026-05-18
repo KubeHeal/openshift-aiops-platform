@@ -1798,13 +1798,12 @@
 <strong>Compliance Score</strong>: 10.0/10
 <strong>Confidence</strong>: 100%</p>
 <h3 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">&para;</a></h3>
-<p><code>Client Version: 4.18.21
+<pre class="highlight"><code>Client Version: 4.18.21
 Server Version: 4.18.21
-Kubernetes Version: v1.31.10</code></p>
+Kubernetes Version: v1.31.10</code></pre>
 <p><strong>Verification Commands</strong>:
-<code>bash
-oc version
-oc get clusterversion</code></p>
+<pre class="highlight"><code class="language-bash">oc version
+oc get clusterversion</code></pre></p>
 <p><strong>Findings</strong>:
 - OpenShift 4.18.21 deployed (exceeds 4.18+ requirement)
 - Kubernetes 1.31.10 running
@@ -1816,16 +1815,15 @@ oc get clusterversion</code></p>
 <strong>Compliance Score</strong>: 10.0/10
 <strong>Confidence</strong>: 100%</p>
 <h3 id="evidence_1">Evidence<a class="headerlink" href="#evidence_1" title="Permanent link">&para;</a></h3>
-<p><code>Operator: rhods-operator.2.25.1
+<pre class="highlight"><code>Operator: rhods-operator.2.25.1
 Name: Red Hat OpenShift AI
 Version: 2.25.1
 Status: Succeeded
-Namespace: redhat-ods-operator</code></p>
+Namespace: redhat-ods-operator</code></pre>
 <p><strong>Verification Commands</strong>:
-<code>bash
-oc get csv -n redhat-ods-operator | grep rhods
+<pre class="highlight"><code class="language-bash">oc get csv -n redhat-ods-operator | grep rhods
 oc get pods -n redhat-ods-applications
-oc get datascienceclusters</code></p>
+oc get datascienceclusters</code></pre></p>
 <p><strong>Findings</strong>:
 - RHODS 2.25.1 operator installed and running
 - All components healthy (notebooks, model serving, dashboards)
@@ -1838,19 +1836,17 @@ oc get datascienceclusters</code></p>
 <strong>Compliance Score</strong>: 9.5/10
 <strong>Confidence</strong>: 100%</p>
 <h3 id="evidence_2">Evidence<a class="headerlink" href="#evidence_2" title="Permanent link">&para;</a></h3>
-<p>```
-InferenceServices Deployed:
+<pre class="highlight"><code>InferenceServices Deployed:
 1. anomaly-detector (self-healing-platform) - READY: True
-2. predictive-analytics (self-healing-platform) - READY: False (pending)</p>
-<p>URLs:
+2. predictive-analytics (self-healing-platform) - READY: False (pending)
+
+URLs:
 - http://anomaly-detector-predictor.self-healing-platform.svc.cluster.local
-- http://predictive-analytics-predictor.self-healing-platform.svc.cluster.local
-```</p>
+- http://predictive-analytics-predictor.self-healing-platform.svc.cluster.local</code></pre>
 <p><strong>Verification Commands</strong>:
-<code>bash
-oc get InferenceService -A
+<pre class="highlight"><code class="language-bash">oc get InferenceService -A
 oc get pods -n self-healing-platform | grep predictor
-oc get ksvc -n self-healing-platform</code></p>
+oc get ksvc -n self-healing-platform</code></pre></p>
 <p><strong>Findings</strong>:
 - KServe operational with 2 InferenceServices deployed
 - Knative Serving integration working
@@ -1865,15 +1861,14 @@ oc get ksvc -n self-healing-platform</code></p>
 <strong>Compliance Score</strong>: 10.0/10
 <strong>Confidence</strong>: 100%</p>
 <h3 id="evidence_3">Evidence<a class="headerlink" href="#evidence_3" title="Permanent link">&para;</a></h3>
-<p><code>Operator: gpu-operator-certified.v24.9.2
+<pre class="highlight"><code>Operator: gpu-operator-certified.v24.9.2
 Name: NVIDIA GPU Operator
 Version: 24.9.2
 Status: Succeeded
-Namespace: nvidia-gpu-operator</code></p>
+Namespace: nvidia-gpu-operator</code></pre>
 <p><strong>Verification Commands</strong>:
-<code>bash
-oc get csv -n nvidia-gpu-operator | grep gpu-operator
-oc get nodes -o custom-columns=NAME:.metadata.name,GPU:.status.capacity."nvidia\.com/gpu"</code></p>
+<pre class="highlight"><code class="language-bash">oc get csv -n nvidia-gpu-operator | grep gpu-operator
+oc get nodes -o custom-columns=NAME:.metadata.name,GPU:.status.capacity."nvidia\.com/gpu"</code></pre></p>
 <p><strong>Findings</strong>:
 - NVIDIA GPU Operator 24.9.2 installed (latest stable release)
 - Operator status: Succeeded
@@ -1887,7 +1882,7 @@ oc get nodes -o custom-columns=NAME:.metadata.name,GPU:.status.capacity."nvidia\
 <strong>Compliance Score</strong>: 10.0/10
 <strong>Confidence</strong>: 100%</p>
 <h3 id="evidence_4">Evidence<a class="headerlink" href="#evidence_4" title="Permanent link">&para;</a></h3>
-<p><code>Prometheus Deployment:
+<pre class="highlight"><code>Prometheus Deployment:
 Name: k8s
 Version: 2.55.1
 Desired Replicas: 2
@@ -1895,12 +1890,11 @@ Ready Replicas: 2
 Reconciled: True
 Available: True
 Age: 2d3h
-Namespace: openshift-monitoring</code></p>
+Namespace: openshift-monitoring</code></pre>
 <p><strong>Verification Commands</strong>:
-<code>bash
-oc get prometheus -n openshift-monitoring
+<pre class="highlight"><code class="language-bash">oc get prometheus -n openshift-monitoring
 oc get servicemonitor -A | wc -l
-oc get pods -n openshift-monitoring | grep prometheus</code></p>
+oc get pods -n openshift-monitoring | grep prometheus</code></pre></p>
 <p><strong>Findings</strong>:
 - Prometheus 2.55.1 deployed (2 replicas)
 - Cluster monitoring stack operational
@@ -1915,22 +1909,20 @@ oc get pods -n openshift-monitoring | grep prometheus</code></p>
 <strong>Compliance Score</strong>: 10.0/10
 <strong>Confidence</strong>: 100%</p>
 <h3 id="evidence_5">Evidence<a class="headerlink" href="#evidence_5" title="Permanent link">&para;</a></h3>
-<p>```
-OpenShift Data Foundation Components:
+<pre class="highlight"><code>OpenShift Data Foundation Components:
 - odf-operator.v4.18.14-rhodf (Succeeded)
 - ocs-operator.v4.18.14-rhodf (Succeeded)
 - cephcsi-operator.v4.18.14-rhodf (Succeeded)
 - rook-ceph-operator.v4.18.14-rhodf (Succeeded)
 - mcg-operator.v4.18.14-rhodf (NooBaa - Succeeded)
-- ocs-client-operator.v4.18.14-rhodf (Succeeded)</p>
-<p>Namespace: openshift-storage
-Version: 4.18.14-rhodf
-```</p>
+- ocs-client-operator.v4.18.14-rhodf (Succeeded)
+
+Namespace: openshift-storage
+Version: 4.18.14-rhodf</code></pre>
 <p><strong>Verification Commands</strong>:
-<code>bash
-oc get csv -n openshift-storage | grep odf
+<pre class="highlight"><code class="language-bash">oc get csv -n openshift-storage | grep odf
 oc get storagecluster -n openshift-storage
-oc get sc | grep ocs</code></p>
+oc get sc | grep ocs</code></pre></p>
 <p><strong>Findings</strong>:
 - OpenShift Data Foundation 4.18.14 fully deployed
 - Ceph storage cluster operational
@@ -2032,16 +2024,14 @@ oc get sc | grep ocs</code></p>
 </ol>
 <h3 id="documentation-updates-required">Documentation Updates Required<a class="headerlink" href="#documentation-updates-required" title="Permanent link">&para;</a></h3>
 <p><strong>IMPLEMENTATION-TRACKER.md</strong>:
-<code>markdown
-| 001 | OpenShift Platform Selection | ✅ Implemented | 2025-09-26 | 2026-01-25 | 10.0/10 | OpenShift 4.18.21 deployed |
+<pre class="highlight"><code class="language-markdown">| 001 | OpenShift Platform Selection | ✅ Implemented | 2025-09-26 | 2026-01-25 | 10.0/10 | OpenShift 4.18.21 deployed |
 | 003 | OpenShift AI/ML Platform | ✅ Implemented | 2025-09-26 | 2026-01-25 | 10.0/10 | RHODS 2.25.1 operational |
 | 004 | KServe Model Serving | ✅ Implemented | 2025-09-26 | 2026-01-25 | 9.5/10 | 2 InferenceServices deployed |
 | 006 | NVIDIA GPU Management | ✅ Implemented | 2025-09-26 | 2026-01-25 | 10.0/10 | GPU Operator 24.9.2 deployed |
 | 007 | Prometheus Monitoring | ✅ Implemented | 2025-09-26 | 2026-01-25 | 10.0/10 | Prometheus 2.55.1 operational |
-| 010 | OpenShift Data Foundation | ✅ Implemented | 2025-09-26 | 2026-01-25 | 10.0/10 | ODF 4.18.14 deployed |</code></p>
+| 010 | OpenShift Data Foundation | ✅ Implemented | 2025-09-26 | 2026-01-25 | 10.0/10 | ODF 4.18.14 deployed |</code></pre></p>
 <p><strong>README.md Status Dashboard</strong>:
-<code>markdown
-| ✅ Fully Implemented | 16 | 37.2% |</code></p>
+<pre class="highlight"><code class="language-markdown">| ✅ Fully Implemented | 16 | 37.2% |</code></pre></p>
 <hr />
 <h2 id="integration-verification">Integration Verification<a class="headerlink" href="#integration-verification" title="Permanent link">&para;</a></h2>
 <h3 id="cross-adr-dependencies-verified">Cross-ADR Dependencies Verified<a class="headerlink" href="#cross-adr-dependencies-verified" title="Permanent link">&para;</a></h3>

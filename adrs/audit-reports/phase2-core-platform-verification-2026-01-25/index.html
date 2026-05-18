@@ -2256,10 +2256,9 @@
 <p><strong>3. Integration Evidence</strong> ✅ VERIFIED
 - <strong>File</strong>: <code>charts/hub/templates/ai-ml-workbench.yaml</code> - AI/ML workbench deployment
 - <strong>File</strong>: <code>charts/hub/templates/rbac.yaml:61,178</code> - Kubeflow Notebooks RBAC
-  <code>yaml
-  - apiGroups: ["kubeflow.org"]
-    resources: ["notebooks"]
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]</code>
+  <pre class="highlight"><code class="language-yaml">- apiGroups: ["kubeflow.org"]
+  resources: ["notebooks"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]</code></pre>
 - <strong>File</strong>: <code>charts/hub/templates/model-serving.yaml</code> - KServe InferenceServices</p>
 <p><strong>4. Required Python Libraries</strong> 📋 DOCUMENTED
 - ADR-003:133-141 lists required ML libraries (pandas, numpy, scikit-learn, tensorflow, pytorch, etc.)
@@ -2376,12 +2375,12 @@
   - "NVIDIA GPU Operator: 24.9.2"</p>
 <p><strong>2. Deployment Components</strong> ✅ DOCUMENTED
 - <strong>File</strong>: ADR-006:110-117 lists deployed pods:
-  <code>- gpu-operator-554b748fdc-rv9gm (GPU Operator controller)
-  - nvidia-driver-daemonset-418.94.202507221927-0-g5q9p (Driver DaemonSet)
-  - nvidia-device-plugin-daemonset-qvkb2 (Device Plugin)
-  - nvidia-dcgm-exporter-n2gzs (Metrics Exporter)
-  - gpu-feature-discovery-5cjff (Feature Discovery)
-  - nvidia-container-toolkit-daemonset-rz2xk (Container Toolkit)</code></p>
+  <pre class="highlight"><code>- gpu-operator-554b748fdc-rv9gm (GPU Operator controller)
+- nvidia-driver-daemonset-418.94.202507221927-0-g5q9p (Driver DaemonSet)
+- nvidia-device-plugin-daemonset-qvkb2 (Device Plugin)
+- nvidia-dcgm-exporter-n2gzs (Metrics Exporter)
+- gpu-feature-discovery-5cjff (Feature Discovery)
+- nvidia-container-toolkit-daemonset-rz2xk (Container Toolkit)</code></pre></p>
 <p><strong>3. GPU Resource Configuration</strong> ✅ VERIFIED
 - <strong>GPU Node</strong>: 1 worker node (ip-10-0-3-186) with GPU capability
 - <strong>Resource Allocation</strong>: ADR-006:119-135 provides GPU workload examples
@@ -2449,25 +2448,23 @@
 <p><strong>2. Integration with Platform</strong> ✅ VERIFIED
 - <strong>File</strong>: <code>charts/hub/templates/mcp-server-deployment.yaml:48-52</code>
   - Prometheus health check with bearer token authentication
-  <code>yaml
-  command:
-  - /usr/local/bin/healthcheck
-  - --bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
-  - --insecure-skip-verify
-  - --timeout=10s
-  - --interval=15s
-  - https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready</code></p>
+  <pre class="highlight"><code class="language-yaml">command:
+- /usr/local/bin/healthcheck
+- --bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+- --insecure-skip-verify
+- --timeout=10s
+- --interval=15s
+- https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready</code></pre></p>
 <p><strong>3. ServiceMonitor Configuration</strong> ✅ DOCUMENTED
 - <strong>File</strong>: ADR-007:112-126 defines ServiceMonitor for platform components
-  <code>yaml
-  apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    name: self-healing-platform
-  spec:
-    selector:
-      matchLabels:
-        app.kubernetes.io/part-of: self-healing-platform</code></p>
+  <pre class="highlight"><code class="language-yaml">apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: self-healing-platform
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: self-healing-platform</code></pre></p>
 <p><strong>4. Metrics Collection</strong> ✅ DOCUMENTED
 - <strong>Node Metrics</strong>: CPU, memory, network (ADR-007:131-140)
 - <strong>Container Metrics</strong>: CPU usage, memory, restarts (ADR-007:142-152)
@@ -2544,21 +2541,19 @@
 <p><strong>3. PVC Implementation</strong> ✅ VERIFIED
 - <strong>File</strong>: <code>charts/hub/templates/storage.yaml</code> - PVC templates found
 - <strong>File</strong>: <code>charts/hub/templates/init-models-job.yaml:36-38</code>
-  <code>yaml
-  volumes:
-  - name: model-storage
-    persistentVolumeClaim:
-      claimName: model-storage-pvc</code></p>
+  <pre class="highlight"><code class="language-yaml">volumes:
+- name: model-storage
+  persistentVolumeClaim:
+    claimName: model-storage-pvc</code></pre></p>
 <p><strong>4. Model Serving Integration</strong> ✅ VERIFIED
 - <strong>File</strong>: <code>charts/hub/templates/model-serving.yaml:24-27,36-38</code>
-  <code>yaml
-  volumeMounts:
-  - name: model-storage
-    mountPath: /mnt/models
-  volumes:
-  - name: model-storage
-    persistentVolumeClaim:
-      claimName: model-storage-pvc</code></p>
+  <pre class="highlight"><code class="language-yaml">volumeMounts:
+- name: model-storage
+  mountPath: /mnt/models
+volumes:
+- name: model-storage
+  persistentVolumeClaim:
+    claimName: model-storage-pvc</code></pre></p>
 <p><strong>5. ODF Components</strong> ✅ DOCUMENTED
 - <strong>Ceph RBD</strong>: High-performance block storage (RWO)
 - <strong>CephFS</strong>: Shared filesystem storage (RWX)
@@ -2940,13 +2935,12 @@ According to ADR-019:51-59:
 </li>
 <li>
 <p>🧪 <strong>Cluster Validation</strong>: Run validation with cluster access
-   <code>bash
-   # Verify actual deployment
-   oc version
-   oc get csv -n redhat-ods-applications | grep rhods
-   oc get csv -n nvidia-gpu-operator | grep gpu-operator
-   oc get storagecluster -n openshift-storage
-   oc get prometheus -n openshift-monitoring</code></p>
+   <pre class="highlight"><code class="language-bash"># Verify actual deployment
+oc version
+oc get csv -n redhat-ods-applications | grep rhods
+oc get csv -n nvidia-gpu-operator | grep gpu-operator
+oc get storagecluster -n openshift-storage
+oc get prometheus -n openshift-monitoring</code></pre></p>
 </li>
 </ol>
 <h3 id="phase-3-preparation">Phase 3 Preparation<a class="headerlink" href="#phase-3-preparation" title="Permanent link">&para;</a></h3>
@@ -3047,16 +3041,17 @@ According to ADR-019:51-59:
 - <code>docs/adrs/README.md</code> (platform state documentation)
 - 79 files referencing "OpenShift 4.18" or "ocp 4.18"</p>
 <h3 id="appendix-c-search-commands-used">Appendix C: Search Commands Used<a class="headerlink" href="#appendix-c-search-commands-used" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="openshift-version-references">OpenShift version references<a class="headerlink" href="#openshift-version-references" title="Permanent link">&para;</a></h1>
-<p>grep -ri "OpenShift.<em>4.18|ocp.</em>4.18" /home/lab-user/openshift-aiops-platform</p>
-<h1 id="validated-patterns-structure">Validated Patterns structure<a class="headerlink" href="#validated-patterns-structure" title="Permanent link">&para;</a></h1>
-<p>ls -la /home/lab-user/openshift-aiops-platform/ | grep -E "Makefile|charts|ansible|values"</p>
-<h1 id="makefile-targets">Makefile targets<a class="headerlink" href="#makefile-targets" title="Permanent link">&para;</a></h1>
-<p>grep -E "install.<em>:|deploy.</em>:|argo.*:" /home/lab-user/openshift-aiops-platform/Makefile</p>
-<h1 id="storage-integration">Storage integration<a class="headerlink" href="#storage-integration" title="Permanent link">&para;</a></h1>
-<p>grep -r "model-storage-pvc" charts/hub/templates/
-```</p>
+<pre class="highlight"><code class="language-bash"># OpenShift version references
+grep -ri "OpenShift.*4\.18\|ocp.*4\.18" /home/lab-user/openshift-aiops-platform
+
+# Validated Patterns structure
+ls -la /home/lab-user/openshift-aiops-platform/ | grep -E "Makefile|charts|ansible|values"
+
+# Makefile targets
+grep -E "install.*:|deploy.*:|argo.*:" /home/lab-user/openshift-aiops-platform/Makefile
+
+# Storage integration
+grep -r "model-storage-pvc" charts/hub/templates/</code></pre>
 <hr />
 <p><strong>Report Prepared By</strong>: Platform Architecture Team
 <strong>Review Date</strong>: 2026-01-25

@@ -1663,6 +1663,24 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#solution-3-deploy-resources-outside-argocd" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solution 3: Deploy Resources Outside ArgoCD
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solution-4-use-argocd-applicationset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solution 4: Use ArgoCD ApplicationSet
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1670,6 +1688,66 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-error-progression" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Error Progression
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommendations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommendations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#immediate-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Immediate Actions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#long-term-solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Long-Term Solutions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
   
 </li>
       
@@ -1701,14 +1779,13 @@
 <strong>Issue</strong>: Ignore differences configured for all resources in <code>self-healing-platform</code> namespace, but ArgoCD still validates namespace management before applying ignore differences.</p>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link">&para;</a></h2>
 <p>ArgoCD Application <code>self-healing-platform</code> is configured with comprehensive <code>ignoreDifferences</code> rules to ignore all resources in the <code>self-healing-platform</code> namespace:</p>
-<p><code>yaml
-ignoreDifferences:
+<pre class="highlight"><code class="language-yaml">ignoreDifferences:
   - group: "*"
     kind: "*"
     jqPathExpressions:
-      - '.metadata.namespace == "self-healing-platform"'</code></p>
+      - '.metadata.namespace == "self-healing-platform"'</code></pre>
 <p>However, ArgoCD continues to report <code>ComparisonError</code>:
-<code>Failed to load live state: Namespace "self-healing-platform" for [Resource] "[name]" is not managed</code></p>
+<pre class="highlight"><code>Failed to load live state: Namespace "self-healing-platform" for [Resource] "[name]" is not managed</code></pre></p>
 <h2 id="root-cause-analysis">Root Cause Analysis<a class="headerlink" href="#root-cause-analysis" title="Permanent link">&para;</a></h2>
 <h3 id="argocd-validation-phases">ArgoCD Validation Phases<a class="headerlink" href="#argocd-validation-phases" title="Permanent link">&para;</a></h3>
 <p>ArgoCD performs validation in the following order:</p>
@@ -1734,14 +1811,14 @@ ignoreDifferences:
 - ❌ The validation happens at a different phase than where ignore differences are applied</p>
 <h2 id="current-configuration">Current Configuration<a class="headerlink" href="#current-configuration" title="Permanent link">&para;</a></h2>
 <h3 id="ignore-differences-configured">Ignore Differences Configured<a class="headerlink" href="#ignore-differences-configured" title="Permanent link">&para;</a></h3>
-<p>```yaml
-ignoreDifferences:
+<pre class="highlight"><code class="language-yaml">ignoreDifferences:
   # Ignore all resources in self-healing-platform namespace
-  - group: "<em>"
-    kind: "</em>"
+  - group: "*"
+    kind: "*"
     jqPathExpressions:
-      - '.metadata.namespace == "self-healing-platform"'</p>
-<p># Explicit ignores for specific resource types
+      - '.metadata.namespace == "self-healing-platform"'
+
+  # Explicit ignores for specific resource types
   - group: ""
     kind: PersistentVolumeClaim
     jqPathExpressions:
@@ -1757,14 +1834,12 @@ ignoreDifferences:
   - group: ""
     kind: ServiceAccount
     jqPathExpressions:
-      - '.metadata.name | test("external-secrets-sa|self-healing-operator|self-healing-workbench")'
-```</p>
+      - '.metadata.name | test("external-secrets-sa|self-healing-operator|self-healing-workbench")'</code></pre>
 <h3 id="namespace-labels">Namespace Labels<a class="headerlink" href="#namespace-labels" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-labels:
+<pre class="highlight"><code class="language-yaml">labels:
   argocd.argoproj.io/instance: hub-gitops
   argocd.argoproj.io/managed-by: hub-gitops
-  kubernetes.io/metadata.name: self-healing-platform</code></p>
+  kubernetes.io/metadata.name: self-healing-platform</code></pre>
 <h2 id="research-findings">Research Findings<a class="headerlink" href="#research-findings" title="Permanent link">&para;</a></h2>
 <h3 id="1-argocd-namespaced-mode-limitations">1. ArgoCD Namespaced Mode Limitations<a class="headerlink" href="#1-argocd-namespaced-mode-limitations" title="Permanent link">&para;</a></h3>
 <p><strong>Source</strong>: ArgoCD Documentation and GitHub Issues</p>
@@ -1776,41 +1851,35 @@ labels:
 </ul>
 <h3 id="2-namespace-management-validation-order">2. Namespace Management Validation Order<a class="headerlink" href="#2-namespace-management-validation-order" title="Permanent link">&para;</a></h3>
 <p><strong>Validation Flow</strong>:
-```
-1. Load Live State
+<pre class="highlight"><code>1. Load Live State
    └─&gt; Validate namespace management ← FAILS HERE
        └─&gt; Check if namespace has argocd.argoproj.io/managed-by label
-       └─&gt; Check if namespace is in ArgoCD's managed namespaces list</p>
-<ol>
-<li>Comparison Phase
+       └─&gt; Check if namespace is in ArgoCD's managed namespaces list
+
+2. Comparison Phase
    └─&gt; Apply ignore differences ← TOO LATE
-       └─&gt; Compare desired vs live state
-```</li>
-</ol>
+       └─&gt; Compare desired vs live state</code></pre></p>
 <h3 id="3-potential-solutions">3. Potential Solutions<a class="headerlink" href="#3-potential-solutions" title="Permanent link">&para;</a></h3>
 <h4 id="solution-1-configure-argocd-instance-recommended">Solution 1: Configure ArgoCD Instance (Recommended)<a class="headerlink" href="#solution-1-configure-argocd-instance-recommended" title="Permanent link">&para;</a></h4>
 <p>Configure the ArgoCD instance to allow managing namespaces with the <code>managed-by</code> label:</p>
-<p><code>yaml
-apiVersion: argoproj.io/v1beta1
+<pre class="highlight"><code class="language-yaml">apiVersion: argoproj.io/v1beta1
 kind: ArgoCD
 metadata:
   name: hub-gitops
 spec:
   controller:
     applicationNamespaces:
-      - self-healing-platform</code></p>
+      - self-healing-platform</code></pre>
 <p><strong>Status</strong>: Requires ArgoCD operator support for <code>applicationNamespaces</code> configuration.</p>
 <h4 id="solution-2-use-resource-exclusions">Solution 2: Use Resource Exclusions<a class="headerlink" href="#solution-2-use-resource-exclusions" title="Permanent link">&para;</a></h4>
 <p>Exclude problematic resources from ArgoCD management entirely:</p>
-<p>```yaml</p>
-<h1 id="in-argocd-cm-configmap">In argocd-cm ConfigMap<a class="headerlink" href="#in-argocd-cm-configmap" title="Permanent link">&para;</a></h1>
-<p>resource.exclusions: |
+<pre class="highlight"><code class="language-yaml"># In argocd-cm ConfigMap
+resource.exclusions: |
   - apiGroups:
       - serving.kserve.io
     kinds:
       - InferenceService
-      - ServingRuntime
-```</p>
+      - ServingRuntime</code></pre>
 <p><strong>Limitation</strong>: Resources won't be managed by ArgoCD at all.</p>
 <h4 id="solution-3-deploy-resources-outside-argocd">Solution 3: Deploy Resources Outside ArgoCD<a class="headerlink" href="#solution-3-deploy-resources-outside-argocd" title="Permanent link">&para;</a></h4>
 <p>Deploy resources manually or via a different mechanism:

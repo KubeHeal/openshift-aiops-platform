@@ -1927,70 +1927,61 @@
 <ol>
 <li>
 <p><strong>Monitoring Integration</strong>
-   ```yaml
-   apiVersion: monitoring.coreos.com/v1
-   kind: ServiceMonitor
-   metadata:
-     name: machine-config-operator
-     namespace: self-healing-platform
-   spec:
-     selector:
-       matchLabels:
-         app: machine-config-operator
-     endpoints:</p>
-<ul>
-<li>port: metrics
-   ```</li>
-</ul>
+   <pre class="highlight"><code class="language-yaml">apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: machine-config-operator
+  namespace: self-healing-platform
+spec:
+  selector:
+    matchLabels:
+      app: machine-config-operator
+  endpoints:
+  - port: metrics</code></pre></p>
 </li>
 <li>
 <p><strong>Alert Rules</strong>
-   ```yaml
-   apiVersion: monitoring.coreos.com/v1
-   kind: PrometheusRule
-   metadata:
-     name: mco-self-healing-alerts
-   spec:
-     groups:</p>
-<ul>
-<li>name: mco.rules
-   rules:</li>
-<li>alert: NodeConfigurationDrift
-     expr: mco_node_config_drift_detected &gt; 0
-     for: 5m
-     labels:
-       severity: warning
-     annotations:
-       summary: "Node configuration drift detected"
-   ```</li>
-</ul>
+   <pre class="highlight"><code class="language-yaml">apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: mco-self-healing-alerts
+spec:
+  groups:
+  - name: mco.rules
+    rules:
+    - alert: NodeConfigurationDrift
+      expr: mco_node_config_drift_detected &gt; 0
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Node configuration drift detected"</code></pre></p>
 </li>
 </ol>
 <h3 id="phase-2-custom-machineconfigs">Phase 2: Custom MachineConfigs<a class="headerlink" href="#phase-2-custom-machineconfigs" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Self-Healing Node Configuration</strong>
-   <code>yaml
-   apiVersion: machineconfiguration.openshift.io/v1
-   kind: MachineConfig
-   metadata:
-     name: 99-self-healing-config
-     labels:
-       machineconfiguration.openshift.io/role: worker
-   spec:
-     config:
-       ignition:
-         version: 3.2.0
-       systemd:
-         units:
-         - name: self-healing-agent.service
-           enabled: true
-           contents: |
-             [Unit]
-             Description=Self-Healing Platform Agent
-             [Service]
-             ExecStart=/usr/local/bin/self-healing-agent
-             [Install]
-             WantedBy=multi-user.target</code></li>
+   <pre class="highlight"><code class="language-yaml">apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  name: 99-self-healing-config
+  labels:
+    machineconfiguration.openshift.io/role: worker
+spec:
+  config:
+    ignition:
+      version: 3.2.0
+    systemd:
+      units:
+      - name: self-healing-agent.service
+        enabled: true
+        contents: |
+          [Unit]
+          Description=Self-Healing Platform Agent
+          [Service]
+          ExecStart=/usr/local/bin/self-healing-agent
+          [Install]
+          WantedBy=multi-user.target</code></pre></li>
 </ol>
 <h3 id="phase-3-integration-with-ai-layer">Phase 3: Integration with AI Layer<a class="headerlink" href="#phase-3-integration-with-ai-layer" title="Permanent link">&para;</a></h3>
 <ol>

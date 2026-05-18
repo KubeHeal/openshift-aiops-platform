@@ -1746,8 +1746,104 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risks-and-mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Risks and Mitigations
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-subtree-management-critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Subtree Management (CRITICAL)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Timeline
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approval" class="md-nav__link">
+    <span class="md-ellipsis">
+      Approval
+    </span>
+  </a>
   
 </li>
       
@@ -1851,11 +1947,11 @@
 </ul>
 <h3 id="configuration-files">Configuration Files<a class="headerlink" href="#configuration-files" title="Permanent link">&para;</a></h3>
 <h4 id="values-globalyaml-existing">values-global.yaml (Existing)<a class="headerlink" href="#values-globalyaml-existing" title="Permanent link">&para;</a></h4>
-<p>```yaml
-global:
+<pre class="highlight"><code class="language-yaml">global:
   pattern: self-healing-platform
-  version: "1.0.0"</p>
-<p>main:
+  version: "1.0.0"
+
+main:
   multiSourceConfig:
     enabled: true
   clusterGroupName: hub
@@ -1863,8 +1959,7 @@ global:
   components:
     openshift-ai: true
     gpu-operator: true
-    serverless: true
-```</p>
+    serverless: true</code></pre>
 <h4 id="values-hubyaml-new">values-hub.yaml (New)<a class="headerlink" href="#values-hubyaml-new" title="Permanent link">&para;</a></h4>
 <p>Hub cluster-specific configuration including:
 - Operator subscriptions (GitOps, AI, GPU, Serverless, Pipelines, ODF)
@@ -1882,25 +1977,21 @@ global:
 - SSL/TLS certificates</p>
 <h3 id="deployment-workflow">Deployment Workflow<a class="headerlink" href="#deployment-workflow" title="Permanent link">&para;</a></h3>
 <p><strong>Before (Custom Bootstrap)</strong>:
-<code>bash
-./bootstrap.sh
-./validate_bootstrap.sh</code></p>
+<pre class="highlight"><code class="language-bash">./bootstrap.sh
+./validate_bootstrap.sh</code></pre></p>
 <p><strong>After (Validated Patterns)</strong>:
-<code>bash
-make install
-make argo-healthcheck</code></p>
+<pre class="highlight"><code class="language-bash">make install
+make argo-healthcheck</code></pre></p>
 <h3 id="deployment-workflows-for-different-audiences">Deployment Workflows for Different Audiences<a class="headerlink" href="#deployment-workflows-for-different-audiences" title="Permanent link">&para;</a></h3>
 <h4 id="development-workflow-granular-control">Development Workflow (Granular Control)<a class="headerlink" href="#development-workflow-granular-control" title="Permanent link">&para;</a></h4>
 <p><strong>Audience</strong>: Pattern developers, maintainers, advanced users</p>
 <p>Uses roles 1-2, 4-7 for step-by-step deployment with full control:</p>
-<p><code>bash
-ansible-playbook ansible/playbooks/deploy_complete_pattern.yml</code></p>
+<pre class="highlight"><code class="language-bash">ansible-playbook ansible/playbooks/deploy_complete_pattern.yml</code></pre>
 <p><strong>Best for</strong>: Pattern development, debugging, learning, customization</p>
 <h4 id="end-user-workflow-simplified-recommended-for-end-users">End-User Workflow (Simplified) - <strong>RECOMMENDED FOR END USERS</strong><a class="headerlink" href="#end-user-workflow-simplified-recommended-for-end-users" title="Permanent link">&para;</a></h4>
 <p><strong>Audience</strong>: End users, production deployments, operations teams</p>
 <p>Uses role 3 (VP Operator) for simplified, one-command deployment:</p>
-<p><code>bash
-make -f common/Makefile operator-deploy</code></p>
+<pre class="highlight"><code class="language-bash">make -f common/Makefile operator-deploy</code></pre>
 <p><strong>Key Benefits for End Users</strong>:
 - ✅ Single command deployment
 - ✅ Automatic prerequisite validation
@@ -1917,39 +2008,28 @@ make -f common/Makefile operator-deploy</code></p>
 6. Run post-deployment validation: Tekton pipeline (see ADR-021)</p>
 <h3 id="e2e-testing-best-practices">E2E Testing Best Practices<a class="headerlink" href="#e2e-testing-best-practices" title="Permanent link">&para;</a></h3>
 <p>All E2E tests MUST follow the role-based approach:</p>
-<p>```yaml</p>
-<h1 id="e2e-test-template">E2E Test Template<a class="headerlink" href="#e2e-test-template" title="Permanent link">&para;</a></h1>
-<ul>
-<li>
-<p>name: E2E Test with Role-Based Approach
+<pre class="highlight"><code class="language-yaml"># E2E Test Template
+- name: E2E Test with Role-Based Approach
   hosts: localhost
   tasks:
-    # 1. Pre-test cleanup using role (MANDATORY)</p>
-<ul>
-<li>include_role:
-    name: validated_patterns_cleanup
-  # Default behavior retains shared infrastructure:
-  # cleanup_gitops: false   # Keep ArgoCD (from common/ subtree)
-  # cleanup_gitea: false    # Keep Gitea (for development)
-  # cleanup_operator: false # Keep operator (reusable)</li>
-</ul>
-<h1 id="2-deploy-using-role">2. Deploy using role<a class="headerlink" href="#2-deploy-using-role" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_role:
-    name: validated_patterns_operator</li>
-</ul>
-<h1 id="3-validate-using-specific-task-files-not-entire-roles">3. Validate using specific task files (not entire roles)<a class="headerlink" href="#3-validate-using-specific-task-files-not-entire-roles" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_tasks: ../../ansible/roles/validated_patterns_validate/tasks/validate_health.yml</li>
-</ul>
-<h1 id="4-post-test-cleanup-using-role">4. Post-test cleanup using role<a class="headerlink" href="#4-post-test-cleanup-using-role" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_role:
-    name: validated_patterns_cleanup
-```</li>
-</ul>
-</li>
-</ul>
+    # 1. Pre-test cleanup using role (MANDATORY)
+    - include_role:
+        name: validated_patterns_cleanup
+      # Default behavior retains shared infrastructure:
+      # cleanup_gitops: false   # Keep ArgoCD (from common/ subtree)
+      # cleanup_gitea: false    # Keep Gitea (for development)
+      # cleanup_operator: false # Keep operator (reusable)
+
+    # 2. Deploy using role
+    - include_role:
+        name: validated_patterns_operator
+
+    # 3. Validate using specific task files (not entire roles)
+    - include_tasks: ../../ansible/roles/validated_patterns_validate/tasks/validate_health.yml
+
+    # 4. Post-test cleanup using role
+    - include_role:
+        name: validated_patterns_cleanup</code></pre>
 <p><strong>Critical Rules</strong>:
 - ✅ Always clean up BEFORE testing to ensure fresh state
 - ✅ Reuse specific task files, not entire roles, during validation
@@ -2010,13 +2090,12 @@ make -f common/Makefile operator-deploy</code></p>
 <p>The <code>common/</code> directory is a <strong>git subtree</strong> imported from <a href="https://github.com/validatedpatterns/common.git">validatedpatterns/common.git</a>.</p>
 <p><strong>⚠️ IMPORTANT</strong>: This repository updates frequently. Keep in sync before major development work.</p>
 <p><strong>Update Procedure</strong>:
-```bash</p>
-<h1 id="option-1-using-utilities-script-recommended">Option 1: Using utilities script (recommended)<a class="headerlink" href="#option-1-using-utilities-script-recommended" title="Permanent link">&para;</a></h1>
-<p>curl -s https://raw.githubusercontent.com/validatedpatterns/utilities/main/scripts/update-common-everywhere.sh | bash</p>
-<h1 id="option-2-manual-update">Option 2: Manual update<a class="headerlink" href="#option-2-manual-update" title="Permanent link">&para;</a></h1>
-<p>git remote add -f common-upstream https://github.com/validatedpatterns/common.git
-git merge -s subtree -Xtheirs -Xsubtree=common common-upstream/main
-```</p>
+<pre class="highlight"><code class="language-bash"># Option 1: Using utilities script (recommended)
+curl -s https://raw.githubusercontent.com/validatedpatterns/utilities/main/scripts/update-common-everywhere.sh | bash
+
+# Option 2: Manual update
+git remote add -f common-upstream https://github.com/validatedpatterns/common.git
+git merge -s subtree -Xtheirs -Xsubtree=common common-upstream/main</code></pre></p>
 <p><strong>When to Update</strong>:
 - ✅ Before starting new feature development
 - ✅ Before running comprehensive e2e tests

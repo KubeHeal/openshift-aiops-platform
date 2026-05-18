@@ -2067,22 +2067,20 @@
 <hr />
 <h2 id="deployment-status">Deployment Status<a class="headerlink" href="#deployment-status" title="Permanent link">&para;</a></h2>
 <h3 id="pod-status">Pod Status<a class="headerlink" href="#pod-status" title="Permanent link">&para;</a></h3>
-<p><code>NAME                         READY   STATUS    RESTARTS   AGE
-mcp-server-6b7b96d9bc-h2vnz   1/1     Running   1          10h</code></p>
+<pre class="highlight"><code>NAME                         READY   STATUS    RESTARTS   AGE
+mcp-server-6b7b96d9bc-h2vnz   1/1     Running   1          10h</code></pre>
 <p><strong>Replica Count</strong>: 1/1 (desired/actual)
 <strong>Uptime</strong>: 10 hours
 <strong>Restarts</strong>: 1 (within normal operational parameters)</p>
 <h3 id="service-configuration">Service Configuration<a class="headerlink" href="#service-configuration" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-Service: mcp-server.self-healing-platform.svc.cluster.local
+<pre class="highlight"><code class="language-yaml">Service: mcp-server.self-healing-platform.svc.cluster.local
 Type: ClusterIP
 IP: 172.30.218.79
 Port: 8080/TCP
-Endpoints: 10.131.0.128:8080</code></p>
+Endpoints: 10.131.0.128:8080</code></pre>
 <h3 id="health-check">Health Check<a class="headerlink" href="#health-check" title="Permanent link">&para;</a></h3>
-<p><code>bash
-$ curl http://mcp-server.self-healing-platform.svc.cluster.local:8080/health
-OK</code></p>
+<pre class="highlight"><code class="language-bash">$ curl http://mcp-server.self-healing-platform.svc.cluster.local:8080/health
+OK</code></pre>
 <p><strong>Health Status</strong>: ✅ HEALTHY
 <strong>Response Time</strong>: &lt; 100ms
 <strong>Init Containers</strong>: Both completed successfully
@@ -2441,41 +2439,39 @@ OK</code></p>
 <hr />
 <h2 id="deployment-configuration">Deployment Configuration<a class="headerlink" href="#deployment-configuration" title="Permanent link">&para;</a></h2>
 <h3 id="image">Image<a class="headerlink" href="#image" title="Permanent link">&para;</a></h3>
-<p><code>Image: quay.io/KubeHeal/openshift-cluster-health-mcp:latest
-Pull Policy: Always</code></p>
+<pre class="highlight"><code>Image: quay.io/KubeHeal/openshift-cluster-health-mcp:latest
+Pull Policy: Always</code></pre>
 <h3 id="resource-limits">Resource Limits<a class="headerlink" href="#resource-limits" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-Resources:
+<pre class="highlight"><code class="language-yaml">Resources:
   Limits:
     cpu: 1
     memory: 512Mi
   Requests:
     cpu: 100m
-    memory: 128Mi</code></p>
+    memory: 128Mi</code></pre>
 <p><strong>Resource Efficiency</strong>: Current pod using ~50Mi memory, well within limits.</p>
 <h3 id="environment-variables">Environment Variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-MCP_TRANSPORT: http
+<pre class="highlight"><code class="language-yaml">MCP_TRANSPORT: http
 SERVER_PORT: 8080
 COORDINATION_ENGINE_URL: http://coordination-engine:8080
-PROMETHEUS_URL: http://prometheus-k8s.openshift-monitoring:9091</code></p>
+PROMETHEUS_URL: http://prometheus-k8s.openshift-monitoring:9091</code></pre>
 <hr />
 <h2 id="logs-analysis">Logs Analysis<a class="headerlink" href="#logs-analysis" title="Permanent link">&para;</a></h2>
 <h3 id="startup-sequence">Startup Sequence<a class="headerlink" href="#startup-sequence" title="Permanent link">&para;</a></h3>
-<p><code>2026/01/24 20:14:41 MCP Server initialized: openshift-cluster-health v0.1.0
+<pre class="highlight"><code>2026/01/24 20:14:41 MCP Server initialized: openshift-cluster-health v0.1.0
 2026/01/24 20:14:41 Transport: http
 2026/01/24 20:14:41 Total tools registered: 12
 2026/01/24 20:14:41 Total resources registered: 4
 2026/01/24 20:14:41 Total prompts registered: 6
 2026/01/24 20:14:41 MCP Server starting...
 2026/01/24 20:14:41 Starting HTTP transport on 0.0.0.0:8080
-2026/01/24 20:14:41 MCP Server listening on 0.0.0.0:8080</code></p>
+2026/01/24 20:14:41 MCP Server listening on 0.0.0.0:8080</code></pre>
 <p><strong>Startup Time</strong>: &lt; 1 second
 <strong>Errors</strong>: 0
 <strong>Warnings</strong>: 0</p>
 <h3 id="request-handling">Request Handling<a class="headerlink" href="#request-handling" title="Permanent link">&para;</a></h3>
-<p><code>2026/01/25 01:32:26 Routing POST /mcp to MCP handler
-2026/01/25 01:32:31 Routing POST /mcp to MCP handler</code></p>
+<pre class="highlight"><code>2026/01/25 01:32:26 Routing POST /mcp to MCP handler
+2026/01/25 01:32:31 Routing POST /mcp to MCP handler</code></pre>
 <p><strong>Request Processing</strong>: Operational
 <strong>Response Latency</strong>: &lt; 100ms for tool list
 <strong>Error Rate</strong>: 0%</p>
@@ -2565,26 +2561,20 @@ PROMETHEUS_URL: http://prometheus-k8s.openshift-monitoring:9091</code></p>
 <hr />
 <h2 id="appendix-test-commands">Appendix: Test Commands<a class="headerlink" href="#appendix-test-commands" title="Permanent link">&para;</a></h2>
 <h3 id="health-check_1">Health Check<a class="headerlink" href="#health-check_1" title="Permanent link">&para;</a></h3>
-<p><code>bash
-curl http://mcp-server.self-healing-platform.svc.cluster.local:8080/health</code></p>
+<pre class="highlight"><code class="language-bash">curl http://mcp-server.self-healing-platform.svc.cluster.local:8080/health</code></pre>
 <h3 id="list-tools">List Tools<a class="headerlink" href="#list-tools" title="Permanent link">&para;</a></h3>
-<p><code>bash
-curl http://mcp-server.self-healing-platform.svc.cluster.local:8080/mcp/tools</code></p>
+<pre class="highlight"><code class="language-bash">curl http://mcp-server.self-healing-platform.svc.cluster.local:8080/mcp/tools</code></pre>
 <h3 id="list-resources">List Resources<a class="headerlink" href="#list-resources" title="Permanent link">&para;</a></h3>
-<p><code>bash
-curl http://mcp-server.self-healing-platform.svc.cluster.local:8080/mcp/resources</code></p>
+<pre class="highlight"><code class="language-bash">curl http://mcp-server.self-healing-platform.svc.cluster.local:8080/mcp/resources</code></pre>
 <h3 id="list-prompts">List Prompts<a class="headerlink" href="#list-prompts" title="Permanent link">&para;</a></h3>
-<p><code>bash
-curl http://mcp-server.self-healing-platform.svc.cluster.local:8080/mcp/prompts</code></p>
+<pre class="highlight"><code class="language-bash">curl http://mcp-server.self-healing-platform.svc.cluster.local:8080/mcp/prompts</code></pre>
 <h3 id="get-cluster-health-resource">Get Cluster Health Resource<a class="headerlink" href="#get-cluster-health-resource" title="Permanent link">&para;</a></h3>
-<p><code>bash
-curl http://mcp-server.self-healing-platform.svc.cluster.local:8080/mcp/resources/cluster/health</code></p>
+<pre class="highlight"><code class="language-bash">curl http://mcp-server.self-healing-platform.svc.cluster.local:8080/mcp/resources/cluster/health</code></pre>
 <h3 id="execute-tool-with-session">Execute Tool (with session)<a class="headerlink" href="#execute-tool-with-session" title="Permanent link">&para;</a></h3>
-<p><code>bash
-curl -X POST http://mcp-server.self-healing-platform.svc.cluster.local:8080/mcp/tools/get-cluster-health/call \
+<pre class="highlight"><code class="language-bash">curl -X POST http://mcp-server.self-healing-platform.svc.cluster.local:8080/mcp/tools/get-cluster-health/call \
   -H 'Content-Type: application/json' \
   -H 'X-MCP-Session-ID: &lt;session-id&gt;' \
-  -d '{}'</code></p>
+  -d '{}'</code></pre>
 <hr />
 <p><strong>Report Generated</strong>: 2026-01-25
 <strong>Generated By</strong>: MCP Analysis Server Validation (Manual)

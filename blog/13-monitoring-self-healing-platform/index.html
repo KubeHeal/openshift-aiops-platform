@@ -1771,122 +1771,116 @@
 <li>Open <code>model-performance-monitoring.ipynb</code></li>
 </ol>
 <h3 id="collect-performance-metrics">Collect Performance Metrics<a class="headerlink" href="#collect-performance-metrics" title="Permanent link">&para;</a></h3>
-<p>```python
-import pandas as pd</p>
-<p>def collect_model_metrics(model_name, time_range='7d'):
+<pre class="highlight"><code class="language-python">import pandas as pd
+
+def collect_model_metrics(model_name, time_range='7d'):
     """
-    Collect model performance metrics from Prometheus.</p>
-<pre><code>Args:
-    model_name: Model name
-    time_range: Time range for metrics
+    Collect model performance metrics from Prometheus.
 
-Returns:
-    DataFrame with performance metrics
-"""
-# Query Prometheus for prediction accuracy
-# (Assuming you're tracking accuracy via metrics)
+    Args:
+        model_name: Model name
+        time_range: Time range for metrics
 
-metrics = {
-    'timestamp': pd.date_range(end=datetime.now(), periods=168, freq='1H'),
-    'accuracy': np.random.uniform(0.85, 0.95, 168),  # Example
-    'precision': np.random.uniform(0.80, 0.90, 168),
-    'recall': np.random.uniform(0.85, 0.95, 168),
-    'f1_score': np.random.uniform(0.82, 0.92, 168),
-    'prediction_count': np.random.randint(100, 1000, 168)
-}
+    Returns:
+        DataFrame with performance metrics
+    """
+    # Query Prometheus for prediction accuracy
+    # (Assuming you're tracking accuracy via metrics)
 
-return pd.DataFrame(metrics)
-</code></pre>
-<p>```</p>
+    metrics = {
+        'timestamp': pd.date_range(end=datetime.now(), periods=168, freq='1H'),
+        'accuracy': np.random.uniform(0.85, 0.95, 168),  # Example
+        'precision': np.random.uniform(0.80, 0.90, 168),
+        'recall': np.random.uniform(0.85, 0.95, 168),
+        'f1_score': np.random.uniform(0.82, 0.92, 168),
+        'prediction_count': np.random.randint(100, 1000, 168)
+    }
+
+    return pd.DataFrame(metrics)</code></pre>
 <h3 id="detect-model-drift">Detect Model Drift<a class="headerlink" href="#detect-model-drift" title="Permanent link">&para;</a></h3>
-<p>```python
-from scipy import stats</p>
-<p>def detect_model_drift(metrics_df, baseline_period=24):
+<pre class="highlight"><code class="language-python">from scipy import stats
+
+def detect_model_drift(metrics_df, baseline_period=24):
     """
-    Detect if model performance has degraded.</p>
-<pre><code>Args:
-    metrics_df: DataFrame with performance metrics
-    baseline_period: Hours to use as baseline
+    Detect if model performance has degraded.
 
-Returns:
-    Drift detection result
-"""
-# Baseline: first N hours
-baseline = metrics_df['accuracy'].iloc[:baseline_period]
+    Args:
+        metrics_df: DataFrame with performance metrics
+        baseline_period: Hours to use as baseline
 
-# Current: last N hours
-current = metrics_df['accuracy'].iloc[-baseline_period:]
+    Returns:
+        Drift detection result
+    """
+    # Baseline: first N hours
+    baseline = metrics_df['accuracy'].iloc[:baseline_period]
 
-# Statistical test
-t_stat, p_value = stats.ttest_ind(baseline, current)
+    # Current: last N hours
+    current = metrics_df['accuracy'].iloc[-baseline_period:]
 
-# Calculate degradation
-degradation = baseline.mean() - current.mean()
+    # Statistical test
+    t_stat, p_value = stats.ttest_ind(baseline, current)
 
-drift_detected = p_value &lt; 0.05 and degradation &gt; 0.05
+    # Calculate degradation
+    degradation = baseline.mean() - current.mean()
 
-return {
-    'drift_detected': drift_detected,
-    'degradation': degradation,
-    'p_value': p_value,
-    'baseline_mean': baseline.mean(),
-    'current_mean': current.mean()
-}
-</code></pre>
-<p>```</p>
+    drift_detected = p_value &lt; 0.05 and degradation &gt; 0.05
+
+    return {
+        'drift_detected': drift_detected,
+        'degradation': degradation,
+        'p_value': p_value,
+        'baseline_mean': baseline.mean(),
+        'current_mean': current.mean()
+    }</code></pre>
 <hr />
 <h2 id="step-2-monitor-healing-success-rates">Step 2: Monitor Healing Success Rates<a class="headerlink" href="#step-2-monitor-healing-success-rates" title="Permanent link">&para;</a></h2>
 <h3 id="track-remediation-outcomes">Track Remediation Outcomes<a class="headerlink" href="#track-remediation-outcomes" title="Permanent link">&para;</a></h3>
-<p>```python
-def track_healing_success():
+<pre class="highlight"><code class="language-python">def track_healing_success():
     """Track success rate of remediation actions"""
     # Load remediation outcomes
-    outcomes = pd.read_json('/opt/app-root/src/data/processed/remediation_outcomes.jsonl', lines=True)</p>
-<pre><code># Calculate success rate by action type
-success_by_action = outcomes.groupby('action_type').agg({
-    'success': ['mean', 'count']
-})
+    outcomes = pd.read_json('/opt/app-root/src/data/processed/remediation_outcomes.jsonl', lines=True)
 
-print("📊 Healing Success Rates:")
-print(success_by_action)
+    # Calculate success rate by action type
+    success_by_action = outcomes.groupby('action_type').agg({
+        'success': ['mean', 'count']
+    })
 
-# Identify low-success actions
-low_success = success_by_action[success_by_action[('success', 'mean')] &lt; 0.7]
+    print("📊 Healing Success Rates:")
+    print(success_by_action)
 
-if len(low_success) &gt; 0:
-    print(f"\n⚠️ Low success actions: {low_success.index.tolist()}")
+    # Identify low-success actions
+    low_success = success_by_action[success_by_action[('success', 'mean')] &lt; 0.7]
 
-return success_by_action
-</code></pre>
-<p>```</p>
+    if len(low_success) &gt; 0:
+        print(f"\n⚠️ Low success actions: {low_success.index.tolist()}")
+
+    return success_by_action</code></pre>
 <hr />
 <h2 id="step-3-automated-retraining">Step 3: Automated Retraining<a class="headerlink" href="#step-3-automated-retraining" title="Permanent link">&para;</a></h2>
 <h3 id="trigger-retraining-on-drift">Trigger Retraining on Drift<a class="headerlink" href="#trigger-retraining-on-drift" title="Permanent link">&para;</a></h3>
-<p>```python
-def trigger_retraining(model_name, drift_result):
+<pre class="highlight"><code class="language-python">def trigger_retraining(model_name, drift_result):
     """
-    Trigger model retraining if drift detected.</p>
-<pre><code>Args:
-    model_name: Model name
-    drift_result: Drift detection result
-"""
-if drift_result['drift_detected']:
-    print(f"⚠️ Model drift detected for {model_name}")
-    print(f"   Degradation: {drift_result['degradation']:.3f}")
+    Trigger model retraining if drift detected.
 
-    # Trigger NotebookValidationJob
-    subprocess.run([
-        'oc', 'delete', 'notebookvalidationjob',
-        f'{model_name}-validation',
-        '-n', 'self-healing-platform'
-    ])
+    Args:
+        model_name: Model name
+        drift_result: Drift detection result
+    """
+    if drift_result['drift_detected']:
+        print(f"⚠️ Model drift detected for {model_name}")
+        print(f"   Degradation: {drift_result['degradation']:.3f}")
 
-    # Recreate to trigger retraining
-    # ... (recreate NotebookValidationJob)
+        # Trigger NotebookValidationJob
+        subprocess.run([
+            'oc', 'delete', 'notebookvalidationjob',
+            f'{model_name}-validation',
+            '-n', 'self-healing-platform'
+        ])
 
-    print(f"✅ Retraining triggered for {model_name}")
-</code></pre>
-<p>```</p>
+        # Recreate to trigger retraining
+        # ... (recreate NotebookValidationJob)
+
+        print(f"✅ Retraining triggered for {model_name}")</code></pre>
 <hr />
 <h2 id="what-just-happened">What Just Happened?<a class="headerlink" href="#what-just-happened" title="Permanent link">&para;</a></h2>
 <p>You've implemented platform monitoring:</p>

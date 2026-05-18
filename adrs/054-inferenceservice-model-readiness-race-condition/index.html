@@ -1778,6 +1778,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notes
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1843,15 +1861,14 @@
 </tbody>
 </table>
 <p><strong>Error on inference requests</strong>:
-<code>json
-{"error":"Model with name anomaly-detector does not exist."}</code></p>
+<pre class="highlight"><code class="language-json">{"error":"Model with name anomaly-detector does not exist."}</code></pre></p>
 <p>The <code>model.pkl</code> files exist on the PVC — the predictor pods simply never reloaded after they were written.</p>
 <h3 id="root-cause">Root Cause<a class="headerlink" href="#root-cause" title="Permanent link">&para;</a></h3>
 <p>ADR-053 separated model training from ArgoCD sync waves (moved to Tekton Pipelines), and in doing so removed the <code>inferenceServiceTrigger</code> and <code>blockNextWave</code> annotations from wave 3 notebooks. The Tekton CronJobs handle steady-state retraining (weekly), but there is <strong>no automatic initial training trigger</strong> on first deployment. The wave 3 notebooks still train models as part of validation, but the predictors at wave 2 never reload after the models appear.</p>
 <p><strong>Architecture Flow</strong>:
-<code>Wave 2: InferenceServices deploy → Predictors start → Look for model.pkl → Not found → ModelMissingError (no retry)
+<pre class="highlight"><code>Wave 2: InferenceServices deploy → Predictors start → Look for model.pkl → Not found → ModelMissingError (no retry)
 Wave 3: NotebookValidationJobs run → Train models → Write model.pkl to PVC
-Result: Predictors never reload, inference fails silently</code></p>
+Result: Predictors never reload, inference fails silently</code></pre></p>
 <h3 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>ADR-053</strong>: Tekton Pipelines for Model Training (Replaces ArgoCD Sync Wave Approach)</li>
@@ -1965,34 +1982,33 @@ Result: Predictors never reload, inference fails silently</code></p>
 <li>This ADR documenting the fix</li>
 </ol>
 <h3 id="deployment-flow">Deployment Flow<a class="headerlink" href="#deployment-flow" title="Permanent link">&para;</a></h3>
-<p><code>Wave -5: init-models-job (creates directory structure)
+<pre class="highlight"><code>Wave -5: init-models-job (creates directory structure)
 Wave 2:   InferenceServices deploy (predictors start, models missing)
 Wave 3:   NotebookValidationJobs train models (write model.pkl)
 Wave 5:   restart-predictors-job (waits for models, restarts predictors)
-PostSync: Validation script tests inference endpoints</code></p>
+PostSync: Validation script tests inference endpoints</code></pre>
 <h3 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h3>
 <p><strong>Manual Test</strong>:
-```bash</p>
-<h1 id="deploy-platform">Deploy platform<a class="headerlink" href="#deploy-platform" title="Permanent link">&para;</a></h1>
-<p>make -f common/Makefile operator-deploy</p>
-<h1 id="wait-for-sync-to-complete">Wait for sync to complete<a class="headerlink" href="#wait-for-sync-to-complete" title="Permanent link">&para;</a></h1>
-<p>make -f common/Makefile argo-healthcheck</p>
-<h1 id="verify-restart-job-completed">Verify restart job completed<a class="headerlink" href="#verify-restart-job-completed" title="Permanent link">&para;</a></h1>
-<p>oc get job restart-predictors-after-models-ready -n self-healing-platform</p>
-<h1 id="test-inference-endpoint">Test inference endpoint<a class="headerlink" href="#test-inference-endpoint" title="Permanent link">&para;</a></h1>
-<p>oc get pods -n self-healing-platform -l serving.kserve.io/inferenceservice=anomaly-detector
+<pre class="highlight"><code class="language-bash"># Deploy platform
+make -f common/Makefile operator-deploy
+
+# Wait for sync to complete
+make -f common/Makefile argo-healthcheck
+
+# Verify restart job completed
+oc get job restart-predictors-after-models-ready -n self-healing-platform
+
+# Test inference endpoint
+oc get pods -n self-healing-platform -l serving.kserve.io/inferenceservice=anomaly-detector
 POD_IP=$(oc get pod -n self-healing-platform -l serving.kserve.io/inferenceservice=anomaly-detector -o jsonpath='{.items[0].status.podIP}')
 curl -X POST "http://${POD_IP}:8080/v1/models/anomaly-detector:predict" \
   -H "Content-Type: application/json" \
-  -d '{"instances": [[0.1, 0.2, 0.3, ...]]}'</p>
-<h1 id="should-return-predictions-not-modelmissingerror">Should return predictions, not ModelMissingError<a class="headerlink" href="#should-return-predictions-not-modelmissingerror" title="Permanent link">&para;</a></h1>
-<p>```</p>
+  -d '{"instances": [[0.1, 0.2, 0.3, ...]]}'
+# Should return predictions, not ModelMissingError</code></pre></p>
 <p><strong>Automated Test</strong>:
-```bash</p>
-<h1 id="run-post-deployment-validation-script">Run post-deployment validation script<a class="headerlink" href="#run-post-deployment-validation-script" title="Permanent link">&para;</a></h1>
-<p>./scripts/post-deployment-validation.sh</p>
-<h1 id="check-7-should-pass-inferenceservice-model-health-check">Check 7 should pass (InferenceService Model Health Check)<a class="headerlink" href="#check-7-should-pass-inferenceservice-model-health-check" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Run post-deployment validation script
+./scripts/post-deployment-validation.sh
+# Check 7 should pass (InferenceService Model Health Check)</code></pre></p>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>GitHub Issue</strong>: <a href="https://github.com/KubeHeal/openshift-aiops-platform/issues/34">#34</a> - Race condition: InferenceService predictor pods start before NotebookValidationJobs train models</li>

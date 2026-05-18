@@ -1541,6 +1541,168 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#quick-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-gitea-developmenttesting" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Gitea (Development/Testing)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-github-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      For GitHub (Production)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-the-value-is-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      Where the Value is Used
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changing-the-url" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changing the URL
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changing the URL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-edit-values-globalyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 1: Edit values-global.yaml
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-override-via-helm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 2: Override via Helm
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-argocd-application-override" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 3: ArgoCD Application Override
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Checklist
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files-with-hardcoded-urls-documentation-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      Files with Hardcoded URLs (Documentation Only)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-domain-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cluster Domain Detection
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#argocd-cant-clone-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArgoCD Can't Clone Repository
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notebook-validation-jobs-failing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notebook Validation Jobs Failing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#buildconfig-source-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      BuildConfig Source Errors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Documentation
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1568,25 +1730,21 @@
 <p>This guide explains how to configure the Git repository URL when deploying to different clusters or switching between Gitea (development) and GitHub (production).</p>
 <h2 id="single-source-of-truth">Single Source of Truth<a class="headerlink" href="#single-source-of-truth" title="Permanent link">&para;</a></h2>
 <p>The Git repository URL is configured in <strong><code>values-global.yaml</code></strong>:</p>
-<p>```yaml</p>
-<h1 id="values-globalyaml">values-global.yaml<a class="headerlink" href="#values-globalyaml" title="Permanent link">&para;</a></h1>
-<p>git:
+<pre class="highlight"><code class="language-yaml"># values-global.yaml
+git:
   # Git repository URL - SINGLE SOURCE OF TRUTH
-  repoURL: "https://gitea-with-admin-gitea.apps.<cluster-domain>/<org>/<repo>.git"
-  revision: "main"
-```</p>
+  repoURL: "https://gitea-with-admin-gitea.apps.&lt;cluster-domain&gt;/&lt;org&gt;/&lt;repo&gt;.git"
+  revision: "main"</code></pre>
 <h2 id="quick-configuration">Quick Configuration<a class="headerlink" href="#quick-configuration" title="Permanent link">&para;</a></h2>
 <h3 id="for-gitea-developmenttesting">For Gitea (Development/Testing)<a class="headerlink" href="#for-gitea-developmenttesting" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="format-httpsgitea-with-admin-giteaappsgit">Format: https://gitea-with-admin-gitea.apps.<cluster-domain>/<org>/<repo>.git<a class="headerlink" href="#format-httpsgitea-with-admin-giteaappsgit" title="Permanent link">&para;</a></h1>
-<h1 id="example-for-cluster-fn2qb">Example for cluster fn2qb:<a class="headerlink" href="#example-for-cluster-fn2qb" title="Permanent link">&para;</a></h1>
-<p>git.repoURL: "https://gitea-with-admin-gitea.apps.cluster-fn2qb.fn2qb.sandbox1343.opentlc.com/opentlc-mgr/openshift-aiops-platform.git"
-```</p>
+<pre class="highlight"><code class="language-bash"># Format: https://gitea-with-admin-gitea.apps.&lt;cluster-domain&gt;/&lt;org&gt;/&lt;repo&gt;.git
+
+# Example for cluster fn2qb:
+git.repoURL: "https://gitea-with-admin-gitea.apps.cluster-fn2qb.fn2qb.sandbox1343.opentlc.com/opentlc-mgr/openshift-aiops-platform.git"</code></pre>
 <h3 id="for-github-production">For GitHub (Production)<a class="headerlink" href="#for-github-production" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="format-httpsgithubcomgit">Format: https://github.com/<org>/<repo>.git<a class="headerlink" href="#format-httpsgithubcomgit" title="Permanent link">&para;</a></h1>
-<p>git.repoURL: "https://github.com/KubeHeal/openshift-aiops-platform.git"
-```</p>
+<pre class="highlight"><code class="language-bash"># Format: https://github.com/&lt;org&gt;/&lt;repo&gt;.git
+
+git.repoURL: "https://github.com/KubeHeal/openshift-aiops-platform.git"</code></pre>
 <h2 id="where-the-value-is-used">Where the Value is Used<a class="headerlink" href="#where-the-value-is-used" title="Permanent link">&para;</a></h2>
 <p>The <code>git.repoURL</code> from <code>values-global.yaml</code> is used by:</p>
 <table>
@@ -1622,35 +1780,31 @@
 </table>
 <h2 id="changing-the-url">Changing the URL<a class="headerlink" href="#changing-the-url" title="Permanent link">&para;</a></h2>
 <h3 id="option-1-edit-values-globalyaml">Option 1: Edit values-global.yaml<a class="headerlink" href="#option-1-edit-values-globalyaml" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="edit-the-file">Edit the file<a class="headerlink" href="#edit-the-file" title="Permanent link">&para;</a></h1>
-<p>vim values-global.yaml</p>
-<h1 id="change-this-line">Change this line:<a class="headerlink" href="#change-this-line" title="Permanent link">&para;</a></h1>
-<p>git:
+<pre class="highlight"><code class="language-bash"># Edit the file
+vim values-global.yaml
+
+# Change this line:
+git:
   repoURL: "https://github.com/your-org/openshift-aiops-platform.git"
-  revision: "main"</p>
-<h1 id="commit-and-push">Commit and push<a class="headerlink" href="#commit-and-push" title="Permanent link">&para;</a></h1>
-<p>git add values-global.yaml
+  revision: "main"
+
+# Commit and push
+git add values-global.yaml
 git commit -m "chore: update git URL for production"
-git push
-```</p>
+git push</code></pre>
 <h3 id="option-2-override-via-helm">Option 2: Override via Helm<a class="headerlink" href="#option-2-override-via-helm" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="during-helm-installupgrade">During Helm install/upgrade<a class="headerlink" href="#during-helm-installupgrade" title="Permanent link">&para;</a></h1>
-<p>helm upgrade self-healing-platform charts/hub \
+<pre class="highlight"><code class="language-bash"># During Helm install/upgrade
+helm upgrade self-healing-platform charts/hub \
   --set global.git.repoURL="https://github.com/your-org/openshift-aiops-platform.git" \
-  --set global.git.revision="main"
-```</p>
+  --set global.git.revision="main"</code></pre>
 <h3 id="option-3-argocd-application-override">Option 3: ArgoCD Application Override<a class="headerlink" href="#option-3-argocd-application-override" title="Permanent link">&para;</a></h3>
-<p>```yaml</p>
-<h1 id="in-your-argocd-application">In your ArgoCD Application<a class="headerlink" href="#in-your-argocd-application" title="Permanent link">&para;</a></h1>
-<p>spec:
+<pre class="highlight"><code class="language-yaml"># In your ArgoCD Application
+spec:
   source:
     helm:
       parameters:
       - name: global.git.repoURL
-        value: "https://github.com/your-org/openshift-aiops-platform.git"
-```</p>
+        value: "https://github.com/your-org/openshift-aiops-platform.git"</code></pre>
 <h2 id="migration-checklist">Migration Checklist<a class="headerlink" href="#migration-checklist" title="Permanent link">&para;</a></h2>
 <p>When migrating from Gitea to GitHub:</p>
 <ul>
@@ -1670,35 +1824,29 @@ git push
 </ul>
 <h2 id="cluster-domain-detection">Cluster Domain Detection<a class="headerlink" href="#cluster-domain-detection" title="Permanent link">&para;</a></h2>
 <p>For Gitea URLs, the cluster domain can be detected automatically:</p>
-<p>```bash</p>
-<h1 id="get-cluster-domain">Get cluster domain<a class="headerlink" href="#get-cluster-domain" title="Permanent link">&para;</a></h1>
-<p>CLUSTER_DOMAIN=$(oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}')
-echo "Cluster domain: $CLUSTER_DOMAIN"</p>
-<h1 id="construct-gitea-url">Construct Gitea URL<a class="headerlink" href="#construct-gitea-url" title="Permanent link">&para;</a></h1>
-<p>GITEA_URL="https://gitea-with-admin-gitea.${CLUSTER_DOMAIN}/opentlc-mgr/openshift-aiops-platform.git"
-echo "Gitea URL: $GITEA_URL"
-```</p>
+<pre class="highlight"><code class="language-bash"># Get cluster domain
+CLUSTER_DOMAIN=$(oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}')
+echo "Cluster domain: $CLUSTER_DOMAIN"
+
+# Construct Gitea URL
+GITEA_URL="https://gitea-with-admin-gitea.${CLUSTER_DOMAIN}/opentlc-mgr/openshift-aiops-platform.git"
+echo "Gitea URL: $GITEA_URL"</code></pre>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="argocd-cant-clone-repository">ArgoCD Can't Clone Repository<a class="headerlink" href="#argocd-cant-clone-repository" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="check-argocd-repository-configuration">Check ArgoCD repository configuration<a class="headerlink" href="#check-argocd-repository-configuration" title="Permanent link">&para;</a></h1>
-<p>argocd repo list</p>
-<h1 id="add-repository-with-credentials">Add repository with credentials<a class="headerlink" href="#add-repository-with-credentials" title="Permanent link">&para;</a></h1>
-<p>argocd repo add https://github.com/your-org/openshift-aiops-platform.git \
-  --username <username> \
-  --password <token>
-```</p>
+<pre class="highlight"><code class="language-bash"># Check ArgoCD repository configuration
+argocd repo list
+
+# Add repository with credentials
+argocd repo add https://github.com/your-org/openshift-aiops-platform.git \
+  --username &lt;username&gt; \
+  --password &lt;token&gt;</code></pre>
 <h3 id="notebook-validation-jobs-failing">Notebook Validation Jobs Failing<a class="headerlink" href="#notebook-validation-jobs-failing" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="check-if-git-clone-works-from-within-cluster">Check if git clone works from within cluster<a class="headerlink" href="#check-if-git-clone-works-from-within-cluster" title="Permanent link">&para;</a></h1>
-<p>oc run git-test --rm -it --image=alpine/git -- \
-  git clone https://github.com/your-org/openshift-aiops-platform.git /tmp/repo
-```</p>
+<pre class="highlight"><code class="language-bash"># Check if git clone works from within cluster
+oc run git-test --rm -it --image=alpine/git -- \
+  git clone https://github.com/your-org/openshift-aiops-platform.git /tmp/repo</code></pre>
 <h3 id="buildconfig-source-errors">BuildConfig Source Errors<a class="headerlink" href="#buildconfig-source-errors" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="check-buildconfig-source">Check BuildConfig source<a class="headerlink" href="#check-buildconfig-source" title="Permanent link">&para;</a></h1>
-<p>oc get bc -n self-healing-platform -o yaml | grep -A5 "source:"
-```</p>
+<pre class="highlight"><code class="language-bash"># Check BuildConfig source
+oc get bc -n self-healing-platform -o yaml | grep -A5 "source:"</code></pre>
 <h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="https://validatedpatterns.io/patterns/getting-started/">Validated Patterns Git Configuration</a></li>

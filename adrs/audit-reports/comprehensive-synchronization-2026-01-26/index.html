@@ -2064,8 +2064,53 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#adr-034-rhods-notebook-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-034: RHODS Notebook Routing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-035-storage-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-035: Storage Strategy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-043-deployment-stability-health-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-043: Deployment Stability Health Checks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-038-go-coordination-engine-verification-pending" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-038: Go Coordination Engine (Verification Pending)
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
   
 </li>
       
@@ -2505,30 +2550,27 @@
 <strong>Evidence Source</strong>: Storage and Configuration Verification Report</p>
 <h4 id="implementation-evidence">Implementation Evidence<a class="headerlink" href="#implementation-evidence" title="Permanent link">&para;</a></h4>
 <p><strong>NooBaa Deployment</strong> (Primary Evidence):
-<code>yaml
-Name: noobaa
+<pre class="highlight"><code class="language-yaml">Name: noobaa
 Phase: Ready
 Status: Available (True), Degraded (False)
 S3 Endpoints: https://10.0.55.170:31115
-Age: 11h</code></p>
+Age: 11h</code></pre></p>
 <p><strong>NooBaa Pods</strong>:
 - noobaa-core-0 (2/2 containers Running)
 - noobaa-db-pg-0 (1/1 container Running)
 - noobaa-endpoint-5d64976cf7-mdbwv (1/1 container Running)
 - noobaa-operator-5b748544fd-vzdfh (1/1 container Running)</p>
 <p><strong>S3 Configuration</strong>:
-<code>yaml
-ConfigMap: notebook-s3-config
+<pre class="highlight"><code class="language-yaml">ConfigMap: notebook-s3-config
   MODEL_BUCKET: model-storage
   S3_ENDPOINT: https://s3.openshift-storage.svc.cluster.local
   S3_REGION: us-east-1
   TRAINING_DATA_BUCKET: training-data
-  INFERENCE_RESULTS_BUCKET: inference-results</code></p>
+  INFERENCE_RESULTS_BUCKET: inference-results</code></pre></p>
 <p><strong>ObjectBucketClaim</strong>:
-<code>yaml
-Name: model-storage
+<pre class="highlight"><code class="language-yaml">Name: model-storage
 StorageClass: openshift-storage.noobaa.io
-Phase: Pending (bucket provisioning may be in progress)</code></p>
+Phase: Pending (bucket provisioning may be in progress)</code></pre></p>
 <p><strong>Secrets</strong>:
 - <code>model-storage</code> secret (3 items) - S3 credentials from ObjectBucketClaim
 - <code>model-storage-config</code> secret (9 items) - Managed by ExternalSecrets (ADR-024)</p>
@@ -2592,21 +2634,18 @@ Phase: Pending (bucket provisioning may be in progress)</code></p>
 <strong>Evidence Source</strong>: Storage and Configuration Verification Report</p>
 <h4 id="implementation-evidence_1">Implementation Evidence<a class="headerlink" href="#implementation-evidence_1" title="Permanent link">&para;</a></h4>
 <p><strong>Route Configuration</strong>:
-<code>yaml
-Name: self-healing-workbench
+<pre class="highlight"><code class="language-yaml">Name: self-healing-workbench
 Host: self-healing-workbench-self-healing-platform.apps.cluster-pch5l...
 TLS Termination: reencrypt
-Insecure Edge Termination Policy: Redirect</code></p>
+Insecure Edge Termination Policy: Redirect</code></pre></p>
 <p><strong>Service Configuration</strong>:
-<code>yaml
-Name: self-healing-workbench-tls
+<pre class="highlight"><code class="language-yaml">Name: self-healing-workbench-tls
 Type: ClusterIP
 IP: 172.30.115.182
-Port: 443/TCP (oauth-proxy)</code></p>
+Port: 443/TCP (oauth-proxy)</code></pre></p>
 <p><strong>Route Accessibility Test</strong>:
-<code>bash
-$ curl -sk https://self-healing-workbench-self-healing-platform.apps...
-&lt;a href="https://oauth-openshift.apps.../oauth/authorize?..."&gt;Found&lt;/a&gt;</code>
+<pre class="highlight"><code class="language-bash">$ curl -sk https://self-healing-workbench-self-healing-platform.apps...
+&lt;a href="https://oauth-openshift.apps.../oauth/authorize?..."&gt;Found&lt;/a&gt;</code></pre>
 - ✅ Route accessible
 - ✅ Redirects to OAuth authentication
 - ✅ TLS re-encryption enabled
@@ -2665,12 +2704,11 @@ $ curl -sk https://self-healing-workbench-self-healing-platform.apps...
 <strong>Evidence Source</strong>: Storage and Configuration Verification Report</p>
 <h4 id="implementation-evidence_2">Implementation Evidence<a class="headerlink" href="#implementation-evidence_2" title="Permanent link">&para;</a></h4>
 <p><strong>Persistent Volume Claims</strong>:
-<code>yaml
-NAME                            STATUS   STORAGECLASS                ACCESSMODE      SIZE
+<pre class="highlight"><code class="language-yaml">NAME                            STATUS   STORAGECLASS                ACCESSMODE      SIZE
 model-artifacts-development     Pending  gp3-csi                     ReadWriteOnce   50Gi
 model-storage-pvc               Bound    ocs-storagecluster-cephfs   ReadWriteMany   10Gi
 self-healing-data-development   Pending  gp3-csi                     ReadWriteOnce   10Gi
-workbench-data-development      Bound    gp3-csi                     ReadWriteOnce   20Gi</code></p>
+workbench-data-development      Bound    gp3-csi                     ReadWriteOnce   20Gi</code></pre></p>
 <p><strong>Storage Class Distribution</strong>:
 - <strong>gp3-csi (AWS EBS)</strong>: 3 PVCs (ReadWriteOnce) - <strong>Primary strategy</strong> ✅
   - workbench-data-development: 20Gi (Bound) ✅
@@ -2740,45 +2778,37 @@ The presence of <code>model-storage-pvc</code> using OCS CephFS (RWX) does <stro
 <h4 id="implementation-evidence_3">Implementation Evidence<a class="headerlink" href="#implementation-evidence_3" title="Permanent link">&para;</a></h4>
 <p><strong>Pattern 1: Init Container Pattern</strong> ✅ IMPLEMENTED</p>
 <p><strong>MCP Server Init Containers</strong>:
-```yaml
-initContainers:
+<pre class="highlight"><code class="language-yaml">initContainers:
 - name: wait-for-coordination-engine
   command: ["/usr/local/bin/healthcheck", "http://coordination-engine:8080/health"]
-  image: quay.io/takinosh/openshift-cluster-health-mcp:4.18-latest</p>
-<ul>
-<li>name: wait-for-prometheus
-  command:<ul>
-<li>/usr/local/bin/healthcheck</li>
-<li>--bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token</li>
-<li>--insecure-skip-verify</li>
-<li>--timeout=10s</li>
-<li>--interval=15s</li>
-<li>https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready
-```</li>
-</ul>
-</li>
-</ul>
-<p><strong>Coordination Engine Init Containers</strong>:
-```yaml
-initContainers:
+  image: quay.io/takinosh/openshift-cluster-health-mcp:4.18-latest
+
 - name: wait-for-prometheus
-  command: ["curl", "-k", "-sf", "-H", "Authorization: Bearer $(cat /var/run/secrets/...)"]</p>
-<ul>
-<li>name: wait-for-argocd
-  command: [similar pattern for ArgoCD dependency]
-```</li>
-</ul>
+  command:
+    - /usr/local/bin/healthcheck
+    - --bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+    - --insecure-skip-verify
+    - --timeout=10s
+    - --interval=15s
+    - https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready</code></pre></p>
+<p><strong>Coordination Engine Init Containers</strong>:
+<pre class="highlight"><code class="language-yaml">initContainers:
+- name: wait-for-prometheus
+  command: ["curl", "-k", "-sf", "-H", "Authorization: Bearer $(cat /var/run/secrets/...)"]
+
+- name: wait-for-argocd
+  command: [similar pattern for ArgoCD dependency]</code></pre></p>
 <p><strong>Pattern 2: Authenticated Cross-Namespace Checks</strong> ✅ IMPLEMENTED
 - Bearer token authentication for Prometheus health checks
 - <code>--bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token</code>
 - HTTPS with insecure-skip-verify for internal services
 - Proper timeout configuration (--timeout=10s)</p>
 <p><strong>Pattern 3: Dependency Chain Management</strong> ✅ IMPLEMENTED
-<code>Prometheus (openshift-monitoring)
+<pre class="highlight"><code>Prometheus (openshift-monitoring)
     ↓
 Coordination Engine (self-healing-platform)
     ↓
-MCP Server (self-healing-platform)</code>
+MCP Server (self-healing-platform)</code></pre>
 - Coordination Engine waits for Prometheus AND ArgoCD
 - MCP Server waits for Coordination Engine AND Prometheus
 - Prevents cascading failures during cluster restarts</p>
@@ -2789,12 +2819,11 @@ MCP Server (self-healing-platform)</code>
 - Bearer token authentication support
 - Configurable timeouts and retries</p>
 <p><strong>Pattern 5: RawDeployment Mode for KServe</strong> ✅ IMPLEMENTED
-<code>yaml
-apiVersion: serving.kserve.io/v1beta1
+<pre class="highlight"><code class="language-yaml">apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   annotations:
-    serving.kserve.io/deploymentMode: "RawDeployment"  # Changed from Serverless</code></p>
+    serving.kserve.io/deploymentMode: "RawDeployment"  # Changed from Serverless</code></pre></p>
 <h4 id="compliance-analysis_3">Compliance Analysis<a class="headerlink" href="#compliance-analysis_3" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
@@ -2926,15 +2955,14 @@ metadata:
 <strong>Container Image</strong>: <code>quay.io/takinosh/openshift-coordination-engine:ocp-4.18-latest</code></p>
 <h4 id="integration-status-partial-deployment-verified-api-functionality-pending">Integration Status: 🚧 PARTIAL - Deployment Verified, API Functionality Pending<a class="headerlink" href="#integration-status-partial-deployment-verified-api-functionality-pending" title="Permanent link">&para;</a></h4>
 <p><strong>Deployment Verification</strong> (2026-01-25):
-<code>yaml
-Name: coordination-engine
+<pre class="highlight"><code class="language-yaml">Name: coordination-engine
 Namespace: self-healing-platform
 Image: quay.io/takinosh/openshift-coordination-engine:ocp-4.18-latest
 Replicas: 1/1 (Ready)
 Health Check: {"status":"ok","version":"ocp-4.18-93c9718"}
 Init Containers:
   - wait-for-prometheus ✅
-  - wait-for-argocd ✅</code></p>
+  - wait-for-argocd ✅</code></pre></p>
 <p><strong>Features Verified</strong>:
 - ✅ Multi-version OpenShift support (4.18, 4.19, 4.20)
 - ✅ Deployment-aware remediation (ArgoCD, Helm, Operator, Manual detection)
@@ -3120,68 +3148,73 @@ Init Containers:
 <hr />
 <h2 id="verification-commands-appendix">Verification Commands Appendix<a class="headerlink" href="#verification-commands-appendix" title="Permanent link">&para;</a></h2>
 <h3 id="adr-025-openshift-object-store">ADR-025: OpenShift Object Store<a class="headerlink" href="#adr-025-openshift-object-store" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="verify-noobaa-deployment">Verify NooBaa deployment<a class="headerlink" href="#verify-noobaa-deployment" title="Permanent link">&para;</a></h1>
-<p>oc get noobaa -n openshift-storage</p>
-<h1 id="check-noobaa-pods">Check NooBaa pods<a class="headerlink" href="#check-noobaa-pods" title="Permanent link">&para;</a></h1>
-<p>oc get pods -n openshift-storage | grep noobaa</p>
-<h1 id="verify-s3-configuration">Verify S3 configuration<a class="headerlink" href="#verify-s3-configuration" title="Permanent link">&para;</a></h1>
-<p>oc get configmap notebook-s3-config -n self-healing-platform -o yaml</p>
-<h1 id="check-objectbucketclaim">Check ObjectBucketClaim<a class="headerlink" href="#check-objectbucketclaim" title="Permanent link">&para;</a></h1>
-<p>oc get objectbucketclaim -n self-healing-platform</p>
-<h1 id="verify-secrets">Verify secrets<a class="headerlink" href="#verify-secrets" title="Permanent link">&para;</a></h1>
-<p>oc get secret model-storage -n self-healing-platform
-oc get secret model-storage-config -n self-healing-platform
-```</p>
+<pre class="highlight"><code class="language-bash"># Verify NooBaa deployment
+oc get noobaa -n openshift-storage
+
+# Check NooBaa pods
+oc get pods -n openshift-storage | grep noobaa
+
+# Verify S3 configuration
+oc get configmap notebook-s3-config -n self-healing-platform -o yaml
+
+# Check ObjectBucketClaim
+oc get objectbucketclaim -n self-healing-platform
+
+# Verify secrets
+oc get secret model-storage -n self-healing-platform
+oc get secret model-storage-config -n self-healing-platform</code></pre>
 <h3 id="adr-034-rhods-notebook-routing">ADR-034: RHODS Notebook Routing<a class="headerlink" href="#adr-034-rhods-notebook-routing" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="verify-route">Verify route<a class="headerlink" href="#verify-route" title="Permanent link">&para;</a></h1>
-<p>oc get route self-healing-workbench -n self-healing-platform</p>
-<h1 id="check-route-details-tls">Check route details (TLS)<a class="headerlink" href="#check-route-details-tls" title="Permanent link">&para;</a></h1>
-<p>oc get route self-healing-workbench -n self-healing-platform -o yaml | grep -A 5 tls</p>
-<h1 id="test-route-accessibility">Test route accessibility<a class="headerlink" href="#test-route-accessibility" title="Permanent link">&para;</a></h1>
-<p>oc exec deployment/utilities -n utils -- curl -sk https://self-healing-workbench-self-healing-platform.apps.cluster-pch5l...</p>
-<h1 id="verify-oauth-proxy-service">Verify OAuth proxy service<a class="headerlink" href="#verify-oauth-proxy-service" title="Permanent link">&para;</a></h1>
-<p>oc get service self-healing-workbench-tls -n self-healing-platform
-```</p>
+<pre class="highlight"><code class="language-bash"># Verify route
+oc get route self-healing-workbench -n self-healing-platform
+
+# Check route details (TLS)
+oc get route self-healing-workbench -n self-healing-platform -o yaml | grep -A 5 tls
+
+# Test route accessibility
+oc exec deployment/utilities -n utils -- curl -sk https://self-healing-workbench-self-healing-platform.apps.cluster-pch5l...
+
+# Verify OAuth proxy service
+oc get service self-healing-workbench-tls -n self-healing-platform</code></pre>
 <h3 id="adr-035-storage-strategy">ADR-035: Storage Strategy<a class="headerlink" href="#adr-035-storage-strategy" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="list-all-pvcs">List all PVCs<a class="headerlink" href="#list-all-pvcs" title="Permanent link">&para;</a></h1>
-<p>oc get pvc -n self-healing-platform</p>
-<h1 id="check-storage-classes">Check storage classes<a class="headerlink" href="#check-storage-classes" title="Permanent link">&para;</a></h1>
-<p>oc get sc | grep -E 'gp3-csi|ocs'</p>
-<h1 id="verify-pvc-details">Verify PVC details<a class="headerlink" href="#verify-pvc-details" title="Permanent link">&para;</a></h1>
-<p>oc describe pvc workbench-data-development -n self-healing-platform
-oc describe pvc model-storage-pvc -n self-healing-platform</p>
-<h1 id="check-bound-volumes">Check bound volumes<a class="headerlink" href="#check-bound-volumes" title="Permanent link">&para;</a></h1>
-<p>oc get pv | grep self-healing-platform
-```</p>
+<pre class="highlight"><code class="language-bash"># List all PVCs
+oc get pvc -n self-healing-platform
+
+# Check storage classes
+oc get sc | grep -E 'gp3-csi|ocs'
+
+# Verify PVC details
+oc describe pvc workbench-data-development -n self-healing-platform
+oc describe pvc model-storage-pvc -n self-healing-platform
+
+# Check bound volumes
+oc get pv | grep self-healing-platform</code></pre>
 <h3 id="adr-043-deployment-stability-health-checks">ADR-043: Deployment Stability Health Checks<a class="headerlink" href="#adr-043-deployment-stability-health-checks" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="verify-init-containers-in-mcp-server">Verify init containers in MCP server<a class="headerlink" href="#verify-init-containers-in-mcp-server" title="Permanent link">&para;</a></h1>
-<p>oc get deployment mcp-server -n self-healing-platform -o yaml | grep -A 20 initContainers</p>
-<h1 id="verify-init-containers-in-coordination-engine">Verify init containers in coordination engine<a class="headerlink" href="#verify-init-containers-in-coordination-engine" title="Permanent link">&para;</a></h1>
-<p>oc get deployment coordination-engine -n self-healing-platform -o yaml | grep -A 20 initContainers</p>
-<h1 id="check-rawdeployment-mode-on-inferenceservices">Check RawDeployment mode on InferenceServices<a class="headerlink" href="#check-rawdeployment-mode-on-inferenceservices" title="Permanent link">&para;</a></h1>
-<p>oc get inferenceservice -n self-healing-platform -o yaml | grep deploymentMode</p>
-<h1 id="test-go-healthcheck-binary">Test Go healthcheck binary<a class="headerlink" href="#test-go-healthcheck-binary" title="Permanent link">&para;</a></h1>
-<p>oc exec deployment/mcp-server -n self-healing-platform -c wait-for-prometheus -- ls -l /usr/local/bin/healthcheck
-```</p>
+<pre class="highlight"><code class="language-bash"># Verify init containers in MCP server
+oc get deployment mcp-server -n self-healing-platform -o yaml | grep -A 20 initContainers
+
+# Verify init containers in coordination engine
+oc get deployment coordination-engine -n self-healing-platform -o yaml | grep -A 20 initContainers
+
+# Check RawDeployment mode on InferenceServices
+oc get inferenceservice -n self-healing-platform -o yaml | grep deploymentMode
+
+# Test Go healthcheck binary
+oc exec deployment/mcp-server -n self-healing-platform -c wait-for-prometheus -- ls -l /usr/local/bin/healthcheck</code></pre>
 <h3 id="adr-038-go-coordination-engine-verification-pending">ADR-038: Go Coordination Engine (Verification Pending)<a class="headerlink" href="#adr-038-go-coordination-engine-verification-pending" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="test-health-endpoint">Test health endpoint<a class="headerlink" href="#test-health-endpoint" title="Permanent link">&para;</a></h1>
-<p>oc exec deployment/utilities -n utils -- curl -s http://coordination-engine.self-healing-platform.svc:8080/health</p>
-<h1 id="test-incident-creation-api-pending-verification">Test incident creation API (PENDING VERIFICATION)<a class="headerlink" href="#test-incident-creation-api-pending-verification" title="Permanent link">&para;</a></h1>
-<p>oc exec deployment/utilities -n utils -- curl -X POST \
+<pre class="highlight"><code class="language-bash"># Test health endpoint
+oc exec deployment/utilities -n utils -- curl -s http://coordination-engine.self-healing-platform.svc:8080/health
+
+# Test incident creation API (PENDING VERIFICATION)
+oc exec deployment/utilities -n utils -- curl -X POST \
   http://coordination-engine.self-healing-platform.svc:8080/api/v1/incidents \
   -H "Content-Type: application/json" \
-  -d '{"title":"Test incident","severity":"low"}'</p>
-<h1 id="test-remediation-api-pending-verification">Test remediation API (PENDING VERIFICATION)<a class="headerlink" href="#test-remediation-api-pending-verification" title="Permanent link">&para;</a></h1>
-<p>oc exec deployment/utilities -n utils -- curl -X POST \
+  -d '{"title":"Test incident","severity":"low"}'
+
+# Test remediation API (PENDING VERIFICATION)
+oc exec deployment/utilities -n utils -- curl -X POST \
   http://coordination-engine.self-healing-platform.svc:8080/api/v1/remediation/trigger \
   -H "Content-Type: application/json" \
-  -d '{"incident_id":"test-123","action":"restart"}'
-```</p>
+  -d '{"incident_id":"test-123","action":"restart"}'</code></pre>
 <hr />
 <h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
 <p>This comprehensive synchronization successfully validated all 43 ADRs and promoted 4 ADRs from "Accepted" to "Implemented" status based on robust evidence from 10 comprehensive audit reports. The platform implementation rate improved from 46.5% to <strong>55.8%</strong>, demonstrating significant progress.</p>

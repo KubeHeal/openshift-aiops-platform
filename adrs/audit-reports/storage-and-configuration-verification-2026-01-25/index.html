@@ -1900,35 +1900,31 @@
 <strong>Verification Date</strong>: 2026-01-25</p>
 <h4 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">&para;</a></h4>
 <p><strong>NooBaa Deployment</strong>:
-<code>bash
-$ oc get noobaa -A
+<pre class="highlight"><code class="language-bash">$ oc get noobaa -A
 NAMESPACE           NAME     S3-ENDPOINTS                    PHASE   AGE
-openshift-storage   noobaa   ["https://10.0.55.170:31115"]   Ready   11h</code></p>
+openshift-storage   noobaa   ["https://10.0.55.170:31115"]   Ready   11h</code></pre></p>
 <p><strong>NooBaa Status</strong>:
 - ✅ Phase: <strong>Ready</strong>
 - ✅ Status: <strong>Available: True, Degraded: False</strong>
 - ✅ Endpoints Ready Count: 1
 - ✅ 4 NooBaa pods running: core, db, endpoint, operator</p>
 <p><strong>NooBaa Pods</strong>:
-<code>bash
-$ oc get pods -n openshift-storage | grep noobaa
+<pre class="highlight"><code class="language-bash">$ oc get pods -n openshift-storage | grep noobaa
 noobaa-core-0                        2/2   Running   2   11h
 noobaa-db-pg-0                       1/1   Running   1   11h
 noobaa-endpoint-5d64976cf7-mdbwv     1/1   Running   1   11h
-noobaa-operator-5b748544fd-vzdfh     1/1   Running   1   11h</code></p>
+noobaa-operator-5b748544fd-vzdfh     1/1   Running   1   11h</code></pre></p>
 <p><strong>S3 Configuration</strong>:
-<code>bash
-$ oc get configmap notebook-s3-config -n self-healing-platform
+<pre class="highlight"><code class="language-bash">$ oc get configmap notebook-s3-config -n self-healing-platform
 MODEL_BUCKET: model-storage
 S3_ENDPOINT: https://s3.openshift-storage.svc.cluster.local
 S3_REGION: us-east-1
 TRAINING_DATA_BUCKET: training-data
-INFERENCE_RESULTS_BUCKET: inference-results</code></p>
+INFERENCE_RESULTS_BUCKET: inference-results</code></pre></p>
 <p><strong>ObjectBucketClaim</strong>:
-<code>bash
-$ oc get objectbucketclaim -A
+<pre class="highlight"><code class="language-bash">$ oc get objectbucketclaim -A
 NAMESPACE               NAME            STORAGE-CLASS                 PHASE     AGE
-self-healing-platform   model-storage   openshift-storage.noobaa.io   Pending   10h</code></p>
+self-healing-platform   model-storage   openshift-storage.noobaa.io   Pending   10h</code></pre></p>
 <p><strong>Secrets</strong>:
 - ✅ <code>model-storage</code> secret (3 items) - S3 credentials from ObjectBucketClaim
 - ✅ <code>model-storage-config</code> secret (9 items) - Managed by ExternalSecrets (ADR-024)</p>
@@ -1948,24 +1944,20 @@ The ADR's decision to use OpenShift Data Foundation with NooBaa for S3-compatibl
 <strong>Verification Date</strong>: 2026-01-25</p>
 <h4 id="evidence_1">Evidence<a class="headerlink" href="#evidence_1" title="Permanent link">&para;</a></h4>
 <p><strong>Route Configuration</strong>:
-<code>bash
-$ oc get route self-healing-workbench -n self-healing-platform
+<pre class="highlight"><code class="language-bash">$ oc get route self-healing-workbench -n self-healing-platform
 NAME                     HOST                                                     TLS
-self-healing-workbench   self-healing-workbench-self-healing-platform.apps...   reencrypt</code></p>
+self-healing-workbench   self-healing-workbench-self-healing-platform.apps...   reencrypt</code></pre></p>
 <p><strong>TLS Configuration</strong>:
-<code>yaml
-tls:
+<pre class="highlight"><code class="language-yaml">tls:
   insecureEdgeTerminationPolicy: Redirect
-  termination: reencrypt</code></p>
+  termination: reencrypt</code></pre></p>
 <p><strong>Service Configuration</strong>:
-<code>bash
-$ oc get service self-healing-workbench-tls -n self-healing-platform
+<pre class="highlight"><code class="language-bash">$ oc get service self-healing-workbench-tls -n self-healing-platform
 NAME                         TYPE        CLUSTER-IP       PORT
-self-healing-workbench-tls   ClusterIP   172.30.115.182   443/TCP (oauth-proxy)</code></p>
+self-healing-workbench-tls   ClusterIP   172.30.115.182   443/TCP (oauth-proxy)</code></pre></p>
 <p><strong>Route Accessibility Test</strong>:
-<code>bash
-$ curl -sk https://self-healing-workbench-self-healing-platform.apps.cluster-pch5l...
-&lt;a href="https://oauth-openshift.apps.cluster-pch5l.../oauth/authorize?..."&gt;Found&lt;/a&gt;</code>
+<pre class="highlight"><code class="language-bash">$ curl -sk https://self-healing-workbench-self-healing-platform.apps.cluster-pch5l...
+&lt;a href="https://oauth-openshift.apps.cluster-pch5l.../oauth/authorize?..."&gt;Found&lt;/a&gt;</code></pre>
 - ✅ Route accessible
 - ✅ Redirects to OAuth authentication
 - ✅ TLS re-encryption enabled
@@ -1985,13 +1977,12 @@ The ADR's decision is to use direct hostname-based access for notebooks, avoidin
 <strong>Verification Date</strong>: 2026-01-25</p>
 <h4 id="evidence_2">Evidence<a class="headerlink" href="#evidence_2" title="Permanent link">&para;</a></h4>
 <p><strong>Persistent Volume Claims</strong>:
-<code>bash
-$ oc get pvc -n self-healing-platform
+<pre class="highlight"><code class="language-bash">$ oc get pvc -n self-healing-platform
 NAME                            STATUS   STORAGECLASS                ACCESSMODE      SIZE
 model-artifacts-development     Pending  gp3-csi                     ReadWriteOnce   50Gi
 model-storage-pvc               Bound    ocs-storagecluster-cephfs   ReadWriteMany   10Gi
 self-healing-data-development   Pending  gp3-csi                     ReadWriteOnce   10Gi
-workbench-data-development      Bound    gp3-csi                     ReadWriteOnce   20Gi</code></p>
+workbench-data-development      Bound    gp3-csi                     ReadWriteOnce   20Gi</code></pre></p>
 <p><strong>Storage Class Distribution</strong>:
 - ✅ <strong>gp3-csi (AWS EBS)</strong>: 3 PVCs (ReadWriteOnce) - Primary strategy
   - workbench-data-development: 20Gi (Bound)
@@ -2018,44 +2009,37 @@ The storage strategy is fully implemented with gp3-csi as the primary storage cl
 <strong>Verification Date</strong>: 2026-01-25</p>
 <h4 id="evidence_3">Evidence<a class="headerlink" href="#evidence_3" title="Permanent link">&para;</a></h4>
 <p><strong>Init Container Deployment</strong>:
-```bash
-$ oc get deployment -n self-healing-platform -o jsonpath='{range .items[<em>]}{.metadata.name}{"\t"}{.spec.template.spec.initContainers[</em>].name}{"\n"}{end}'</p>
-<p>anomaly-detector-predictor
+<pre class="highlight"><code class="language-bash">$ oc get deployment -n self-healing-platform -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.template.spec.initContainers[*].name}{"\n"}{end}'
+
+anomaly-detector-predictor
 coordination-engine         wait-for-prometheus wait-for-argocd
 mcp-server                  wait-for-coordination-engine wait-for-prometheus
-predictive-analytics-predictor
-```</p>
+predictive-analytics-predictor</code></pre></p>
 <p><strong>Pattern 1: Init Container Pattern</strong> ✅ IMPLEMENTED</p>
 <p><strong>MCP Server Init Containers</strong>:
-```yaml
-initContainers:
+<pre class="highlight"><code class="language-yaml">initContainers:
 - name: wait-for-coordination-engine
   command: ["/usr/local/bin/healthcheck", "http://coordination-engine:8080/health"]
-  image: quay.io/takinosh/openshift-cluster-health-mcp:4.18-latest</p>
-<ul>
-<li>name: wait-for-prometheus
-  command: ["/usr/local/bin/healthcheck", "--bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token", ...]
-```</li>
-</ul>
+  image: quay.io/takinosh/openshift-cluster-health-mcp:4.18-latest
+
+- name: wait-for-prometheus
+  command: ["/usr/local/bin/healthcheck", "--bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token", ...]</code></pre></p>
 <p><strong>Coordination Engine Init Containers</strong>:
-```yaml
-initContainers:
+<pre class="highlight"><code class="language-yaml">initContainers:
 - name: wait-for-prometheus
   command:
     - sh
     - -c
     - |
       echo "Waiting for Prometheus service to be available..."
-      until curl -k -sf -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://prometheus-k8s.openshift-monitoring.svc:9091/api/v1/status/config &gt;/dev/null 2&gt;&1; do
+      until curl -k -sf -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://prometheus-k8s.openshift-monitoring.svc:9091/api/v1/status/config &gt;/dev/null 2&gt;&amp;1; do
         echo "Prometheus not ready yet, retrying in 10s..."
         sleep 10
       done
-      echo "Prometheus is ready!"</p>
-<ul>
-<li>name: wait-for-argocd
-  [Similar pattern for ArgoCD dependency]
-```</li>
-</ul>
+      echo "Prometheus is ready!"
+
+- name: wait-for-argocd
+  [Similar pattern for ArgoCD dependency]</code></pre></p>
 <p><strong>Pattern 2: Authenticated Cross-Namespace Checks</strong> ✅ IMPLEMENTED</p>
 <p><strong>Evidence</strong>:
 - ✅ Bearer token authentication for Prometheus health checks
@@ -2064,11 +2048,11 @@ initContainers:
 - ✅ Proper timeout configuration (--timeout=10s)</p>
 <p><strong>Pattern 3: Dependency Chain Management</strong> ✅ IMPLEMENTED</p>
 <p><strong>Dependency Chain</strong>:
-<code>Prometheus (openshift-monitoring)
+<pre class="highlight"><code>Prometheus (openshift-monitoring)
     ↓
 Coordination Engine (self-healing-platform)
     ↓
-MCP Server (self-healing-platform)</code></p>
+MCP Server (self-healing-platform)</code></pre></p>
 <ul>
 <li>✅ Coordination Engine waits for Prometheus AND ArgoCD</li>
 <li>✅ MCP Server waits for Coordination Engine AND Prometheus</li>
@@ -2107,17 +2091,15 @@ All five architectural patterns from ADR-043 are fully implemented:
 <h3 id="devworkspace-operator-v0380">DevWorkspace Operator (v0.38.0)<a class="headerlink" href="#devworkspace-operator-v0380" title="Permanent link">&para;</a></h3>
 <p><strong>Status</strong>: Deployed as supporting infrastructure for RHODS/OpenShift AI</p>
 <p><strong>Evidence</strong>:
-<code>bash
-$ oc get csv -A | grep devworkspace
-devworkspace-operator.v0.38.0    DevWorkspace Operator    0.38.0    Succeeded</code></p>
+<pre class="highlight"><code class="language-bash">$ oc get csv -A | grep devworkspace
+devworkspace-operator.v0.38.0    DevWorkspace Operator    0.38.0    Succeeded</code></pre></p>
 <p><strong>Purpose</strong>: Provides workspace management for Jupyter notebooks and development environments. Required by OpenShift AI (ADR-003) which is already marked as implemented.</p>
 <hr />
 <h3 id="web-terminal-v1130">Web Terminal (v1.13.0)<a class="headerlink" href="#web-terminal-v1130" title="Permanent link">&para;</a></h3>
 <p><strong>Status</strong>: Deployed as supporting infrastructure</p>
 <p><strong>Evidence</strong>:
-<code>bash
-$ oc get csv -A | grep web-terminal
-web-terminal.v1.13.0    Web Terminal    1.13.0    Succeeded</code></p>
+<pre class="highlight"><code class="language-bash">$ oc get csv -A | grep web-terminal
+web-terminal.v1.13.0    Web Terminal    1.13.0    Succeeded</code></pre></p>
 <p><strong>Purpose</strong>: Provides browser-based terminal access to OpenShift. Convenience feature, not part of any specific ADR requirement.</p>
 <hr />
 <h2 id="cross-validation-with-existing-audits">Cross-Validation with Existing Audits<a class="headerlink" href="#cross-validation-with-existing-audits" title="Permanent link">&para;</a></h2>

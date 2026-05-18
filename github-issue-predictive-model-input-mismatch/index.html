@@ -1620,8 +1620,53 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#option-3-client-side-feature-engineering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 3: Client-Side Feature Engineering
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-4-kserve-transformer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 4: KServe Transformer
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acceptance-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acceptance Criteria
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workaround" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workaround
+    </span>
+  </a>
   
 </li>
       
@@ -1651,7 +1696,7 @@
 <h1 id="predictive-analytics-model-input-mismatch-with-coordination-engine">Predictive Analytics Model Input Mismatch with Coordination Engine<a class="headerlink" href="#predictive-analytics-model-input-mismatch-with-coordination-engine" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <p>The <code>predictive-analytics</code> KServe model expects 3264 features, but the coordination engine sends only 4 features (raw metrics), causing prediction failures with error:</p>
-<p><code>X has 4 features, but StandardScaler is expecting 3264 features as input.</code></p>
+<pre class="highlight"><code>X has 4 features, but StandardScaler is expecting 3264 features as input.</code></pre>
 <h2 id="environment">Environment<a class="headerlink" href="#environment" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>OpenShift</strong>: 4.18.21</li>
@@ -1670,8 +1715,7 @@
 - 5 metrics × ~136 engineered features per metric × 24 lookback window</p>
 <h3 id="inference-side-coordination-engine">Inference Side (Coordination Engine)<a class="headerlink" href="#inference-side-coordination-engine" title="Permanent link">&para;</a></h3>
 <p>The coordination engine's KServe client (<code>pkg/clients/kserve.go:buildPredictiveAnalyticsRequest</code>) sends raw metrics without feature engineering:</p>
-<p><code>go
-func (c *KServeClient) buildPredictiveAnalyticsRequest(req *PredictiveAnalyticsRequest) *InferenceRequest {
+<pre class="highlight"><code class="language-go">func (c *KServeClient) buildPredictiveAnalyticsRequest(req *PredictiveAnalyticsRequest) *InferenceRequest {
     var data [][]interface{}
     for _, metric := range req.Metrics {
         row := make([]interface{}, len(metric.Values))
@@ -1681,42 +1725,37 @@ func (c *KServeClient) buildPredictiveAnalyticsRequest(req *PredictiveAnalyticsR
         data = append(data, row)
     }
     // ...
-}</code></p>
+}</code></pre>
 <p>This sends only 4 features (cpu, memory, disk, network values).</p>
 <h2 id="logs">Logs<a class="headerlink" href="#logs" title="Permanent link">&para;</a></h2>
-<p><code>json
-{"error":"model predictive-analytics returned status 500: {\"error\":\"X has 4 features, but StandardScaler is expecting 3264 features as input.\"}","level":"error","model":"predictive-analytics","msg":"KServe prediction failed","time":"2026-01-28T23:45:12Z"}</code></p>
+<pre class="highlight"><code class="language-json">{"error":"model predictive-analytics returned status 500: {\"error\":\"X has 4 features, but StandardScaler is expecting 3264 features as input.\"}","level":"error","model":"predictive-analytics","msg":"KServe prediction failed","time":"2026-01-28T23:45:12Z"}</code></pre>
 <h2 id="proposed-solutions">Proposed Solutions<a class="headerlink" href="#proposed-solutions" title="Permanent link">&para;</a></h2>
 <h3 id="option-1-feature-engineering-preprocessor-service-recommended">Option 1: Feature Engineering Preprocessor Service (Recommended)<a class="headerlink" href="#option-1-feature-engineering-preprocessor-service-recommended" title="Permanent link">&para;</a></h3>
 <p>Create a preprocessing service that sits between the coordination engine and KServe:</p>
-<p><code>Coordination Engine → Feature Engineering Service → KServe Model
-         (4 raw metrics)     (transforms to 3264)      (prediction)</code></p>
+<pre class="highlight"><code>Coordination Engine → Feature Engineering Service → KServe Model
+         (4 raw metrics)     (transforms to 3264)      (prediction)</code></pre>
 <p><strong>Pros</strong>: Clean separation, reusable, model-agnostic
 <strong>Cons</strong>: Additional service to deploy/maintain</p>
 <h3 id="option-2-simpler-model-architecture">Option 2: Simpler Model Architecture<a class="headerlink" href="#option-2-simpler-model-architecture" title="Permanent link">&para;</a></h3>
 <p>Train a model that works with raw metrics directly (without extensive feature engineering):</p>
-<p>```python</p>
-<h1 id="simple-sklearn-pipeline-without-lookback-features">Simple sklearn Pipeline without lookback features<a class="headerlink" href="#simple-sklearn-pipeline-without-lookback-features" title="Permanent link">&para;</a></h1>
-<p>pipeline = Pipeline([
+<pre class="highlight"><code class="language-python"># Simple sklearn Pipeline without lookback features
+pipeline = Pipeline([
     ('scaler', StandardScaler()),
     ('regressor', RandomForestRegressor())
-])</p>
-<h1 id="input-4-5-raw-metrics">Input: 4-5 raw metrics<a class="headerlink" href="#input-4-5-raw-metrics" title="Permanent link">&para;</a></h1>
-<p>```</p>
+])
+# Input: 4-5 raw metrics</code></pre>
 <p><strong>Pros</strong>: Simple, no changes to coordination engine needed
 <strong>Cons</strong>: Potentially lower accuracy without temporal features</p>
 <h3 id="option-3-client-side-feature-engineering">Option 3: Client-Side Feature Engineering<a class="headerlink" href="#option-3-client-side-feature-engineering" title="Permanent link">&para;</a></h3>
 <p>Add feature engineering logic to the coordination engine's Go code:</p>
-<p><code>go
-func (c *KServeClient) engineerFeatures(metrics []MetricData) [][]float64 {
+<pre class="highlight"><code class="language-go">func (c *KServeClient) engineerFeatures(metrics []MetricData) [][]float64 {
     // Implement lag, rolling, trend features in Go
-}</code></p>
+}</code></pre>
 <p><strong>Pros</strong>: No additional services
 <strong>Cons</strong>: Duplicates Python logic in Go, harder to maintain</p>
 <h3 id="option-4-kserve-transformer">Option 4: KServe Transformer<a class="headerlink" href="#option-4-kserve-transformer" title="Permanent link">&para;</a></h3>
 <p>Use KServe's built-in Transformer feature to preprocess inputs:</p>
-<p><code>yaml
-apiVersion: serving.kserve.io/v1beta1
+<pre class="highlight"><code class="language-yaml">apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 spec:
   transformer:
@@ -1725,7 +1764,7 @@ spec:
       name: transformer
   predictor:
     sklearn:
-      storageUri: pvc://model-storage-pvc/predictive-analytics</code></p>
+      storageUri: pvc://model-storage-pvc/predictive-analytics</code></pre>
 <p><strong>Pros</strong>: KServe-native, clean architecture
 <strong>Cons</strong>: Requires custom transformer image</p>
 <h2 id="acceptance-criteria">Acceptance Criteria<a class="headerlink" href="#acceptance-criteria" title="Permanent link">&para;</a></h2>
@@ -1743,11 +1782,10 @@ spec:
 </ul>
 <h2 id="workaround">Workaround<a class="headerlink" href="#workaround" title="Permanent link">&para;</a></h2>
 <p>Until fixed, use the <strong>PromQL-based linear projection</strong> method shown by Lightspeed:</p>
-<p>```promql</p>
-<h1 id="current-cluster-cpu">Current cluster CPU %<a class="headerlink" href="#current-cluster-cpu" title="Permanent link">&para;</a></h1>
-<p>sum(rate(container_cpu_usage_seconds_total[5m])) / sum(kube_node_status_capacity{resource="cpu"}) * 100</p>
-<h1 id="linear-projection-slope-hours_until_target-current_value">Linear projection: slope * hours_until_target + current_value<a class="headerlink" href="#linear-projection-slope-hours_until_target-current_value" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-promql"># Current cluster CPU %
+sum(rate(container_cpu_usage_seconds_total[5m])) / sum(kube_node_status_capacity{resource="cpu"}) * 100
+
+# Linear projection: slope * hours_until_target + current_value</code></pre>
 
 
 

@@ -1760,6 +1760,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1912,8 +1939,7 @@
 <p>Sample interval: <strong>5 minutes</strong> (matches production inference cadence)</p>
 <h3 id="training-configuration">Training Configuration<a class="headerlink" href="#training-configuration" title="Permanent link">&para;</a></h3>
 <p><strong>NotebookValidationJob Settings</strong>:
-<code>yaml
-name: isolation-forest-implementation-validation
+<pre class="highlight"><code class="language-yaml">name: isolation-forest-implementation-validation
 notebook: notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb
 tier: tier2
 blockNextWave: true  # Ensure model training completes before dependent services
@@ -1926,10 +1952,9 @@ validationConfig:
 comparisonConfig:
   strategy: normalized
   floatingPointTolerance: 0.01
-  ignoreTimestamps: true</code></p>
+  ignoreTimestamps: true</code></pre></p>
 <p><strong>Environment Variables</strong>:
-<code>yaml
-env:
+<pre class="highlight"><code class="language-yaml">env:
   - name: DATA_SOURCE
     value: "hybrid"  # synthetic|prometheus|hybrid
   - name: PROMETHEUS_URL
@@ -1937,17 +1962,16 @@ env:
   - name: TRAINING_DAYS
     value: "7"  # Prometheus lookback window
   - name: ANOMALY_RATE
-    value: "0.03"  # 3% synthetic anomalies</code></p>
+    value: "0.03"  # 3% synthetic anomalies</code></pre></p>
 <h3 id="model-parameters">Model Parameters<a class="headerlink" href="#model-parameters" title="Permanent link">&para;</a></h3>
 <p><strong>Isolation Forest Hyperparameters</strong>:
-<code>python
-IsolationForest(
+<pre class="highlight"><code class="language-python">IsolationForest(
     n_estimators=100,        # Number of trees
     max_samples='auto',      # Subsample size
     contamination=0.03,      # Expected anomaly rate (3%)
     random_state=42,         # Reproducibility
     n_jobs=-1                # Parallel processing
-)</code></p>
+)</code></pre></p>
 <p><strong>Feature Engineering</strong>:
 - Window size: 24 samples (2 hours at 5-min intervals)
 - Rolling statistics: mean, std, min, max
@@ -2067,27 +2091,30 @@ IsolationForest(
 <li>Add troubleshooting runbook</li>
 </ol>
 <h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="verify-notebookvalidationjob-exists">Verify NotebookValidationJob exists<a class="headerlink" href="#verify-notebookvalidationjob-exists" title="Permanent link">&para;</a></h1>
-<p>oc get notebookvalidationjobs -n self-healing-platform | grep isolation-forest</p>
-<h1 id="manually-trigger-training">Manually trigger training<a class="headerlink" href="#manually-trigger-training" title="Permanent link">&para;</a></h1>
-<p>oc create job --from=notebookvalidationjob/isolation-forest-implementation-validation \
-  manual-train-$(date +%s) -n self-healing-platform</p>
-<h1 id="monitor-training-progress">Monitor training progress<a class="headerlink" href="#monitor-training-progress" title="Permanent link">&para;</a></h1>
-<p>oc logs -f job/manual-train-* -n self-healing-platform</p>
-<h1 id="verify-model-file-updated">Verify model file updated<a class="headerlink" href="#verify-model-file-updated" title="Permanent link">&para;</a></h1>
-<p>oc exec deployment/model-troubleshooting-utilities -n self-healing-platform -- \
-  ls -lh /mnt/models/anomaly-detector/model.pkl</p>
-<h1 id="verify-inferenceservice-restarted">Verify InferenceService restarted<a class="headerlink" href="#verify-inferenceservice-restarted" title="Permanent link">&para;</a></h1>
-<p>oc get pods -l serving.kserve.io/inferenceservice=anomaly-detector \
-  -n self-healing-platform --sort-by=.metadata.creationTimestamp</p>
-<h1 id="test-model-endpoint">Test model endpoint<a class="headerlink" href="#test-model-endpoint" title="Permanent link">&para;</a></h1>
-<p>PREDICTOR_IP=$(oc get pod -l serving.kserve.io/inferenceservice=anomaly-detector \
+<pre class="highlight"><code class="language-bash"># Verify NotebookValidationJob exists
+oc get notebookvalidationjobs -n self-healing-platform | grep isolation-forest
+
+# Manually trigger training
+oc create job --from=notebookvalidationjob/isolation-forest-implementation-validation \
+  manual-train-$(date +%s) -n self-healing-platform
+
+# Monitor training progress
+oc logs -f job/manual-train-* -n self-healing-platform
+
+# Verify model file updated
+oc exec deployment/model-troubleshooting-utilities -n self-healing-platform -- \
+  ls -lh /mnt/models/anomaly-detector/model.pkl
+
+# Verify InferenceService restarted
+oc get pods -l serving.kserve.io/inferenceservice=anomaly-detector \
+  -n self-healing-platform --sort-by=.metadata.creationTimestamp
+
+# Test model endpoint
+PREDICTOR_IP=$(oc get pod -l serving.kserve.io/inferenceservice=anomaly-detector \
   -o jsonpath='{.items[0].status.podIP}')
 curl -X POST http://${PREDICTOR_IP}:8080/v1/models/anomaly-detector:predict \
   -H 'Content-Type: application/json' \
-  -d '{"instances": [[0.5, 0.6, 0.4, 100, 80]]}'
-```</p>
+  -d '{"instances": [[0.5, 0.6, 0.4, 100, 80]]}'</code></pre>
 <h2 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../004-kserve-model-serving/">ADR-004: KServe for Model Serving Infrastructure</a></li>

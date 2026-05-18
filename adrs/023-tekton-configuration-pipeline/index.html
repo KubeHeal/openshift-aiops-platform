@@ -1611,8 +1611,146 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#phase-2-tekton-configuration-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Tekton Configuration Pipeline
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-ansible-prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Ansible Prerequisites
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-external-secrets-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: External Secrets Operator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-tekton-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Tekton Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-user-trains-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: User Trains Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-user-uploads-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 5: User Uploads Models
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mitigations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-status_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Status
+    </span>
+  </a>
   
 </li>
       
@@ -1676,15 +1814,15 @@
 <h2 id="rationale">Rationale<a class="headerlink" href="#rationale" title="Permanent link">&para;</a></h2>
 <h3 id="why-external-secrets-instead-of-tekton-patching">Why External Secrets Instead of Tekton Patching?<a class="headerlink" href="#why-external-secrets-instead-of-tekton-patching" title="Permanent link">&para;</a></h3>
 <p><strong>ArgoCD GitOps Conflict:</strong>
-<code>Tekton patches secret (real credentials)
+<pre class="highlight"><code>Tekton patches secret (real credentials)
   ↓
 ArgoCD detects drift (cluster ≠ Git)
   ↓
 ArgoCD reverts secret (selfHeal: true)
   ↓
-❌ Tekton changes lost</code></p>
+❌ Tekton changes lost</code></pre></p>
 <p><strong>External Secrets Solution:</strong>
-<code>ObjectBucketClaim creates secret (real credentials)
+<pre class="highlight"><code>ObjectBucketClaim creates secret (real credentials)
   ↓
 External Secrets reads ObjectBucketClaim
   ↓
@@ -1692,7 +1830,7 @@ External Secrets creates model-storage-config secret
   ↓
 ArgoCD manages ExternalSecret (not Secret)
   ↓
-✅ No conflicts</code></p>
+✅ No conflicts</code></pre></p>
 <h3 id="benefits">Benefits<a class="headerlink" href="#benefits" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>GitOps-Compliant</strong> - ArgoCD manages ExternalSecret, not Secret</li>
@@ -1705,9 +1843,8 @@ ArgoCD manages ExternalSecret (not Secret)
 <h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
 <h3 id="phase-1-external-secrets-setup-helm">Phase 1: External Secrets Setup (Helm)<a class="headerlink" href="#phase-1-external-secrets-setup-helm" title="Permanent link">&para;</a></h3>
 <p><strong>Create ExternalSecret template:</strong>
-```yaml</p>
-<h1 id="chartshubtemplatesexternalsecrets-model-storageyaml">charts/hub/templates/externalsecrets-model-storage.yaml<a class="headerlink" href="#chartshubtemplatesexternalsecrets-model-storageyaml" title="Permanent link">&para;</a></h1>
-<p>apiVersion: external-secrets.io/v1beta1
+<pre class="highlight"><code class="language-yaml"># charts/hub/templates/externalsecrets-model-storage.yaml
+apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
   name: model-storage-config
@@ -1728,12 +1865,10 @@ spec:
   - secretKey: AWS_SECRET_ACCESS_KEY
     remoteRef:
       key: model-storage-obc-secret
-      property: AWS_SECRET_ACCESS_KEY
-```</p>
+      property: AWS_SECRET_ACCESS_KEY</code></pre></p>
 <p><strong>Create SecretStore template:</strong>
-```yaml</p>
-<h1 id="chartshubtemplatessecretstore-kubernetesyaml">charts/hub/templates/secretstore-kubernetes.yaml<a class="headerlink" href="#chartshubtemplatessecretstore-kubernetesyaml" title="Permanent link">&para;</a></h1>
-<p>apiVersion: external-secrets.io/v1beta1
+<pre class="highlight"><code class="language-yaml"># charts/hub/templates/secretstore-kubernetes.yaml
+apiVersion: external-secrets.io/v1beta1
 kind: SecretStore
 metadata:
   name: kubernetes-secret-store
@@ -1744,8 +1879,7 @@ spec:
       auth:
         serviceAccount:
           name: external-secrets-sa
-      remoteNamespace: openshift-storage
-```</p>
+      remoteNamespace: openshift-storage</code></pre></p>
 <h3 id="phase-2-tekton-configuration-pipeline">Phase 2: Tekton Configuration Pipeline<a class="headerlink" href="#phase-2-tekton-configuration-pipeline" title="Permanent link">&para;</a></h3>
 <p><strong>Tekton Tasks (4):</strong>
 1. <strong>validate-s3-connectivity</strong> - Test S3 endpoint
@@ -1753,8 +1887,7 @@ spec:
 3. <strong>reconcile-inferenceservices</strong> - Trigger reconciliation
 4. <strong>validate-model-serving</strong> - Health checks</p>
 <p><strong>Tekton Pipeline:</strong>
-<code>yaml
-apiVersion: tekton.dev/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: s3-configuration-pipeline
@@ -1774,33 +1907,33 @@ spec:
   - name: validate-serving
     taskRef:
       name: validate-model-serving
-    runAfter: [reconcile-services]</code></p>
+    runAfter: [reconcile-services]</code></pre></p>
 <hr />
 <h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h2>
 <h3 id="phase-1-ansible-prerequisites">Phase 1: Ansible Prerequisites<a class="headerlink" href="#phase-1-ansible-prerequisites" title="Permanent link">&para;</a></h3>
-<p><code>Create namespace
+<pre class="highlight"><code>Create namespace
 Create ExternalSecret
 Helm deployment
 ├─ Creates NooBaa
 ├─ Creates ObjectBucketClaim
-└─ Creates InferenceServices (pending)</code></p>
+└─ Creates InferenceServices (pending)</code></pre>
 <h3 id="phase-2-external-secrets-operator">Phase 2: External Secrets Operator<a class="headerlink" href="#phase-2-external-secrets-operator" title="Permanent link">&para;</a></h3>
-<p><code>Reads ObjectBucketClaim secret
+<pre class="highlight"><code>Reads ObjectBucketClaim secret
 Creates model-storage-config secret
-Refreshes every 1 hour</code></p>
+Refreshes every 1 hour</code></pre>
 <h3 id="phase-3-tekton-configuration">Phase 3: Tekton Configuration<a class="headerlink" href="#phase-3-tekton-configuration" title="Permanent link">&para;</a></h3>
-<p><code>Validate S3 connectivity
+<pre class="highlight"><code>Validate S3 connectivity
 Upload placeholder models
 Reconcile InferenceServices
-Run health checks</code></p>
+Run health checks</code></pre>
 <h3 id="phase-4-user-trains-models">Phase 4: User Trains Models<a class="headerlink" href="#phase-4-user-trains-models" title="Permanent link">&para;</a></h3>
-<p><code>Run Phase 2 notebooks
+<pre class="highlight"><code>Run Phase 2 notebooks
 Train models locally
-Save to /opt/app-root/src/models/</code></p>
+Save to /opt/app-root/src/models/</code></pre>
 <h3 id="phase-5-user-uploads-models">Phase 5: User Uploads Models<a class="headerlink" href="#phase-5-user-uploads-models" title="Permanent link">&para;</a></h3>
-<p><code>Get credentials from environment
+<pre class="highlight"><code>Get credentials from environment
 Upload trained models to S3
-Test model endpoints</code></p>
+Test model endpoints</code></pre>
 <hr />
 <h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>

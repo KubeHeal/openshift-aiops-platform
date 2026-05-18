@@ -1603,13 +1603,211 @@
   
 </li>
         
-      </ul>
-    </nav>
+          <li class="md-nav__item">
+  <a href="#2-prometheus-mode-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Prometheus Mode (Production)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-hybrid-mode-staging-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Hybrid Mode (Staging &amp; Validation)
+    </span>
+  </a>
   
 </li>
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-specific-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model-Specific Recommendations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-query-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prometheus Query Strategy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rationale" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rationale
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rationale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-not-synthetic-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Not Synthetic-Only
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-not-prometheus-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Not Prometheus-Only
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-hybrid-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Hybrid Approach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-environment-variable-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Environment Variable Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#neutral" class="md-nav__link">
+    <span class="md-ellipsis">
+      Neutral
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#files-createdmodified" class="md-nav__link">
+    <span class="md-ellipsis">
+      Files Created/Modified
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Template
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
   
 </li>
       
@@ -1693,8 +1891,7 @@ A model trained on synthetic CPU patterns (smooth sine waves) fails to detect an
 </tbody>
 </table>
 <p>Configurable via environment variable:
-<code>bash
-export DATA_SOURCE=hybrid  # synthetic|prometheus|hybrid</code></p>
+<pre class="highlight"><code class="language-bash">export DATA_SOURCE=hybrid  # synthetic|prometheus|hybrid</code></pre></p>
 <h3 id="mode-details">Mode Details<a class="headerlink" href="#mode-details" title="Permanent link">&para;</a></h3>
 <h4 id="1-synthetic-mode-development">1. Synthetic Mode (Development)<a class="headerlink" href="#1-synthetic-mode-development" title="Permanent link">&para;</a></h4>
 <p><strong>When to Use</strong>:
@@ -1708,25 +1905,23 @@ export DATA_SOURCE=hybrid  # synthetic|prometheus|hybrid</code></p>
 - ✅ Controlled anomaly patterns (ground truth labels)
 - ✅ No dependencies on external services</p>
 <p><strong>Data Characteristics</strong>:
-```python</p>
-<h1 id="synthetic-time-series-patterns">Synthetic time series patterns<a class="headerlink" href="#synthetic-time-series-patterns" title="Permanent link">&para;</a></h1>
-<p>patterns = {
+<pre class="highlight"><code class="language-python"># Synthetic time series patterns
+patterns = {
     'cpu_usage': sine_wave + daily_seasonality + weekly_seasonality + noise,
     'memory_usage': linear_trend + daily_seasonality + noise,
     'pod_restarts': poisson_process(lambda=0.01),  # Rare events
     'network_traffic': sine_wave + burst_anomalies + noise
-}</p>
-<h1 id="injected-anomalies-3-of-samples">Injected anomalies (3% of samples)<a class="headerlink" href="#injected-anomalies-3-of-samples" title="Permanent link">&para;</a></h1>
-<p>anomalies = {
+}
+
+# Injected anomalies (3% of samples)
+anomalies = {
     'cpu_spike': gaussian_spike(mean=0.9, std=0.05),
     'memory_leak': linear_increase(slope=0.01),
     'restart_storm': poisson_burst(lambda=5.0),
     'network_ddos': exponential_spike(scale=10.0)
-}
-```</p>
+}</code></pre></p>
 <p><strong>Configuration</strong>:
-<code>yaml
-env:
+<pre class="highlight"><code class="language-yaml">env:
   - name: DATA_SOURCE
     value: "synthetic"
   - name: N_SAMPLES
@@ -1734,7 +1929,7 @@ env:
   - name: ANOMALY_RATE
     value: "0.03"  # 3% anomalies
   - name: RANDOM_SEED
-    value: "42"  # Reproducibility</code></p>
+    value: "42"  # Reproducibility</code></pre></p>
 <h4 id="2-prometheus-mode-production">2. Prometheus Mode (Production)<a class="headerlink" href="#2-prometheus-mode-production" title="Permanent link">&para;</a></h4>
 <p><strong>When to Use</strong>:
 - Production cluster with Prometheus deployed
@@ -1747,21 +1942,19 @@ env:
 - ✅ Production workload characteristics
 - ✅ Adapts to cluster growth over time</p>
 <p><strong>Data Characteristics</strong>:
-```python</p>
-<h1 id="prometheus-queries-30-day-lookback-for-predictive-analytics">Prometheus queries (30-day lookback for predictive-analytics)<a class="headerlink" href="#prometheus-queries-30-day-lookback-for-predictive-analytics" title="Permanent link">&para;</a></h1>
-<p>queries = {
+<pre class="highlight"><code class="language-python"># Prometheus queries (30-day lookback for predictive-analytics)
+queries = {
     'cpu_usage': 'avg(rate(node_cpu_seconds_total{mode!="idle"}[5m]))',
     'memory_usage': 'avg(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))',
     'pod_restarts': 'sum(rate(kube_pod_container_status_restarts_total[5m]))',
     'network_in': 'sum(rate(container_network_receive_bytes_total[5m]))',
     'network_out': 'sum(rate(container_network_transmit_bytes_total[5m]))'
-}</p>
-<h1 id="20-synthetic-anomalies-still-injected-for-labeled-training">20% synthetic anomalies still injected for labeled training<a class="headerlink" href="#20-synthetic-anomalies-still-injected-for-labeled-training" title="Permanent link">&para;</a></h1>
-<h1 id="prometheus-data-is-mostly-normal-needs-anomaly-examples">(Prometheus data is mostly normal, needs anomaly examples)<a class="headerlink" href="#prometheus-data-is-mostly-normal-needs-anomaly-examples" title="Permanent link">&para;</a></h1>
-<p>```</p>
+}
+
+# 20% synthetic anomalies still injected for labeled training
+# (Prometheus data is mostly normal, needs anomaly examples)</code></pre></p>
 <p><strong>Configuration</strong>:
-<code>yaml
-env:
+<pre class="highlight"><code class="language-yaml">env:
   - name: DATA_SOURCE
     value: "prometheus"
   - name: PROMETHEUS_URL
@@ -1770,19 +1963,17 @@ env:
     value: "30"  # Historical lookback (predictive-analytics)
     # value: "7"   # For anomaly-detector (shorter lookback)
   - name: ANOMALY_RATE
-    value: "0.03"  # Still inject 3% synthetic anomalies</code></p>
+    value: "0.03"  # Still inject 3% synthetic anomalies</code></pre></p>
 <p><strong>Fallback Behavior</strong>:
-```python</p>
-<h1 id="if-prometheus-unavailable-fall-back-to-synthetic">If Prometheus unavailable, fall back to synthetic<a class="headerlink" href="#if-prometheus-unavailable-fall-back-to-synthetic" title="Permanent link">&para;</a></h1>
-<p>try:
+<pre class="highlight"><code class="language-python"># If Prometheus unavailable, fall back to synthetic
+try:
     response = requests.get(f"{PROMETHEUS_URL}/api/v1/status/config", timeout=5)
     if response.status_code != 200:
         print("⚠️ Prometheus unavailable, falling back to synthetic data")
         DATA_SOURCE = 'synthetic'
 except Exception as e:
     print(f"⚠️ Prometheus error: {e}, falling back to synthetic data")
-    DATA_SOURCE = 'synthetic'
-```</p>
+    DATA_SOURCE = 'synthetic'</code></pre></p>
 <h4 id="3-hybrid-mode-staging-validation">3. Hybrid Mode (Staging &amp; Validation)<a class="headerlink" href="#3-hybrid-mode-staging-validation" title="Permanent link">&para;</a></h4>
 <p><strong>When to Use</strong>:
 - Staging environments
@@ -1795,19 +1986,18 @@ except Exception as e:
 - ✅ Provides diverse training examples
 - ✅ Balances reproducibility and realism</p>
 <p><strong>Data Blending Strategy</strong>:
-```python</p>
-<h1 id="5050-split-between-synthetic-and-prometheus">50/50 split between synthetic and Prometheus<a class="headerlink" href="#5050-split-between-synthetic-and-prometheus" title="Permanent link">&para;</a></h1>
-<p>synthetic_data = generate_synthetic_anomalies(n_samples=1000)
-prometheus_data = fetch_prometheus_metrics(days=7)</p>
-<h1 id="inject-synthetic-anomalies-into-prometheus-data-for-labels">Inject synthetic anomalies into Prometheus data (for labels)<a class="headerlink" href="#inject-synthetic-anomalies-into-prometheus-data-for-labels" title="Permanent link">&para;</a></h1>
-<p>prometheus_data = inject_synthetic_anomalies(prometheus_data, anomaly_rate=0.03)</p>
-<h1 id="concatenate-datasets">Concatenate datasets<a class="headerlink" href="#concatenate-datasets" title="Permanent link">&para;</a></h1>
-<p>train_data = pd.concat([synthetic_data, prometheus_data])
-train_data = train_data.sample(frac=1).reset_index(drop=True)  # Shuffle
-```</p>
+<pre class="highlight"><code class="language-python"># 50/50 split between synthetic and Prometheus
+synthetic_data = generate_synthetic_anomalies(n_samples=1000)
+prometheus_data = fetch_prometheus_metrics(days=7)
+
+# Inject synthetic anomalies into Prometheus data (for labels)
+prometheus_data = inject_synthetic_anomalies(prometheus_data, anomaly_rate=0.03)
+
+# Concatenate datasets
+train_data = pd.concat([synthetic_data, prometheus_data])
+train_data = train_data.sample(frac=1).reset_index(drop=True)  # Shuffle</code></pre></p>
 <p><strong>Configuration</strong>:
-<code>yaml
-env:
+<pre class="highlight"><code class="language-yaml">env:
   - name: DATA_SOURCE
     value: "hybrid"
   - name: PROMETHEUS_URL
@@ -1817,7 +2007,7 @@ env:
   - name: TRAINING_DAYS
     value: "7"
   - name: ANOMALY_RATE
-    value: "0.03"</code></p>
+    value: "0.03"</code></pre></p>
 <h3 id="model-specific-recommendations">Model-Specific Recommendations<a class="headerlink" href="#model-specific-recommendations" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -1861,11 +2051,11 @@ env:
 - <strong>predictive-analytics</strong>: 30-day lookback (captures monthly seasonality)</p>
 <p><strong>Sample Interval</strong>: 5 minutes (matches production inference cadence)</p>
 <p><strong>Query Optimization</strong>:
-```python</p>
-<h1 id="use-thanos-for-long-term-storage-if-available">Use Thanos for long-term storage (if available)<a class="headerlink" href="#use-thanos-for-long-term-storage-if-available" title="Permanent link">&para;</a></h1>
-<p>THANOS_URL = os.getenv('THANOS_URL', PROMETHEUS_URL)</p>
-<h1 id="chunk-large-queries-to-avoid-timeouts">Chunk large queries to avoid timeouts<a class="headerlink" href="#chunk-large-queries-to-avoid-timeouts" title="Permanent link">&para;</a></h1>
-<p>def fetch_prometheus_chunked(query, start, end, chunk_days=7):
+<pre class="highlight"><code class="language-python"># Use Thanos for long-term storage (if available)
+THANOS_URL = os.getenv('THANOS_URL', PROMETHEUS_URL)
+
+# Chunk large queries to avoid timeouts
+def fetch_prometheus_chunked(query, start, end, chunk_days=7):
     chunks = []
     current = start
     while current &lt; end:
@@ -1873,27 +2063,22 @@ env:
         data = fetch_prometheus_range(query, current, chunk_end)
         chunks.append(data)
         current = chunk_end
-    return pd.concat(chunks)
-```</p>
+    return pd.concat(chunks)</code></pre></p>
 <p><strong>Error Handling</strong>:
-```python</p>
-<h1 id="retry-logic-for-transient-failures">Retry logic for transient failures<a class="headerlink" href="#retry-logic-for-transient-failures" title="Permanent link">&para;</a></h1>
-<p>@retry(max_attempts=3, backoff=exponential)
+<pre class="highlight"><code class="language-python"># Retry logic for transient failures
+@retry(max_attempts=3, backoff=exponential)
 def fetch_prometheus_metrics(query, start, end):
     response = requests.get(
         f"{PROMETHEUS_URL}/api/v1/query_range",
         params={'query': query, 'start': start, 'end': end, 'step': '5m'}
     )
     response.raise_for_status()
-    return parse_prometheus_response(response.json())
-```</p>
+    return parse_prometheus_response(response.json())</code></pre></p>
 <h2 id="rationale">Rationale<a class="headerlink" href="#rationale" title="Permanent link">&para;</a></h2>
 <h3 id="why-not-synthetic-only">Why Not Synthetic-Only<a class="headerlink" href="#why-not-synthetic-only" title="Permanent link">&para;</a></h3>
 <p><strong>Rejected Approach</strong>:
-```python</p>
-<h1 id="only-use-synthetic-data-forever">Only use synthetic data forever<a class="headerlink" href="#only-use-synthetic-data-forever" title="Permanent link">&para;</a></h1>
-<p>DATA_SOURCE = 'synthetic'
-```</p>
+<pre class="highlight"><code class="language-python"># Only use synthetic data forever
+DATA_SOURCE = 'synthetic'</code></pre></p>
 <p><strong>Problems</strong>:
 - ❌ Models never adapt to real cluster behavior
 - ❌ May miss production-specific patterns (burst workloads, autoscaling)
@@ -1905,11 +2090,9 @@ def fetch_prometheus_metrics(query, start, end):
 - ✅ Experimental models not deployed to production</p>
 <h3 id="why-not-prometheus-only">Why Not Prometheus-Only<a class="headerlink" href="#why-not-prometheus-only" title="Permanent link">&para;</a></h3>
 <p><strong>Rejected Approach</strong>:
-```python</p>
-<h1 id="only-use-prometheus-data-no-synthetic">Only use Prometheus data, no synthetic<a class="headerlink" href="#only-use-prometheus-data-no-synthetic" title="Permanent link">&para;</a></h1>
-<p>DATA_SOURCE = 'prometheus'</p>
-<h1 id="no-anomaly-injection">No anomaly injection<a class="headerlink" href="#no-anomaly-injection" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-python"># Only use Prometheus data, no synthetic
+DATA_SOURCE = 'prometheus'
+# No anomaly injection</code></pre></p>
 <p><strong>Problems</strong>:
 - ❌ No labeled anomalies for supervised learning
 - ❌ Real cluster data is mostly "normal" (imbalanced training data)
@@ -1920,12 +2103,10 @@ def fetch_prometheus_metrics(query, start, end):
 - ✅ Models that don't require labeled anomalies</p>
 <h3 id="why-hybrid-approach">Why Hybrid Approach<a class="headerlink" href="#why-hybrid-approach" title="Permanent link">&para;</a></h3>
 <p><strong>Chosen Strategy</strong>:
-```python</p>
-<h1 id="mix-of-prometheus-real-patterns-synthetic-labeled-anomalies">Mix of Prometheus (real patterns) + Synthetic (labeled anomalies)<a class="headerlink" href="#mix-of-prometheus-real-patterns-synthetic-labeled-anomalies" title="Permanent link">&para;</a></h1>
-<p>DATA_SOURCE = 'hybrid'
+<pre class="highlight"><code class="language-python"># Mix of Prometheus (real patterns) + Synthetic (labeled anomalies)
+DATA_SOURCE = 'hybrid'
 prometheus_data = fetch_prometheus_metrics(days=7)
-synthetic_anomalies = inject_synthetic_anomalies(prometheus_data, rate=0.03)
-```</p>
+synthetic_anomalies = inject_synthetic_anomalies(prometheus_data, rate=0.03)</code></pre></p>
 <p><strong>Advantages</strong>:
 - ✅ Real cluster patterns from Prometheus
 - ✅ Labeled anomalies from synthetic injection
@@ -1934,24 +2115,18 @@ synthetic_anomalies = inject_synthetic_anomalies(prometheus_data, rate=0.03)
 - ✅ Best generalization (diverse training examples)</p>
 <h3 id="why-environment-variable-configuration">Why Environment Variable Configuration<a class="headerlink" href="#why-environment-variable-configuration" title="Permanent link">&para;</a></h3>
 <p><strong>Alternative 1: Hardcoded in Notebook</strong> (Rejected)
-```python</p>
-<h1 id="hardcoded">Hardcoded<a class="headerlink" href="#hardcoded" title="Permanent link">&para;</a></h1>
-<p>DATA_SOURCE = 'synthetic'
-```
+<pre class="highlight"><code class="language-python"># Hardcoded
+DATA_SOURCE = 'synthetic'</code></pre>
 - ❌ Requires notebook editing to change mode
 - ❌ Can't override for different environments</p>
 <p><strong>Alternative 2: Function Parameter</strong> (Rejected)
-```python</p>
-<h1 id="function-parameter">Function parameter<a class="headerlink" href="#function-parameter" title="Permanent link">&para;</a></h1>
-<p>train_model(data_source='synthetic')
-```
+<pre class="highlight"><code class="language-python"># Function parameter
+train_model(data_source='synthetic')</code></pre>
 - ❌ Requires notebook execution with parameters
 - ❌ Harder to configure in NotebookValidationJob</p>
 <p><strong>Alternative 3: Environment Variable</strong> (Chosen)
-```python</p>
-<h1 id="environment-variable">Environment variable<a class="headerlink" href="#environment-variable" title="Permanent link">&para;</a></h1>
-<p>DATA_SOURCE = os.getenv('DATA_SOURCE', 'synthetic')
-```
+<pre class="highlight"><code class="language-python"># Environment variable
+DATA_SOURCE = os.getenv('DATA_SOURCE', 'synthetic')</code></pre>
 - ✅ Easy to configure in NotebookValidationJob
 - ✅ Can override without editing notebooks
 - ✅ Standard practice for 12-factor apps</p>
@@ -1996,21 +2171,22 @@ synthetic_anomalies = inject_synthetic_anomalies(prometheus_data, rate=0.03)
 </ol>
 <h3 id="code-template">Code Template<a class="headerlink" href="#code-template" title="Permanent link">&para;</a></h3>
 <p><strong>Common Notebook Cell</strong> (add to both notebooks):
-```python
-import os
+<pre class="highlight"><code class="language-python">import os
 import requests
 from datetime import datetime, timedelta
-import pandas as pd</p>
-<h1 id="_1">====================<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h1 id="data-source-configuration">Data Source Configuration<a class="headerlink" href="#data-source-configuration" title="Permanent link">&para;</a></h1>
-<h1 id="_2">====================<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h1>
-<p>DATA_SOURCE = os.getenv('DATA_SOURCE', 'synthetic')  # synthetic|prometheus|hybrid
+import pandas as pd
+
+# ====================
+# Data Source Configuration
+# ====================
+DATA_SOURCE = os.getenv('DATA_SOURCE', 'synthetic')  # synthetic|prometheus|hybrid
 PROMETHEUS_URL = os.getenv('PROMETHEUS_URL', 'http://prometheus-k8s.openshift-monitoring.svc:9090')
 TRAINING_DAYS = int(os.getenv('TRAINING_DAYS', '7'))  # 7 for anomaly-detector, 30 for predictive-analytics
 ANOMALY_RATE = float(os.getenv('ANOMALY_RATE', '0.03'))
-PROMETHEUS_AVAILABLE = False</p>
-<h1 id="check-prometheus-availability">Check Prometheus availability<a class="headerlink" href="#check-prometheus-availability" title="Permanent link">&para;</a></h1>
-<p>if DATA_SOURCE in ['prometheus', 'hybrid']:
+PROMETHEUS_AVAILABLE = False
+
+# Check Prometheus availability
+if DATA_SOURCE in ['prometheus', 'hybrid']:
     try:
         response = requests.get(f"{PROMETHEUS_URL}/api/v1/status/config", timeout=5)
         PROMETHEUS_AVAILABLE = response.status_code == 200
@@ -2018,27 +2194,28 @@ PROMETHEUS_AVAILABLE = False</p>
     except Exception as e:
         print(f"⚠️ Prometheus not available: {e}")
         print(f"   Falling back to synthetic data")
-        DATA_SOURCE = 'synthetic'</p>
-<p>print(f"📊 Using data source: {DATA_SOURCE}")
+        DATA_SOURCE = 'synthetic'
+
+print(f"📊 Using data source: {DATA_SOURCE}")
 print(f"   Training days: {TRAINING_DAYS}")
-print(f"   Anomaly rate: {ANOMALY_RATE}")
-```</p>
+print(f"   Anomaly rate: {ANOMALY_RATE}")</code></pre></p>
 <h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="test-synthetic-mode-default">Test synthetic mode (default)<a class="headerlink" href="#test-synthetic-mode-default" title="Permanent link">&para;</a></h1>
-<p>oc create job --from=notebookvalidationjob/isolation-forest-implementation-validation \
-  test-synthetic-$(date +%s) -n self-healing-platform</p>
-<h1 id="test-prometheus-mode">Test prometheus mode<a class="headerlink" href="#test-prometheus-mode" title="Permanent link">&para;</a></h1>
-<p>oc create job --from=notebookvalidationjob/isolation-forest-implementation-validation \
+<pre class="highlight"><code class="language-bash"># Test synthetic mode (default)
+oc create job --from=notebookvalidationjob/isolation-forest-implementation-validation \
+  test-synthetic-$(date +%s) -n self-healing-platform
+
+# Test prometheus mode
+oc create job --from=notebookvalidationjob/isolation-forest-implementation-validation \
   test-prometheus-$(date +%s) -n self-healing-platform \
-  --overrides='{"spec":{"template":{"spec":{"containers":[{"name":"notebook-validator","env":[{"name":"DATA_SOURCE","value":"prometheus"}]}]}}}}'</p>
-<h1 id="test-hybrid-mode">Test hybrid mode<a class="headerlink" href="#test-hybrid-mode" title="Permanent link">&para;</a></h1>
-<p>oc create job --from=notebookvalidationjob/isolation-forest-implementation-validation \
+  --overrides='{"spec":{"template":{"spec":{"containers":[{"name":"notebook-validator","env":[{"name":"DATA_SOURCE","value":"prometheus"}]}]}}}}'
+
+# Test hybrid mode
+oc create job --from=notebookvalidationjob/isolation-forest-implementation-validation \
   test-hybrid-$(date +%s) -n self-healing-platform \
-  --overrides='{"spec":{"template":{"spec":{"containers":[{"name":"notebook-validator","env":[{"name":"DATA_SOURCE","value":"hybrid"}]}]}}}}'</p>
-<h1 id="monitor-logs-to-verify-data-source">Monitor logs to verify data source<a class="headerlink" href="#monitor-logs-to-verify-data-source" title="Permanent link">&para;</a></h1>
-<p>oc logs -f job/test-* -n self-healing-platform | grep "Using data source"
-```</p>
+  --overrides='{"spec":{"template":{"spec":{"containers":[{"name":"notebook-validator","env":[{"name":"DATA_SOURCE","value":"hybrid"}]}]}}}}'
+
+# Monitor logs to verify data source
+oc logs -f job/test-* -n self-healing-platform | grep "Using data source"</code></pre>
 <h2 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../007-prometheus-monitoring-integration/">ADR-007: Prometheus Monitoring Integration</a></li>

@@ -1640,6 +1640,126 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#neutral" class="md-nav__link">
+    <span class="md-ellipsis">
+      Neutral
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-deterministic-foundation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Deterministic Foundation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-ai-layer-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: AI Layer Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-coordination-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Coordination Engine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coordination-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Coordination Rules
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Metrics
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1688,7 +1808,7 @@
 <li><strong>Coordination Engine</strong>: To manage interaction between the two layers</li>
 </ol>
 <h3 id="architecture-components">Architecture Components<a class="headerlink" href="#architecture-components" title="Permanent link">&para;</a></h3>
-<p><code>┌─────────────────────────────────────────────────────────────┐
+<pre class="highlight"><code>┌─────────────────────────────────────────────────────────────┐
 │                 Self-Healing Platform                        │
 ├─────────────────────────────────────────────────────────────┤
 │  Coordination Engine                                        │
@@ -1707,7 +1827,7 @@
 │  ├─ Prometheus Metrics                                     │
 │  ├─ Alert Manager                                          │
 │  └─ Incident Correlation                                   │
-└─────────────────────────────────────────────────────────────┘</code></p>
+└─────────────────────────────────────────────────────────────┘</code></pre>
 <h2 id="alternatives-considered">Alternatives Considered<a class="headerlink" href="#alternatives-considered" title="Permanent link">&para;</a></h2>
 <h3 id="pure-deterministic-approach">Pure Deterministic Approach<a class="headerlink" href="#pure-deterministic-approach" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1773,10 +1893,10 @@
 </tbody>
 </table>
 <p><strong>Example Usage</strong> (from notebooks):
-```python
-import requests</p>
-<h1 id="submit-anomaly">Submit anomaly<a class="headerlink" href="#submit-anomaly" title="Permanent link">&para;</a></h1>
-<p>response = requests.post(
+<pre class="highlight"><code class="language-python">import requests
+
+# Submit anomaly
+response = requests.post(
     'http://coordination-engine:8080/api/v1/anomalies',
     json={
         'timestamp': '2025-12-09T12:00:00Z',
@@ -1785,8 +1905,7 @@ import requests</p>
         'confidence_score': 0.92,
         'recommended_action': 'scale_down_pods'
     }
-)
-```</p>
+)</code></pre></p>
 <p><strong>Coordination Rules</strong>:
 1. Deterministic layer has priority for known issue types
 2. Novel issues automatically route to AI layer

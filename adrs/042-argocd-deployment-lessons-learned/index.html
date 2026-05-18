@@ -1665,8 +1665,110 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#2-validated_patterns_secrets-role" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. validated_patterns_secrets Role
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-changes-to-helm-charts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Changes to Helm Charts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Changes to Helm Charts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-add-wait-for-image-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Add Wait-for-Image Pattern
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-use-fallback-chains-for-required-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Use Fallback Chains for Required Values
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
   
 </li>
       
@@ -1714,8 +1816,7 @@
 <h3 id="1-pvc-with-waitforfirstconsumer-blocking-sync">1. PVC with WaitForFirstConsumer Blocking Sync<a class="headerlink" href="#1-pvc-with-waitforfirstconsumer-blocking-sync" title="Permanent link">&para;</a></h3>
 <p><strong>Problem</strong>: PVCs using <code>WaitForFirstConsumer</code> storage class remain in <code>Pending</code> state until a pod uses them. ArgoCD's default health check marks these as unhealthy, blocking sync.</p>
 <p><strong>Fix Applied</strong>: Added custom <code>resourceHealthChecks</code> to ArgoCD CR:
-<code>yaml
-spec:
+<pre class="highlight"><code class="language-yaml">spec:
   resourceHealthChecks:
     - group: ""
       kind: PersistentVolumeClaim
@@ -1731,19 +1832,18 @@ spec:
           hs.status = "Progressing"
           hs.message = "PVC status: " .. obj.status.phase
         end
-        return hs</code></p>
+        return hs</code></pre></p>
 <p><strong>Recommendation</strong>: Add this to <code>validated_patterns_deploy</code> Ansible role or ArgoCD Helm chart.</p>
 <h3 id="2-buildconfig-git-uri-not-resolved">2. BuildConfig Git URI Not Resolved<a class="headerlink" href="#2-buildconfig-git-uri-not-resolved" title="Permanent link">&para;</a></h3>
 <p><strong>Problem</strong>: BuildConfigs failed with <code>spec.source.git.uri: Required value</code> because the git URL wasn't being resolved from values.</p>
 <p><strong>Fix Applied</strong>: Added fallback chain in Helm templates:
-<code>yaml
-{{- $gitUrl := .Values.imageBuilds.gitRepository | default .Values.git.repoURL | default .Values.global.git.repoURL | default "" }}
+<pre class="highlight"><code class="language-yaml">{{- $gitUrl := .Values.imageBuilds.gitRepository | default .Values.git.repoURL | default .Values.global.git.repoURL | default "" }}
 {{- if $gitUrl }}
 spec:
   source:
     git:
       uri: {{ $gitUrl }}
-{{- end }}</code></p>
+{{- end }}</code></pre></p>
 <p><strong>Recommendation</strong>: Always use fallback chains for critical values. Document required values in <code>values.yaml</code>.</p>
 <h3 id="3-argocd-excludes-pipelinerun-resources">3. ArgoCD Excludes PipelineRun Resources<a class="headerlink" href="#3-argocd-excludes-pipelinerun-resources" title="Permanent link">&para;</a></h3>
 <p><strong>Problem</strong>: ArgoCD excludes <code>tekton.dev/PipelineRun</code> by default. Attempts to use Jobs to trigger pipelines had race conditions with sync waves.</p>
@@ -1754,8 +1854,7 @@ spec:
 <h3 id="4-dependent-resources-need-to-wait-for-image-builds">4. Dependent Resources Need to Wait for Image Builds<a class="headerlink" href="#4-dependent-resources-need-to-wait-for-image-builds" title="Permanent link">&para;</a></h3>
 <p><strong>Problem</strong>: NotebookValidationJobs and Workbench pods tried to pull images before BuildConfig completed, causing <code>ErrImagePull</code>.</p>
 <p><strong>Fix Applied</strong>: Added a Sync hook Job that waits for the image:
-<code>yaml
-apiVersion: batch/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: batch/v1
 kind: Job
 metadata:
   name: wait-for-notebook-validator-image
@@ -1774,39 +1873,35 @@ spec:
           # Wait for imagestreamtag to exist
           while ! oc get imagestreamtag notebook-validator:latest; do
             sleep 30
-          done</code></p>
+          done</code></pre></p>
 <p><strong>Recommendation</strong>: Add wait-for-image pattern to Helm charts for any resources that depend on built images.</p>
 <h3 id="5-serviceaccount-permissions-for-wait-jobs">5. ServiceAccount Permissions for Wait Jobs<a class="headerlink" href="#5-serviceaccount-permissions-for-wait-jobs" title="Permanent link">&para;</a></h3>
 <p><strong>Problem</strong>: Wait-for-image Job couldn't check ImageStreamTags because ServiceAccount lacked permissions.</p>
 <p><strong>Fix Applied</strong>: Added to Role:
-<code>yaml
-- apiGroups: ["image.openshift.io"]
+<pre class="highlight"><code class="language-yaml">- apiGroups: ["image.openshift.io"]
   resources: ["imagestreams", "imagestreamtags"]
   verbs: ["get", "list", "watch"]
 - apiGroups: ["build.openshift.io"]
   resources: ["builds"]
-  verbs: ["get", "list", "watch"]</code></p>
+  verbs: ["get", "list", "watch"]</code></pre></p>
 <p><strong>Recommendation</strong>: Ensure ServiceAccounts used by Jobs have all required permissions.</p>
 <h3 id="6-externalsecret-source-secrets-need-correct-credentials">6. ExternalSecret Source Secrets Need Correct Credentials<a class="headerlink" href="#6-externalsecret-source-secrets-need-correct-credentials" title="Permanent link">&para;</a></h3>
 <p><strong>Problem</strong>: <code>gitea-credentials-source</code> had wrong password, causing git clone failures in BuildConfigs.</p>
 <p><strong>Fix Applied</strong>: Updated Makefile <code>load-env-secrets</code> to read password from Gitea CR:
-<code>makefile
-GITEA_PASSWORD=$(oc get gitea gitea-with-admin -n gitea -o jsonpath='{.status.adminPassword}')</code></p>
+<pre class="highlight"><code class="language-makefile">GITEA_PASSWORD=$(oc get gitea gitea-with-admin -n gitea -o jsonpath='{.status.adminPassword}')</code></pre></p>
 <p><strong>Recommendation</strong>: Document how to obtain correct credentials. Consider reading from Gitea CR automatically.</p>
 <h3 id="7-notebookvalidationjob-image-configuration">7. NotebookValidationJob Image Configuration<a class="headerlink" href="#7-notebookvalidationjob-image-configuration" title="Permanent link">&para;</a></h3>
 <p><strong>Problem</strong>: Different tiers used different images, but all notebooks needed ML packages only available in the custom image.</p>
 <p><strong>Fix Applied</strong>: Updated <code>values-notebooks-validation.yaml</code> to use <code>notebook-validator:latest</code> for all tiers:
-<code>yaml
-images:
+<pre class="highlight"><code class="language-yaml">images:
   tier1: "image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest"
   tier2: "image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest"
-  tier3: "image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest"</code></p>
+  tier3: "image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest"</code></pre></p>
 <p><strong>Recommendation</strong>: Use a single well-tested image for all validation jobs rather than tiered images.</p>
 <h3 id="8-inferenceservice-health-check-blocking-sync">8. InferenceService Health Check Blocking Sync<a class="headerlink" href="#8-inferenceservice-health-check-blocking-sync" title="Permanent link">&para;</a></h3>
 <p><strong>Problem</strong>: InferenceServices show as unhealthy when models don't exist, blocking ArgoCD sync.</p>
 <p><strong>Fix Applied</strong>: Added custom health check and ignoreDifferences:
-<code>yaml
-spec:
+<pre class="highlight"><code class="language-yaml">spec:
   resourceHealthChecks:
     - group: "serving.kserve.io"
       kind: "InferenceService"
@@ -1819,15 +1914,13 @@ spec:
     - group: serving.kserve.io
       kind: InferenceService
       jqPathExpressions:
-        - .status</code></p>
+        - .status</code></pre></p>
 <p><strong>Recommendation</strong>: InferenceServices should not block initial deployment since models are trained later.</p>
 <h2 id="recommended-changes-to-ansible-roles">Recommended Changes to Ansible Roles<a class="headerlink" href="#recommended-changes-to-ansible-roles" title="Permanent link">&para;</a></h2>
 <h3 id="1-validated_patterns_deploy-role">1. <code>validated_patterns_deploy</code> Role<a class="headerlink" href="#1-validated_patterns_deploy-role" title="Permanent link">&para;</a></h3>
 <p>Add ArgoCD resource health checks:
-```yaml</p>
-<h1 id="in-tasksconfigure_argocdyml">In tasks/configure_argocd.yml<a class="headerlink" href="#in-tasksconfigure_argocdyml" title="Permanent link">&para;</a></h1>
-<ul>
-<li>name: Configure ArgoCD resource health checks
+<pre class="highlight"><code class="language-yaml"># In tasks/configure_argocd.yml
+- name: Configure ArgoCD resource health checks
   kubernetes.core.k8s:
     state: patched
     definition:
@@ -1843,20 +1936,17 @@ spec:
             check: "{{ lookup('file', 'files/pvc-health-check.lua') }}"
           - group: "serving.kserve.io"
             kind: "InferenceService"
-            check: "{{ lookup('file', 'files/inferenceservice-health-check.lua') }}"
-```</li>
-</ul>
+            check: "{{ lookup('file', 'files/inferenceservice-health-check.lua') }}"</code></pre></p>
 <h3 id="2-validated_patterns_secrets-role">2. <code>validated_patterns_secrets</code> Role<a class="headerlink" href="#2-validated_patterns_secrets-role" title="Permanent link">&para;</a></h3>
 <p>Add automatic Gitea credential discovery:
-```yaml
-- name: Get Gitea admin password
+<pre class="highlight"><code class="language-yaml">- name: Get Gitea admin password
   kubernetes.core.k8s_info:
     kind: Gitea
     name: gitea-with-admin
     namespace: gitea
-  register: gitea_info</p>
-<ul>
-<li>name: Create gitea-credentials-source secret
+  register: gitea_info
+
+- name: Create gitea-credentials-source secret
   kubernetes.core.k8s:
     state: present
     definition:
@@ -1867,14 +1957,11 @@ spec:
         namespace: "{{ namespace }}"
       stringData:
         username: "{{ gitea_info.resources[0].spec.giteaAdminUser }}"
-        password: "{{ gitea_info.resources[0].status.adminPassword }}"
-```</li>
-</ul>
+        password: "{{ gitea_info.resources[0].status.adminPassword }}"</code></pre></p>
 <h2 id="recommended-changes-to-helm-charts">Recommended Changes to Helm Charts<a class="headerlink" href="#recommended-changes-to-helm-charts" title="Permanent link">&para;</a></h2>
 <h3 id="1-add-wait-for-image-pattern">1. Add Wait-for-Image Pattern<a class="headerlink" href="#1-add-wait-for-image-pattern" title="Permanent link">&para;</a></h3>
 <p>Create a helper template in <code>_helpers.tpl</code>:
-<code>yaml
-{{- define "wait-for-image" -}}
+<pre class="highlight"><code class="language-yaml">{{- define "wait-for-image" -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -1905,17 +1992,16 @@ spec:
             ELAPSED=$((ELAPSED + 30))
           done
           exit 1
-{{- end }}</code></p>
+{{- end }}</code></pre></p>
 <h3 id="2-use-fallback-chains-for-required-values">2. Use Fallback Chains for Required Values<a class="headerlink" href="#2-use-fallback-chains-for-required-values" title="Permanent link">&para;</a></h3>
 <p>Document and implement fallback chains:
-```yaml</p>
-<h1 id="in-valuesyaml-document">In values.yaml, document:<a class="headerlink" href="#in-valuesyaml-document" title="Permanent link">&para;</a></h1>
-<h1 id="git">git:<a class="headerlink" href="#git" title="Permanent link">&para;</a></h1>
-<h1 id="repourl-required-set-in-values-globalyaml-or-override">repoURL: ""  # REQUIRED: Set in values-global.yaml or override<a class="headerlink" href="#repourl-required-set-in-values-globalyaml-or-override" title="Permanent link">&para;</a></h1>
-<h1 id="revision-main">revision: "main"<a class="headerlink" href="#revision-main" title="Permanent link">&para;</a></h1>
-<h1 id="in-templates-use">In templates, use:<a class="headerlink" href="#in-templates-use" title="Permanent link">&para;</a></h1>
-<p>{{- $gitUrl := .Values.git.repoURL | default .Values.global.git.repoURL | required "git.repoURL is required" }}
-```</p>
+<pre class="highlight"><code class="language-yaml"># In values.yaml, document:
+# git:
+#   repoURL: ""  # REQUIRED: Set in values-global.yaml or override
+#   revision: "main"
+
+# In templates, use:
+{{- $gitUrl := .Values.git.repoURL | default .Values.global.git.repoURL | required "git.repoURL is required" }}</code></pre></p>
 <h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Implement ArgoCD health check customizations in <code>validated_patterns_deploy</code> role</li>

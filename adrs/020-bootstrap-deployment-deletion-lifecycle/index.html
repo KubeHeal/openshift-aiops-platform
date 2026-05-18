@@ -1635,8 +1635,95 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#task-reusability-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task Reusability Pattern
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resources-to-clean-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resources to Clean (Checklist)
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive-consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive Consequences
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative-consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative Consequences
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#neutral-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Neutral Considerations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Tasks
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
   
 </li>
       
@@ -1704,95 +1791,81 @@
 <li><strong>Environment support</strong>: Helm values overlays for dev/staging/production</li>
 </ol>
 <h3 id="deployment-flow-deploy">Deployment Flow (--deploy)<a class="headerlink" href="#deployment-flow-deploy" title="Permanent link">&para;</a></h3>
-<p>```
-Phase 1: Pre-deployment Validation
+<pre class="highlight"><code>Phase 1: Pre-deployment Validation
   ├─ Cluster connectivity check
   ├─ Required tools verification (oc, kubectl, helm, yq, make)
   ├─ Namespace verification
-  └─ RBAC permissions check</p>
-<p>Phase 2: Infrastructure Validation
+  └─ RBAC permissions check
+
+Phase 2: Infrastructure Validation
   ├─ OpenShift GitOps operator
   ├─ OpenShift Data Foundation
   ├─ KServe availability
-  └─ Knative Serverless</p>
-<p>Phase 3: Validated Patterns Deployment
+  └─ Knative Serverless
+
+Phase 3: Validated Patterns Deployment
   ├─ make validate-prereq
   ├─ make validate-cluster
-  └─ make install (with timeout)</p>
-<p>Phase 4: Deployment Verification
+  └─ make install (with timeout)
+
+Phase 4: Deployment Verification
   ├─ ArgoCD applications sync
   ├─ Pod status verification
-  └─ Resource count validation</p>
-<p>Phase 5: Health Checks
+  └─ Resource count validation
+
+Phase 5: Health Checks
   ├─ Coordination engine readiness
   ├─ Model serving endpoints
-  └─ Object storage availability
-```</p>
+  └─ Object storage availability</code></pre>
 <h3 id="deletion-flow-delete">Deletion Flow (--delete)<a class="headerlink" href="#deletion-flow-delete" title="Permanent link">&para;</a></h3>
-<p>```
-Phase 1: Pre-deletion Validation
+<pre class="highlight"><code>Phase 1: Pre-deletion Validation
   ├─ Cluster connectivity check
   ├─ Required tools verification
   ├─ Namespace existence check
-  └─ Confirmation prompt (unless --force)</p>
-<p>Phase 2: Resource Cleanup
+  └─ Confirmation prompt (unless --force)
+
+Phase 2: Resource Cleanup
   ├─ make uninstall (Helm uninstall)
   ├─ Delete ArgoCD applications
-  └─ Delete namespace</p>
-<p>Phase 3: Verification
+  └─ Delete namespace
+
+Phase 3: Verification
   ├─ Namespace deletion confirmation
   ├─ Resource cleanup verification
-  └─ State cleanup
-```</p>
+  └─ State cleanup</code></pre>
 <h2 id="e2e-testing-and-cleanup-procedures">E2E Testing and Cleanup Procedures<a class="headerlink" href="#e2e-testing-and-cleanup-procedures" title="Permanent link">&para;</a></h2>
 <h3 id="mandatory-cleanup-before-testing">Mandatory Cleanup Before Testing<a class="headerlink" href="#mandatory-cleanup-before-testing" title="Permanent link">&para;</a></h3>
 <p><strong>CRITICAL</strong>: Always clean up before running e2e tests to ensure fresh state and avoid conflicts.</p>
-<p>```yaml</p>
-<h1 id="e2e-test-template">E2E Test Template<a class="headerlink" href="#e2e-test-template" title="Permanent link">&para;</a></h1>
-<ul>
-<li>
-<p>name: E2E Test with Role-Based Approach
+<pre class="highlight"><code class="language-yaml"># E2E Test Template
+- name: E2E Test with Role-Based Approach
   hosts: localhost
   tasks:
-    # 1. Pre-test cleanup using role (MANDATORY)</p>
-<ul>
-<li>include_role:
-    name: validated_patterns_cleanup
-  # Default behavior retains shared infrastructure:
-  # cleanup_gitops: false   # Keep ArgoCD (from common/ subtree)
-  # cleanup_gitea: false    # Keep Gitea (for development)
-  # cleanup_operator: false # Keep operator (reusable)</li>
-</ul>
-<h1 id="2-deploy-using-role">2. Deploy using role<a class="headerlink" href="#2-deploy-using-role" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_role:
-    name: validated_patterns_operator</li>
-</ul>
-<h1 id="3-validate-using-specific-task-files-not-entire-roles">3. Validate using specific task files (not entire roles)<a class="headerlink" href="#3-validate-using-specific-task-files-not-entire-roles" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_tasks: ../../ansible/roles/validated_patterns_validate/tasks/validate_health.yml</li>
-</ul>
-<h1 id="4-post-test-cleanup-using-role">4. Post-test cleanup using role<a class="headerlink" href="#4-post-test-cleanup-using-role" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_role:
-    name: validated_patterns_cleanup
-```</li>
-</ul>
-</li>
-</ul>
+    # 1. Pre-test cleanup using role (MANDATORY)
+    - include_role:
+        name: validated_patterns_cleanup
+      # Default behavior retains shared infrastructure:
+      # cleanup_gitops: false   # Keep ArgoCD (from common/ subtree)
+      # cleanup_gitea: false    # Keep Gitea (for development)
+      # cleanup_operator: false # Keep operator (reusable)
+
+    # 2. Deploy using role
+    - include_role:
+        name: validated_patterns_operator
+
+    # 3. Validate using specific task files (not entire roles)
+    - include_tasks: ../../ansible/roles/validated_patterns_validate/tasks/validate_health.yml
+
+    # 4. Post-test cleanup using role
+    - include_role:
+        name: validated_patterns_cleanup</code></pre>
 <h3 id="task-reusability-pattern">Task Reusability Pattern<a class="headerlink" href="#task-reusability-pattern" title="Permanent link">&para;</a></h3>
 <p>Reuse specific task files instead of entire roles during validation:</p>
-<p>```yaml</p>
-<h1 id="good-reuse-specific-validation-task">Good: Reuse specific validation task<a class="headerlink" href="#good-reuse-specific-validation-task" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_tasks: ../../ansible/roles/validated_patterns_prerequisites/tasks/check_openshift_version.yml</li>
-</ul>
-<h1 id="avoid-re-running-entire-role-when-only-one-check-needed">Avoid: Re-running entire role when only one check needed<a class="headerlink" href="#avoid-re-running-entire-role-when-only-one-check-needed" title="Permanent link">&para;</a></h1>
-<ul>
-<li>include_role:
-    name: validated_patterns_prerequisites  # Runs ALL checks unnecessarily
-```</li>
-</ul>
+<pre class="highlight"><code class="language-yaml"># Good: Reuse specific validation task
+- include_tasks: ../../ansible/roles/validated_patterns_prerequisites/tasks/check_openshift_version.yml
+
+# Avoid: Re-running entire role when only one check needed
+- include_role:
+    name: validated_patterns_prerequisites  # Runs ALL checks unnecessarily</code></pre>
 <h3 id="resources-to-clean-checklist">Resources to Clean (Checklist)<a class="headerlink" href="#resources-to-clean-checklist" title="Permanent link">&para;</a></h3>
 <ul>
 <li>✅ Pattern Custom Resources (<code>oc get pattern -A</code>) — <strong>ALWAYS</strong></li>

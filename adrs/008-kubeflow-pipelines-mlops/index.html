@@ -1960,10 +1960,10 @@
 </ul>
 <h2 id="implementation-architecture">Implementation Architecture<a class="headerlink" href="#implementation-architecture" title="Permanent link">&para;</a></h2>
 <h3 id="self-healing-mlops-pipeline">Self-Healing MLOps Pipeline<a class="headerlink" href="#self-healing-mlops-pipeline" title="Permanent link">&para;</a></h3>
-<p>```python
-from kfp import dsl, components
-from kfp.client import Client</p>
-<p>@dsl.component
+<pre class="highlight"><code class="language-python">from kfp import dsl, components
+from kfp.client import Client
+
+@dsl.component
 def data_ingestion_op(
     prometheus_url: str,
     start_time: str,
@@ -1971,127 +1971,132 @@ def data_ingestion_op(
 ) -&gt; str:
     """Ingest operational data from Prometheus"""
     import pandas as pd
-    from prometheus_api_client import PrometheusConnect</p>
-<pre><code>prom = PrometheusConnect(url=prometheus_url)
+    from prometheus_api_client import PrometheusConnect
 
-# Query operational metrics
-queries = {
-    'cpu': 'rate(container_cpu_usage_seconds_total[5m])',
-    'memory': 'container_memory_working_set_bytes',
-    'network': 'rate(container_network_receive_bytes_total[5m])'
-}
+    prom = PrometheusConnect(url=prometheus_url)
 
-data = {}
-for metric, query in queries.items():
-    data[metric] = prom.get_metric_range_data(query, start_time, end_time)
+    # Query operational metrics
+    queries = {
+        'cpu': 'rate(container_cpu_usage_seconds_total[5m])',
+        'memory': 'container_memory_working_set_bytes',
+        'network': 'rate(container_network_receive_bytes_total[5m])'
+    }
 
-# Save to artifact storage
-dataset_path = '/tmp/operational_data.parquet'
-pd.DataFrame(data).to_parquet(dataset_path)
+    data = {}
+    for metric, query in queries.items():
+        data[metric] = prom.get_metric_range_data(query, start_time, end_time)
 
-return dataset_path
-</code></pre>
-<p>@dsl.component
+    # Save to artifact storage
+    dataset_path = '/tmp/operational_data.parquet'
+    pd.DataFrame(data).to_parquet(dataset_path)
+
+    return dataset_path
+
+@dsl.component
 def feature_engineering_op(dataset_path: str) -&gt; str:
     """Engineer features for anomaly detection"""
     import pandas as pd
-    import numpy as np</p>
-<pre><code>df = pd.read_parquet(dataset_path)
+    import numpy as np
 
-# Time-based features
-df['hour'] = pd.to_datetime(df['timestamp']).dt.hour
-df['day_of_week'] = pd.to_datetime(df['timestamp']).dt.dayofweek
+    df = pd.read_parquet(dataset_path)
 
-# Statistical features
-df['cpu_rolling_mean'] = df['cpu'].rolling(window=10).mean()
-df['memory_rolling_std'] = df['memory'].rolling(window=10).std()
+    # Time-based features
+    df['hour'] = pd.to_datetime(df['timestamp']).dt.hour
+    df['day_of_week'] = pd.to_datetime(df['timestamp']).dt.dayofweek
 
-# Save engineered features
-features_path = '/tmp/engineered_features.parquet'
-df.to_parquet(features_path)
+    # Statistical features
+    df['cpu_rolling_mean'] = df['cpu'].rolling(window=10).mean()
+    df['memory_rolling_std'] = df['memory'].rolling(window=10).std()
 
-return features_path
-</code></pre>
-<p>@dsl.component
+    # Save engineered features
+    features_path = '/tmp/engineered_features.parquet'
+    df.to_parquet(features_path)
+
+    return features_path
+
+@dsl.component
 def model_training_op(features_path: str) -&gt; str:
     """Train anomaly detection model"""
     import pandas as pd
     from sklearn.ensemble import IsolationForest
     from sklearn.preprocessing import StandardScaler
-    import joblib</p>
-<pre><code>df = pd.read_parquet(features_path)
+    import joblib
 
-# Prepare training data
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(df.select_dtypes(include=[np.number]))
+    df = pd.read_parquet(features_path)
 
-# Train model
-model = IsolationForest(contamination=0.1, random_state=42)
-model.fit(X_scaled)
+    # Prepare training data
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(df.select_dtypes(include=[np.number]))
 
-# Save model artifacts
-model_path = '/tmp/anomaly_model.pkl'
-scaler_path = '/tmp/scaler.pkl'
+    # Train model
+    model = IsolationForest(contamination=0.1, random_state=42)
+    model.fit(X_scaled)
 
-joblib.dump(model, model_path)
-joblib.dump(scaler, scaler_path)
+    # Save model artifacts
+    model_path = '/tmp/anomaly_model.pkl'
+    scaler_path = '/tmp/scaler.pkl'
 
-return model_path
-</code></pre>
-<p>@dsl.component
+    joblib.dump(model, model_path)
+    joblib.dump(scaler, scaler_path)
+
+    return model_path
+
+@dsl.component
 def model_validation_op(model_path: str, test_data_path: str) -&gt; bool:
     """Validate model performance"""
     import joblib
     import pandas as pd
-    from sklearn.metrics import classification_report</p>
-<pre><code>model = joblib.load(model_path)
-test_data = pd.read_parquet(test_data_path)
+    from sklearn.metrics import classification_report
 
-# Perform validation
-predictions = model.predict(test_data)
-accuracy = (predictions == 1).mean()  # Normal samples should be 1
+    model = joblib.load(model_path)
+    test_data = pd.read_parquet(test_data_path)
 
-# Validation threshold
-return accuracy &gt; 0.8
-</code></pre>
-<p>@dsl.component
+    # Perform validation
+    predictions = model.predict(test_data)
+    accuracy = (predictions == 1).mean()  # Normal samples should be 1
+
+    # Validation threshold
+    return accuracy &gt; 0.8
+
+@dsl.component
 def model_deployment_op(model_path: str, model_name: str):
     """Deploy model to KServe"""
     import yaml
-    from kubernetes import client, config</p>
-<pre><code># KServe InferenceService definition
-inference_service = {
-    'apiVersion': 'serving.kserve.io/v1beta1',
-    'kind': 'InferenceService',
-    'metadata': {
-        'name': model_name,
-        'namespace': 'self-healing-platform'
-    },
-    'spec': {
-        'predictor': {
-            'sklearn': {
-                'storageUri': f's3://model-storage/{model_name}/',
-                'resources': {
-                    'requests': {'cpu': '1', 'memory': '2Gi'},
-                    'limits': {'cpu': '2', 'memory': '4Gi'}
+    from kubernetes import client, config
+
+    # KServe InferenceService definition
+    inference_service = {
+        'apiVersion': 'serving.kserve.io/v1beta1',
+        'kind': 'InferenceService',
+        'metadata': {
+            'name': model_name,
+            'namespace': 'self-healing-platform'
+        },
+        'spec': {
+            'predictor': {
+                'sklearn': {
+                    'storageUri': f's3://model-storage/{model_name}/',
+                    'resources': {
+                        'requests': {'cpu': '1', 'memory': '2Gi'},
+                        'limits': {'cpu': '2', 'memory': '4Gi'}
+                    }
                 }
             }
         }
     }
-}
 
-# Deploy to cluster
-config.load_incluster_config()
-api = client.CustomObjectsApi()
-api.create_namespaced_custom_object(
-    group='serving.kserve.io',
-    version='v1beta1',
-    namespace='self-healing-platform',
-    plural='inferenceservices',
-    body=inference_service
-)
-</code></pre>
-<p>@dsl.pipeline(
+    # Deploy to cluster
+    config.load_incluster_config()
+    api = client.CustomObjectsApi()
+    api.create_namespaced_custom_object(
+        group='serving.kserve.io',
+        version='v1beta1',
+        namespace='self-healing-platform',
+        plural='inferenceservices',
+        body=inference_service
+    )
+
+@dsl.pipeline(
     name='self-healing-mlops-pipeline',
     description='Automated MLOps pipeline for Self-Healing Platform'
 )
@@ -2104,34 +2109,32 @@ def self_healing_pipeline(
         prometheus_url=prometheus_url,
         start_time='2024-01-01T00:00:00Z',
         end_time='2024-01-02T00:00:00Z'
-    )</p>
-<pre><code># Feature engineering
-features_task = feature_engineering_op(
-    dataset_path=data_task.output
-)
-
-# Model training
-training_task = model_training_op(
-    features_path=features_task.output
-)
-
-# Model validation
-validation_task = model_validation_op(
-    model_path=training_task.output,
-    test_data_path=features_task.output
-)
-
-# Conditional deployment
-with dsl.Condition(validation_task.output == True):
-    deployment_task = model_deployment_op(
-        model_path=training_task.output,
-        model_name=model_name
     )
-</code></pre>
-<p>```</p>
+
+    # Feature engineering
+    features_task = feature_engineering_op(
+        dataset_path=data_task.output
+    )
+
+    # Model training
+    training_task = model_training_op(
+        features_path=features_task.output
+    )
+
+    # Model validation
+    validation_task = model_validation_op(
+        model_path=training_task.output,
+        test_data_path=features_task.output
+    )
+
+    # Conditional deployment
+    with dsl.Condition(validation_task.output == True):
+        deployment_task = model_deployment_op(
+            model_path=training_task.output,
+            model_name=model_name
+        )</code></pre>
 <h3 id="pipeline-scheduling">Pipeline Scheduling<a class="headerlink" href="#pipeline-scheduling" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-apiVersion: argoproj.io/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
 metadata:
   name: self-healing-mlops-schedule
@@ -2145,7 +2148,7 @@ spec:
       dag:
         tasks:
         - name: trigger-pipeline
-          template: kfp-trigger</code></p>
+          template: kfp-trigger</code></pre>
 <h2 id="monitoring-and-observability">Monitoring and Observability<a class="headerlink" href="#monitoring-and-observability" title="Permanent link">&para;</a></h2>
 <h3 id="pipeline-metrics">Pipeline Metrics<a class="headerlink" href="#pipeline-metrics" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2155,8 +2158,7 @@ spec:
 <li><strong>Resource Utilization</strong>: CPU/memory usage during pipeline execution</li>
 </ul>
 <h3 id="alert-configuration">Alert Configuration<a class="headerlink" href="#alert-configuration" title="Permanent link">&para;</a></h3>
-<p>```yaml
-apiVersion: monitoring.coreos.com/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: mlops-pipeline-alerts
@@ -2170,16 +2172,15 @@ spec:
       labels:
         severity: warning
       annotations:
-        summary: "MLOps pipeline execution failed"</p>
-<pre><code>- alert: ModelPerformanceDegradation
-  expr: model_accuracy &lt; 0.8
-  for: 15m
-  labels:
-    severity: critical
-  annotations:
-    summary: "Model performance has degraded below threshold"
-</code></pre>
-<p>```</p>
+        summary: "MLOps pipeline execution failed"
+
+    - alert: ModelPerformanceDegradation
+      expr: model_accuracy &lt; 0.8
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Model performance has degraded below threshold"</code></pre>
 <h2 id="success-metrics">Success Metrics<a class="headerlink" href="#success-metrics" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Pipeline Reliability</strong>: &gt;95% successful pipeline execution rate</li>

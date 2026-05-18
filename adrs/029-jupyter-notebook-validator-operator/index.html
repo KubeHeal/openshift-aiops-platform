@@ -1678,13 +1678,187 @@
   
 </li>
         
-      </ul>
-    </nav>
+          <li class="md-nav__item">
+  <a href="#2-model-aware-validation-adr-020" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Model-Aware Validation (ADR-020)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-exit-code-validation-adr-041" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Exit Code Validation (ADR-041)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-advanced-comparison-adr-030" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Advanced Comparison (ADR-030)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Benefits
+    </span>
+  </a>
   
 </li>
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operator Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-via-validated-patterns-2025-12-04-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment via Validated Patterns (2025-12-04 Update)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-existing-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with Existing Infrastructure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive-consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive Consequences
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative-consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative Consequences
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Strategy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Tasks
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Related ADRs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#direct-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Direct Dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-and-model-management-new-2025-12-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage and Model Management (NEW - 2025-12-01)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-and-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation and Testing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approval" class="md-nav__link">
+    <span class="md-ellipsis">
+      Approval
+    </span>
+  </a>
   
 </li>
       
@@ -1757,7 +1931,7 @@
 <h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
 <p><strong>Adopt the Jupyter Notebook Validator Operator</strong> as the primary notebook validation mechanism, superseding Tekton-based notebook execution from ADR-021.</p>
 <h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h3>
-<p><code>Notebook Validation Architecture:
+<pre class="highlight"><code>Notebook Validation Architecture:
 ┌─────────────────────────────────────────────────────────────┐
 │              Jupyter Notebook Validator Operator            │
 │  ┌─────────────────────────────────────────────────────┐    │
@@ -1796,11 +1970,10 @@
 │  │    - username/password (PAT tokens)                 │    │
 │  │    - SSH keys                                       │    │
 │  └─────────────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────────────┘</code></p>
+└─────────────────────────────────────────────────────────────┘</code></pre>
 <h3 id="notebookvalidationjob-crd-example">NotebookValidationJob CRD Example<a class="headerlink" href="#notebookvalidationjob-crd-example" title="Permanent link">&para;</a></h3>
 <h4 id="basic-notebook-validation-without-volumes">Basic Notebook Validation (Without Volumes)<a class="headerlink" href="#basic-notebook-validation-without-volumes" title="Permanent link">&para;</a></h4>
-<p>```yaml
-apiVersion: mlops.mlops.dev/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: mlops.mlops.dev/v1alpha1
 kind: NotebookValidationJob
 metadata:
   name: anomaly-detection-isolation-forest
@@ -1811,8 +1984,9 @@ spec:
       url: "https://github.com/openshift-aiops/openshift-aiops-platform.git"
       ref: "main"
       credentialsSecret: "github-credentials"  # For private repos
-    path: "notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb"</p>
-<p>podConfig:
+    path: "notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb"
+
+  podConfig:
     containerImage: "quay.io/jupyter/minimal-notebook:latest"
     resources:
       requests:
@@ -1820,13 +1994,12 @@ spec:
         cpu: "1000m"
       limits:
         memory: "4Gi"
-        cpu: "2000m"</p>
-<p>timeout: "30m"
-```</p>
+        cpu: "2000m"
+
+  timeout: "30m"</code></pre>
 <h4 id="advanced-notebook-validation-with-model-storage-volumes">Advanced Notebook Validation (With Model Storage Volumes)<a class="headerlink" href="#advanced-notebook-validation-with-model-storage-volumes" title="Permanent link">&para;</a></h4>
 <p><strong>NEW (2025-12-01)</strong>: The Jupyter Notebook Validator Operator now supports volume mounting, enabling persistent model storage across validation runs.</p>
-<p>```yaml
-apiVersion: mlops.mlops.dev/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: mlops.mlops.dev/v1alpha1
 kind: NotebookValidationJob
 metadata:
   name: model-training-with-storage
@@ -1837,8 +2010,9 @@ spec:
       url: "https://github.com/openshift-aiops/openshift-aiops-platform.git"
       ref: "main"
       credentialsSecret: "github-credentials"
-    path: "notebooks/03-model-training/ensemble-model-training.ipynb"</p>
-<p>podConfig:
+    path: "notebooks/03-model-training/ensemble-model-training.ipynb"
+
+  podConfig:
     containerImage: "quay.io/modh/runtime-images:jupyter-datascience-ubi9-python-3.11-2025.1"
     resources:
       requests:
@@ -1848,24 +2022,24 @@ spec:
       limits:
         memory: "8Gi"
         cpu: "4000m"
-        nvidia.com/gpu: "1"</p>
-<pre><code># Volume mounts for persistent model storage
-volumes:
-  - name: model-storage
-    persistentVolumeClaim:
-      claimName: model-storage-pvc
-  - name: data-storage
-    persistentVolumeClaim:
-      claimName: data-storage-pvc
+        nvidia.com/gpu: "1"
 
-volumeMounts:
-  - name: model-storage
-    mountPath: /opt/app-root/src/models
-  - name: data-storage
-    mountPath: /opt/app-root/src/data
-</code></pre>
-<p>timeout: "60m"
-```</p>
+    # Volume mounts for persistent model storage
+    volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-storage-pvc
+      - name: data-storage
+        persistentVolumeClaim:
+          claimName: data-storage-pvc
+
+    volumeMounts:
+      - name: model-storage
+        mountPath: /opt/app-root/src/models
+      - name: data-storage
+        mountPath: /opt/app-root/src/data
+
+  timeout: "60m"</code></pre>
 <p><strong>Use Cases for Volume Support</strong>:
 1. <strong>Model Training Notebooks</strong>: Store trained models in PVCs for later deployment
 2. <strong>Data Preprocessing</strong>: Cache preprocessed datasets across validation runs
@@ -1890,8 +2064,7 @@ volumeMounts:
 - <code>spec.podConfig.nodeSelector</code> - Map of node selector labels
 - <code>spec.podConfig.affinity</code> - Full affinity configuration</p>
 <p><strong>Example Configuration</strong>:
-<code>yaml
-podConfig:
+<pre class="highlight"><code class="language-yaml">podConfig:
   resources:
     requests:
       nvidia.com/gpu: "1"
@@ -1912,7 +2085,7 @@ podConfig:
               - key: nvidia.com/gpu.memory
                 operator: Gt
                 values:
-                  - "16384"</code></p>
+                  - "16384"</code></pre></p>
 <p><strong>Sample Manifests</strong>:
 - GPU scheduling example: <code>k8s/operators/jupyter-notebook-validator/samples/predictive-analytics-validation-job.yaml</code>
 - See upstream repository for additional examples: high-memory nodes, spot instances, multi-tenant isolation</p>
@@ -1927,20 +2100,18 @@ podConfig:
 - Status mapping: Succeeded → Healthy, Failed → Degraded, Running → Progressing
 - Real-time validation progress visible in ArgoCD dashboard</p>
 <p><strong>Post-Success Resource Hooks</strong>: Auto-restart InferenceServices when notebooks succeed
-<code>yaml
-annotations:
+<pre class="highlight"><code class="language-yaml">annotations:
   mlops.dev/on-success-trigger: |
     - apiVersion: serving.kserve.io/v1beta1
       kind: InferenceService
       name: predictive-analytics
       namespace: self-healing-platform
-      action: restart</code></p>
+      action: restart</code></pre></p>
 <p><strong>CRITICAL ISSUE SOLVED</strong>: This feature eliminates the manual pod deletion requirement for InferenceServices. Previously, when notebooks trained models and stored them in PVCs, the InferenceService predictor pods remained at 1/2 ready state until manually deleted. The <code>mlops.dev/on-success-trigger</code> annotation automatically triggers pod restart, bringing InferenceServices to 2/2 ready state without manual intervention.</p>
 <p><strong>Sync Wave Awareness</strong>: Coordinate notebook execution with ArgoCD deployment waves
-<code>yaml
-annotations:
+<pre class="highlight"><code class="language-yaml">annotations:
   argocd.argoproj.io/sync-wave: "3"     # Run notebook in wave 3
-  mlops.dev/block-wave: "4"              # Block wave 4 until success</code></p>
+  mlops.dev/block-wave: "4"              # Block wave 4 until success</code></pre></p>
 <p>This enables precise orchestration of notebook execution in relation to other resources:
 - Wave 1: Infrastructure (PVCs, ConfigMaps)
 - Wave 2: Dependencies (databases, services)
@@ -1955,33 +2126,24 @@ annotations:
 - Supports Slack, email, PagerDuty, webhook notifications
 - Events created for: validation started, succeeded, failed, timeout</p>
 <p><strong>RBAC Requirements</strong>: Updated ClusterRole permissions required
-```yaml</p>
-<h1 id="required-for-auto-restart-inferenceservices">Required for auto-restart InferenceServices<a class="headerlink" href="#required-for-auto-restart-inferenceservices" title="Permanent link">&para;</a></h1>
-<ul>
-<li>
-<p>apiGroups: ["serving.kserve.io"]
+<pre class="highlight"><code class="language-yaml"># Required for auto-restart InferenceServices
+- apiGroups: ["serving.kserve.io"]
   resources: ["inferenceservices"]
-  verbs: ["get", "list", "patch"]</p>
-</li>
-<li>
-<p>apiGroups: [""]
+  verbs: ["get", "list", "patch"]
+
+- apiGroups: [""]
   resources: ["pods"]
-  verbs: ["list", "delete"]</p>
-</li>
-</ul>
-<h1 id="required-for-argocd-application-status-updates">Required for ArgoCD Application status updates<a class="headerlink" href="#required-for-argocd-application-status-updates" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: ["argoproj.io"]
+  verbs: ["list", "delete"]
+
+# Required for ArgoCD Application status updates
+- apiGroups: ["argoproj.io"]
   resources: ["applications"]
-  verbs: ["get", "list", "patch"]</li>
-</ul>
-<h1 id="required-for-notification-events">Required for notification events<a class="headerlink" href="#required-for-notification-events" title="Permanent link">&para;</a></h1>
-<ul>
-<li>apiGroups: [""]
+  verbs: ["get", "list", "patch"]
+
+# Required for notification events
+- apiGroups: [""]
   resources: ["events"]
-  verbs: ["create", "patch"]
-```</li>
-</ul>
+  verbs: ["create", "patch"]</code></pre></p>
 <h4 id="2-model-aware-validation-adr-020">2. Model-Aware Validation (ADR-020)<a class="headerlink" href="#2-model-aware-validation-adr-020" title="Permanent link">&para;</a></h4>
 <p>Fully implemented multi-platform model validation:</p>
 <p><strong>Supported Platforms</strong>: KServe, OpenShift AI, vLLM, TorchServe, Triton, Ray Serve, Seldon Core, BentoML</p>
@@ -1990,8 +2152,7 @@ annotations:
 - <strong>Phase 2 (Existing Environment)</strong>: Validate against deployed models after deployment
 - <strong>Both</strong>: Run both phases for comprehensive testing</p>
 <p><strong>Prediction Validation</strong>: Test deployed models with sample data
-<code>yaml
-modelValidation:
+<pre class="highlight"><code class="language-yaml">modelValidation:
   enabled: true
   platform: kserve
   phase: both
@@ -2004,7 +2165,7 @@ modelValidation:
     expectedOutput: |
       {"predictions": [[0.8, 0.2]]}
     tolerance: "0.1"
-  timeout: "5m"</code></p>
+  timeout: "5m"</code></pre></p>
 <p><strong>Platform Auto-Detection</strong>: Automatically detects serving platform from deployed models
 - Scans namespace for InferenceServices (KServe)
 - Detects Ray Serve deployments
@@ -2029,8 +2190,7 @@ modelValidation:
 - Empty results when output expected
 - Type mismatches</p>
 <p><strong>Configuration Example</strong>:
-<code>yaml
-validationConfig:
+<pre class="highlight"><code class="language-yaml">validationConfig:
   level: "production"
   strictMode: true
   failOnStderr: false  # Allow warnings but not errors
@@ -2042,7 +2202,7 @@ validationConfig:
       notEmpty: true
     - cell: 15  # Cell that evaluates model
       type: "float"
-      range: [0.7, 1.0]  # Accuracy 70-100%</code></p>
+      range: [0.7, 1.0]  # Accuracy 70-100%</code></pre></p>
 <p><strong>Use Cases</strong>:
 - Prevent broken notebooks from passing validation
 - Catch logical errors that don't raise exceptions
@@ -2054,19 +2214,17 @@ validationConfig:
 - <code>exact</code>: Byte-for-byte comparison (for deterministic notebooks)
 - <code>normalized</code>: Floating-point tolerant comparison (for ML notebooks)</p>
 <p><strong>Floating-Point Tolerance</strong>: Handle non-deterministic ML outputs
-<code>yaml
-comparisonConfig:
+<pre class="highlight"><code class="language-yaml">comparisonConfig:
   strategy: "normalized"
   floatingPointTolerance: "0.01"  # 1% tolerance
   ignoreTimestamps: true
-  ignoreExecutionCount: true</code></p>
+  ignoreExecutionCount: true</code></pre></p>
 <p><strong>Custom Timestamp Patterns</strong>: Ignore ML training logs
-<code>yaml
-comparisonConfig:
+<pre class="highlight"><code class="language-yaml">comparisonConfig:
   customTimestampPatterns:
     - "Training time: \\d+\\.\\d+s"
     - "Epoch \\d+/\\d+ - \\d+\\.\\d+s"
-    - "Accuracy: 0\\.\\d+"  # Tolerate accuracy variations</code></p>
+    - "Accuracy: 0\\.\\d+"  # Tolerate accuracy variations</code></pre></p>
 <p><strong>Benefits</strong>:
 - ✅ Handle non-deterministic model training outputs
 - ✅ Tolerate timing variations across runs
@@ -2103,18 +2261,17 @@ comparisonConfig:
 <li><strong>Kubernetes 1.31+ / OpenShift 4.18+</strong>: Platform requirements</li>
 </ol>
 <p><strong>Helm Installation</strong>:
-<code>bash
-helm install jupyter-validator \
+<pre class="highlight"><code class="language-bash">helm install jupyter-validator \
   https://github.com/tosin2013/jupyter-notebook-validator-operator/releases/download/release-4.18/jupyter-notebook-validator-operator-0.1.0.tgz \
   --namespace jupyter-validator-system \
   --create-namespace \
   --set openshift.enabled=true \
-  --set prometheus.enabled=true</code></p>
+  --set prometheus.enabled=true</code></pre></p>
 <h3 id="deployment-via-validated-patterns-2025-12-04-update">Deployment via Validated Patterns (2025-12-04 Update)<a class="headerlink" href="#deployment-via-validated-patterns-2025-12-04-update" title="Permanent link">&para;</a></h3>
 <p><strong>Status</strong>: Operator NOT yet in OperatorHub/marketplace (submission in progress)</p>
 <p><strong>Deployment Method</strong>: Self-contained kustomize deployment following ADR-030 Hybrid Management Pattern</p>
 <p><strong>Architecture</strong>:
-<code>k8s/operators/jupyter-notebook-validator/
+<pre class="highlight"><code>k8s/operators/jupyter-notebook-validator/
 ├── base/                           # Base manifests
 │   ├── crd/                        # NotebookValidationJob CRD
 │   ├── rbac/                       # ClusterRole, ClusterRoleBinding, ServiceAccount
@@ -2130,21 +2287,21 @@ helm install jupyter-validator \
 └── overlays/
     ├── dev-ocp4.18/                # OCP 4.18 (image: 1.0.6 - universal release)
     ├── dev-ocp4.19/                # OCP 4.19 (image: 1.0.6 - universal release)
-    └── dev-ocp4.20/                # OCP 4.20 (image: 1.0.6 - universal release)</code></p>
+    └── dev-ocp4.20/                # OCP 4.20 (image: 1.0.6 - universal release)</code></pre></p>
 <p><strong>Installation</strong>:
-```bash</p>
-<h1 id="build-execution-environment-first-time">Build execution environment (first time)<a class="headerlink" href="#build-execution-environment-first-time" title="Permanent link">&para;</a></h1>
-<p>make build-ee</p>
-<h1 id="install-operator">Install operator<a class="headerlink" href="#install-operator" title="Permanent link">&para;</a></h1>
-<p>make install-jupyter-validator</p>
-<h1 id="verify-installation">Verify installation<a class="headerlink" href="#verify-installation" title="Permanent link">&para;</a></h1>
-<p>make validate-jupyter-validator</p>
-<h1 id="test-with-sample-notebook">Test with sample notebook<a class="headerlink" href="#test-with-sample-notebook" title="Permanent link">&para;</a></h1>
-<p>make test-jupyter-validator
-```</p>
+<pre class="highlight"><code class="language-bash"># Build execution environment (first time)
+make build-ee
+
+# Install operator
+make install-jupyter-validator
+
+# Verify installation
+make validate-jupyter-validator
+
+# Test with sample notebook
+make test-jupyter-validator</code></pre></p>
 <p><strong>Uninstallation</strong>:
-<code>bash
-make uninstall-jupyter-validator</code></p>
+<pre class="highlight"><code class="language-bash">make uninstall-jupyter-validator</code></pre></p>
 <p><strong>Deployment Flow</strong>:
 1. Kustomize builds overlay: <code>k8s/operators/jupyter-notebook-validator/overlays/dev-ocp4.18</code>
 2. Ansible applies manifests: <code>kubernetes.core.k8s</code> with kustomize lookup

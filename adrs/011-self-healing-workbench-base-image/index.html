@@ -1780,13 +1780,91 @@
   
 </li>
         
-      </ul>
-    </nav>
+          <li class="md-nav__item">
+  <a href="#step-2-clone-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Clone Repository
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-development-environment-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Development Environment Setup
+    </span>
+  </a>
   
 </li>
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benefits-of-git-clone-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits of Git Clone Workflow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compliance-and-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compliance and Validation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Compliance and Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR Compliance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Criteria
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approval" class="md-nav__link">
+    <span class="md-ellipsis">
+      Approval
+    </span>
+  </a>
   
 </li>
       
@@ -1979,31 +2057,30 @@
 <h3 id="git-clone-approach-immediate-productivity">Git Clone Approach (Immediate Productivity)<a class="headerlink" href="#git-clone-approach-immediate-productivity" title="Permanent link">&para;</a></h3>
 <p>Due to Jupyter web interface configuration complexities with the PyTorch base image, the recommended development workflow uses direct git access:</p>
 <h4 id="step-1-access-workbench-terminal"><strong>Step 1: Access Workbench Terminal</strong><a class="headerlink" href="#step-1-access-workbench-terminal" title="Permanent link">&para;</a></h4>
-<p>```bash</p>
-<h1 id="get-workbench-pod-name">Get workbench pod name<a class="headerlink" href="#get-workbench-pod-name" title="Permanent link">&para;</a></h1>
-<p>oc get pods -n self-healing-platform | grep workbench</p>
-<h1 id="access-the-workbench-terminal">Access the workbench terminal<a class="headerlink" href="#access-the-workbench-terminal" title="Permanent link">&para;</a></h1>
-<p>oc exec -it self-healing-workbench-dev-0 -c self-healing-workbench -n self-healing-platform -- /bin/bash
-```</p>
+<pre class="highlight"><code class="language-bash"># Get workbench pod name
+oc get pods -n self-healing-platform | grep workbench
+
+# Access the workbench terminal
+oc exec -it self-healing-workbench-dev-0 -c self-healing-workbench -n self-healing-platform -- /bin/bash</code></pre>
 <h4 id="step-2-clone-repository"><strong>Step 2: Clone Repository</strong><a class="headerlink" href="#step-2-clone-repository" title="Permanent link">&para;</a></h4>
-<p>```bash</p>
-<h1 id="clone-the-self-healing-platform-repository">Clone the Self-Healing Platform repository<a class="headerlink" href="#clone-the-self-healing-platform-repository" title="Permanent link">&para;</a></h1>
-<p>git clone https://gitea-with-admin-gitea.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/user1/openshift-aiops-platform.git</p>
-<h1 id="navigate-to-project-directory">Navigate to project directory<a class="headerlink" href="#navigate-to-project-directory" title="Permanent link">&para;</a></h1>
-<p>cd openshift-aiops-platform</p>
-<h1 id="verify-access-to-mounted-volumes">Verify access to mounted volumes<a class="headerlink" href="#verify-access-to-mounted-volumes" title="Permanent link">&para;</a></h1>
-<p>ls -la /opt/app-root/src/data    # Persistent data storage
-ls -la /opt/app-root/src/models  # Model artifacts storage
-```</p>
+<pre class="highlight"><code class="language-bash"># Clone the Self-Healing Platform repository
+git clone https://gitea-with-admin-gitea.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/user1/openshift-aiops-platform.git
+
+# Navigate to project directory
+cd openshift-aiops-platform
+
+# Verify access to mounted volumes
+ls -la /opt/app-root/src/data    # Persistent data storage
+ls -la /opt/app-root/src/models  # Model artifacts storage</code></pre>
 <h4 id="step-3-development-environment-setup"><strong>Step 3: Development Environment Setup</strong><a class="headerlink" href="#step-3-development-environment-setup" title="Permanent link">&para;</a></h4>
-<p>```bash</p>
-<h1 id="install-additional-self-healing-specific-libraries">Install additional self-healing specific libraries<a class="headerlink" href="#install-additional-self-healing-specific-libraries" title="Permanent link">&para;</a></h1>
-<p>pip install -r k8s/base/ai-ml-workbench.yaml | grep -A 30 "requirements.txt"</p>
-<h1 id="verify-gpu-access-if-available">Verify GPU access (if available)<a class="headerlink" href="#verify-gpu-access-if-available" title="Permanent link">&para;</a></h1>
-<p>python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"</p>
-<h1 id="start-development-work">Start development work<a class="headerlink" href="#start-development-work" title="Permanent link">&para;</a></h1>
-<p>jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
-```</p>
+<pre class="highlight"><code class="language-bash"># Install additional self-healing specific libraries
+pip install -r k8s/base/ai-ml-workbench.yaml | grep -A 30 "requirements.txt"
+
+# Verify GPU access (if available)
+python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
+
+# Start development work
+jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root</code></pre>
 <h3 id="benefits-of-git-clone-workflow">Benefits of Git Clone Workflow<a class="headerlink" href="#benefits-of-git-clone-workflow" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Immediate Productivity</strong>: Bypass Jupyter web interface configuration issues</li>

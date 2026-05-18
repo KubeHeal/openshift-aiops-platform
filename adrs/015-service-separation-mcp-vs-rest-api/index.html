@@ -1964,17 +1964,16 @@
 <h2 id="update-dual-transport-architecture-2025-10-14">Update: Dual Transport Architecture (2025-10-14)<a class="headerlink" href="#update-dual-transport-architecture-2025-10-14" title="Permanent link">&para;</a></h2>
 <p><strong>Context</strong>: ADR-016 identified that OpenShift Lightspeed OLSConfig requires HTTP transport, not stdio.</p>
 <p><strong>Solution</strong>: Extended MCP server with dual transport support while maintaining service separation principles:</p>
-<p>```typescript
-// Environment-based transport selection
-const transport = process.env['MCP_TRANSPORT'] || 'stdio';</p>
-<p>if (transport === 'http') {
+<pre class="highlight"><code class="language-typescript">// Environment-based transport selection
+const transport = process.env['MCP_TRANSPORT'] || 'stdio';
+
+if (transport === 'http') {
   // HTTP transport for OLSConfig integration
   await this.startHttpTransport();
 } else {
   // Stdio transport for direct spawning (default)
   await this.startStdioTransport();
-}
-```</p>
+}</code></pre>
 <p><strong>Key Principles Maintained</strong>:
 - ✅ <strong>Single Responsibility</strong>: MCP server only handles MCP protocol
 - ✅ <strong>Transport Abstraction</strong>: HTTP layer is minimal wrapper, no business logic

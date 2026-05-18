@@ -1777,8 +1777,71 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#root-cause-hypothesis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Root Cause Hypothesis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proposed-fix_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proposed Fix
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#files-to-modify-updated" class="md-nav__link">
+    <span class="md-ellipsis">
+      Files to Modify (Updated)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acceptance-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acceptance Criteria
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Timeline
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-applied" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Applied
+    </span>
+  </a>
   
 </li>
         
@@ -1833,7 +1896,7 @@
 <p>Model receives 3264 features matching the trained StandardScaler expectation.</p>
 <h4 id="actual-behavior">Actual Behavior<a class="headerlink" href="#actual-behavior" title="Permanent link">&para;</a></h4>
 <p>Coordination engine generates 3200 features, causing model rejection:
-<code>{"error":"X has 3200 features, but StandardScaler is expecting 3264 features as input."}</code></p>
+<pre class="highlight"><code>{"error":"X has 3200 features, but StandardScaler is expecting 3264 features as input."}</code></pre></p>
 <h4 id="root-cause-analysis">Root Cause Analysis<a class="headerlink" href="#root-cause-analysis" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
@@ -1877,8 +1940,7 @@
 - <code>is_business_hours</code></p>
 <h4 id="proposed-fix">Proposed Fix<a class="headerlink" href="#proposed-fix" title="Permanent link">&para;</a></h4>
 <p>Update <code>pkg/features/predictive.go</code> to use 6 time features matching the Python notebook:</p>
-<p>```go
-// Time-based feature names - MUST match Python notebook exactly
+<pre class="highlight"><code class="language-go">// Time-based feature names - MUST match Python notebook exactly
 var timeFeatureNames = []string{
     "hour",             // 0-23 (was hour_of_day)
     "day_of_week",      // 0-6 (Monday=0)
@@ -1886,35 +1948,31 @@ var timeFeatureNames = []string{
     "month",            // 1-12
     "is_weekend",       // 0 or 1
     "is_business_hours", // 0 or 1 (9-17 weekdays)
-}</p>
-<p>// TimeFeatureCount is the number of time-based features
-const TimeFeatureCount = 6  // Changed from 8
-```</p>
+}
+
+// TimeFeatureCount is the number of time-based features
+const TimeFeatureCount = 6  // Changed from 8</code></pre>
 <p>And update the formula calculation to match Python:
-<code>go
-// Python formula: lookback × (metrics + time_features + features_per_metric × metrics)
+<pre class="highlight"><code class="language-go">// Python formula: lookback × (metrics + time_features + features_per_metric × metrics)
 // = 24 × (5 + 6 + 25×5) = 24 × 136 = 3264
 func (b *PredictiveFeatureBuilder) calculateTotalFeatures() int {
     columnsPerTimestep := len(predictiveBaseMetrics) + TimeFeatureCount +
                           (FeaturesPerMetric * len(predictiveBaseMetrics))
     return b.config.LookbackHours * columnsPerTimestep
-}</code></p>
+}</code></pre></p>
 <hr />
 <h3 id="bug-2-prometheus-range-query-failure">Bug 2: Prometheus Range Query Failure<a class="headerlink" href="#bug-2-prometheus-range-query-failure" title="Permanent link">&para;</a></h3>
 <h4 id="expected-behavior_1">Expected Behavior<a class="headerlink" href="#expected-behavior_1" title="Permanent link">&para;</a></h4>
 <p>Prometheus range queries return time series data for feature engineering.</p>
 <h4 id="actual-behavior_1">Actual Behavior<a class="headerlink" href="#actual-behavior_1" title="Permanent link">&para;</a></h4>
 <p>All range queries return empty results:
-<code>json
-{"level":"debug","msg":"No data returned for predictive range query","query":"avg(rate(container_cpu_usage_seconds_total{container!=\"\",pod!=\"\"}[5m]))"}</code></p>
+<pre class="highlight"><code class="language-json">{"level":"debug","msg":"No data returned for predictive range query","query":"avg(rate(container_cpu_usage_seconds_total{container!=\"\",pod!=\"\"}[5m]))"}</code></pre></p>
 <h4 id="direct-curl-works">Direct curl WORKS<a class="headerlink" href="#direct-curl-works" title="Permanent link">&para;</a></h4>
 <p>When testing the same query directly from the pod:
-<code>bash
-curl -sk -H "Authorization: Bearer $TOKEN" \
-  "https://prometheus-k8s.openshift-monitoring.svc:9091/api/v1/query_range?query=avg(rate(container_cpu_usage_seconds_total%7Bcontainer!=%22%22,pod!=%22%22%7D%5B5m%5D))&amp;start=${START}&amp;end=${NOW}&amp;step=300"</code></p>
+<pre class="highlight"><code class="language-bash">curl -sk -H "Authorization: Bearer $TOKEN" \
+  "https://prometheus-k8s.openshift-monitoring.svc:9091/api/v1/query_range?query=avg(rate(container_cpu_usage_seconds_total%7Bcontainer!=%22%22,pod!=%22%22%7D%5B5m%5D))&amp;start=${START}&amp;end=${NOW}&amp;step=300"</code></pre></p>
 <p>Returns valid matrix data:
-<code>json
-{"status":"success","data":{"resultType":"matrix","result":[{"metric":{},"values":[[1769647825,"0.003554019"],...]}]}}</code></p>
+<pre class="highlight"><code class="language-json">{"status":"success","data":{"resultType":"matrix","result":[{"metric":{},"values":[[1769647825,"0.003554019"],...]}]}}</code></pre></p>
 <h4 id="root-cause-hypothesis">Root Cause Hypothesis<a class="headerlink" href="#root-cause-hypothesis" title="Permanent link">&para;</a></h4>
 <p>The <code>pkg/features/prometheus_adapter.go</code> likely has an issue parsing the Prometheus API matrix response format. Possible causes:
 1. Not handling <code>resultType: "matrix"</code> correctly (only handling <code>"vector"</code>)
@@ -1925,8 +1983,7 @@ curl -sk -H "Authorization: Bearer $TOKEN" \
 <ol>
 <li>
 <p>Ensure matrix responses are parsed correctly:
-<code>go
-type PrometheusResponse struct {
+<pre class="highlight"><code class="language-go">type PrometheusResponse struct {
     Status string `json:"status"`
     Data   struct {
         ResultType string `json:"resultType"`
@@ -1936,7 +1993,7 @@ type PrometheusResponse struct {
             Value  []interface{}     `json:"value"`  // For vector
         } `json:"result"`
     } `json:"data"`
-}</code></p>
+}</code></pre></p>
 </li>
 <li>
 <p>Add debug logging for raw response body</p>
@@ -2008,30 +2065,21 @@ type PrometheusResponse struct {
 <ol>
 <li>
 <p>Set expected feature count for validation:
-   ```yaml
-   env:</p>
-<ul>
-<li>name: FEATURE_ENGINEERING_EXPECTED_COUNT
-   value: "3264"
-   ```</li>
-</ul>
+   <pre class="highlight"><code class="language-yaml">env:
+  - name: FEATURE_ENGINEERING_EXPECTED_COUNT
+    value: "3264"</code></pre></p>
 </li>
 <li>
 <p>Enable debug logging:
-   ```yaml
-   env:</p>
-<ul>
-<li>name: LOG_LEVEL
-   value: "debug"
-   ```</li>
-</ul>
+   <pre class="highlight"><code class="language-yaml">env:
+  - name: LOG_LEVEL
+    value: "debug"</code></pre></p>
 </li>
 <li>
 <p>Test prediction:
-   <code>bash
-   curl -X POST http://coordination-engine:8080/api/v1/predict \
-     -H "Content-Type: application/json" \
-     -d '{"scope":"cluster","metric":"cpu","target_date":"2026-01-29","target_time":"19:00"}'</code></p>
+   <pre class="highlight"><code class="language-bash">curl -X POST http://coordination-engine:8080/api/v1/predict \
+  -H "Content-Type: application/json" \
+  -d '{"scope":"cluster","metric":"cpu","target_date":"2026-01-29","target_time":"19:00"}'</code></pre></p>
 </li>
 <li>
 <p>Verify logs show:</p>
@@ -2060,18 +2108,16 @@ type PrometheusResponse struct {
 <p>Coordination engine parses KServe model response and returns prediction results.</p>
 <h4 id="actual-behavior_2">Actual Behavior<a class="headerlink" href="#actual-behavior_2" title="Permanent link">&para;</a></h4>
 <p>JSON parsing fails when processing the model response:
-<code>json
-{"error":"failed to parse forecast response from model predictive-analytics: json: cannot unmarshal number into Go struct field .predictions of type []float64","level":"error","model":"predictive-analytics","msg":"KServe prediction failed","time":"2026-01-29T02:41:21Z"}</code></p>
+<pre class="highlight"><code class="language-json">{"error":"failed to parse forecast response from model predictive-analytics: json: cannot unmarshal number into Go struct field .predictions of type []float64","level":"error","model":"predictive-analytics","msg":"KServe prediction failed","time":"2026-01-29T02:41:21Z"}</code></pre></p>
 <h4 id="kserve-model-returns-correct-format">KServe Model Returns Correct Format<a class="headerlink" href="#kserve-model-returns-correct-format" title="Permanent link">&para;</a></h4>
 <p>Direct test to KServe model works correctly:
-```bash</p>
-<h1 id="test-with-3264-zero-features">Test with 3264 zero features<a class="headerlink" href="#test-with-3264-zero-features" title="Permanent link">&para;</a></h1>
-<p>curl -X POST "http://predictive-analytics-stable:8080/v1/models/predictive-analytics:predict" \
+<pre class="highlight"><code class="language-bash"># Test with 3264 zero features
+curl -X POST "http://predictive-analytics-stable:8080/v1/models/predictive-analytics:predict" \
   -H "Content-Type: application/json" \
-  -d '{"instances": [[0.0, 0.0, ... (3264 zeros) ...]]}'</p>
-<h1 id="response-correct">Response (CORRECT):<a class="headerlink" href="#response-correct" title="Permanent link">&para;</a></h1>
-<p>{"predictions":[0.12351758718119261]}
-```</p>
+  -d '{"instances": [[0.0, 0.0, ... (3264 zeros) ...]]}'
+
+# Response (CORRECT):
+{"predictions":[0.12351758718119261]}</code></pre></p>
 <p>The model returns <code>{"predictions": [0.123...]}</code> (array format), which is correct.</p>
 <h4 id="root-cause-hypothesis_1">Root Cause Hypothesis<a class="headerlink" href="#root-cause-hypothesis_1" title="Permanent link">&para;</a></h4>
 <p>The Go code in <code>pkg/clients/kserve.go</code> or response parsing has a struct field mismatch. The error suggests:
@@ -2083,34 +2129,32 @@ type PrometheusResponse struct {
 3. There may be a different response format when using batch predictions vs single predictions</p>
 <h4 id="proposed-fix_2">Proposed Fix<a class="headerlink" href="#proposed-fix_2" title="Permanent link">&para;</a></h4>
 <p>Review <code>pkg/clients/kserve.go</code> response parsing:</p>
-<p><code>``go
-// Current struct might be something like:
+<pre class="highlight"><code class="language-go">// Current struct might be something like:
 type ForecastResponse struct {
-    Predictions float64</code>json:"predictions"`  // WRONG - expects number
-}</p>
-<p>// Should be:
-type ForecastResponse struct {
-    Predictions []float64 <code>json:"predictions"</code>  // CORRECT - expects array
-}</p>
-<p>// Or handle both cases:
-type KServeResponse struct {
-    Predictions interface{} <code>json:"predictions"</code> // Can be []float64 or float64
+    Predictions float64 `json:"predictions"`  // WRONG - expects number
 }
-```</p>
+
+// Should be:
+type ForecastResponse struct {
+    Predictions []float64 `json:"predictions"`  // CORRECT - expects array
+}
+
+// Or handle both cases:
+type KServeResponse struct {
+    Predictions interface{} `json:"predictions"` // Can be []float64 or float64
+}</code></pre>
 <p>Also verify the response parsing logic handles sklearn server output format:
-<code>go
-// sklearn server returns: {"predictions": [value1, value2, ...]}
-// NOT: {"predictions": {"values": [...]}} or other nested formats</code></p>
+<pre class="highlight"><code class="language-go">// sklearn server returns: {"predictions": [value1, value2, ...]}
+// NOT: {"predictions": {"values": [...]}} or other nested formats</code></pre></p>
 <h4 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h4>
 <p>After fix:
-```bash</p>
-<h1 id="test-prediction">Test prediction<a class="headerlink" href="#test-prediction" title="Permanent link">&para;</a></h1>
-<p>curl -X POST http://coordination-engine:8080/api/v1/predict \
+<pre class="highlight"><code class="language-bash"># Test prediction
+curl -X POST http://coordination-engine:8080/api/v1/predict \
   -H "Content-Type: application/json" \
-  -d '{"scope":"cluster","metric":"cpu","target_date":"2026-01-29","target_time":"19:00"}'</p>
-<h1 id="expected-response-example">Expected response (example):<a class="headerlink" href="#expected-response-example" title="Permanent link">&para;</a></h1>
-<p>{"status":"success","prediction":{"cpu_usage":0.45,"confidence":0.85}}
-```</p>
+  -d '{"scope":"cluster","metric":"cpu","target_date":"2026-01-29","target_time":"19:00"}'
+
+# Expected response (example):
+{"status":"success","prediction":{"cpu_usage":0.45,"confidence":0.85}}</code></pre></p>
 <hr />
 <h3 id="files-to-modify-updated">Files to Modify (Updated)<a class="headerlink" href="#files-to-modify-updated" title="Permanent link">&para;</a></h3>
 <ol>
@@ -2176,16 +2220,14 @@ type KServeResponse struct {
 </tbody>
 </table>
 <h3 id="configuration-applied">Configuration Applied<a class="headerlink" href="#configuration-applied" title="Permanent link">&para;</a></h3>
-<p>```yaml</p>
-<h1 id="chartshubvaluesyaml">charts/hub/values.yaml<a class="headerlink" href="#chartshubvaluesyaml" title="Permanent link">&para;</a></h1>
-<p>coordinationEngine:
+<pre class="highlight"><code class="language-yaml"># charts/hub/values.yaml
+coordinationEngine:
   kserve:
     timeout: "120s"  # Increased from 10s for feature engineering
   featureEngineering:
     enabled: true
     lookbackHours: 24
-    expectedFeatureCount: 3264
-```</p>
+    expectedFeatureCount: 3264</code></pre>
 
 
 

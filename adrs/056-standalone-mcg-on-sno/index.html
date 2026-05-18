@@ -1709,6 +1709,93 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-date" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision Date
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-makers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision Makers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Results
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validation Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validated-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validated Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparison-mcg-only-vs-full-odf" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comparison: MCG-only vs Full ODF
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1759,11 +1846,10 @@
 <h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
 <p>Deploy <strong>MCG-only ODF (standalone NooBaa)</strong> on SNO clusters instead of skipping ODF entirely.</p>
 <h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h3>
-<p><code>Standard cluster: ODF operator -&gt; StorageCluster (full Ceph + NooBaa)
-SNO cluster:      ODF operator -&gt; StorageCluster (MCG-only, reconcileStrategy: standalone)</code></p>
+<pre class="highlight"><code>Standard cluster: ODF operator -&gt; StorageCluster (full Ceph + NooBaa)
+SNO cluster:      ODF operator -&gt; StorageCluster (MCG-only, reconcileStrategy: standalone)</code></pre>
 <h3 id="mcg-only-storagecluster-manifest">MCG-Only StorageCluster Manifest<a class="headerlink" href="#mcg-only-storagecluster-manifest" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-apiVersion: ocs.openshift.io/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: ocs.openshift.io/v1
 kind: StorageCluster
 metadata:
   name: ocs-storagecluster
@@ -1771,7 +1857,7 @@ metadata:
 spec:
   multiCloudGateway:
     reconcileStrategy: standalone
-    dbStorageClassName: gp3-csi</code></p>
+    dbStorageClassName: gp3-csi</code></pre>
 <h3 id="key-design-choices">Key Design Choices<a class="headerlink" href="#key-design-choices" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong><code>objectStore.enabled: true</code> for all topologies</strong> -- eliminates topology-specific Helm conditionals</li>
@@ -1780,7 +1866,7 @@ spec:
 <li><strong>CRD wait</strong> -- <code>configure-cluster-infrastructure.sh</code> waits for the StorageCluster CRD to be available (ocs-operator sub-operator) before creating the StorageCluster</li>
 </ol>
 <h2 id="deployment-flow">Deployment Flow<a class="headerlink" href="#deployment-flow" title="Permanent link">&para;</a></h2>
-<p><code>make configure-cluster
+<pre class="highlight"><code>make configure-cluster
   |
   |-- Standard: install ODF operator + full StorageCluster (Ceph + NooBaa)
   |-- SNO: install ODF operator + MCG-only StorageCluster (NooBaa only)
@@ -1792,7 +1878,7 @@ make operator-deploy-prereqs
   |-- Creates NooBaa RBAC in openshift-storage (both topologies)
   v
 make operator-deploy
-  |-- Helm chart renders all NooBaa templates (objectStore.enabled: true)</code></p>
+  |-- Helm chart renders all NooBaa templates (objectStore.enabled: true)</code></pre>
 <h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
 <ol>
@@ -1848,20 +1934,21 @@ make operator-deploy
 </ol>
 <h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
 <p>Verified on SNO cluster (OpenShift 4.20, AWS):</p>
-<p>```bash
-$ make configure-cluster</p>
-<h1 id="odf-operator-installed-mcg-only-storagecluster-created-noobaa-ready">ODF operator installed, MCG-only StorageCluster created, NooBaa Ready<a class="headerlink" href="#odf-operator-installed-mcg-only-storagecluster-created-noobaa-ready" title="Permanent link">&para;</a></h1>
-<p>$ oc get noobaa -n openshift-storage
+<pre class="highlight"><code class="language-bash">$ make configure-cluster
+# ODF operator installed, MCG-only StorageCluster created, NooBaa Ready
+
+$ oc get noobaa -n openshift-storage
 NAME     PHASE   AGE
-noobaa   Ready   2m43s</p>
-<p>$ oc get sc
+noobaa   Ready   2m43s
+
+$ oc get sc
 gp2-csi
 gp3-csi (default)
-openshift-storage.noobaa.io</p>
-<p>$ make operator-deploy-prereqs</p>
-<h1 id="noobaa-rbac-deploying-objectstoreenabledtrue-openshift-storage-namespaceexists">NooBaa RBAC: DEPLOYING (objectStore.enabled=True, openshift-storage namespace=exists)<a class="headerlink" href="#noobaa-rbac-deploying-objectstoreenabledtrue-openshift-storage-namespaceexists" title="Permanent link">&para;</a></h1>
-<h1 id="full-playbook-ok190-changed8-failed0">Full playbook: ok=190 changed=8 failed=0<a class="headerlink" href="#full-playbook-ok190-changed8-failed0" title="Permanent link">&para;</a></h1>
-<p>```</p>
+openshift-storage.noobaa.io
+
+$ make operator-deploy-prereqs
+# NooBaa RBAC: DEPLOYING (objectStore.enabled=True, openshift-storage namespace=exists)
+# Full playbook: ok=190 changed=8 failed=0</code></pre>
 <h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../055-openshift-420-multi-cluster-topology-support/">ADR-055: OpenShift 4.20 Multi-Cluster Topology Support</a></li>

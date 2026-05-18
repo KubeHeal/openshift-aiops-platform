@@ -1598,6 +1598,183 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#deployment-with-webhooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment with Webhooks
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment with Webhooks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automatic-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatic Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation Steps
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-webhooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Webhooks
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Webhooks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-1-automatic-defaults-mutating-webhook" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test 1: Automatic Defaults (Mutating Webhook)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-2-volume-validation-validating-webhook" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test 2: Volume Validation (Validating Webhook)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-pod-stuck-in-containercreating-with-secret-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Pod stuck in ContainerCreating with "secret not found"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-webhook-timeouts-or-connection-refused" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: Webhook timeouts or connection refused
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-cert-manager-not-installed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue: cert-manager not installed
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-configuration-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      Default Configuration (Production)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#webhook-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Webhook Environment Variables
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uninstallation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Uninstallation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1686,25 +1863,23 @@
 <h3 id="1-cert-manager-installation">1. cert-manager Installation<a class="headerlink" href="#1-cert-manager-installation" title="Permanent link">&para;</a></h3>
 <p>Our deployment <strong>automatically detects</strong> cert-manager and enables webhooks if present.</p>
 <p><strong>Verify cert-manager</strong>:
-<code>bash
-oc get pods -n cert-manager</code></p>
+<pre class="highlight"><code class="language-bash">oc get pods -n cert-manager</code></pre></p>
 <p>Expected output:
-<code>NAME                                       READY   STATUS    RESTARTS   AGE
+<pre class="highlight"><code>NAME                                       READY   STATUS    RESTARTS   AGE
 cert-manager-xxxxxxxxxx-xxxxx              1/1     Running   0          10m
 cert-manager-cainjector-xxxxxxxxxx-xxxxx   1/1     Running   0          10m
-cert-manager-webhook-xxxxxxxxxx-xxxxx      1/1     Running   0          10m</code></p>
+cert-manager-webhook-xxxxxxxxxx-xxxxx      1/1     Running   0          10m</code></pre></p>
 <p><strong>If cert-manager is not installed</strong>:
-```bash</p>
-<h1 id="install-cert-manager-v1130-or-later">Install cert-manager v1.13.0 (or later)<a class="headerlink" href="#install-cert-manager-v1130-or-later" title="Permanent link">&para;</a></h1>
-<p>kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml</p>
-<h1 id="wait-for-cert-manager-to-be-ready">Wait for cert-manager to be ready<a class="headerlink" href="#wait-for-cert-manager-to-be-ready" title="Permanent link">&para;</a></h1>
-<p>kubectl wait --for=condition=Available --timeout=300s \
+<pre class="highlight"><code class="language-bash"># Install cert-manager v1.13.0 (or later)
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+
+# Wait for cert-manager to be ready
+kubectl wait --for=condition=Available --timeout=300s \
   deployment/cert-manager -n cert-manager
 kubectl wait --for=condition=Available --timeout=300s \
   deployment/cert-manager-webhook -n cert-manager
 kubectl wait --for=condition=Available --timeout=300s \
-  deployment/cert-manager-cainjector -n cert-manager
-```</p>
+  deployment/cert-manager-cainjector -n cert-manager</code></pre></p>
 <h2 id="deployment-with-webhooks">Deployment with Webhooks<a class="headerlink" href="#deployment-with-webhooks" title="Permanent link">&para;</a></h2>
 <h3 id="automatic-deployment">Automatic Deployment<a class="headerlink" href="#automatic-deployment" title="Permanent link">&para;</a></h3>
 <p>The operator deployment automatically:
@@ -1715,20 +1890,20 @@ kubectl wait --for=condition=Available --timeout=300s \
 5. <strong>Waits for cert-manager</strong> to issue the certificate
 6. <strong>Starts operator pod</strong> once webhook-server-cert secret exists</p>
 <h3 id="installation-steps">Installation Steps<a class="headerlink" href="#installation-steps" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="1-ensure-cert-manager-is-running">1. Ensure cert-manager is running<a class="headerlink" href="#1-ensure-cert-manager-is-running" title="Permanent link">&para;</a></h1>
-<p>oc get pods -n cert-manager</p>
-<h1 id="2-install-operator-webhooks-auto-enabled">2. Install operator (webhooks auto-enabled)<a class="headerlink" href="#2-install-operator-webhooks-auto-enabled" title="Permanent link">&para;</a></h1>
-<p>make install-jupyter-validator</p>
-<h1 id="the-deployment-will">The deployment will:<a class="headerlink" href="#the-deployment-will" title="Permanent link">&para;</a></h1>
-<h1 id="-detect-cert-manager">- Detect cert-manager ✅<a class="headerlink" href="#-detect-cert-manager" title="Permanent link">&para;</a></h1>
-<h1 id="-enable-webhooks">- Enable webhooks ✅<a class="headerlink" href="#-enable-webhooks" title="Permanent link">&para;</a></h1>
-<h1 id="-create-issuer-and-certificate">- Create Issuer and Certificate ✅<a class="headerlink" href="#-create-issuer-and-certificate" title="Permanent link">&para;</a></h1>
-<h1 id="-wait-for-cert-manager-to-create-webhook-server-cert">- Wait for cert-manager to create webhook-server-cert ✅<a class="headerlink" href="#-wait-for-cert-manager-to-create-webhook-server-cert" title="Permanent link">&para;</a></h1>
-<h1 id="-start-operator-pod-with-webhooks-enabled">- Start operator pod with webhooks enabled ✅<a class="headerlink" href="#-start-operator-pod-with-webhooks-enabled" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># 1. Ensure cert-manager is running
+oc get pods -n cert-manager
+
+# 2. Install operator (webhooks auto-enabled)
+make install-jupyter-validator
+
+# The deployment will:
+# - Detect cert-manager ✅
+# - Enable webhooks ✅
+# - Create Issuer and Certificate ✅
+# - Wait for cert-manager to create webhook-server-cert ✅
+# - Start operator pod with webhooks enabled ✅</code></pre>
 <h3 id="deployment-flow">Deployment Flow<a class="headerlink" href="#deployment-flow" title="Permanent link">&para;</a></h3>
-<p><code>1. User runs: make install-jupyter-validator
+<pre class="highlight"><code>1. User runs: make install-jupyter-validator
    ↓
 2. Ansible detects cert-manager namespace exists
    └─&gt; Sets jupyter_validator_enable_webhooks: true
@@ -1751,27 +1926,28 @@ kubectl wait --for=condition=Available --timeout=300s \
    └─&gt; Starts webhook server on port 9443
    ↓
 6. Operator pod becomes Ready ✅
-   └─&gt; Webhooks active and processing requests</code></p>
+   └─&gt; Webhooks active and processing requests</code></pre>
 <h3 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="check-operator-is-running-with-webhooks">Check operator is running with webhooks<a class="headerlink" href="#check-operator-is-running-with-webhooks" title="Permanent link">&para;</a></h1>
-<p>oc get pods -n jupyter-notebook-validator-operator
-oc logs -n jupyter-notebook-validator-operator -l control-plane=controller-manager | grep webhook</p>
-<h1 id="expected-log-output">Expected log output:<a class="headerlink" href="#expected-log-output" title="Permanent link">&para;</a></h1>
-<h1 id="webhooks-enabled-configuring-webhook-server">"webhooks enabled - configuring webhook server"<a class="headerlink" href="#webhooks-enabled-configuring-webhook-server" title="Permanent link">&para;</a></h1>
-<h1 id="check-certificate-was-created">Check certificate was created<a class="headerlink" href="#check-certificate-was-created" title="Permanent link">&para;</a></h1>
-<p>oc get certificate -n jupyter-notebook-validator-operator</p>
-<h1 id="check-webhook-secret-exists">Check webhook secret exists<a class="headerlink" href="#check-webhook-secret-exists" title="Permanent link">&para;</a></h1>
-<p>oc get secret webhook-server-cert -n jupyter-notebook-validator-operator</p>
-<h1 id="check-webhook-configurations">Check webhook configurations<a class="headerlink" href="#check-webhook-configurations" title="Permanent link">&para;</a></h1>
-<p>oc get validatingwebhookconfigurations | grep jupyter-notebook
-oc get mutatingwebhookconfigurations | grep jupyter-notebook
-```</p>
+<pre class="highlight"><code class="language-bash"># Check operator is running with webhooks
+oc get pods -n jupyter-notebook-validator-operator
+oc logs -n jupyter-notebook-validator-operator -l control-plane=controller-manager | grep webhook
+
+# Expected log output:
+# "webhooks enabled - configuring webhook server"
+
+# Check certificate was created
+oc get certificate -n jupyter-notebook-validator-operator
+
+# Check webhook secret exists
+oc get secret webhook-server-cert -n jupyter-notebook-validator-operator
+
+# Check webhook configurations
+oc get validatingwebhookconfigurations | grep jupyter-notebook
+oc get mutatingwebhookconfigurations | grep jupyter-notebook</code></pre>
 <h2 id="testing-webhooks">Testing Webhooks<a class="headerlink" href="#testing-webhooks" title="Permanent link">&para;</a></h2>
 <h3 id="test-1-automatic-defaults-mutating-webhook">Test 1: Automatic Defaults (Mutating Webhook)<a class="headerlink" href="#test-1-automatic-defaults-mutating-webhook" title="Permanent link">&para;</a></h3>
 <p>Create a minimal NotebookValidationJob without specifying serviceAccountName or timeout:</p>
-<p><code>yaml
-apiVersion: mlops.mlops.dev/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: mlops.mlops.dev/v1alpha1
 kind: NotebookValidationJob
 metadata:
   name: test-mutating-webhook
@@ -1785,21 +1961,20 @@ spec:
   podConfig:
     containerImage: "quay.io/jupyter/scipy-notebook:latest"
     # No serviceAccountName specified - webhook will add it
-    # No timeout specified - webhook will add it</code></p>
+    # No timeout specified - webhook will add it</code></pre>
 <p>Apply and verify:
-```bash
-oc apply -f test-mutating-webhook.yaml</p>
-<h1 id="check-the-resource-was-mutated">Check the resource was mutated<a class="headerlink" href="#check-the-resource-was-mutated" title="Permanent link">&para;</a></h1>
-<p>oc get notebookvalidationjob test-mutating-webhook -o yaml | grep -A 5 podConfig</p>
-<h1 id="should-show">Should show:<a class="headerlink" href="#should-show" title="Permanent link">&para;</a></h1>
-<h1 id="serviceaccountname-default-added-by-webhook">serviceAccountName: default  ← Added by webhook<a class="headerlink" href="#serviceaccountname-default-added-by-webhook" title="Permanent link">&para;</a></h1>
-<h1 id="and">And:<a class="headerlink" href="#and" title="Permanent link">&para;</a></h1>
-<h1 id="timeout-30m-added-by-webhook">timeout: 30m  ← Added by webhook<a class="headerlink" href="#timeout-30m-added-by-webhook" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash">oc apply -f test-mutating-webhook.yaml
+
+# Check the resource was mutated
+oc get notebookvalidationjob test-mutating-webhook -o yaml | grep -A 5 podConfig
+
+# Should show:
+#   serviceAccountName: default  ← Added by webhook
+# And:
+# timeout: 30m  ← Added by webhook</code></pre></p>
 <h3 id="test-2-volume-validation-validating-webhook">Test 2: Volume Validation (Validating Webhook)<a class="headerlink" href="#test-2-volume-validation-validating-webhook" title="Permanent link">&para;</a></h3>
 <p>Try to create a job with a reserved volume name (should be rejected):</p>
-<p><code>yaml
-apiVersion: mlops.mlops.dev/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: mlops.mlops.dev/v1alpha1
 kind: NotebookValidationJob
 metadata:
   name: test-validating-webhook
@@ -1814,77 +1989,72 @@ spec:
     serviceAccountName: "default"
     volumes:
       - name: git-clone  # Reserved name - should be rejected
-        emptyDir: {}</code></p>
+        emptyDir: {}</code></pre>
 <p>Apply and verify rejection:
-```bash
-oc apply -f test-validating-webhook.yaml</p>
-<h1 id="expected-error-from-webhook">Expected error from webhook:<a class="headerlink" href="#expected-error-from-webhook" title="Permanent link">&para;</a></h1>
-<h1 id="error-from-server-admission-webhook-vnotebookvalidationjobkbio-denied-the-request">Error from server: admission webhook "vnotebookvalidationjob.kb.io" denied the request:<a class="headerlink" href="#error-from-server-admission-webhook-vnotebookvalidationjobkbio-denied-the-request" title="Permanent link">&para;</a></h1>
-<h1 id="volume-name-git-clone-is-reserved-by-the-operator">volume name "git-clone" is reserved by the operator<a class="headerlink" href="#volume-name-git-clone-is-reserved-by-the-operator" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash">oc apply -f test-validating-webhook.yaml
+
+# Expected error from webhook:
+# Error from server: admission webhook "vnotebookvalidationjob.kb.io" denied the request:
+# volume name "git-clone" is reserved by the operator</code></pre></p>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="issue-pod-stuck-in-containercreating-with-secret-not-found">Issue: Pod stuck in ContainerCreating with "secret not found"<a class="headerlink" href="#issue-pod-stuck-in-containercreating-with-secret-not-found" title="Permanent link">&para;</a></h3>
 <p><strong>Symptom</strong>:
-<code>MountVolume.SetUp failed for volume "cert" : secret "webhook-server-cert" not found</code></p>
+<pre class="highlight"><code>MountVolume.SetUp failed for volume "cert" : secret "webhook-server-cert" not found</code></pre></p>
 <p><strong>Root Cause</strong>: cert-manager hasn't created the certificate yet</p>
 <p><strong>Solution</strong>: Wait for cert-manager to issue the certificate
-```bash</p>
-<h1 id="check-certificate-status">Check certificate status<a class="headerlink" href="#check-certificate-status" title="Permanent link">&para;</a></h1>
-<p>oc describe certificate -n jupyter-notebook-validator-operator</p>
-<h1 id="check-cert-manager-logs">Check cert-manager logs<a class="headerlink" href="#check-cert-manager-logs" title="Permanent link">&para;</a></h1>
-<p>oc logs -n cert-manager -l app=cert-manager --tail=50</p>
-<h1 id="if-certificate-is-stuck-delete-and-recreate">If certificate is stuck, delete and recreate<a class="headerlink" href="#if-certificate-is-stuck-delete-and-recreate" title="Permanent link">&para;</a></h1>
-<p>oc delete certificate notebook-validator-serving-cert -n jupyter-notebook-validator-operator</p>
-<h1 id="deployment-will-recreate-it">Deployment will recreate it<a class="headerlink" href="#deployment-will-recreate-it" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Check certificate status
+oc describe certificate -n jupyter-notebook-validator-operator
+
+# Check cert-manager logs
+oc logs -n cert-manager -l app=cert-manager --tail=50
+
+# If certificate is stuck, delete and recreate
+oc delete certificate notebook-validator-serving-cert -n jupyter-notebook-validator-operator
+# Deployment will recreate it</code></pre></p>
 <h3 id="issue-webhook-timeouts-or-connection-refused">Issue: Webhook timeouts or connection refused<a class="headerlink" href="#issue-webhook-timeouts-or-connection-refused" title="Permanent link">&para;</a></h3>
 <p><strong>Symptom</strong>: Webhook calls timeout or return connection refused</p>
 <p><strong>Solution</strong>: Check webhook service and pod
-```bash</p>
-<h1 id="check-webhook-service">Check webhook service<a class="headerlink" href="#check-webhook-service" title="Permanent link">&para;</a></h1>
-<p>oc get service -n jupyter-notebook-validator-operator | grep webhook</p>
-<h1 id="check-operator-pod-logs">Check operator pod logs<a class="headerlink" href="#check-operator-pod-logs" title="Permanent link">&para;</a></h1>
-<p>oc logs -n jupyter-notebook-validator-operator -l control-plane=controller-manager | grep -i webhook</p>
-<h1 id="test-webhook-endpoint">Test webhook endpoint<a class="headerlink" href="#test-webhook-endpoint" title="Permanent link">&para;</a></h1>
-<p>oc port-forward -n jupyter-notebook-validator-operator deployment/notebook-validator-controller-manager 9443:9443
-curl -k https://localhost:9443/healthz
-```</p>
+<pre class="highlight"><code class="language-bash"># Check webhook service
+oc get service -n jupyter-notebook-validator-operator | grep webhook
+
+# Check operator pod logs
+oc logs -n jupyter-notebook-validator-operator -l control-plane=controller-manager | grep -i webhook
+
+# Test webhook endpoint
+oc port-forward -n jupyter-notebook-validator-operator deployment/notebook-validator-controller-manager 9443:9443
+curl -k https://localhost:9443/healthz</code></pre></p>
 <h3 id="issue-cert-manager-not-installed">Issue: cert-manager not installed<a class="headerlink" href="#issue-cert-manager-not-installed" title="Permanent link">&para;</a></h3>
 <p><strong>Symptom</strong>: Deployment detects no cert-manager, webhooks disabled</p>
 <p><strong>Solution</strong>: Install cert-manager first
-```bash
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml</p>
-<h1 id="wait-for-ready">Wait for ready<a class="headerlink" href="#wait-for-ready" title="Permanent link">&para;</a></h1>
-<p>kubectl wait --for=condition=Available --timeout=300s deployment/cert-manager -n cert-manager</p>
-<h1 id="uninstall-and-reinstall-operator">Uninstall and reinstall operator<a class="headerlink" href="#uninstall-and-reinstall-operator" title="Permanent link">&para;</a></h1>
-<p>make uninstall-jupyter-validator
-make install-jupyter-validator
-```</p>
+<pre class="highlight"><code class="language-bash">kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+
+# Wait for ready
+kubectl wait --for=condition=Available --timeout=300s deployment/cert-manager -n cert-manager
+
+# Uninstall and reinstall operator
+make uninstall-jupyter-validator
+make install-jupyter-validator</code></pre></p>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <h3 id="default-configuration-production">Default Configuration (Production)<a class="headerlink" href="#default-configuration-production" title="Permanent link">&para;</a></h3>
 <p>The operator automatically enables webhooks when cert-manager is detected:</p>
-<p>```yaml</p>
-<h1 id="ansiblerolesvalidated_patterns_jupyter_validatordefaultsmainyml">ansible/roles/validated_patterns_jupyter_validator/defaults/main.yml<a class="headerlink" href="#ansiblerolesvalidated_patterns_jupyter_validatordefaultsmainyml" title="Permanent link">&para;</a></h1>
-<p>jupyter_validator_enable_webhooks: false  # Auto-detected (set to true if cert-manager found)
-jupyter_validator_kustomize_overlay: "overlays/dev-ocp4.18"  # Includes webhook resources
-```</p>
+<pre class="highlight"><code class="language-yaml"># ansible/roles/validated_patterns_jupyter_validator/defaults/main.yml
+jupyter_validator_enable_webhooks: false  # Auto-detected (set to true if cert-manager found)
+jupyter_validator_kustomize_overlay: "overlays/dev-ocp4.18"  # Includes webhook resources</code></pre>
 <h3 id="webhook-environment-variables">Webhook Environment Variables<a class="headerlink" href="#webhook-environment-variables" title="Permanent link">&para;</a></h3>
 <p>The operator deployment sets:
-<code>yaml
-env:
+<pre class="highlight"><code class="language-yaml">env:
   - name: ENABLE_WEBHOOKS
     value: "true"  # Enabled automatically when cert-manager detected
   - name: PLATFORM
-    value: "openshift"</code></p>
+    value: "openshift"</code></pre></p>
 <h2 id="uninstallation">Uninstallation<a class="headerlink" href="#uninstallation" title="Permanent link">&para;</a></h2>
-<p>```bash</p>
-<h1 id="uninstall-operator-removes-webhooks-certificates-issuer">Uninstall operator (removes webhooks, certificates, issuer)<a class="headerlink" href="#uninstall-operator-removes-webhooks-certificates-issuer" title="Permanent link">&para;</a></h1>
-<p>make uninstall-jupyter-validator</p>
-<h1 id="verify-cleanup">Verify cleanup<a class="headerlink" href="#verify-cleanup" title="Permanent link">&para;</a></h1>
-<p>oc get certificate -n jupyter-notebook-validator-operator  # Should be empty
+<pre class="highlight"><code class="language-bash"># Uninstall operator (removes webhooks, certificates, issuer)
+make uninstall-jupyter-validator
+
+# Verify cleanup
+oc get certificate -n jupyter-notebook-validator-operator  # Should be empty
 oc get validatingwebhookconfigurations | grep jupyter-notebook  # Should be empty
-oc get mutatingwebhookconfigurations | grep jupyter-notebook  # Should be empty
-```</p>
+oc get mutatingwebhookconfigurations | grep jupyter-notebook  # Should be empty</code></pre>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <p>✅ <strong>For Production</strong>: Webhooks <strong>ENABLED</strong> (requires cert-manager)
 - Better user experience

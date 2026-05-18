@@ -1607,6 +1607,171 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#implementation-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Requirements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-model-registry-data-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Model Registry Data Structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-model-registry-loader" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Model Registry Loader
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-api-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. API Endpoints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-startup-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Startup Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-backward-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Backward Compatibility
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helm-chart-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helm Chart Integration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Requirements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Tests
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Criteria
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-user-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example User Workflow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Labels
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      Priority
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#milestone" class="md-nav__link">
+    <span class="md-ellipsis">
+      Milestone
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1647,17 +1812,15 @@
 </ul>
 <h3 id="current-limitation">Current Limitation<a class="headerlink" href="#current-limitation" title="Permanent link">&para;</a></h3>
 <p>The coordination engine has <strong>hardcoded KServe service discovery</strong>:</p>
-<p><code>go
-// Current approach (hardcoded)
+<pre class="highlight"><code class="language-go">// Current approach (hardcoded)
 anomalyDetectorURL := os.Getenv("KSERVE_ANOMALY_DETECTOR_SERVICE")
-predictiveAnalyticsURL := os.Getenv("KSERVE_PREDICTIVE_ANALYTICS_SERVICE")</code></p>
+predictiveAnalyticsURL := os.Getenv("KSERVE_PREDICTIVE_ANALYTICS_SERVICE")</code></pre>
 <p><strong>Problem</strong>: Users cannot add custom models (e.g., <code>disk-failure-predictor</code>, <code>postgres-query-anomaly</code>) without coordination engine code changes.</p>
 <h3 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link">&para;</a></h3>
 <p>Support dynamic model loading via <code>KSERVE_MODEL_REGISTRY</code> environment variable containing a JSON array of model configurations.</p>
 <h4 id="example-configuration">Example Configuration<a class="headerlink" href="#example-configuration" title="Permanent link">&para;</a></h4>
-<p>```bash</p>
-<h1 id="environment-variable-from-helm-chart">Environment variable from Helm chart<a class="headerlink" href="#environment-variable-from-helm-chart" title="Permanent link">&para;</a></h1>
-<p>export KSERVE_MODEL_REGISTRY='[
+<pre class="highlight"><code class="language-bash"># Environment variable from Helm chart
+export KSERVE_MODEL_REGISTRY='[
   {
     "name": "anomaly-detector",
     "service": "anomaly-detector-predictor",
@@ -1672,64 +1835,67 @@ predictiveAnalyticsURL := os.Getenv("KSERVE_PREDICTIVE_ANALYTICS_SERVICE")</code
     "type": "predictive",
     "description": "Predicts disk failures using SMART metrics"
   }
-]'
-```</p>
+]'</code></pre>
 <h2 id="implementation-requirements">Implementation Requirements<a class="headerlink" href="#implementation-requirements" title="Permanent link">&para;</a></h2>
 <h3 id="1-model-registry-data-structure">1. Model Registry Data Structure<a class="headerlink" href="#1-model-registry-data-structure" title="Permanent link">&para;</a></h3>
-<p>```go
-// pkg/kserve/types.go
-package kserve</p>
-<p>type ModelType string</p>
-<p>const (
+<pre class="highlight"><code class="language-go">// pkg/kserve/types.go
+package kserve
+
+type ModelType string
+
+const (
     ModelTypeAnomaly        ModelType = "anomaly"
     ModelTypePredictive     ModelType = "predictive"
     ModelTypeClassification ModelType = "classification"
-)</p>
-<p>type KServeModel struct {
-    Name        string    <code>json:"name"</code>        // Unique model identifier
-    Service     string    <code>json:"service"</code>     // KServe InferenceService name
-    Namespace   string    <code>json:"namespace"</code>   // Kubernetes namespace (optional)
-    Type        ModelType <code>json:"type"</code>        // Model type
-    Description string    <code>json:"description"</code> // Human-readable description (optional)
-}</p>
-<p>type ModelRegistry struct {
+)
+
+type KServeModel struct {
+    Name        string    `json:"name"`        // Unique model identifier
+    Service     string    `json:"service"`     // KServe InferenceService name
+    Namespace   string    `json:"namespace"`   // Kubernetes namespace (optional)
+    Type        ModelType `json:"type"`        // Model type
+    Description string    `json:"description"` // Human-readable description (optional)
+}
+
+type ModelRegistry struct {
     Models        []KServeModel
     DefaultNS     string
     BaseURLFormat string // "http://{service}.{namespace}.svc.cluster.local"
-}
-```</p>
+}</code></pre>
 <h3 id="2-model-registry-loader">2. Model Registry Loader<a class="headerlink" href="#2-model-registry-loader" title="Permanent link">&para;</a></h3>
-<p>```go
-// pkg/kserve/registry.go
-package kserve</p>
-<p>import (
+<pre class="highlight"><code class="language-go">// pkg/kserve/registry.go
+package kserve
+
+import (
     "encoding/json"
     "fmt"
     "os"
-)</p>
-<p>func LoadModelRegistry() (*ModelRegistry, error) {
+)
+
+func LoadModelRegistry() (*ModelRegistry, error) {
     registryJSON := os.Getenv("KSERVE_MODEL_REGISTRY")
     if registryJSON == "" {
         return nil, fmt.Errorf("KSERVE_MODEL_REGISTRY not set")
-    }</p>
-<pre><code>var models []KServeModel
-if err := json.Unmarshal([]byte(registryJSON), &amp;models); err != nil {
-    return nil, fmt.Errorf("failed to parse KSERVE_MODEL_REGISTRY: %w", err)
+    }
+
+    var models []KServeModel
+    if err := json.Unmarshal([]byte(registryJSON), &amp;models); err != nil {
+        return nil, fmt.Errorf("failed to parse KSERVE_MODEL_REGISTRY: %w", err)
+    }
+
+    defaultNS := os.Getenv("KSERVE_NAMESPACE")
+    if defaultNS == "" {
+        defaultNS = "self-healing-platform"
+    }
+
+    return &amp;ModelRegistry{
+        Models:        models,
+        DefaultNS:     defaultNS,
+        BaseURLFormat: "http://{service}.{namespace}.svc.cluster.local",
+    }, nil
 }
 
-defaultNS := os.Getenv("KSERVE_NAMESPACE")
-if defaultNS == "" {
-    defaultNS = "self-healing-platform"
-}
-
-return &amp;ModelRegistry{
-    Models:        models,
-    DefaultNS:     defaultNS,
-    BaseURLFormat: "http://{service}.{namespace}.svc.cluster.local",
-}, nil
-</code></pre>
-<p>}</p>
-<p>func (r *ModelRegistry) GetModelURL(modelName string) (string, error) {
+func (r *ModelRegistry) GetModelURL(modelName string) (string, error) {
     for _, model := range r.Models {
         if model.Name == modelName {
             namespace := model.Namespace
@@ -1740,8 +1906,9 @@ return &amp;ModelRegistry{
         }
     }
     return "", fmt.Errorf("model not found: %s", modelName)
-}</p>
-<p>func (r *ModelRegistry) GetModelsByType(modelType ModelType) []KServeModel {
+}
+
+func (r *ModelRegistry) GetModelsByType(modelType ModelType) []KServeModel {
     var result []KServeModel
     for _, model := range r.Models {
         if model.Type == modelType {
@@ -1749,157 +1916,153 @@ return &amp;ModelRegistry{
         }
     }
     return result
-}
-```</p>
+}</code></pre>
 <h3 id="3-api-endpoints">3. API Endpoints<a class="headerlink" href="#3-api-endpoints" title="Permanent link">&para;</a></h3>
 <p>Add REST API endpoints to expose registered models:</p>
-<p>```go
-// internal/api/models.go
-package api</p>
-<p>import (
+<pre class="highlight"><code class="language-go">// internal/api/models.go
+package api
+
+import (
     "net/http"
     "github.com/gin-gonic/gin"
-)</p>
-<p>// GET /api/v1/models - List all registered models
-func (s <em>Server) listModels(c </em>gin.Context) {
+)
+
+// GET /api/v1/models - List all registered models
+func (s *Server) listModels(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{
         "models": s.modelRegistry.Models,
     })
-}</p>
-<p>// GET /api/v1/models/:name - Get specific model details
-func (s <em>Server) getModel(c </em>gin.Context) {
-    modelName := c.Param("name")</p>
-<pre><code>for _, model := range s.modelRegistry.Models {
-    if model.Name == modelName {
-        url, _ := s.modelRegistry.GetModelURL(modelName)
-        c.JSON(http.StatusOK, gin.H{
-            "name":        model.Name,
-            "service":     model.Service,
-            "namespace":   model.Namespace,
-            "type":        model.Type,
-            "description": model.Description,
-            "url":         url,
-        })
+}
+
+// GET /api/v1/models/:name - Get specific model details
+func (s *Server) getModel(c *gin.Context) {
+    modelName := c.Param("name")
+
+    for _, model := range s.modelRegistry.Models {
+        if model.Name == modelName {
+            url, _ := s.modelRegistry.GetModelURL(modelName)
+            c.JSON(http.StatusOK, gin.H{
+                "name":        model.Name,
+                "service":     model.Service,
+                "namespace":   model.Namespace,
+                "type":        model.Type,
+                "description": model.Description,
+                "url":         url,
+            })
+            return
+        }
+    }
+
+    c.JSON(http.StatusNotFound, gin.H{"error": "model not found"})
+}
+
+// POST /api/v1/models/:name/predict - Proxy to KServe model
+func (s *Server) predictWithModel(c *gin.Context) {
+    modelName := c.Param("name")
+
+    modelURL, err := s.modelRegistry.GetModelURL(modelName)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
         return
     }
-}
 
-c.JSON(http.StatusNotFound, gin.H{"error": "model not found"})
-</code></pre>
-<p>}</p>
-<p>// POST /api/v1/models/:name/predict - Proxy to KServe model
-func (s <em>Server) predictWithModel(c </em>gin.Context) {
-    modelName := c.Param("name")</p>
-<pre><code>modelURL, err := s.modelRegistry.GetModelURL(modelName)
-if err != nil {
-    c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-    return
-}
-
-// Forward request to KServe InferenceService
-// POST {modelURL}/v1/models/{modelName}:predict
-// ... proxy implementation ...
-</code></pre>
-<p>}
-```</p>
+    // Forward request to KServe InferenceService
+    // POST {modelURL}/v1/models/{modelName}:predict
+    // ... proxy implementation ...
+}</code></pre>
 <h3 id="4-startup-validation">4. Startup Validation<a class="headerlink" href="#4-startup-validation" title="Permanent link">&para;</a></h3>
-<p>```go
-// cmd/coordination-engine/main.go
-package main</p>
-<p>import (
+<pre class="highlight"><code class="language-go">// cmd/coordination-engine/main.go
+package main
+
+import (
     "log"
     "github.com/KubeHeal/openshift-coordination-engine/pkg/kserve"
-)</p>
-<p>func main() {
+)
+
+func main() {
     // Load model registry at startup
     registry, err := kserve.LoadModelRegistry()
     if err != nil {
         log.Fatalf("Failed to load model registry: %v", err)
-    }</p>
-<pre><code>log.Printf("Loaded %d models from registry:", len(registry.Models))
-for _, model := range registry.Models {
-    url, _ := registry.GetModelURL(model.Name)
-    log.Printf("  - %s (%s) at %s", model.Name, model.Type, url)
-}
+    }
 
-// Continue with server initialization...
-</code></pre>
-<p>}
-```</p>
+    log.Printf("Loaded %d models from registry:", len(registry.Models))
+    for _, model := range registry.Models {
+        url, _ := registry.GetModelURL(model.Name)
+        log.Printf("  - %s (%s) at %s", model.Name, model.Type, url)
+    }
+
+    // Continue with server initialization...
+}</code></pre>
 <h3 id="5-backward-compatibility">5. Backward Compatibility<a class="headerlink" href="#5-backward-compatibility" title="Permanent link">&para;</a></h3>
 <p>Support both old (hardcoded) and new (dynamic) configurations:</p>
-<p>```go
-func LoadModelRegistryWithFallback() (*ModelRegistry, error) {
+<pre class="highlight"><code class="language-go">func LoadModelRegistryWithFallback() (*ModelRegistry, error) {
     // Try new approach first
     registry, err := LoadModelRegistry()
     if err == nil {
         return registry, nil
-    }</p>
-<pre><code>// Fall back to old approach (hardcoded env vars)
-log.Println("KSERVE_MODEL_REGISTRY not found, using legacy configuration")
+    }
 
-models := []KServeModel{}
-if svc := os.Getenv("KSERVE_ANOMALY_DETECTOR_SERVICE"); svc != "" {
-    models = append(models, KServeModel{
-        Name:    "anomaly-detector",
-        Service: svc,
-        Type:    ModelTypeAnomaly,
-    })
-}
-if svc := os.Getenv("KSERVE_PREDICTIVE_ANALYTICS_SERVICE"); svc != "" {
-    models = append(models, KServeModel{
-        Name:    "predictive-analytics",
-        Service: svc,
-        Type:    ModelTypePredictive,
-    })
-}
+    // Fall back to old approach (hardcoded env vars)
+    log.Println("KSERVE_MODEL_REGISTRY not found, using legacy configuration")
 
-return &amp;ModelRegistry{
-    Models:    models,
-    DefaultNS: os.Getenv("KSERVE_NAMESPACE"),
-}, nil
-</code></pre>
-<p>}
-```</p>
+    models := []KServeModel{}
+    if svc := os.Getenv("KSERVE_ANOMALY_DETECTOR_SERVICE"); svc != "" {
+        models = append(models, KServeModel{
+            Name:    "anomaly-detector",
+            Service: svc,
+            Type:    ModelTypeAnomaly,
+        })
+    }
+    if svc := os.Getenv("KSERVE_PREDICTIVE_ANALYTICS_SERVICE"); svc != "" {
+        models = append(models, KServeModel{
+            Name:    "predictive-analytics",
+            Service: svc,
+            Type:    ModelTypePredictive,
+        })
+    }
+
+    return &amp;ModelRegistry{
+        Models:    models,
+        DefaultNS: os.Getenv("KSERVE_NAMESPACE"),
+    }, nil
+}</code></pre>
 <h2 id="helm-chart-integration">Helm Chart Integration<a class="headerlink" href="#helm-chart-integration" title="Permanent link">&para;</a></h2>
 <p>The platform Helm chart will pass the model registry via environment variable:</p>
-<p>```yaml</p>
-<h1 id="chartshubtemplatescoordination-engineyaml">charts/hub/templates/coordination-engine.yaml<a class="headerlink" href="#chartshubtemplatescoordination-engineyaml" title="Permanent link">&para;</a></h1>
-<p>env:
+<pre class="highlight"><code class="language-yaml"># charts/hub/templates/coordination-engine.yaml
+env:
   - name: ENABLE_KSERVE_INTEGRATION
     value: "true"
   - name: KSERVE_NAMESPACE
     value: {{ .Values.coordinationEngine.kserve.namespace | default .Release.Namespace | quote }}
   - name: KSERVE_MODEL_REGISTRY
-    value: {{ toJson .Values.coordinationEngine.kserve.models | quote }}
-```</p>
+    value: {{ toJson .Values.coordinationEngine.kserve.models | quote }}</code></pre>
 <h2 id="testing-requirements">Testing Requirements<a class="headerlink" href="#testing-requirements" title="Permanent link">&para;</a></h2>
 <h3 id="unit-tests">Unit Tests<a class="headerlink" href="#unit-tests" title="Permanent link">&para;</a></h3>
-<p><code>``go
-// pkg/kserve/registry_test.go
+<pre class="highlight"><code class="language-go">// pkg/kserve/registry_test.go
 func TestLoadModelRegistry(t *testing.T) {
-    os.Setenv("KSERVE_MODEL_REGISTRY",</code>[
+    os.Setenv("KSERVE_MODEL_REGISTRY", `[
         {"name": "anomaly-detector", "service": "anomaly-detector-predictor", "type": "anomaly"},
         {"name": "disk-predictor", "service": "disk-predictor", "namespace": "storage", "type": "predictive"}
-    ]`)</p>
-<pre><code>registry, err := LoadModelRegistry()
-assert.NoError(t, err)
-assert.Len(t, registry.Models, 2)
-</code></pre>
-<p>}</p>
-<p>func TestGetModelURL(t *testing.T) {
+    ]`)
+
+    registry, err := LoadModelRegistry()
+    assert.NoError(t, err)
+    assert.Len(t, registry.Models, 2)
+}
+
+func TestGetModelURL(t *testing.T) {
     registry := &amp;ModelRegistry{
         Models: []KServeModel{
             {Name: "test-model", Service: "test-predictor", Namespace: "test-ns"},
         },
         DefaultNS: "default",
-    }</p>
-<pre><code>url, err := registry.GetModelURL("test-model")
-assert.NoError(t, err)
-assert.Equal(t, "http://test-predictor.test-ns.svc.cluster.local", url)
-</code></pre>
-<p>}
-```</p>
+    }
+
+    url, err := registry.GetModelURL("test-model")
+    assert.NoError(t, err)
+    assert.Equal(t, "http://test-predictor.test-ns.svc.cluster.local", url)
+}</code></pre>
 <h3 id="integration-tests">Integration Tests<a class="headerlink" href="#integration-tests" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Deploy coordination engine with custom model registry</li>
@@ -1927,13 +2090,10 @@ assert.Equal(t, "http://test-predictor.test-ns.svc.cluster.local", url)
 </ol>
 <h2 id="example-user-workflow">Example User Workflow<a class="headerlink" href="#example-user-workflow" title="Permanent link">&para;</a></h2>
 <p><strong>Before</strong> (hardcoded, limited):
-```bash</p>
-<h1 id="user-cannot-add-custom-models">User cannot add custom models<a class="headerlink" href="#user-cannot-add-custom-models" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># User cannot add custom models</code></pre></p>
 <p><strong>After</strong> (dynamic, extensible):
-```yaml</p>
-<h1 id="values-hubyaml-in-openshift-aiops-platform">values-hub.yaml in openshift-aiops-platform<a class="headerlink" href="#values-hubyaml-in-openshift-aiops-platform" title="Permanent link">&para;</a></h1>
-<p>coordinationEngine:
+<pre class="highlight"><code class="language-yaml"># values-hub.yaml in openshift-aiops-platform
+coordinationEngine:
   kserve:
     models:
       - name: anomaly-detector
@@ -1942,23 +2102,22 @@ assert.Equal(t, "http://test-predictor.test-ns.svc.cluster.local", url)
       - name: disk-failure-predictor  # USER ADDS THIS
         service: disk-failure-predictor-predictor
         namespace: storage-monitoring
-        type: predictive
-```</p>
-<p>```bash</p>
-<h1 id="deploy-platform">Deploy platform<a class="headerlink" href="#deploy-platform" title="Permanent link">&para;</a></h1>
-<p>helm upgrade self-healing-platform charts/hub -f values-hub.yaml</p>
-<h1 id="verify-model-registered">Verify model registered<a class="headerlink" href="#verify-model-registered" title="Permanent link">&para;</a></h1>
-<p>curl http://coordination-engine:8080/api/v1/models</p>
-<h1 id="_1">{<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h1 id="models">"models": [<a class="headerlink" href="#models" title="Permanent link">&para;</a></h1>
-<h1 id="name-anomaly-detector">{"name": "anomaly-detector", ...},<a class="headerlink" href="#name-anomaly-detector" title="Permanent link">&para;</a></h1>
-<h1 id="name-disk-failure-predictor">{"name": "disk-failure-predictor", ...}<a class="headerlink" href="#name-disk-failure-predictor" title="Permanent link">&para;</a></h1>
-<h1 id="_2">]<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h1>
-<h1 id="_3">}<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h1>
-<h1 id="use-custom-model">Use custom model<a class="headerlink" href="#use-custom-model" title="Permanent link">&para;</a></h1>
-<p>curl -X POST http://coordination-engine:8080/api/v1/models/disk-failure-predictor/predict \
-  -d '{"instances": [[85.5, 5000, 365]]}'
-```</p>
+        type: predictive</code></pre></p>
+<pre class="highlight"><code class="language-bash"># Deploy platform
+helm upgrade self-healing-platform charts/hub -f values-hub.yaml
+
+# Verify model registered
+curl http://coordination-engine:8080/api/v1/models
+# {
+#   "models": [
+#     {"name": "anomaly-detector", ...},
+#     {"name": "disk-failure-predictor", ...}
+#   ]
+# }
+
+# Use custom model
+curl -X POST http://coordination-engine:8080/api/v1/models/disk-failure-predictor/predict \
+  -d '{"instances": [[85.5, 5000, 365]]}'</code></pre>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Platform ADR-039</strong>: <a href="https://github.com/KubeHeal/openshift-aiops-platform/blob/main/docs/adrs/039-user-deployed-kserve-models.md">User-Deployed KServe Models</a></li>

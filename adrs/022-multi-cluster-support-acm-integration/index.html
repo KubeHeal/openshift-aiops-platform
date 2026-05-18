@@ -1700,6 +1700,75 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mitigations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approval" class="md-nav__link">
+    <span class="md-ellipsis">
+      Approval
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1758,7 +1827,7 @@
 <h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
 <p>We will <strong>implement multi-cluster support using Red Hat Advanced Cluster Management (ACM)</strong> integrated with the Validated Patterns framework, enabling hub-spoke topology for the Self-Healing Platform.</p>
 <h3 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h3>
-<p><code>┌─────────────────────────────────────────────────────────────┐
+<pre class="highlight"><code>┌─────────────────────────────────────────────────────────────┐
 │                    Hub Cluster (OpenShift)                  │
 │  ┌──────────────────────────────────────────────────────┐   │
 │  │  Red Hat Advanced Cluster Management (ACM)           │   │
@@ -1788,7 +1857,7 @@
     │ Platform (Spoke) │ Platform (Spoke) │ Platform (Spoke)
     │                  │                  │
     │ Klusterlet Agent │ Klusterlet Agent │ Klusterlet Agent
-    └─────────────────┘ └─────────────────┘ └─────────────────┘</code></p>
+    └─────────────────┘ └─────────────────┘ └─────────────────┘</code></pre>
 <h3 id="hub-spoke-topology">Hub-Spoke Topology<a class="headerlink" href="#hub-spoke-topology" title="Permanent link">&para;</a></h3>
 <p><strong>Hub Cluster Responsibilities:</strong>
 - Central management and orchestration
@@ -1846,56 +1915,59 @@
 <h3 id="configuration-files">Configuration Files<a class="headerlink" href="#configuration-files" title="Permanent link">&para;</a></h3>
 <h4 id="hub-cluster-configuration">Hub Cluster Configuration<a class="headerlink" href="#hub-cluster-configuration" title="Permanent link">&para;</a></h4>
 <p><strong>File:</strong> <code>values-hub-acm.yaml</code>
-```yaml
-acm:
+<pre class="highlight"><code class="language-yaml">acm:
   enabled: true
   multiClusterHub:
     namespace: open-cluster-management
-    replicas: 3</p>
-<p>policies:
+    replicas: 3
+
+  policies:
     - name: self-healing-platform-policy
       namespace: open-cluster-management-policies
-      clusters: "all"</p>
-<p>applicationSets:
+      clusters: "all"
+
+  applicationSets:
     - name: self-healing-hub
       namespace: openshift-gitops
-      clusters: ["local-cluster"]</p>
-<pre><code>- name: self-healing-spokes
-  namespace: openshift-gitops
-  clusters: "all-except-hub"
-</code></pre>
-<p>```</p>
+      clusters: ["local-cluster"]
+
+    - name: self-healing-spokes
+      namespace: openshift-gitops
+      clusters: "all-except-hub"</code></pre></p>
 <h4 id="spoke-cluster-configuration">Spoke Cluster Configuration<a class="headerlink" href="#spoke-cluster-configuration" title="Permanent link">&para;</a></h4>
 <p><strong>File:</strong> <code>values-spoke-acm.yaml</code>
-```yaml
-acm:
+<pre class="highlight"><code class="language-yaml">acm:
   klusterlet:
     namespace: open-cluster-management-agent
-    mode: hosted  # or default</p>
-<p>labels:
+    mode: hosted  # or default
+
+  labels:
     cluster-type: spoke
     region: edge
-    workload: self-healing</p>
-<p>taints:
+    workload: self-healing
+
+  taints:
     - key: workload
       value: self-healing
-      effect: NoSchedule
-```</p>
+      effect: NoSchedule</code></pre></p>
 <h3 id="deployment-workflow">Deployment Workflow<a class="headerlink" href="#deployment-workflow" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="1-deploy-hub-cluster-with-acm">1. Deploy hub cluster with ACM<a class="headerlink" href="#1-deploy-hub-cluster-with-acm" title="Permanent link">&para;</a></h1>
-<p>make -f common/Makefile operator-deploy VALUES_FILE=values-hub-acm.yaml</p>
-<h1 id="2-validate-hub-readiness">2. Validate hub readiness<a class="headerlink" href="#2-validate-hub-readiness" title="Permanent link">&para;</a></h1>
-<p>make -f common/Makefile argo-healthcheck</p>
-<h1 id="3-register-spoke-clusters">3. Register spoke clusters<a class="headerlink" href="#3-register-spoke-clusters" title="Permanent link">&para;</a></h1>
-<p>ansible-playbook ansible/playbooks/register_spoke_clusters.yml</p>
-<h1 id="4-validate-spoke-connectivity">4. Validate spoke connectivity<a class="headerlink" href="#4-validate-spoke-connectivity" title="Permanent link">&para;</a></h1>
-<p>make -f common/Makefile validate-multi-cluster</p>
-<h1 id="5-deploy-applications-to-spokes">5. Deploy applications to spokes<a class="headerlink" href="#5-deploy-applications-to-spokes" title="Permanent link">&para;</a></h1>
-<p>make -f common/Makefile deploy-to-spokes</p>
-<h1 id="6-validate-end-to-end">6. Validate end-to-end<a class="headerlink" href="#6-validate-end-to-end" title="Permanent link">&para;</a></h1>
-<p>make -f common/Makefile validate-e2e-multi-cluster
-```</p>
+<pre class="highlight"><code class="language-bash"># 1. Deploy hub cluster with ACM
+make -f common/Makefile operator-deploy VALUES_FILE=values-hub-acm.yaml
+
+# 2. Validate hub readiness
+make -f common/Makefile argo-healthcheck
+
+# 3. Register spoke clusters
+ansible-playbook ansible/playbooks/register_spoke_clusters.yml
+
+# 4. Validate spoke connectivity
+make -f common/Makefile validate-multi-cluster
+
+# 5. Deploy applications to spokes
+make -f common/Makefile deploy-to-spokes
+
+# 6. Validate end-to-end
+make -f common/Makefile validate-e2e-multi-cluster</code></pre>
 <h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
 <ol>

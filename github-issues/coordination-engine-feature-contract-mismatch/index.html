@@ -1577,6 +1577,84 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#error-message" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Message
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#options-to-resolve" class="md-nav__link">
+    <span class="md-ellipsis">
+      Options to Resolve
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Options to Resolve">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-update-coordination-engine-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option A: Update Coordination Engine (Recommended)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-b-retrain-model-to-match-coordination-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option B: Retrain Model to Match Coordination Engine
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-c-support-both-feature-sets-most-flexible" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option C: Support Both Feature Sets (Most Flexible)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommendation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Issues
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-after-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing After Fix
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1611,8 +1689,7 @@
 <p>After fixing the <code>ENABLE_FEATURE_ENGINEERING</code> env var bug (now correctly reads from config), predictions fail because the feature sets don't match.</p>
 <h2 id="current-behavior">Current Behavior<a class="headerlink" href="#current-behavior" title="Permanent link">&para;</a></h2>
 <p><strong>Coordination Engine (<code>buildRawMetricInstances</code>)</strong>:
-<code>go
-// pkg/api/v1/prediction.go line 695
+<pre class="highlight"><code class="language-go">// pkg/api/v1/prediction.go line 695
 func (h *PredictionHandler) buildRawMetricInstances(hour, dayOfWeek int, cpuRollingMean, memoryRollingMean float64) [][]float64 {
     return [][]float64{{
         float64(hour),         // Feature 1: Time of day
@@ -1620,41 +1697,36 @@ func (h *PredictionHandler) buildRawMetricInstances(hour, dayOfWeek int, cpuRoll
         cpuRollingMean,        // Feature 3: Rolling mean CPU
         memoryRollingMean,     // Feature 4: Rolling mean memory
     }}
-}</code></p>
+}</code></pre></p>
 <p><strong>Trained Model Expects</strong>:
-```python</p>
-<h1 id="5-raw-metrics-from-training-data">5 raw metrics from training data<a class="headerlink" href="#5-raw-metrics-from-training-data" title="Permanent link">&para;</a></h1>
-<p>features = ['cpu_usage', 'memory_usage', 'disk_usage', 'network_in', 'network_out']
-```</p>
+<pre class="highlight"><code class="language-python"># 5 raw metrics from training data
+features = ['cpu_usage', 'memory_usage', 'disk_usage', 'network_in', 'network_out']</code></pre></p>
 <h2 id="error-message">Error Message<a class="headerlink" href="#error-message" title="Permanent link">&para;</a></h2>
-<p><code>json
-{
+<pre class="highlight"><code class="language-json">{
   "status": "error",
   "error": "Prediction failed",
   "details": "model predictive-analytics returned status 500: {\"error\":\"X has 4 features, but StandardScaler is expecting 5 features as input.\"}",
   "code": "PREDICTION_FAILED"
-}</code></p>
+}</code></pre>
 <h2 id="options-to-resolve">Options to Resolve<a class="headerlink" href="#options-to-resolve" title="Permanent link">&para;</a></h2>
 <h3 id="option-a-update-coordination-engine-recommended">Option A: Update Coordination Engine (Recommended)<a class="headerlink" href="#option-a-update-coordination-engine-recommended" title="Permanent link">&para;</a></h3>
 <p>Change <code>buildRawMetricInstances</code> to send 5 metrics that match the model:</p>
-<p>```go
-func (h *PredictionHandler) buildRawMetricInstances(ctx context.Context) ([][]float64, error) {
+<pre class="highlight"><code class="language-go">func (h *PredictionHandler) buildRawMetricInstances(ctx context.Context) ([][]float64, error) {
     // Fetch current metrics from Prometheus
     cpuUsage := h.getMetric(ctx, "cluster:node_cpu:ratio_rate5m")
     memoryUsage := h.getMetric(ctx, "avg(instance:node_memory_utilisation:ratio)")
     diskUsage := h.getMetric(ctx, "1 - sum(node_filesystem_avail_bytes) / sum(node_filesystem_size_bytes)")
     networkIn := h.getMetric(ctx, "sum(rate(container_network_receive_bytes_total[5m]))")
-    networkOut := h.getMetric(ctx, "sum(rate(container_network_transmit_bytes_total[5m]))")</p>
-<pre><code>return [][]float64{{
-    cpuUsage,
-    memoryUsage,
-    diskUsage,
-    networkIn,
-    networkOut,
-}}, nil
-</code></pre>
-<p>}
-```</p>
+    networkOut := h.getMetric(ctx, "sum(rate(container_network_transmit_bytes_total[5m]))")
+
+    return [][]float64{{
+        cpuUsage,
+        memoryUsage,
+        diskUsage,
+        networkIn,
+        networkOut,
+    }}, nil
+}</code></pre>
 <p><strong>Pros</strong>:
 - Aligns with standard ML model training approach
 - Uses actual current metrics for predictions
@@ -1672,11 +1744,10 @@ func (h *PredictionHandler) buildRawMetricInstances(ctx context.Context) ([][]fl
 - Time-based predictions may not capture actual system state</p>
 <h3 id="option-c-support-both-feature-sets-most-flexible">Option C: Support Both Feature Sets (Most Flexible)<a class="headerlink" href="#option-c-support-both-feature-sets-most-flexible" title="Permanent link">&para;</a></h3>
 <p>Add a new endpoint or parameter to support different feature sets:</p>
-<p><code>go
-type PredictRequest struct {
+<pre class="highlight"><code class="language-go">type PredictRequest struct {
     // ... existing fields ...
     FeatureMode string `json:"feature_mode"` // "time_based" (4 features) or "metrics" (5 features)
-}</code></p>
+}</code></pre>
 <h2 id="recommendation">Recommendation<a class="headerlink" href="#recommendation" title="Permanent link">&para;</a></h2>
 <p><strong>Option A</strong> is recommended because:
 1. The model should predict based on current system state (actual metrics)
@@ -1688,13 +1759,12 @@ type PredictRequest struct {
 <li>Related: Bug 3 - KServe response parsing (separate issue)</li>
 </ul>
 <h2 id="testing-after-fix">Testing After Fix<a class="headerlink" href="#testing-after-fix" title="Permanent link">&para;</a></h2>
-<p>```bash</p>
-<h1 id="test-prediction-with-metrics-based-input">Test prediction with metrics-based input<a class="headerlink" href="#test-prediction-with-metrics-based-input" title="Permanent link">&para;</a></h1>
-<p>curl -X POST http://coordination-engine:8080/api/v1/predict \
+<pre class="highlight"><code class="language-bash"># Test prediction with metrics-based input
+curl -X POST http://coordination-engine:8080/api/v1/predict \
   -H 'Content-Type: application/json' \
-  -d '{}' | jq .</p>
-<h1 id="expected-200-ok-with-predictions-array">Expected: 200 OK with predictions array<a class="headerlink" href="#expected-200-ok-with-predictions-array" title="Permanent link">&para;</a></h1>
-<p>```</p>
+  -d '{}' | jq .
+
+# Expected: 200 OK with predictions array</code></pre>
 <hr />
 <p><strong>Labels</strong>: <code>bug</code>, <code>feature-request</code>, <code>prediction-api</code>, <code>breaking-change</code></p>
 <p><strong>Assignee</strong>: @tosin2013</p>

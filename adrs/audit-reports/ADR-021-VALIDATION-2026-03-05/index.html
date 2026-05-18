@@ -1593,8 +1593,134 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resolution
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tekton-infrastructure-validated" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tekton Infrastructure Validated
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evidence Files
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evidence Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sno-recent-pipeline-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      SNO Recent Pipeline Runs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ha-pipeline-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      HA Pipeline Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adr-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR Compliance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ADR Compliance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#infrastructure-validation-active" class="md-nav__link">
+    <span class="md-ellipsis">
+      Infrastructure Validation (ACTIVE)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notebook-validation-superseded-by-adr-029" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notebook Validation (SUPERSEDED by ADR-029)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validator-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validator Changes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validator Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file-validatorsmlops-cicdsh" class="md-nav__link">
+    <span class="md-ellipsis">
+      File: /validators/mlops-cicd.sh
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-criteria-met" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Criteria Met
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
   
 </li>
       
@@ -1629,20 +1755,20 @@
 <p>ADR-021 (Tekton Pipeline for Post-Deployment Validation) is <strong>fully implemented</strong> and operational on both SNO and HA clusters. All 4 Tekton pipelines are deployed with complete task definitions and the Tekton Pipelines operator is running.</p>
 <h2 id="validation-results">Validation Results<a class="headerlink" href="#validation-results" title="Permanent link">&para;</a></h2>
 <h3 id="sno-cluster">SNO Cluster<a class="headerlink" href="#sno-cluster" title="Permanent link">&para;</a></h3>
-<p><code>Pipelines: 4
+<pre class="highlight"><code>Pipelines: 4
 Tasks: 16
 Recent runs: 3
-Tekton controller: tekton-pipelines-controller (READY)</code></p>
+Tekton controller: tekton-pipelines-controller (READY)</code></pre>
 <p><strong>Pipelines:</strong>
 - deployment-validation-pipeline
 - model-training-pipeline
 - model-training-pipeline-gpu
 - s3-configuration-pipeline</p>
 <h3 id="ha-cluster">HA Cluster<a class="headerlink" href="#ha-cluster" title="Permanent link">&para;</a></h3>
-<p><code>Pipelines: 4
+<pre class="highlight"><code>Pipelines: 4
 Tasks: 17
 Recent runs: 0
-Tekton controller: tekton-pipelines-controller (READY)</code></p>
+Tekton controller: tekton-pipelines-controller (READY)</code></pre>
 <p><strong>Pipelines:</strong>
 - deployment-validation-pipeline
 - model-training-pipeline
@@ -1651,12 +1777,11 @@ Tekton controller: tekton-pipelines-controller (READY)</code></p>
 <h2 id="root-cause-analysis">Root Cause Analysis<a class="headerlink" href="#root-cause-analysis" title="Permanent link">&para;</a></h2>
 <h3 id="initial-issue">Initial Issue<a class="headerlink" href="#initial-issue" title="Permanent link">&para;</a></h3>
 <p>Validator was marked as PARTIAL due to incorrect deployment name check:
-```bash</p>
-<h1 id="old-incorrect">Old (incorrect):<a class="headerlink" href="#old-incorrect" title="Permanent link">&para;</a></h1>
-<p>local tekton_operator=$(oc get deployment -n openshift-pipelines openshift-pipelines-operator ...)</p>
-<h1 id="fixed">Fixed:<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h1>
-<p>local tekton_operator=$(oc get deployment -n openshift-pipelines tekton-pipelines-controller ...)
-```</p>
+<pre class="highlight"><code class="language-bash"># Old (incorrect):
+local tekton_operator=$(oc get deployment -n openshift-pipelines openshift-pipelines-operator ...)
+
+# Fixed:
+local tekton_operator=$(oc get deployment -n openshift-pipelines tekton-pipelines-controller ...)</code></pre></p>
 <h3 id="resolution">Resolution<a class="headerlink" href="#resolution" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed validator to check for correct deployment name: <code>tekton-pipelines-controller</code></li>
@@ -1676,15 +1801,11 @@ Tekton controller: tekton-pipelines-controller (READY)</code></p>
 - ✅ tekton-events-controller</p>
 <h2 id="evidence-files">Evidence Files<a class="headerlink" href="#evidence-files" title="Permanent link">&para;</a></h2>
 <h3 id="sno-recent-pipeline-runs">SNO Recent Pipeline Runs<a class="headerlink" href="#sno-recent-pipeline-runs" title="Permanent link">&para;</a></h3>
-<p>```bash
-oc get pipelinerun -n self-healing-platform --no-headers | head -5</p>
-<h1 id="shows-3-recent-runs-validator-requirement-met">Shows 3 recent runs (validator requirement met)<a class="headerlink" href="#shows-3-recent-runs-validator-requirement-met" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash">oc get pipelinerun -n self-healing-platform --no-headers | head -5
+# Shows 3 recent runs (validator requirement met)</code></pre>
 <h3 id="ha-pipeline-configuration">HA Pipeline Configuration<a class="headerlink" href="#ha-pipeline-configuration" title="Permanent link">&para;</a></h3>
-<p>```bash
-oc get pipelines.tekton.dev -n self-healing-platform</p>
-<h1 id="all-4-pipelines-deployed-via-helmargocd">All 4 pipelines deployed via Helm/ArgoCD<a class="headerlink" href="#all-4-pipelines-deployed-via-helmargocd" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash">oc get pipelines.tekton.dev -n self-healing-platform
+# All 4 pipelines deployed via Helm/ArgoCD</code></pre>
 <h2 id="adr-compliance">ADR Compliance<a class="headerlink" href="#adr-compliance" title="Permanent link">&para;</a></h2>
 <h3 id="infrastructure-validation-active">Infrastructure Validation (ACTIVE)<a class="headerlink" href="#infrastructure-validation-active" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1704,10 +1825,9 @@ oc get pipelines.tekton.dev -n self-healing-platform</p>
 <h3 id="file-validatorsmlops-cicdsh">File: <code>/validators/mlops-cicd.sh</code><a class="headerlink" href="#file-validatorsmlops-cicdsh" title="Permanent link">&para;</a></h3>
 <p><strong>Function:</strong> <code>validate_adr_021()</code></p>
 <p><strong>Change:</strong>
-<code>diff
-- local tekton_operator=$(oc get deployment -n openshift-pipelines openshift-pipelines-operator --no-headers 2&gt;/dev/null | wc -l)
+<pre class="highlight"><code class="language-diff">- local tekton_operator=$(oc get deployment -n openshift-pipelines openshift-pipelines-operator --no-headers 2&gt;/dev/null | wc -l)
 + # Fixed: Check for tekton-pipelines-controller (actual deployment name in OpenShift Pipelines)
-+ local tekton_operator=$(oc get deployment -n openshift-pipelines tekton-pipelines-controller --no-headers 2&gt;/dev/null | wc -l)</code></p>
++ local tekton_operator=$(oc get deployment -n openshift-pipelines tekton-pipelines-controller --no-headers 2&gt;/dev/null | wc -l)</code></pre></p>
 <h2 id="validation-criteria-met">Validation Criteria Met<a class="headerlink" href="#validation-criteria-met" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

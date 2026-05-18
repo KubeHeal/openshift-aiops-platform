@@ -1577,6 +1577,126 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#expected-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      Expected Behavior
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#actual-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      Actual Behavior
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#root-cause-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Root Cause Analysis
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proposed-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proposed Fix
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Proposed Fix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-fix-defaultpredictionhandlerconfig-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 1: Fix DefaultPredictionHandlerConfig (Recommended)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-pass-config-from-maingo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 2: Pass config from main.go
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-from-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evidence from Logs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Files
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-steps-after-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification Steps After Fix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workaround-none" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workaround (None)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional Context
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Additional Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config-reading-works-correctly" class="md-nav__link">
+    <span class="md-ellipsis">
+      Config reading works correctly
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1616,29 +1736,22 @@
 </ul>
 <h2 id="steps-to-reproduce">Steps to Reproduce<a class="headerlink" href="#steps-to-reproduce" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Deploy coordination engine with <code>ENABLE_FEATURE_ENGINEERING=false</code>:
-```yaml
-env:</li>
-<li>name: ENABLE_FEATURE_ENGINEERING
-  value: "false"</li>
 <li>
-<p>name: FEATURE_ENGINEERING_EXPECTED_COUNT
-  value: "5"
-```</p>
+<p>Deploy coordination engine with <code>ENABLE_FEATURE_ENGINEERING=false</code>:
+<pre class="highlight"><code class="language-yaml">env:
+- name: ENABLE_FEATURE_ENGINEERING
+  value: "false"
+- name: FEATURE_ENGINEERING_EXPECTED_COUNT
+  value: "5"</code></pre></p>
 </li>
 <li>
 <p>Verify env var is set:
-```bash
-oc exec -n self-healing-platform deployment/coordination-engine -- printenv ENABLE_FEATURE_ENGINEERING</p>
+<pre class="highlight"><code class="language-bash">oc exec -n self-healing-platform deployment/coordination-engine -- printenv ENABLE_FEATURE_ENGINEERING
+# Output: false</code></pre></p>
 </li>
-</ol>
-<h1 id="output-false">Output: false<a class="headerlink" href="#output-false" title="Permanent link">&para;</a></h1>
-<p>```</p>
-<ol>
 <li>
 <p>Check coordination engine startup logs:
-<code>bash
-oc logs -n self-healing-platform deployment/coordination-engine | grep -i feature</code></p>
+<pre class="highlight"><code class="language-bash">oc logs -n self-healing-platform deployment/coordination-engine | grep -i feature</code></pre></p>
 </li>
 <li>
 <p><strong>Observe</strong>: Log shows <code>"msg":"Predictive feature engineering enabled"</code> despite env var being <code>false</code></p>
@@ -1658,8 +1771,7 @@ oc logs -n self-healing-platform deployment/coordination-engine | grep -i featur
 <h2 id="root-cause-analysis">Root Cause Analysis<a class="headerlink" href="#root-cause-analysis" title="Permanent link">&para;</a></h2>
 <p><strong>File</strong>: <code>pkg/api/v1/prediction.go</code></p>
 <p><strong>Problem</strong>: The <code>DefaultPredictionHandlerConfig()</code> function hardcodes the value instead of reading from the config:</p>
-<p><code>go
-// Current code (BUG)
+<pre class="highlight"><code class="language-go">// Current code (BUG)
 func DefaultPredictionHandlerConfig() PredictionHandlerConfig {
     defaultConfig := features.DefaultPredictiveConfig()
     return PredictionHandlerConfig{
@@ -1667,15 +1779,14 @@ func DefaultPredictionHandlerConfig() PredictionHandlerConfig {
         LookbackHours:            defaultConfig.LookbackHours,
         ExpectedFeatureCount:     0,
     }
-}</code></p>
+}</code></pre>
 <p><strong>Why it happens</strong>:
 - <code>main.go</code> calls <code>NewPredictionHandler()</code> without passing config
 - <code>NewPredictionHandler()</code> calls <code>DefaultPredictionHandlerConfig()</code>
 - <code>DefaultPredictionHandlerConfig()</code> returns hardcoded <code>true</code> instead of reading from <code>config.Get().FeatureEngineering.Enabled</code></p>
 <h2 id="proposed-fix">Proposed Fix<a class="headerlink" href="#proposed-fix" title="Permanent link">&para;</a></h2>
 <h3 id="option-1-fix-defaultpredictionhandlerconfig-recommended">Option 1: Fix DefaultPredictionHandlerConfig (Recommended)<a class="headerlink" href="#option-1-fix-defaultpredictionhandlerconfig-recommended" title="Permanent link">&para;</a></h3>
-<p><code>go
-// pkg/api/v1/prediction.go
+<pre class="highlight"><code class="language-go">// pkg/api/v1/prediction.go
 func DefaultPredictionHandlerConfig() PredictionHandlerConfig {
     cfg := config.Get()  // Read from environment
     return PredictionHandlerConfig{
@@ -1683,10 +1794,9 @@ func DefaultPredictionHandlerConfig() PredictionHandlerConfig {
         LookbackHours:            cfg.FeatureEngineering.LookbackHours,
         ExpectedFeatureCount:     cfg.FeatureEngineering.ExpectedFeatureCount,
     }
-}</code></p>
+}</code></pre>
 <h3 id="option-2-pass-config-from-maingo">Option 2: Pass config from main.go<a class="headerlink" href="#option-2-pass-config-from-maingo" title="Permanent link">&para;</a></h3>
-<p><code>go
-// cmd/coordination-engine/main.go
+<pre class="highlight"><code class="language-go">// cmd/coordination-engine/main.go
 cfg := config.Get()
 predictionConfig := v1.PredictionHandlerConfig{
     EnableFeatureEngineering: cfg.FeatureEngineering.Enabled,
@@ -1698,11 +1808,10 @@ predictionHandler = v1.NewPredictionHandlerWithConfig(
     prometheusClient,
     log,
     predictionConfig,
-)</code></p>
+)</code></pre>
 <h2 id="evidence-from-logs">Evidence from Logs<a class="headerlink" href="#evidence-from-logs" title="Permanent link">&para;</a></h2>
 <p><strong>Startup log (with ENABLE_FEATURE_ENGINEERING=false)</strong>:
-<code>json
-{
+<pre class="highlight"><code class="language-json">{
   "base_metrics": 5,
   "expected_feature_count": 0,
   "feature_count": 3264,
@@ -1710,17 +1819,16 @@ predictionHandler = v1.NewPredictionHandlerWithConfig(
   "lookback_hours": 24,
   "msg": "Predictive feature engineering enabled",
   "time": "2026-01-29T21:56:36Z"
-}</code></p>
+}</code></pre></p>
 <p><strong>Prediction errors</strong>:
-<code>json
-{
+<pre class="highlight"><code class="language-json">{
   "duration": 0,
   "endpoint": "http://predictive-analytics-stable...:8080/v1/models/predictive-analytics:predict",
   "error": "context canceled",
   "level": "error",
   "model": "predictive-analytics",
   "msg": "KServe predict request failed"
-}</code></p>
+}</code></pre></p>
 <h2 id="related-files">Related Files<a class="headerlink" href="#related-files" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1749,10 +1857,9 @@ predictionHandler = v1.NewPredictionHandlerWithConfig(
 <li>Deploy with <code>ENABLE_FEATURE_ENGINEERING=false</code></li>
 <li>Check startup logs - should NOT show "feature engineering enabled"</li>
 <li>Test prediction endpoint:
-<code>bash
-curl -X POST http://coordination-engine:8080/api/v1/predict \
+<pre class="highlight"><code class="language-bash">curl -X POST http://coordination-engine:8080/api/v1/predict \
   -H 'Content-Type: application/json' \
-  -d '{}'</code></li>
+  -d '{}'</code></pre></li>
 <li>Should return predictions from the 5-feature model without errors</li>
 </ol>
 <h2 id="workaround-none">Workaround (None)<a class="headerlink" href="#workaround-none" title="Permanent link">&para;</a></h2>
@@ -1761,8 +1868,7 @@ curl -X POST http://coordination-engine:8080/api/v1/predict \
 <p>This bug was discovered while testing the predictive analytics model training pipeline. Models trained in "fast mode" use 5 features (raw metrics), while production models use 3264 engineered features. The inability to disable feature engineering prevents testing simple models.</p>
 <h3 id="config-reading-works-correctly">Config reading works correctly<a class="headerlink" href="#config-reading-works-correctly" title="Permanent link">&para;</a></h3>
 <p>The <code>pkg/config/config.go</code> correctly reads the env var:
-<code>go
-Enabled: getEnvAsBool("ENABLE_FEATURE_ENGINEERING", DefaultFeatureEngineeringEnabled),</code></p>
+<pre class="highlight"><code class="language-go">Enabled: getEnvAsBool("ENABLE_FEATURE_ENGINEERING", DefaultFeatureEngineeringEnabled),</code></pre></p>
 <p>The bug is that <code>DefaultPredictionHandlerConfig()</code> doesn't use this config.</p>
 <hr />
 <p><strong>Labels</strong>: <code>bug</code>, <code>high-priority</code>, <code>feature-engineering</code>, <code>prediction-api</code></p>

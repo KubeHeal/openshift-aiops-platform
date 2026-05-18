@@ -1662,21 +1662,6 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#yaml" class="md-nav__link">
-    <span class="md-ellipsis">
-      ```yaml
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="```yaml">
-      <ul class="md-nav__list">
-        
           <li class="md-nav__item">
   <a href="#repository-mirroring-playbook" class="md-nav__link">
     <span class="md-ellipsis">
@@ -1688,15 +1673,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#yaml_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      ```yaml
-    </span>
-  </a>
   
 </li>
       
@@ -1778,6 +1754,126 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-deployment-week-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Deployment (Week 1)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-repository-mirroring-week-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Repository Mirroring (Week 1)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-argocd-integration-week-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: ArgoCD Integration (Week 2)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-tekton-integration-week-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Tekton Integration (Week 2)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Positive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Negative
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#neutral" class="md-nav__link">
+    <span class="md-ellipsis">
+      Neutral
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compliance-and-standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compliance and Standards
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
   
 </li>
       
@@ -1897,7 +1993,7 @@
 <hr />
 <h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">&para;</a></h2>
 <h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h3>
-<p><code>┌─────────────────────────────────────────────────────────────┐
+<pre class="highlight"><code>┌─────────────────────────────────────────────────────────────┐
 │                    OpenShift Cluster                         │
 │                                                              │
 │  ┌──────────────┐         ┌──────────────┐                 │
@@ -1915,7 +2011,7 @@
 │  ┌──────────────────────────────────────┐                  │
 │  │  PostgreSQL (Gitea Database)         │                  │
 │  └──────────────────────────────────────┘                  │
-└─────────────────────────────────────────────────────────────┘</code></p>
+└─────────────────────────────────────────────────────────────┘</code></pre>
 <h3 id="deployment-configuration">Deployment Configuration<a class="headerlink" href="#deployment-configuration" title="Permanent link">&para;</a></h3>
 <p><strong>Namespace:</strong> <code>gitea</code></p>
 <p><strong>Components:</strong>
@@ -1940,13 +2036,12 @@
 <h3 id="validated-patterns-role">Validated Patterns Role<a class="headerlink" href="#validated-patterns-role" title="Permanent link">&para;</a></h3>
 <p><strong>Role:</strong> <code>validated_patterns_gitea</code></p>
 <p><strong>Playbook:</strong> <code>ansible/playbooks/deploy_gitea.yml</code></p>
-<h2 id="yaml">```yaml<a class="headerlink" href="#yaml" title="Permanent link">&para;</a></h2>
-<ul>
-<li>name: Deploy Gitea Local Git Repository
+<pre class="highlight"><code class="language-yaml">---
+- name: Deploy Gitea Local Git Repository
   hosts: localhost
-  gather_facts: false</li>
-</ul>
-<p>roles:
+  gather_facts: false
+
+  roles:
     - role: validated_patterns_gitea
       vars:
         gitea_namespace: gitea
@@ -1957,17 +2052,15 @@
         gitea_create_users: true
         gitea_user_format: lab-user
         gitea_user_count: 1
-        gitea_user_password_length: 16
-```</p>
+        gitea_user_password_length: 16</code></pre>
 <h3 id="repository-mirroring-playbook">Repository Mirroring Playbook<a class="headerlink" href="#repository-mirroring-playbook" title="Permanent link">&para;</a></h3>
 <p><strong>Playbook:</strong> <code>ansible/playbooks/mirror_repositories.yml</code></p>
-<h2 id="yaml_1">```yaml<a class="headerlink" href="#yaml_1" title="Permanent link">&para;</a></h2>
-<ul>
-<li>name: Mirror External Repositories to Gitea
+<pre class="highlight"><code class="language-yaml">---
+- name: Mirror External Repositories to Gitea
   hosts: localhost
-  gather_facts: false</li>
-</ul>
-<p>vars:
+  gather_facts: false
+
+  vars:
     gitea_url: "https://gitea-gitea.apps.cluster-fn2qb.fn2qb.sandbox1343.opentlc.com"
     gitea_admin_user: opentlc-mgr
     external_repos:
@@ -1976,52 +2069,51 @@
         private: false
       - name: validated-patterns-ansible-toolkit
         url: https://github.com/tosin2013/validated-patterns-ansible-toolkit.git
-        private: false</p>
-<p>tasks:
+        private: false
+
+  tasks:
     - name: Get Gitea admin password
       kubernetes.core.k8s_info:
         api_version: v1
         kind: Secret
         name: gitea-with-admin-admin-credentials
         namespace: gitea
-      register: gitea_secret</p>
-<pre><code>- name: Create organizations in Gitea
-  uri:
-    url: "{{ gitea_url }}/api/v1/orgs"
-    method: POST
-    user: "{{ gitea_admin_user }}"
-    password: "{{ gitea_secret.resources[0].data.password | b64decode }}"
-    force_basic_auth: yes
-    body_format: json
-    body:
-      username: validated-patterns
-      full_name: Validated Patterns
-    status_code: [201, 422]  # 422 if already exists
+      register: gitea_secret
 
-- name: Mirror repositories to Gitea
-  uri:
-    url: "{{ gitea_url }}/api/v1/repos/migrate"
-    method: POST
-    user: "{{ gitea_admin_user }}"
-    password: "{{ gitea_secret.resources[0].data.password | b64decode }}"
-    force_basic_auth: yes
-    body_format: json
-    body:
-      clone_addr: "{{ item.url }}"
-      repo_name: "{{ item.name }}"
-      mirror: true
-      private: "{{ item.private }}"
-      uid: 1
-    status_code: [201, 409]  # 409 if already exists
-  loop: "{{ external_repos }}"
-</code></pre>
-<p>```</p>
+    - name: Create organizations in Gitea
+      uri:
+        url: "{{ gitea_url }}/api/v1/orgs"
+        method: POST
+        user: "{{ gitea_admin_user }}"
+        password: "{{ gitea_secret.resources[0].data.password | b64decode }}"
+        force_basic_auth: yes
+        body_format: json
+        body:
+          username: validated-patterns
+          full_name: Validated Patterns
+        status_code: [201, 422]  # 422 if already exists
+
+    - name: Mirror repositories to Gitea
+      uri:
+        url: "{{ gitea_url }}/api/v1/repos/migrate"
+        method: POST
+        user: "{{ gitea_admin_user }}"
+        password: "{{ gitea_secret.resources[0].data.password | b64decode }}"
+        force_basic_auth: yes
+        body_format: json
+        body:
+          clone_addr: "{{ item.url }}"
+          repo_name: "{{ item.name }}"
+          mirror: true
+          private: "{{ item.private }}"
+          uid: 1
+        status_code: [201, 409]  # 409 if already exists
+      loop: "{{ external_repos }}"</code></pre>
 <hr />
 <h2 id="argocd-integration">ArgoCD Integration<a class="headerlink" href="#argocd-integration" title="Permanent link">&para;</a></h2>
 <h3 id="update-argocd-application-to-use-gitea">Update ArgoCD Application to Use Gitea<a class="headerlink" href="#update-argocd-application-to-use-gitea" title="Permanent link">&para;</a></h3>
 <p><strong>File:</strong> <code>values-hub.yaml</code></p>
-<p><code>yaml
-applications:
+<pre class="highlight"><code class="language-yaml">applications:
   coordination-engine:
     name: coordination-engine
     namespace: self-healing-platform
@@ -2036,10 +2128,9 @@ applications:
     syncPolicy:
       automated:
         prune: true
-        selfHeal: true</code></p>
+        selfHeal: true</code></pre>
 <h3 id="argocd-repository-secret">ArgoCD Repository Secret<a class="headerlink" href="#argocd-repository-secret" title="Permanent link">&para;</a></h3>
-<p><code>yaml
-apiVersion: v1
+<pre class="highlight"><code class="language-yaml">apiVersion: v1
 kind: Secret
 metadata:
   name: gitea-repo-secret
@@ -2051,13 +2142,12 @@ stringData:
   type: git
   url: https://gitea-gitea.apps.cluster-fn2qb.fn2qb.sandbox1343.opentlc.com/validated-patterns/openshift-aiops-platform.git
   username: opentlc-mgr
-  password: &lt;gitea-admin-password&gt;</code></p>
+  password: &lt;gitea-admin-password&gt;</code></pre>
 <hr />
 <h2 id="tekton-integration">Tekton Integration<a class="headerlink" href="#tekton-integration" title="Permanent link">&para;</a></h2>
 <h3 id="gitea-webhook-configuration">Gitea Webhook Configuration<a class="headerlink" href="#gitea-webhook-configuration" title="Permanent link">&para;</a></h3>
 <p><strong>EventListener:</strong> <code>tekton/triggers/gitea-webhook-trigger.yaml</code></p>
-<p>```yaml
-apiVersion: triggers.tekton.dev/v1beta1
+<pre class="highlight"><code class="language-yaml">apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: gitea-webhook-listener
@@ -2079,9 +2169,9 @@ spec:
       bindings:
         - ref: gitea-push-binding
       template:
-        ref: cicd-pipeline-template</p>
-<hr />
-<p>apiVersion: triggers.tekton.dev/v1beta1
+        ref: cicd-pipeline-template
+---
+apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: gitea-push-binding
@@ -2093,49 +2183,54 @@ spec:
     - name: gitrepositoryurl
       value: $(body.repository.clone_url)
     - name: gitrepositoryname
-      value: $(body.repository.name)
-```</p>
+      value: $(body.repository.name)</code></pre>
 <hr />
 <h2 id="validation-and-testing">Validation and Testing<a class="headerlink" href="#validation-and-testing" title="Permanent link">&para;</a></h2>
 <h3 id="validation-script">Validation Script<a class="headerlink" href="#validation-script" title="Permanent link">&para;</a></h3>
 <p><strong>File:</strong> <code>scripts/validate-gitea-deployment.sh</code></p>
-<p>```bash</p>
-<h1 id="binbash">!/bin/bash<a class="headerlink" href="#binbash" title="Permanent link">&para;</a></h1>
-<h1 id="validate-gitea-deployment-and-integration">Validate Gitea deployment and integration<a class="headerlink" href="#validate-gitea-deployment-and-integration" title="Permanent link">&para;</a></h1>
-<p>set -e</p>
-<p>GITEA_NAMESPACE=${GITEA_NAMESPACE:-gitea}
-GITEA_ROUTE=$(oc get route gitea -n $GITEA_NAMESPACE -o jsonpath='{.spec.host}' 2&gt;/dev/null || echo "")</p>
-<p>echo "Validating Gitea Deployment..."</p>
-<h1 id="test-1-gitea-pods-running">Test 1: Gitea pods running<a class="headerlink" href="#test-1-gitea-pods-running" title="Permanent link">&para;</a></h1>
-<p>if oc get pods -n $GITEA_NAMESPACE | grep -q "Running"; then
+<pre class="highlight"><code class="language-bash">#!/bin/bash
+# Validate Gitea deployment and integration
+
+set -e
+
+GITEA_NAMESPACE=${GITEA_NAMESPACE:-gitea}
+GITEA_ROUTE=$(oc get route gitea -n $GITEA_NAMESPACE -o jsonpath='{.spec.host}' 2&gt;/dev/null || echo "")
+
+echo "Validating Gitea Deployment..."
+
+# Test 1: Gitea pods running
+if oc get pods -n $GITEA_NAMESPACE | grep -q "Running"; then
     echo "✅ Gitea pods are running"
 else
     echo "❌ Gitea pods not running"
     exit 1
-fi</p>
-<h1 id="test-2-gitea-route-accessible">Test 2: Gitea route accessible<a class="headerlink" href="#test-2-gitea-route-accessible" title="Permanent link">&para;</a></h1>
-<p>if [ -n "$GITEA_ROUTE" ]; then
+fi
+
+# Test 2: Gitea route accessible
+if [ -n "$GITEA_ROUTE" ]; then
     echo "✅ Gitea route: https://$GITEA_ROUTE"
 else
     echo "❌ Gitea route not found"
     exit 1
-fi</p>
-<h1 id="test-3-gitea-api-accessible">Test 3: Gitea API accessible<a class="headerlink" href="#test-3-gitea-api-accessible" title="Permanent link">&para;</a></h1>
-<p>if curl -k -s "https://$GITEA_ROUTE/api/v1/version" | grep -q "version"; then
+fi
+
+# Test 3: Gitea API accessible
+if curl -k -s "https://$GITEA_ROUTE/api/v1/version" | grep -q "version"; then
     echo "✅ Gitea API is accessible"
 else
     echo "❌ Gitea API not accessible"
     exit 1
-fi</p>
-<h1 id="test-4-admin-credentials-exist">Test 4: Admin credentials exist<a class="headerlink" href="#test-4-admin-credentials-exist" title="Permanent link">&para;</a></h1>
-<p>if oc get secret gitea-with-admin-admin-credentials -n $GITEA_NAMESPACE &amp;&gt;/dev/null; then
+fi
+
+# Test 4: Admin credentials exist
+if oc get secret gitea-with-admin-admin-credentials -n $GITEA_NAMESPACE &amp;&gt;/dev/null; then
     echo "✅ Admin credentials secret exists"
 else
     echo "❌ Admin credentials not found"
     exit 1
-fi</p>
-<p>echo "✅ All Gitea validation checks passed"
-```</p>
+fi
+
+echo "✅ All Gitea validation checks passed"</code></pre>
 <hr />
 <h2 id="migration-strategy">Migration Strategy<a class="headerlink" href="#migration-strategy" title="Permanent link">&para;</a></h2>
 <h3 id="phase-1-deployment-week-1">Phase 1: Deployment (Week 1)<a class="headerlink" href="#phase-1-deployment-week-1" title="Permanent link">&para;</a></h3>

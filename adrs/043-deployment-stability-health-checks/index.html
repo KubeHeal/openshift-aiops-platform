@@ -1728,8 +1728,122 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#example-2-rawdeployment-mode-for-kserve" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 2: RawDeployment Mode for KServe
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-init-models-job-storage-resilience" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 3: Init Models Job Storage Resilience
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-4-startup-probe-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 4: Startup Probe Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-5-diagnostic-script-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 5: Diagnostic Script Usage
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#internal-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Internal Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Files
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      Commit History
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      External References
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision Metadata
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Criteria
+    </span>
+  </a>
   
 </li>
       
@@ -1779,10 +1893,9 @@
 <li>Startup probes configured with 5-minute failure windows</li>
 <li>ADR-043 patterns documented in CLUSTER_RESTART_HEALTH.md</li>
 <li><strong>Verification Commands</strong>:
-  <code>bash
-  oc get deployment mcp-server -n self-healing-platform -o yaml | grep -A 20 initContainers
-  oc get deployment coordination-engine -n self-healing-platform -o yaml | grep -A 20 initContainers
-  oc get inferenceservice -n self-healing-platform -o yaml | grep deploymentMode</code></li>
+  <pre class="highlight"><code class="language-bash">oc get deployment mcp-server -n self-healing-platform -o yaml | grep -A 20 initContainers
+oc get deployment coordination-engine -n self-healing-platform -o yaml | grep -A 20 initContainers
+oc get inferenceservice -n self-healing-platform -o yaml | grep deploymentMode</code></pre></li>
 </ul>
 <h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
 <p>The Self-Healing Platform consists of multiple components that depend on services deployed in different namespaces. During cluster restarts and initial deployments, several race conditions were encountered that caused CrashLoopBackOff failures, initialization errors, and storage timing issues.</p>
@@ -1843,13 +1956,12 @@
 - No external dependencies (single binary, no curl/jq installation needed)</p>
 <p><strong>Implementation</strong>: Source healthcheck binary from <code>quay.io/takinosh/openshift-cluster-health-mcp:ocp-4.18-latest</code> image, built as part of the Go MCP Server (see <a href="../036-go-based-standalone-mcp-server/">ADR-036</a>).</p>
 <p><strong>Command Format</strong>:
-<code>bash
-/usr/local/bin/healthcheck \
+<pre class="highlight"><code class="language-bash">/usr/local/bin/healthcheck \
   --bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token \
   --insecure-skip-verify \
   --timeout=10s \
   --interval=15s \
-  https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready</code></p>
+  https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready</code></pre></p>
 <h3 id="4-rawdeployment-mode-for-kserve-stability">4. RawDeployment Mode for KServe Stability<a class="headerlink" href="#4-rawdeployment-mode-for-kserve-stability" title="Permanent link">&para;</a></h3>
 <p><strong>Decision</strong>: KServe InferenceServices MUST use <code>RawDeployment</code> mode instead of Serverless mode.</p>
 <p><strong>Rationale</strong>:
@@ -1957,43 +2069,33 @@
 <h2 id="implementation-examples">Implementation Examples<a class="headerlink" href="#implementation-examples" title="Permanent link">&para;</a></h2>
 <h3 id="example-1-mcp-server-init-containers">Example 1: MCP Server Init Containers<a class="headerlink" href="#example-1-mcp-server-init-containers" title="Permanent link">&para;</a></h3>
 <p><strong>File</strong>: <code>charts/hub/templates/mcp-server-deployment.yaml:30-58</code></p>
-<p>```yaml
-initContainers:</p>
-<h1 id="wait-for-coordination-engine-to-be-available-before-starting">Wait for Coordination Engine to be available before starting<a class="headerlink" href="#wait-for-coordination-engine-to-be-available-before-starting" title="Permanent link">&para;</a></h1>
-<ul>
-<li>name: wait-for-coordination-engine
+<pre class="highlight"><code class="language-yaml">initContainers:
+# Wait for Coordination Engine to be available before starting
+- name: wait-for-coordination-engine
   image: quay.io/takinosh/openshift-cluster-health-mcp:ocp-4.18-latest
   command: ["/usr/local/bin/healthcheck", "http://coordination-engine:8080/health"]
   securityContext:
     allowPrivilegeEscalation: false
     capabilities:
-      drop:<ul>
-<li>ALL
-runAsNonRoot: true</li>
-</ul>
-</li>
-</ul>
-<h1 id="wait-for-prometheus-to-be-available-before-starting">Wait for Prometheus to be available before starting<a class="headerlink" href="#wait-for-prometheus-to-be-available-before-starting" title="Permanent link">&para;</a></h1>
-<ul>
-<li>name: wait-for-prometheus
+      drop:
+      - ALL
+    runAsNonRoot: true
+# Wait for Prometheus to be available before starting
+- name: wait-for-prometheus
   image: quay.io/takinosh/openshift-cluster-health-mcp:ocp-4.18-latest
-  command:</li>
-<li>/usr/local/bin/healthcheck</li>
-<li>--bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token</li>
-<li>--insecure-skip-verify</li>
-<li>--timeout=10s</li>
-<li>--interval=15s</li>
-<li>https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready
+  command:
+  - /usr/local/bin/healthcheck
+  - --bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+  - --insecure-skip-verify
+  - --timeout=10s
+  - --interval=15s
+  - https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready
   securityContext:
     allowPrivilegeEscalation: false
     capabilities:
-      drop:<ul>
-<li>ALL
-runAsNonRoot: true
-```</li>
-</ul>
-</li>
-</ul>
+      drop:
+      - ALL
+    runAsNonRoot: true</code></pre>
 <p><strong>Key Points</strong>:
 - Go healthcheck binary supports both simple HTTP checks and authenticated checks
 - ServiceAccount token automatically mounted for Prometheus authentication
@@ -2001,8 +2103,7 @@ runAsNonRoot: true
 - Security context follows OpenShift best practices (non-root, no capabilities)</p>
 <h3 id="example-2-rawdeployment-mode-for-kserve">Example 2: RawDeployment Mode for KServe<a class="headerlink" href="#example-2-rawdeployment-mode-for-kserve" title="Permanent link">&para;</a></h3>
 <p><strong>File</strong>: <code>charts/hub/templates/model-serving.yaml:9</code></p>
-<p><code>yaml
-apiVersion: serving.kserve.io/v1beta1
+<pre class="highlight"><code class="language-yaml">apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   name: anomaly-detector
@@ -2013,15 +2114,14 @@ spec:
   predictor:
     model:
       runtime: sklearn-pvc-runtime
-      storageUri: "pvc://model-storage-pvc/anomaly-detector"</code></p>
+      storageUri: "pvc://model-storage-pvc/anomaly-detector"</code></pre>
 <p><strong>Key Points</strong>:
 - Single annotation changes deployment mode
 - Sync wave 2 ensures PVC and init-models-job complete first (sync wave -5)
 - PVC storage URI requires storage to be ready before InferenceService creation</p>
 <h3 id="example-3-init-models-job-storage-resilience">Example 3: Init Models Job Storage Resilience<a class="headerlink" href="#example-3-init-models-job-storage-resilience" title="Permanent link">&para;</a></h3>
 <p><strong>File</strong>: <code>charts/hub/templates/init-models-job.yaml:15-44</code></p>
-<p><code>yaml
-apiVersion: batch/v1
+<pre class="highlight"><code class="language-yaml">apiVersion: batch/v1
 kind: Job
 metadata:
   name: init-models-job
@@ -2059,7 +2159,7 @@ spec:
       volumes:
       - name: model-storage
         persistentVolumeClaim:
-          claimName: model-storage-pvc</code></p>
+          claimName: model-storage-pvc</code></pre>
 <p><strong>Key Points</strong>:
 - Init container waits for PVC mount point to exist
 - Main container creates model directories and marker file
@@ -2067,8 +2167,7 @@ spec:
 - Marker file (<code>.initialized</code>) signals to other components that storage is ready</p>
 <h3 id="example-4-startup-probe-configuration">Example 4: Startup Probe Configuration<a class="headerlink" href="#example-4-startup-probe-configuration" title="Permanent link">&para;</a></h3>
 <p><strong>File</strong>: <code>charts/hub/templates/mcp-server-deployment.yaml:XX-XX</code> (implied, not shown in excerpt)</p>
-<p><code>yaml
-startupProbe:
+<pre class="highlight"><code class="language-yaml">startupProbe:
   httpGet:
     path: /health
     port: 8080
@@ -2082,7 +2181,7 @@ livenessProbe:
     port: 8080
   periodSeconds: 30
   failureThreshold: 3
-  successThreshold: 1</code></p>
+  successThreshold: 1</code></pre>
 <p><strong>Key Points</strong>:
 - Startup probe allows 5 minutes (30 failures × 10 seconds) for initialization
 - Liveness probe takes over after startup succeeds
@@ -2090,17 +2189,16 @@ livenessProbe:
 - Tighter failure threshold (3) for runtime health monitoring</p>
 <h3 id="example-5-diagnostic-script-usage">Example 5: Diagnostic Script Usage<a class="headerlink" href="#example-5-diagnostic-script-usage" title="Permanent link">&para;</a></h3>
 <p><strong>File</strong>: <code>scripts/diagnose-cluster-restart.sh</code></p>
-<p>```bash</p>
-<h1 id="binbash">!/bin/bash<a class="headerlink" href="#binbash" title="Permanent link">&para;</a></h1>
-<h1 id="usage-scriptsdiagnose-cluster-restartsh">Usage: ./scripts/diagnose-cluster-restart.sh<a class="headerlink" href="#usage-scriptsdiagnose-cluster-restartsh" title="Permanent link">&para;</a></h1>
-<h1 id="generates-diagnostic-report-in-tmpcluster-restart-diagnostics">Generates diagnostic report in /tmp/cluster-restart-diagnostics/<a class="headerlink" href="#generates-diagnostic-report-in-tmpcluster-restart-diagnostics" title="Permanent link">&para;</a></h1>
-<h1 id="check-pod-status-across-all-namespaces">Check pod status across all namespaces<a class="headerlink" href="#check-pod-status-across-all-namespaces" title="Permanent link">&para;</a></h1>
-<h1 id="check-recent-events-last-30-minutes">Check recent events (last 30 minutes)<a class="headerlink" href="#check-recent-events-last-30-minutes" title="Permanent link">&para;</a></h1>
-<h1 id="analyze-init-container-logs">Analyze init container logs<a class="headerlink" href="#analyze-init-container-logs" title="Permanent link">&para;</a></h1>
-<h1 id="check-pvc-binding-status">Check PVC binding status<a class="headerlink" href="#check-pvc-binding-status" title="Permanent link">&para;</a></h1>
-<h1 id="measure-time-since-cluster-restart">Measure time since cluster restart<a class="headerlink" href="#measure-time-since-cluster-restart" title="Permanent link">&para;</a></h1>
-<h1 id="generate-markdown-report-with-recommendations">Generate markdown report with recommendations<a class="headerlink" href="#generate-markdown-report-with-recommendations" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash">#!/bin/bash
+# Usage: ./scripts/diagnose-cluster-restart.sh
+# Generates diagnostic report in /tmp/cluster-restart-diagnostics/
+
+# Check pod status across all namespaces
+# Check recent events (last 30 minutes)
+# Analyze init container logs
+# Check PVC binding status
+# Measure time since cluster restart
+# Generate markdown report with recommendations</code></pre>
 <p><strong>Workflow</strong>:
 1. Cluster restart occurs or deployment issue detected
 2. Run diagnostic script: <code>./scripts/diagnose-cluster-restart.sh</code>

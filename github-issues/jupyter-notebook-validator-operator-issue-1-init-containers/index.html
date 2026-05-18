@@ -1746,21 +1746,6 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#podconfigspec" class="md-nav__link">
-    <span class="md-ellipsis">
-      PodConfigSpec
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="PodConfigSpec">
-      <ul class="md-nav__list">
-        
           <li class="md-nav__item">
   <a href="#2-user-guide" class="md-nav__link">
     <span class="md-ellipsis">
@@ -1770,8 +1755,161 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#3-examples-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Examples Directory
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Path
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Work
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Related Work">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#existing-adrs-in-jupyter-notebook-validator-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Existing ADRs in jupyter-notebook-validator-operator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reference Implementations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acceptance-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acceptance Criteria
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Benefits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Users
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Operator
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternatives-considered" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alternatives Considered
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alternatives Considered">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alternative-1-operator-managed-retry-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alternative 1: Operator-Managed Retry Logic
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alternative-2-pre-job-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alternative 2: Pre-Job Hooks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alternative-3-do-nothing-users-handle-in-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alternative 3: Do Nothing (Users Handle in Notebooks)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#priority-justification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Priority Justification
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
   
 </li>
       
@@ -1817,17 +1955,15 @@
 - Running separate wait jobs before NotebookValidationJob (complex ArgoCD sync wave management)</p>
 <h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link">&para;</a></h2>
 <p>Add <code>initContainers []corev1.Container</code> field to <code>PodConfigSpec</code> in the NotebookValidationJob API:</p>
-<p>```go
-type PodConfigSpec struct {
-    // ... existing fields (resources, serviceAccountName, volumes, etc.) ...</p>
-<pre><code>// InitContainers run before notebook execution container starts.
-// Use init containers to wait for external dependencies, download datasets,
-// initialize workspaces, or perform other setup tasks.
-// +optional
-InitContainers []corev1.Container `json:"initContainers,omitempty"`
-</code></pre>
-<p>}
-```</p>
+<pre class="highlight"><code class="language-go">type PodConfigSpec struct {
+    // ... existing fields (resources, serviceAccountName, volumes, etc.) ...
+
+    // InitContainers run before notebook execution container starts.
+    // Use init containers to wait for external dependencies, download datasets,
+    // initialize workspaces, or perform other setup tasks.
+    // +optional
+    InitContainers []corev1.Container `json:"initContainers,omitempty"`
+}</code></pre>
 <p><strong>Implementation Notes</strong>:
 - Operator passes init containers directly to pod spec (standard Kubernetes pattern)
 - Users provide their own container images (operator has no dependency on specific images)
@@ -1894,37 +2030,36 @@ InitContainers []corev1.Container `json:"initContainers,omitempty"`
 <p>See: <a href="https://github.com/KubeHeal/openshift-aiops-platform/blob/main/docs/adrs/043-deployment-stability-health-checks.md">ADR-043: Deployment Stability Patterns</a></p>
 <h2 id="implementation-examples">Implementation Examples<a class="headerlink" href="#implementation-examples" title="Permanent link">&para;</a></h2>
 <h3 id="example-1-wait-for-database-postgresql">Example 1: Wait for Database (PostgreSQL)<a class="headerlink" href="#example-1-wait-for-database-postgresql" title="Permanent link">&para;</a></h3>
-<p>```yaml
-apiVersion: notebook.validation.io/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: notebook.validation.io/v1alpha1
 kind: NotebookValidationJob
 metadata:
   name: analyze-customer-data
 spec:
   notebook:
-    path: "analysis/customer-segmentation.ipynb"</p>
-<p>podConfig:
+    path: "analysis/customer-segmentation.ipynb"
+
+  podConfig:
     # Wait for PostgreSQL before notebook execution
     initContainers:
     - name: wait-for-postgres
       image: postgres:15-alpine  # Standard PostgreSQL image
-      command: [pg_isready, -h, postgres.database.svc, -p, "5432"]</p>
-<pre><code># Notebook will execute after database is ready
-resources:
-  requests:
-    memory: "2Gi"
-    cpu: "1"
-</code></pre>
-<p>```</p>
+      command: [pg_isready, -h, postgres.database.svc, -p, "5432"]
+
+    # Notebook will execute after database is ready
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "1"</code></pre>
 <h3 id="example-2-download-dataset-from-s3">Example 2: Download Dataset from S3<a class="headerlink" href="#example-2-download-dataset-from-s3" title="Permanent link">&para;</a></h3>
-<p>```yaml
-apiVersion: notebook.validation.io/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: notebook.validation.io/v1alpha1
 kind: NotebookValidationJob
 metadata:
   name: train-model-with-large-dataset
 spec:
   notebook:
-    path: "models/train-recommendation-model.ipynb"</p>
-<p>podConfig:
+    path: "models/train-recommendation-model.ipynb"
+
+  podConfig:
     # Download dataset before notebook starts
     initContainers:
     - name: download-dataset
@@ -1943,27 +2078,26 @@ spec:
         valueFrom:
           secretKeyRef:
             name: s3-credentials
-            key: secret-key</p>
-<pre><code>volumes:
-- name: data-volume
-  persistentVolumeClaim:
-    claimName: datasets-pvc
+            key: secret-key
 
-volumeMounts:
-- name: data-volume
-  mountPath: /data
-</code></pre>
-<p>```</p>
+    volumes:
+    - name: data-volume
+      persistentVolumeClaim:
+        claimName: datasets-pvc
+
+    volumeMounts:
+    - name: data-volume
+      mountPath: /data</code></pre>
 <h3 id="example-3-wait-for-multiple-services-api-storage">Example 3: Wait for Multiple Services (API + Storage)<a class="headerlink" href="#example-3-wait-for-multiple-services-api-storage" title="Permanent link">&para;</a></h3>
-<p>```yaml
-apiVersion: notebook.validation.io/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: notebook.validation.io/v1alpha1
 kind: NotebookValidationJob
 metadata:
   name: end-to-end-pipeline
 spec:
   notebook:
-    path: "pipelines/e2e-workflow.ipynb"</p>
-<p>podConfig:
+    path: "pipelines/e2e-workflow.ipynb"
+
+  podConfig:
     # Init containers run sequentially
     initContainers:
     # 1. Wait for API
@@ -1976,43 +2110,42 @@ spec:
           echo "Waiting for ML API..."
           sleep 5
         done
-        echo "API ready"</p>
-<pre><code># 2. Wait for storage mount
-- name: wait-for-storage
-  image: busybox
-  command: [sh, -c]
-  args:
-  - |
-    until [ -d /mnt/models/.initialized ]; do
-      echo "Waiting for storage initialization..."
-      sleep 5
-    done
-    echo "Storage ready"
-  volumeMounts:
-  - name: model-storage
-    mountPath: /mnt/models
+        echo "API ready"
 
-volumes:
-- name: model-storage
-  persistentVolumeClaim:
-    claimName: model-storage-pvc
+    # 2. Wait for storage mount
+    - name: wait-for-storage
+      image: busybox
+      command: [sh, -c]
+      args:
+      - |
+        until [ -d /mnt/models/.initialized ]; do
+          echo "Waiting for storage initialization..."
+          sleep 5
+        done
+        echo "Storage ready"
+      volumeMounts:
+      - name: model-storage
+        mountPath: /mnt/models
 
-volumeMounts:
-- name: model-storage
-  mountPath: /mnt/models
-</code></pre>
-<p>```</p>
+    volumes:
+    - name: model-storage
+      persistentVolumeClaim:
+        claimName: model-storage-pvc
+
+    volumeMounts:
+    - name: model-storage
+      mountPath: /mnt/models</code></pre>
 <h3 id="example-4-using-custom-healthcheck-tool-openshift-aiops-platform">Example 4: Using Custom Healthcheck Tool (openshift-aiops-platform)<a class="headerlink" href="#example-4-using-custom-healthcheck-tool-openshift-aiops-platform" title="Permanent link">&para;</a></h3>
-<p>```yaml
-apiVersion: notebook.validation.io/v1alpha1
+<pre class="highlight"><code class="language-yaml">apiVersion: notebook.validation.io/v1alpha1
 kind: NotebookValidationJob
 metadata:
   name: prometheus-metrics-collection
   namespace: self-healing-platform
 spec:
   notebook:
-    path: "monitoring/collect-prometheus-metrics.ipynb"</p>
-<p>podConfig:
+    path: "monitoring/collect-prometheus-metrics.ipynb"
+
+  podConfig:
     # Use organization-specific healthcheck tool
     initContainers:
     - name: wait-for-prometheus
@@ -2023,60 +2156,60 @@ spec:
       - --insecure-skip-verify
       - --timeout=10s
       - --interval=15s
-      - https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready
-```</p>
+      - https://prometheus-k8s.openshift-monitoring.svc:9091/-/ready</code></pre>
 <p><strong>Note</strong>: This example shows openshift-aiops-platform's custom healthcheck binary, but users can use any image with their own tools (curl, custom binaries, etc.).</p>
 <h2 id="technical-design">Technical Design<a class="headerlink" href="#technical-design" title="Permanent link">&para;</a></h2>
 <h3 id="api-changes">API Changes<a class="headerlink" href="#api-changes" title="Permanent link">&para;</a></h3>
 <p><strong>File</strong>: <code>api/v1alpha1/notebookvalidationjob_types.go</code></p>
-<p><code>``go
-type PodConfigSpec struct {
+<pre class="highlight"><code class="language-go">type PodConfigSpec struct {
     // Existing fields
-    Resources          corev1.ResourceRequirements</code>json:"resources,omitempty"<code>ServiceAccountName string</code>json:"serviceAccountName,omitempty"<code>NodeSelector       map[string]string</code>json:"nodeSelector,omitempty"<code>Tolerations        []corev1.Toleration</code>json:"tolerations,omitempty"<code>Affinity           *corev1.Affinity</code>json:"affinity,omitempty"<code>Volumes            []corev1.Volume</code>json:"volumes,omitempty"<code>VolumeMounts       []corev1.VolumeMount</code>json:"volumeMounts,omitempty"`</p>
-<pre><code>// NEW: Init containers for pre-execution setup
-// +optional
-// +kubebuilder:validation:Optional
-InitContainers     []corev1.Container          `json:"initContainers,omitempty"`
-</code></pre>
-<p>}
-```</p>
+    Resources          corev1.ResourceRequirements `json:"resources,omitempty"`
+    ServiceAccountName string                      `json:"serviceAccountName,omitempty"`
+    NodeSelector       map[string]string           `json:"nodeSelector,omitempty"`
+    Tolerations        []corev1.Toleration         `json:"tolerations,omitempty"`
+    Affinity           *corev1.Affinity            `json:"affinity,omitempty"`
+    Volumes            []corev1.Volume             `json:"volumes,omitempty"`
+    VolumeMounts       []corev1.VolumeMount        `json:"volumeMounts,omitempty"`
+
+    // NEW: Init containers for pre-execution setup
+    // +optional
+    // +kubebuilder:validation:Optional
+    InitContainers     []corev1.Container          `json:"initContainers,omitempty"`
+}</code></pre>
 <h3 id="controller-changes">Controller Changes<a class="headerlink" href="#controller-changes" title="Permanent link">&para;</a></h3>
 <p><strong>File</strong>: <code>controllers/notebookvalidationjob_controller.go</code></p>
 <p>In the pod creation logic, add init containers to pod spec:</p>
-<p>```go
-func (r <em>NotebookValidationJobReconciler) createPod(
+<pre class="highlight"><code class="language-go">func (r *NotebookValidationJobReconciler) createPod(
     ctx context.Context,
-    job </em>validationv1alpha1.NotebookValidationJob,
-) (*corev1.Pod, error) {</p>
-<pre><code>pod := &amp;corev1.Pod{
-    ObjectMeta: metav1.ObjectMeta{
-        Name:      job.Name + "-pod",
-        Namespace: job.Namespace,
-        Labels:    labels,
-    },
-    Spec: corev1.PodSpec{
-        // Add init containers from podConfig
-        InitContainers:     job.Spec.PodConfig.InitContainers,  // NEW
+    job *validationv1alpha1.NotebookValidationJob,
+) (*corev1.Pod, error) {
 
-        Containers: []corev1.Container{
-            {
-                Name:  "notebook-executor",
-                Image: job.Spec.Image,
-                // ... existing container spec ...
-            },
+    pod := &amp;corev1.Pod{
+        ObjectMeta: metav1.ObjectMeta{
+            Name:      job.Name + "-pod",
+            Namespace: job.Namespace,
+            Labels:    labels,
         },
-        // ... rest of pod spec ...
-    },
-}
+        Spec: corev1.PodSpec{
+            // Add init containers from podConfig
+            InitContainers:     job.Spec.PodConfig.InitContainers,  // NEW
 
-return pod, nil
-</code></pre>
-<p>}
-```</p>
+            Containers: []corev1.Container{
+                {
+                    Name:  "notebook-executor",
+                    Image: job.Spec.Image,
+                    // ... existing container spec ...
+                },
+            },
+            // ... rest of pod spec ...
+        },
+    }
+
+    return pod, nil
+}</code></pre>
 <h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
 <p>Add validation for init containers (optional but recommended):</p>
-<p><code>go
-// ValidateInitContainers ensures init containers have required fields
+<pre class="highlight"><code class="language-go">// ValidateInitContainers ensures init containers have required fields
 func validateInitContainers(initContainers []corev1.Container) error {
     for i, container := range initContainers {
         if container.Name == "" {
@@ -2087,11 +2220,10 @@ func validateInitContainers(initContainers []corev1.Container) error {
         }
     }
     return nil
-}</code></p>
+}</code></pre>
 <h2 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h2>
 <h3 id="unit-tests">Unit Tests<a class="headerlink" href="#unit-tests" title="Permanent link">&para;</a></h3>
-<p>```go
-func TestPodCreationWithInitContainers(t *testing.T) {
+<pre class="highlight"><code class="language-go">func TestPodCreationWithInitContainers(t *testing.T) {
     job := &amp;validationv1alpha1.NotebookValidationJob{
         Spec: validationv1alpha1.NotebookValidationJobSpec{
             PodConfig: validationv1alpha1.PodConfigSpec{
@@ -2104,14 +2236,13 @@ func TestPodCreationWithInitContainers(t *testing.T) {
                 },
             },
         },
-    }</p>
-<pre><code>pod, err := createPod(context.TODO(), job)
-assert.NoError(t, err)
-assert.Len(t, pod.Spec.InitContainers, 1)
-assert.Equal(t, "wait-for-db", pod.Spec.InitContainers[0].Name)
-</code></pre>
-<p>}
-```</p>
+    }
+
+    pod, err := createPod(context.TODO(), job)
+    assert.NoError(t, err)
+    assert.Len(t, pod.Spec.InitContainers, 1)
+    assert.Equal(t, "wait-for-db", pod.Spec.InitContainers[0].Name)
+}</code></pre>
 <h3 id="e2e-tests">E2E Tests<a class="headerlink" href="#e2e-tests" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Test init container success</strong>: Init container succeeds, notebook executes</li>
@@ -2122,41 +2253,22 @@ assert.Equal(t, "wait-for-db", pod.Spec.InitContainers[0].Name)
 <h2 id="documentation-updates">Documentation Updates<a class="headerlink" href="#documentation-updates" title="Permanent link">&para;</a></h2>
 <h3 id="1-api-reference">1. API Reference<a class="headerlink" href="#1-api-reference" title="Permanent link">&para;</a></h3>
 <p>Document the new field in API documentation:</p>
-<p>```markdown</p>
-<h2 id="podconfigspec">PodConfigSpec<a class="headerlink" href="#podconfigspec" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>initContainers</code></td>
-<td><code>[]corev1.Container</code></td>
-<td>(Optional) Init containers run before notebook execution. Use to wait for dependencies, download data, or perform setup tasks.</td>
-</tr>
-<tr>
-<td>```</td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<pre class="highlight"><code class="language-markdown">## PodConfigSpec
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `initContainers` | `[]corev1.Container` | (Optional) Init containers run before notebook execution. Use to wait for dependencies, download data, or perform setup tasks. |</code></pre>
 <h3 id="2-user-guide">2. User Guide<a class="headerlink" href="#2-user-guide" title="Permanent link">&para;</a></h3>
 <p>Add new section: <strong>"Using Init Containers for Dependency Management"</strong></p>
-<p>```markdown</p>
-<h1 id="using-init-containers">Using Init Containers<a class="headerlink" href="#using-init-containers" title="Permanent link">&para;</a></h1>
-<p>Init containers run before your notebook executes. Common use cases:</p>
-<ul>
-<li><strong>Wait for services</strong>: Databases, APIs, storage</li>
-<li><strong>Download data</strong>: Large datasets from S3, GCS, Azure Blob</li>
-<li><strong>Setup tasks</strong>: Create directories, fetch secrets, verify configuration</li>
-</ul>
-<p>See examples in the <a href="examples/init-containers/">examples/init-containers</a> directory.
-```</p>
+<pre class="highlight"><code class="language-markdown"># Using Init Containers
+
+Init containers run before your notebook executes. Common use cases:
+
+- **Wait for services**: Databases, APIs, storage
+- **Download data**: Large datasets from S3, GCS, Azure Blob
+- **Setup tasks**: Create directories, fetch secrets, verify configuration
+
+See examples in the [examples/init-containers](examples/init-containers/) directory.</code></pre>
 <h3 id="3-examples-directory">3. Examples Directory<a class="headerlink" href="#3-examples-directory" title="Permanent link">&para;</a></h3>
 <p>Create <code>examples/init-containers/</code> with:
 - <code>wait-for-database.yaml</code>

@@ -1751,6 +1751,99 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#validation-and-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation and Testing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validation and Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#storage-validation-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage Validation Commands
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-benchmarking" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Benchmarking
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-and-alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring and Alerting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring and Alerting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#odf-specific-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      ODF-Specific Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-platform-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with Platform Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related ADRs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-status_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Status
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1960,20 +2053,19 @@
 <ol>
 <li>
 <p><strong>ODF Installation</strong>
-   <code>bash
-   # Install ODF Operator
-   oc create -f - &lt;&lt;EOF
-   apiVersion: operators.coreos.com/v1alpha1
-   kind: Subscription
-   metadata:
-     name: odf-operator
-     namespace: openshift-storage
-   spec:
-     channel: stable-4.18
-     name: odf-operator
-     source: redhat-operators
-     sourceNamespace: openshift-marketplace
-   EOF</code></p>
+   <pre class="highlight"><code class="language-bash"># Install ODF Operator
+oc create -f - &lt;&lt;EOF
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: odf-operator
+  namespace: openshift-storage
+spec:
+  channel: stable-4.18
+  name: odf-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+EOF</code></pre></p>
 </li>
 <li>
 <p><strong>Storage Cluster Configuration</strong></p>
@@ -1984,9 +2076,8 @@
 </ol>
 <h3 id="updated-kustomize-configuration">Updated Kustomize Configuration<a class="headerlink" href="#updated-kustomize-configuration" title="Permanent link">&para;</a></h3>
 <p><strong>Base Storage Configuration</strong> (<code>k8s/base/storage.yaml</code>):
-```yaml</p>
-<h1 id="individual-pod-data-rwo">Individual pod data - RWO<a class="headerlink" href="#individual-pod-data-rwo" title="Permanent link">&para;</a></h1>
-<p>apiVersion: v1
+<pre class="highlight"><code class="language-yaml"># Individual pod data - RWO
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: self-healing-data
@@ -1996,10 +2087,10 @@ spec:
   storageClassName: gp3-csi
   resources:
     requests:
-      storage: 10Gi</p>
-<hr />
-<h1 id="shared-model-artifacts-rwx">Shared model artifacts - RWX<a class="headerlink" href="#shared-model-artifacts-rwx" title="Permanent link">&para;</a></h1>
-<p>apiVersion: v1
+      storage: 10Gi
+---
+# Shared model artifacts - RWX
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: model-artifacts
@@ -2009,8 +2100,7 @@ spec:
   storageClassName: ocs-storagecluster-cephfs
   resources:
     requests:
-      storage: 50Gi
-```</p>
+      storage: 50Gi</code></pre></p>
 <p><strong>Development Overlay</strong> (<code>k8s/overlays/development/kustomization.yaml</code>):
 - <code>model-artifacts</code>: 10Gi with <code>ocs-storagecluster-cephfs</code>
 - <code>self-healing-data</code>: 5Gi with <code>gp3-csi</code></p>
@@ -2019,16 +2109,16 @@ spec:
 - <code>self-healing-data</code>: 50Gi with <code>ocs-storagecluster-ceph-rbd</code></p>
 <h2 id="validation-and-testing">Validation and Testing<a class="headerlink" href="#validation-and-testing" title="Permanent link">&para;</a></h2>
 <h3 id="storage-validation-commands">Storage Validation Commands<a class="headerlink" href="#storage-validation-commands" title="Permanent link">&para;</a></h3>
-<p>```bash</p>
-<h1 id="verify-odf-installation">Verify ODF installation<a class="headerlink" href="#verify-odf-installation" title="Permanent link">&para;</a></h1>
-<p>oc get storagecluster -n openshift-storage</p>
-<h1 id="verify-storage-classes">Verify storage classes<a class="headerlink" href="#verify-storage-classes" title="Permanent link">&para;</a></h1>
-<p>oc get storageclass | grep ocs</p>
-<h1 id="test-rwx-functionality">Test RWX functionality<a class="headerlink" href="#test-rwx-functionality" title="Permanent link">&para;</a></h1>
-<p>oc run test-rwx-1 --image=busybox --restart=Never -- sleep 3600
-oc run test-rwx-2 --image=busybox --restart=Never -- sleep 3600</p>
-<h1 id="mount-same-pvc-to-both-pods-and-verify-shared-access">Mount same PVC to both pods and verify shared access<a class="headerlink" href="#mount-same-pvc-to-both-pods-and-verify-shared-access" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<pre class="highlight"><code class="language-bash"># Verify ODF installation
+oc get storagecluster -n openshift-storage
+
+# Verify storage classes
+oc get storageclass | grep ocs
+
+# Test RWX functionality
+oc run test-rwx-1 --image=busybox --restart=Never -- sleep 3600
+oc run test-rwx-2 --image=busybox --restart=Never -- sleep 3600
+# Mount same PVC to both pods and verify shared access</code></pre>
 <h3 id="performance-benchmarking">Performance Benchmarking<a class="headerlink" href="#performance-benchmarking" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>RWO Performance</strong>: Compare <code>ocs-storagecluster-ceph-rbd</code> vs <code>gp3-csi</code></li>
