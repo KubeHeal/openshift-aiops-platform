@@ -34,12 +34,13 @@ import time
 # Optional imports - will be available in RHODS workbench
 try:
     import boto3
-    from botocore.exceptions import ClientError, NoCredentialsError
+    from botocore.exceptions import ClientError, NoCredentialsError, EndpointConnectionError
     BOTO3_AVAILABLE = True
 except ImportError:
     BOTO3_AVAILABLE = False
     ClientError = Exception
     NoCredentialsError = Exception
+    EndpointConnectionError = Exception
 
 # Constants
 COORDINATION_ENGINE_URL = "http://coordination-engine:8080"
@@ -567,15 +568,59 @@ def validate_object_storage() -> List[Dict[str, Any]]:
                     remediation="Bucket will be created during notebook execution"
                 ))
 
-        except (ClientError, NoCredentialsError) as e:
+        except EndpointConnectionError as e:
+            # DNS/network errors expected when objectStore is disabled (objectStore: false in values-hub.yaml)
             checks.append(_create_check_result(
                 category=CATEGORY_PLATFORM,
                 component="Object Storage",
                 check_name="S3 Connectivity",
-                status="FAILED",
-                details=f"Connection failed: {str(e)[:100]}",
-                remediation="Check AWS_S3_ENDPOINT (or S3_ENDPOINT_URL) and credentials in model-storage-config secret"
+                status="WARNING",
+                details=f"S3 endpoint not reachable (expected when objectStore: false): {str(e)[:100]}",
+                remediation="This is expected on clusters without ODF/NooBaa S3. Model artifacts will be stored in PVCs instead."
             ))
+        except (ClientError, NoCredentialsError) as e:
+            # Other S3 errors (permissions, authentication) - likely configuration issues
+            error_str = str(e)
+            # Check if it's a DNS resolution error (common when objectStore: false)
+            if "Failed to resolve" in error_str or "Name or service not known" in error_str or "gaierror" in error_str:
+                checks.append(_create_check_result(
+                    category=CATEGORY_PLATFORM,
+                    component="Object Storage",
+                    check_name="S3 Connectivity",
+                    status="WARNING",
+                    details=f"S3 endpoint DNS not found (expected when objectStore: false): {error_str[:100]}",
+                    remediation="This is expected on clusters without ODF/NooBaa S3. Model artifacts will be stored in PVCs instead."
+                ))
+            else:
+                checks.append(_create_check_result(
+                    category=CATEGORY_PLATFORM,
+                    component="Object Storage",
+                    check_name="S3 Connectivity",
+                    status="FAILED",
+                    details=f"S3 connection failed: {error_str[:100]}",
+                    remediation="Check AWS_S3_ENDPOINT (or S3_ENDPOINT_URL) and credentials in model-storage-config secret"
+                ))
+        except Exception as e:
+            # Catch-all for DNS errors and other connection issues
+            error_str = str(e)
+            if "Failed to resolve" in error_str or "Name or service not known" in error_str or "gaierror" in error_str:
+                checks.append(_create_check_result(
+                    category=CATEGORY_PLATFORM,
+                    component="Object Storage",
+                    check_name="S3 Connectivity",
+                    status="WARNING",
+                    details=f"S3 endpoint not reachable (expected when objectStore: false): {error_str[:100]}",
+                    remediation="This is expected on clusters without ODF/NooBaa S3. Model artifacts will be stored in PVCs instead."
+                ))
+            else:
+                checks.append(_create_check_result(
+                    category=CATEGORY_PLATFORM,
+                    component="Object Storage",
+                    check_name="S3 Connectivity",
+                    status="FAILED",
+                    details=f"Unexpected S3 error: {error_str[:100]}",
+                    remediation="Check logs for details"
+                ))
     else:
         checks.append(_create_check_result(
             category=CATEGORY_PLATFORM,
