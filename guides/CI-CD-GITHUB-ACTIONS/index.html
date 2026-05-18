@@ -15,6 +15,10 @@
         <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/guides/CI-CD-GITHUB-ACTIONS/">
       
       
+        <link rel="prev" href="../JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE/">
+      
+      
+        <link rel="next" href="../../blog/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -22,7 +26,7 @@
     
     
       
-        <title>CI/CD with GitHub Actions for Helm Validation - OpenShift AIOps Self-Healing Platform</title>
+        <title>CI/CD Integration - OpenShift AIOps Self-Healing Platform</title>
       
     
     
@@ -108,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CI/CD with GitHub Actions for Helm Validation
+              CI/CD Integration
             
           </span>
         </div>
@@ -340,10 +344,12 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../FRESH-CLUSTER-DEPLOYMENT/" class="md-tabs__link">
           
   
@@ -362,7 +368,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../blog/index.md" class="md-tabs__link">
+        <a href="../../blog/" class="md-tabs__link">
           
   
   Blog
@@ -946,7 +952,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/api.md" class="md-nav__link">
+      <a href="../../reference/api-documentation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1128,7 +1134,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+      <a href="../../ADR-CROSS-REFERENCE-MATRIX/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1174,8 +1180,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -1184,14 +1192,12 @@
       
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
         
           
           <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
@@ -1205,7 +1211,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             Guides
@@ -1300,10 +1306,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1312,6 +1338,314 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Files
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-helm-validation-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Helm Validation Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Helm Validation Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#job-1-helm-lint" class="md-nav__link">
+    <span class="md-ellipsis">
+      Job 1: helm-lint
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#job-2-pre-commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Job 2: pre-commit
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-issue-creation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatic Issue Creation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-instructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setup Instructions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setup Instructions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-copy-workflow-to-github-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Copy Workflow to GitHub Repository
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-configure-github-secrets-if-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Configure GitHub Secrets (if needed)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-test-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Test Workflow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-monitor-workflow-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Monitor Workflow Execution
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Results
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#success" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Failure ❌
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-testing-before-push" class="md-nav__link">
+    <span class="md-ellipsis">
+      Local Testing Before Push
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-with-gitea" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with Gitea
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-kubeconform-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add Kubeconform Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-polaris-best-practices-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add Polaris Best Practices Check
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-datree-policy-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add Datree Policy Enforcement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-badges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Status Badges
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workflow-not-triggering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Not Triggering
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helm-lint-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helm Lint Failures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-commit-failures-in-ci-but-not-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-commit Failures in CI but Not Locally
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1373,7 +1707,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../blog/index.md" class="md-nav__link">
+      <a href="../../blog/" class="md-nav__link">
         
   
   <span class="md-ellipsis">

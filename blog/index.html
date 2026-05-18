@@ -12,24 +12,28 @@
         <meta name="author" content="KubeHeal Team">
       
       
-        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/adrs/050-anomaly-detector-model-training/">
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/blog/">
       
       
+        <link rel="prev" href="../guides/CI-CD-GITHUB-ACTIONS/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+        <link rel="next" href="../CONTRIBUTING/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
     
     
       
-        <title>ADR-050: Anomaly Detector Model Training and Data Strategy - OpenShift AIOps Self-Healing Platform</title>
+        <title>Overview - OpenShift AIOps Self-Healing Platform</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,7 +52,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-050-anomaly-detector-model-training-and-data-strategy" class="md-skip">
+        <a href="#blog" class="md-skip">
           Skip to content
         </a>
       
@@ -88,7 +92,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -108,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-050: Anomaly Detector Model Training and Data Strategy
+              Overview
             
           </span>
         </div>
@@ -217,7 +221,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href=".." class="md-tabs__link">
         
   
     
@@ -236,7 +240,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../README.md" class="md-tabs__link">
+        <a href="../README.md" class="md-tabs__link">
           
   
   Getting Started
@@ -254,7 +258,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../tutorials/" class="md-tabs__link">
+        <a href="../tutorials/" class="md-tabs__link">
           
   
   Tutorials
@@ -272,7 +276,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../how-to/" class="md-tabs__link">
+        <a href="../how-to/" class="md-tabs__link">
           
   
   How-To Guides
@@ -290,7 +294,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../reference/" class="md-tabs__link">
+        <a href="../reference/" class="md-tabs__link">
           
   
   Reference
@@ -308,7 +312,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../explanation/" class="md-tabs__link">
+        <a href="../explanation/" class="md-tabs__link">
           
   
   Explanation
@@ -326,7 +330,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../" class="md-tabs__link">
+        <a href="../adrs/" class="md-tabs__link">
           
   
   ADRs
@@ -344,7 +348,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-tabs__link">
+        <a href="../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-tabs__link">
           
   
   Guides
@@ -358,11 +362,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../blog/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   Blog
@@ -380,7 +386,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../CONTRIBUTING/" class="md-tabs__link">
+        <a href="../CONTRIBUTING/" class="md-tabs__link">
           
   
   Contributing
@@ -413,7 +419,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -443,7 +449,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -505,7 +511,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../README.md" class="md-nav__link">
+      <a href="../README.md" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -526,7 +532,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../DEPLOYMENT/" class="md-nav__link">
+      <a href="../DEPLOYMENT/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -547,7 +553,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+      <a href="../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -617,7 +623,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/" class="md-nav__link">
+      <a href="../tutorials/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -638,7 +644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/getting-started/" class="md-nav__link">
+      <a href="../tutorials/getting-started/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -659,7 +665,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/deploy-first-ml-model/" class="md-nav__link">
+      <a href="../tutorials/deploy-first-ml-model/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -680,7 +686,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/build-first-self-healing-automation/" class="md-nav__link">
+      <a href="../tutorials/build-first-self-healing-automation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -701,7 +707,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/workbench-development-guide/" class="md-nav__link">
+      <a href="../tutorials/workbench-development-guide/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -771,7 +777,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/" class="md-nav__link">
+      <a href="../how-to/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -792,7 +798,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/deploy-on-sno/" class="md-nav__link">
+      <a href="../how-to/deploy-on-sno/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -813,7 +819,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/access-workbench/" class="md-nav__link">
+      <a href="../how-to/access-workbench/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -834,7 +840,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/deploy-mcp-server-lightspeed/" class="md-nav__link">
+      <a href="../how-to/deploy-mcp-server-lightspeed/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -904,7 +910,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/" class="md-nav__link">
+      <a href="../reference/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -925,7 +931,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../adrs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -946,7 +952,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/api-documentation/" class="md-nav__link">
+      <a href="../reference/api-documentation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1016,7 +1022,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../explanation/" class="md-nav__link">
+      <a href="../explanation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1037,7 +1043,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../explanation/architecture-overview/" class="md-nav__link">
+      <a href="../explanation/architecture-overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1107,7 +1113,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../adrs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1128,7 +1134,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ADR-CROSS-REFERENCE-MATRIX/" class="md-nav__link">
+      <a href="../ADR-CROSS-REFERENCE-MATRIX/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1149,7 +1155,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../IMPLEMENTATION-TRACKER/" class="md-nav__link">
+      <a href="../adrs/IMPLEMENTATION-TRACKER/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1219,7 +1225,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+      <a href="../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1240,7 +1246,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/TROUBLESHOOTING-GUIDE/" class="md-nav__link">
+      <a href="../guides/TROUBLESHOOTING-GUIDE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1261,7 +1267,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/VALIDATED-PATTERNS-SUBMISSION/" class="md-nav__link">
+      <a href="../guides/VALIDATED-PATTERNS-SUBMISSION/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1282,7 +1288,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE/" class="md-nav__link">
+      <a href="../guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1303,7 +1309,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/CI-CD-GITHUB-ACTIONS/" class="md-nav__link">
+      <a href="../guides/CI-CD-GITHUB-ACTIONS/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1328,8 +1334,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -1338,14 +1346,12 @@
       
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
         
           
           <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
@@ -1359,7 +1365,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             Blog
@@ -1370,10 +1376,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../blog/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1382,6 +1408,131 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#latest-articles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Latest Articles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Latest Articles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getting-started-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Started Series
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anomaly-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Anomaly Detection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-healing-automation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Healing Automation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Scenarios
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring &amp; Operations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Topics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qa" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q&amp;A
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#about-this-blog" class="md-nav__link">
+    <span class="md-ellipsis">
+      About This Blog
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1443,7 +1594,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../CONTRIBUTING/" class="md-nav__link">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1464,7 +1615,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../CODE_OF_CONDUCT/" class="md-nav__link">
+      <a href="../CODE_OF_CONDUCT/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1485,7 +1636,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../AGENTS/" class="md-nav__link">
+      <a href="../AGENTS/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1533,37 +1684,82 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#status" class="md-nav__link">
+  <a href="#latest-articles" class="md-nav__link">
     <span class="md-ellipsis">
-      Status
+      Latest Articles
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
-    <span class="md-ellipsis">
-      Context
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Context">
+    <nav class="md-nav" aria-label="Latest Articles">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#problem-scenario" class="md-nav__link">
+  <a href="#getting-started-series" class="md-nav__link">
     <span class="md-ellipsis">
-      Problem Scenario
+      Getting Started Series
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#requirements" class="md-nav__link">
+  <a href="#anomaly-detection" class="md-nav__link">
     <span class="md-ellipsis">
-      Requirements
+      Anomaly Detection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-healing-automation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Healing Automation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Scenarios
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring &amp; Operations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Topics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qa" class="md-nav__link">
+    <span class="md-ellipsis">
+      Q&amp;A
     </span>
   </a>
   
@@ -1575,213 +1771,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
+  <a href="#about-this-blog" class="md-nav__link">
     <span class="md-ellipsis">
-      Decision
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Decision">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#model-specifications" class="md-nav__link">
-    <span class="md-ellipsis">
-      Model Specifications
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#data-source-strategy" class="md-nav__link">
-    <span class="md-ellipsis">
-      Data Source Strategy
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#prometheus-metrics-used" class="md-nav__link">
-    <span class="md-ellipsis">
-      Prometheus Metrics Used
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#training-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Training Configuration
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#model-parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Model Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#automated-workflow" class="md-nav__link">
-    <span class="md-ellipsis">
-      Automated Workflow
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#rationale" class="md-nav__link">
-    <span class="md-ellipsis">
-      Rationale
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Rationale">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#why-isolation-forest" class="md-nav__link">
-    <span class="md-ellipsis">
-      Why Isolation Forest
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-hybrid-data-source" class="md-nav__link">
-    <span class="md-ellipsis">
-      Why Hybrid Data Source
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#why-weekly-retraining" class="md-nav__link">
-    <span class="md-ellipsis">
-      Why Weekly Retraining
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
-    <span class="md-ellipsis">
-      Consequences
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Consequences">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#positive" class="md-nav__link">
-    <span class="md-ellipsis">
-      Positive
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#negative" class="md-nav__link">
-    <span class="md-ellipsis">
-      Negative
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#neutral" class="md-nav__link">
-    <span class="md-ellipsis">
-      Neutral
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Implementation
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Implementation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#files-createdmodified" class="md-nav__link">
-    <span class="md-ellipsis">
-      Files Created/Modified
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Validation
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related-adrs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Related ADRs
+      About This Blog
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
+  <a href="#contributing" class="md-nav__link">
     <span class="md-ellipsis">
-      References
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      Next Steps
+      Contributing
     </span>
   </a>
   
@@ -1802,7 +1803,7 @@
                   
 
   
-    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/adrs/050-anomaly-detector-model-training.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/blog/index.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
     </a>
@@ -1810,344 +1811,55 @@
   
 
 
-<h1 id="adr-050-anomaly-detector-model-training-and-data-strategy">ADR-050: Anomaly Detector Model Training and Data Strategy<a class="headerlink" href="#adr-050-anomaly-detector-model-training-and-data-strategy" title="Permanent link">&para;</a></h1>
-<h2 id="status">Status<a class="headerlink" href="#status" title="Permanent link">&para;</a></h2>
-<p>accepted - 2026-01-27</p>
-<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
-<p>The <strong>anomaly-detector</strong> InferenceService is the platform's primary real-time anomaly detection model, deployed to production via KServe. However, the model training process lacked clear documentation, leading to:</p>
-<ol>
-<li><strong>Flaky models</strong>: Inconsistent training results due to undocumented procedures</li>
-<li><strong>Missing automation</strong>: No NotebookValidationJob configured for regular retraining</li>
-<li><strong>Unclear data sources</strong>: Only synthetic data used, despite Prometheus metrics being available</li>
-<li><strong>Manual intervention</strong>: Models trained ad-hoc without automated deployment</li>
-<li><strong>No model-to-notebook mapping</strong>: When models fail, unclear which notebook to run</li>
-</ol>
-<h3 id="problem-scenario">Problem Scenario<a class="headerlink" href="#problem-scenario" title="Permanent link">&para;</a></h3>
-<p>When the anomaly-detector InferenceService encounters issues:
-- ❌ No documented process for retraining the model
-- ❌ No scheduled retraining (models become stale)
-- ❌ No automatic deployment after training
-- ❌ No validation that new models work before deployment
-- ❌ Training data disconnected from production cluster metrics</p>
-<h3 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h3>
-<ol>
-<li>Document the model architecture and training strategy</li>
-<li>Define data source strategy (synthetic vs Prometheus vs hybrid)</li>
-<li>Specify training frequency and automation approach</li>
-<li>Map the model to its training notebook</li>
-<li>Enable automatic InferenceService restart on successful training</li>
-<li>Support both development (synthetic) and production (real metrics) scenarios</li>
-</ol>
-<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
-<p>Establish <strong>anomaly-detector</strong> as a production-grade model with documented training strategy:</p>
-<h3 id="model-specifications">Model Specifications<a class="headerlink" href="#model-specifications" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Model Type</strong></td>
-<td>Isolation Forest (scikit-learn)</td>
-</tr>
-<tr>
-<td><strong>Purpose</strong></td>
-<td>Real-time anomaly detection in cluster metrics</td>
-</tr>
-<tr>
-<td><strong>Training Notebook</strong></td>
-<td><code>01-isolation-forest-implementation.ipynb</code></td>
-</tr>
-<tr>
-<td><strong>Model Location</strong></td>
-<td><code>/mnt/models/anomaly-detector/model.pkl</code></td>
-</tr>
-<tr>
-<td><strong>InferenceService</strong></td>
-<td><code>anomaly-detector</code></td>
-</tr>
-<tr>
-<td><strong>Training Frequency</strong></td>
-<td>Weekly via NotebookValidationJob</td>
-</tr>
-<tr>
-<td><strong>Auto-Deployment</strong></td>
-<td>Yes (InferenceService restarts on training success)</td>
-</tr>
-</tbody>
-</table>
-<h3 id="data-source-strategy">Data Source Strategy<a class="headerlink" href="#data-source-strategy" title="Permanent link">&para;</a></h3>
-<p><strong>Development Phase</strong>: 100% synthetic data
-- Fast iteration and testing
-- Reproducible results
-- Controlled anomaly injection
-- No Prometheus dependency</p>
-<p><strong>Staging Phase</strong>: Hybrid (50% synthetic, 50% Prometheus)
-- Validate model on real cluster behavior
-- Maintain labeled anomalies from synthetic data
-- Test Prometheus integration</p>
-<p><strong>Production Phase</strong>: Hybrid (80% Prometheus, 20% synthetic)
-- Majority real cluster metrics
-- Synthetic anomalies for labeled training data
-- Continuous adaptation to cluster patterns</p>
-<h3 id="prometheus-metrics-used">Prometheus Metrics Used<a class="headerlink" href="#prometheus-metrics-used" title="Permanent link">&para;</a></h3>
-<p>Training data fetched from Prometheus (7-day lookback):</p>
-<table>
-<thead>
-<tr>
-<th>Metric</th>
-<th>Prometheus Query</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>CPU usage</td>
-<td><code>rate(node_cpu_seconds_total{mode="user"}[5m])</code></td>
-<td>Detect CPU anomalies</td>
-</tr>
-<tr>
-<td>Memory usage</td>
-<td><code>1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)</code></td>
-<td>Detect memory pressure</td>
-</tr>
-<tr>
-<td>Pod restarts</td>
-<td><code>rate(kube_pod_container_status_restarts_total[5m])</code></td>
-<td>Detect crash loops</td>
-</tr>
-<tr>
-<td>Network ingress</td>
-<td><code>rate(container_network_receive_bytes_total[5m])</code></td>
-<td>Detect traffic anomalies</td>
-</tr>
-<tr>
-<td>Network egress</td>
-<td><code>rate(container_network_transmit_bytes_total[5m])</code></td>
-<td>Detect data exfiltration</td>
-</tr>
-<tr>
-<td>Pod status</td>
-<td><code>kube_pod_status_phase</code></td>
-<td>Detect stuck pods</td>
-</tr>
-</tbody>
-</table>
-<p>Sample interval: <strong>5 minutes</strong> (matches production inference cadence)</p>
-<h3 id="training-configuration">Training Configuration<a class="headerlink" href="#training-configuration" title="Permanent link">&para;</a></h3>
-<p><strong>NotebookValidationJob Settings</strong>:
-<pre class="highlight"><code class="language-yaml">name: isolation-forest-implementation-validation
-notebook: notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb
-tier: tier2
-blockNextWave: true  # Ensure model training completes before dependent services
-inferenceServiceTrigger:
-  name: anomaly-detector  # Auto-restart after successful training
-validationConfig:
-  level: production
-  strictMode: true
-  detectSilentFailures: true
-comparisonConfig:
-  strategy: normalized
-  floatingPointTolerance: 0.01
-  ignoreTimestamps: true</code></pre></p>
-<p><strong>Environment Variables</strong>:
-<pre class="highlight"><code class="language-yaml">env:
-  - name: DATA_SOURCE
-    value: "hybrid"  # synthetic|prometheus|hybrid
-  - name: PROMETHEUS_URL
-    value: "http://prometheus-k8s.openshift-monitoring.svc:9090"
-  - name: TRAINING_DAYS
-    value: "7"  # Prometheus lookback window
-  - name: ANOMALY_RATE
-    value: "0.03"  # 3% synthetic anomalies</code></pre></p>
-<h3 id="model-parameters">Model Parameters<a class="headerlink" href="#model-parameters" title="Permanent link">&para;</a></h3>
-<p><strong>Isolation Forest Hyperparameters</strong>:
-<pre class="highlight"><code class="language-python">IsolationForest(
-    n_estimators=100,        # Number of trees
-    max_samples='auto',      # Subsample size
-    contamination=0.03,      # Expected anomaly rate (3%)
-    random_state=42,         # Reproducibility
-    n_jobs=-1                # Parallel processing
-)</code></pre></p>
-<p><strong>Feature Engineering</strong>:
-- Window size: 24 samples (2 hours at 5-min intervals)
-- Rolling statistics: mean, std, min, max
-- Lag features: 1, 3, 6 time steps
-- Total features: ~25 per metric</p>
-<h3 id="automated-workflow">Automated Workflow<a class="headerlink" href="#automated-workflow" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Weekly Trigger</strong>: NotebookValidationJob scheduled via CronJob</li>
-<li><strong>Data Collection</strong>: Fetch Prometheus metrics (last 7 days)</li>
-<li><strong>Anomaly Injection</strong>: Add synthetic anomalies (3% of samples)</li>
-<li><strong>Model Training</strong>: Train Isolation Forest on hybrid dataset</li>
-<li><strong>Model Validation</strong>: Test on held-out validation set</li>
-<li><strong>Model Persistence</strong>: Save to <code>/mnt/models/anomaly-detector/model.pkl</code></li>
-<li><strong>Auto-Deployment</strong>: Trigger InferenceService restart</li>
-<li><strong>Health Check</strong>: Verify new model loads successfully</li>
-</ol>
-<h2 id="rationale">Rationale<a class="headerlink" href="#rationale" title="Permanent link">&para;</a></h2>
-<h3 id="why-isolation-forest">Why Isolation Forest<a class="headerlink" href="#why-isolation-forest" title="Permanent link">&para;</a></h3>
-<p><strong>Alternatives Considered</strong>:</p>
-<ol>
-<li><strong>One-Class SVM</strong></li>
-<li>❌ Slower inference (kernel computations)</li>
-<li>❌ Harder to tune (gamma, nu parameters)</li>
-<li>❌ Not scalable to high-dimensional data</li>
-<li>
-<p>✅ Better theoretical guarantees</p>
-</li>
-<li>
-<p><strong>Autoencoder (Deep Learning)</strong></p>
-</li>
-<li>❌ Requires significantly more training data</li>
-<li>❌ Longer training time</li>
-<li>❌ GPU dependency for training</li>
-<li>
-<p>✅ Can learn complex patterns</p>
-</li>
-<li>
-<p><strong>Prophet / ARIMA</strong></p>
-</li>
-<li>❌ Designed for univariate time series</li>
-<li>❌ Not suitable for multivariate anomaly detection</li>
-<li>❌ Assumes specific seasonality patterns</li>
-<li>✅ Better for forecasting</li>
-</ol>
-<p><strong>Isolation Forest Advantages</strong>:
-- ✅ Fast training and inference
-- ✅ Handles high-dimensional data well
-- ✅ Requires minimal hyperparameter tuning
-- ✅ Works well with small datasets
-- ✅ No GPU required
-- ✅ Naturally handles multivariate anomalies</p>
-<h3 id="why-hybrid-data-source">Why Hybrid Data Source<a class="headerlink" href="#why-hybrid-data-source" title="Permanent link">&para;</a></h3>
-<p><strong>Synthetic-Only Approach</strong> (Rejected):
-- ❌ Doesn't adapt to real cluster behavior
-- ❌ May miss production-specific patterns
-- ✅ Reproducible and controllable</p>
-<p><strong>Prometheus-Only Approach</strong> (Rejected):
-- ❌ No labeled anomalies for training
-- ❌ Requires unsupervised learning only
-- ✅ Real cluster patterns</p>
-<p><strong>Hybrid Approach</strong> (Chosen):
-- ✅ Real cluster patterns from Prometheus
-- ✅ Labeled anomalies from synthetic injection
-- ✅ Adapts to cluster over time
-- ✅ Fallback to synthetic if Prometheus unavailable
-- ✅ Best of both worlds</p>
-<h3 id="why-weekly-retraining">Why Weekly Retraining<a class="headerlink" href="#why-weekly-retraining" title="Permanent link">&para;</a></h3>
-<p><strong>Daily Retraining</strong> (Rejected):
-- ❌ Excessive resource consumption
-- ❌ Cluster patterns don't change that fast
-- ❌ Risk of overfitting to recent noise</p>
-<p><strong>Monthly Retraining</strong> (Rejected):
-- ❌ Too infrequent to adapt to cluster changes
-- ❌ Seasonal patterns may drift</p>
-<p><strong>Weekly Retraining</strong> (Chosen):
-- ✅ Balances resource usage and freshness
-- ✅ Captures weekly seasonality patterns
-- ✅ Adapts to gradual cluster changes
-- ✅ Aligns with typical operational cadence</p>
-<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
-<h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
+<h1 id="blog">Blog<a class="headerlink" href="#blog" title="Permanent link">&para;</a></h1>
+<p>Welcome to the OpenShift AIOps Platform blog! Here you'll find articles, tutorials, and insights about AI-powered operations, machine learning for cluster management, and self-healing automation.</p>
+<h2 id="latest-articles">Latest Articles<a class="headerlink" href="#latest-articles" title="Permanent link">&para;</a></h2>
+<h3 id="getting-started-series">Getting Started Series<a class="headerlink" href="#getting-started-series" title="Permanent link">&para;</a></h3>
 <ul>
-<li>✅ <strong>Documented Training Process</strong>: Clear runbook for model retraining</li>
-<li>✅ <strong>Automated Deployment</strong>: No manual intervention required</li>
-<li>✅ <strong>Production Data Integration</strong>: Models adapt to real cluster behavior</li>
-<li>✅ <strong>Validation Before Deployment</strong>: NotebookValidationJob ensures models work</li>
-<li>✅ <strong>Clear Model Ownership</strong>: Notebook-to-model mapping documented</li>
-<li>✅ <strong>Consistent Model Quality</strong>: Repeatable training process reduces flakiness</li>
-<li>✅ <strong>Fallback Strategy</strong>: Graceful degradation if Prometheus unavailable</li>
+<li><a href="01-setting-up-ai-powered-cluster/">Setting Up AI-Powered Cluster</a></li>
+<li><a href="02-collecting-data-for-aiops/">Collecting Data for AIOps</a></li>
 </ul>
-<h3 id="negative">Negative<a class="headerlink" href="#negative" title="Permanent link">&para;</a></h3>
+<h3 id="anomaly-detection">Anomaly Detection<a class="headerlink" href="#anomaly-detection" title="Permanent link">&para;</a></h3>
 <ul>
-<li>⚠️ <strong>Prometheus Dependency</strong>: Production training requires Prometheus access</li>
-<li>⚠️ <strong>Resource Overhead</strong>: Weekly training jobs consume cluster resources</li>
-<li>⚠️ <strong>Potential Downtime</strong>: InferenceService restarts during deployment</li>
-<li>⚠️ <strong>No Human Approval</strong>: Models auto-deploy without review</li>
+<li><a href="03-isolation-forest-anomaly-detection/">Isolation Forest Anomaly Detection</a></li>
+<li><a href="04-time-series-anomaly-detection/">Time Series Anomaly Detection</a></li>
+<li><a href="05-lstm-deep-learning-anomalies/">LSTM Deep Learning for Anomalies</a></li>
+<li><a href="06-ensemble-anomaly-methods/">Ensemble Anomaly Detection Methods</a></li>
 </ul>
-<h3 id="neutral">Neutral<a class="headerlink" href="#neutral" title="Permanent link">&para;</a></h3>
+<h3 id="self-healing-automation">Self-Healing Automation<a class="headerlink" href="#self-healing-automation" title="Permanent link">&para;</a></h3>
 <ul>
-<li>📝 <strong>Fixed Schedule</strong>: Weekly retraining may not align with incident patterns</li>
-<li>📝 <strong>Single Model Architecture</strong>: No A/B testing or canary deployments</li>
-<li>📝 <strong>No Model Versioning</strong>: Latest model always deployed (no rollback)</li>
+<li><a href="07-rule-based-remediation/">Rule-Based Remediation</a></li>
+<li><a href="08-ai-driven-decision-making/">AI-Driven Decision Making</a></li>
 </ul>
-<h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
-<h3 id="files-createdmodified">Files Created/Modified<a class="headerlink" href="#files-createdmodified" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>ADR Documentation</strong>: <code>docs/adrs/050-anomaly-detector-model-training.md</code> (this file)</li>
-<li><strong>Validation Job Config</strong>: <code>charts/hub/values-notebooks-validation.yaml</code></li>
-<li>Add <code>inferenceServiceTrigger</code> for <code>isolation-forest-implementation</code></li>
-<li>Add validation config</li>
-<li><strong>Notebook Updates</strong>: <code>notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb</code></li>
-<li>Add Prometheus data fetching functions</li>
-<li>Add hybrid data source logic</li>
-<li>Add environment variable configuration</li>
-<li><strong>Training Guide</strong>: <code>docs/model-training-guide.md</code></li>
-<li>Document manual training procedure</li>
-<li>Add troubleshooting runbook</li>
-</ol>
-<h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
-<pre class="highlight"><code class="language-bash"># Verify NotebookValidationJob exists
-oc get notebookvalidationjobs -n self-healing-platform | grep isolation-forest
-
-# Manually trigger training
-oc create job --from=notebookvalidationjob/isolation-forest-implementation-validation \
-  manual-train-$(date +%s) -n self-healing-platform
-
-# Monitor training progress
-oc logs -f job/manual-train-* -n self-healing-platform
-
-# Verify model file updated
-oc exec deployment/model-troubleshooting-utilities -n self-healing-platform -- \
-  ls -lh /mnt/models/anomaly-detector/model.pkl
-
-# Verify InferenceService restarted
-oc get pods -l serving.kserve.io/inferenceservice=anomaly-detector \
-  -n self-healing-platform --sort-by=.metadata.creationTimestamp
-
-# Test model endpoint
-PREDICTOR_IP=$(oc get pod -l serving.kserve.io/inferenceservice=anomaly-detector \
-  -o jsonpath='{.items[0].status.podIP}')
-curl -X POST http://${PREDICTOR_IP}:8080/v1/models/anomaly-detector:predict \
-  -H 'Content-Type: application/json' \
-  -d '{"instances": [[0.5, 0.6, 0.4, 100, 80]]}'</code></pre>
-<h2 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h2>
+<h3 id="model-deployment">Model Deployment<a class="headerlink" href="#model-deployment" title="Permanent link">&para;</a></h3>
 <ul>
-<li><a href="../004-kserve-model-serving/">ADR-004: KServe for Model Serving Infrastructure</a></li>
-<li><a href="../007-prometheus-monitoring-integration/">ADR-007: Prometheus Monitoring Integration</a></li>
-<li><a href="../012-notebook-architecture-for-end-to-end-workflows/">ADR-012: Notebook Architecture for End-to-End Workflows</a></li>
-<li><a href="../013-data-collection-and-preprocessing-workflows/">ADR-013: Data Collection and Preprocessing Workflows</a></li>
-<li><a href="../029-jupyter-notebook-validator-operator/">ADR-029: Jupyter Notebook Validator Operator</a></li>
-<li><a href="../037-mlops-workflow-strategy/">ADR-037: MLOps Workflow Strategy</a></li>
-<li><a href="../041-model-storage-and-versioning-strategy/">ADR-041: Model Storage and Versioning Strategy</a></li>
-<li><a href="../051-predictive-analytics-model-training/">ADR-051: Predictive Analytics Model Training</a> (companion ADR)</li>
-<li><a href="../052-model-training-data-sources/">ADR-052: Model Training Data Source Selection Strategy</a> (companion ADR)</li>
+<li><a href="09-deploying-models-kserve/">Deploying Models with KServe</a></li>
 </ul>
-<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<h3 id="real-world-scenarios">Real-World Scenarios<a class="headerlink" href="#real-world-scenarios" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Isolation Forest paper: Liu et al. (2008) "Isolation Forest"</li>
-<li>scikit-learn documentation: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html</li>
-<li>Prometheus query API: https://prometheus.io/docs/prometheus/latest/querying/api/</li>
-<li>KServe sklearn server: https://github.com/kserve/kserve/tree/master/python/sklearnserver</li>
-<li>Notebook: <code>notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb</code></li>
+<li><a href="10-scenario-pod-crash-loops/">Scenario: Pod Crash Loops</a></li>
+<li><a href="11-scenario-memory-exhaustion/">Scenario: Memory Exhaustion</a></li>
 </ul>
-<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
-<p><strong>Immediate (This ADR)</strong>:
-1. ✅ Create NotebookValidationJob for isolation-forest notebook
-2. ✅ Update notebook to support Prometheus data fetching
-3. ✅ Configure automatic InferenceService restart
-4. ✅ Document manual training procedure</p>
-<p><strong>Future Enhancements</strong>:
-1. Add model performance monitoring (drift detection)
-2. Implement A/B testing for model versions
-3. Add human-in-the-loop approval for production deployments
-4. Implement model rollback capability
-5. Add continuous learning from production feedback
-6. Evaluate SHAP for model explainability</p>
+<h3 id="monitoring-operations">Monitoring &amp; Operations<a class="headerlink" href="#monitoring-operations" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="13-monitoring-self-healing-platform/">Monitoring the Self-Healing Platform</a></li>
+<li><a href="14-predictive-scaling-cost-optimization/">Predictive Scaling &amp; Cost Optimization</a></li>
+<li><a href="15-security-incident-automation/">Security Incident Automation</a></li>
+</ul>
+<h3 id="advanced-topics">Advanced Topics<a class="headerlink" href="#advanced-topics" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="16-end-to-end-self-healing-with-lightspeed/">End-to-End Self-Healing with Lightspeed</a></li>
+<li><a href="17-training-ml-models-with-tekton/">Training ML Models with Tekton</a></li>
+</ul>
+<h3 id="qa">Q&amp;A<a class="headerlink" href="#qa" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="ml-powered-anomaly-detection-questions/">ML-Powered Anomaly Detection Questions</a></li>
+</ul>
+<h2 id="about-this-blog">About This Blog<a class="headerlink" href="#about-this-blog" title="Permanent link">&para;</a></h2>
+<p>These articles provide hands-on examples, deep dives into ML techniques, and practical guidance for implementing AI-powered operations in OpenShift environments.</p>
+<p>Each article builds on the concepts and infrastructure described in our <a href="../tutorials/">Tutorials</a> and <a href="../how-to/">How-To Guides</a>.</p>
+<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
+<p>Have insights to share about AIOps, machine learning for operations, or self-healing systems? See our <a href="../CONTRIBUTING/">Contributing Guidelines</a> to learn how to submit blog articles.</p>
 
 
 
@@ -2170,7 +1882,7 @@ curl -X POST http://${PREDICTOR_IP}:8080/v1/models/anomaly-detector:predict \
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 6, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 18, 2026</span>
   </span>
 
     
@@ -2180,7 +1892,7 @@ curl -X POST http://${PREDICTOR_IP}:8080/v1/models/anomaly-detector:predict \
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 27, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 18, 2026</span>
   </span>
 
     
@@ -2247,10 +1959,10 @@ curl -X POST http://${PREDICTOR_IP}:8080/v1/models/anomaly-detector:predict \
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
       
     
   </body>
