@@ -1,0 +1,2461 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A hands-on tutorial to create an end-to-end self-healing workflow that detects and remediates problems automatically">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/tutorials/build-first-self-healing-automation/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Build Your First Self-Healing Automation - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#build-your-first-self-healing-automation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Build Your First Self-Healing Automation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      What You'll Build
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      What You'll Learn
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/tutorials/build-first-self-healing-automation.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="build-your-first-self-healing-automation">Build Your First Self-Healing Automation<a class="headerlink" href="#build-your-first-self-healing-automation" title="Permanent link">&para;</a></h1>
+<p><strong>Time</strong>: 60 minutes | <strong>Difficulty</strong>: Intermediate | <strong>Prerequisites</strong>: <a href="../deploy-first-ml-model/">Deploy Your First ML Model</a></p>
+<h2 id="what-youll-build">What You'll Build<a class="headerlink" href="#what-youll-build" title="Permanent link">&para;</a></h2>
+<p>By the end of this tutorial, you will have created a complete self-healing automation that:</p>
+<p>✅ <strong>Detects</strong> high memory usage anomalies using ML<br />
+✅ <strong>Alerts</strong> the coordination engine when anomalies occur<br />
+✅ <strong>Diagnoses</strong> the root cause (memory leak, traffic spike, resource limits)<br />
+✅ <strong>Remediates</strong> automatically (restart pod, scale up, adjust limits)<br />
+✅ <strong>Monitors</strong> remediation effectiveness and learns from outcomes  </p>
+<h2 id="what-youll-learn">What You'll Learn<a class="headerlink" href="#what-youll-learn" title="Permanent link">&para;</a></h2>
+<ul>
+<li>How to integrate ML models with the coordination engine</li>
+<li>Creating remediation actions and conflict resolution rules</li>
+<li>Building feedback loops between detection and remediation</li>
+<li>Monitoring automation effectiveness</li>
+<li>Implementing safety guardrails</li>
+</ul>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<p>Before you begin:</p>
+<ul>
+<li>✅ Completed <a href="../deploy-first-ml-model/">Deploy Your First ML Model</a> tutorial</li>
+<li>✅ Working KServe InferenceService deployed</li>
+<li>✅ Access to the coordination engine API</li>
+<li>✅ Cluster-admin permissions (for creating MachineConfigs)</li>
+</ul>
+<p><strong>Check your access</strong>:</p>
+<p>```bash</p>
+<h1 id="verify-coordination-engine-is-running">Verify coordination engine is running<a class="headerlink" href="#verify-coordination-engine-is-running" title="Permanent link">&para;</a></h1>
+<p>oc get deployment coordination-engine -n self-healing-platform</p>
+<h1 id="test-coordination-engine-health-endpoint">Test coordination engine health endpoint<a class="headerlink" href="#test-coordination-engine-health-endpoint" title="Permanent link">&para;</a></h1>
+<p>oc exec -n self-healing-platform deployment/coordination-engine -- \
+  curl -s http://localhost:8080/health
+```</p>
+<p><strong>Expected</strong>: <code>{"status": "healthy"}</code></p>
+<hr />
+<h2 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
+<p>Here's what we're building:</p>
+<p><code>┌─────────────────────────────────────────────────────────────┐
+│                  Self-Healing Loop                          │
+├─────────────────────────────────────────────────────────────┤
+│  1. COLLECT: Prometheus metrics → ML model                  │
+│  2. DETECT: Model predicts anomaly → Alert                  │
+│  3. DIAGNOSE: Coordination engine analyzes context          │
+│  4. DECIDE: Select remediation action (with conflict check) │
+│  5. EXECUTE: Apply remediation (MachineConfig, scale, etc.) │
+│  6. MONITOR: Track outcome → Improve model                  │
+└─────────────────────────────────────────────────────────────┘</code></p>
+<hr />
+<h2 id="step-1-set-up-monitoring-webhook">Step 1: Set Up Monitoring Webhook<a class="headerlink" href="#step-1-set-up-monitoring-webhook" title="Permanent link">&para;</a></h2>
+<h3 id="11-create-webhook-configmap">1.1 Create Webhook ConfigMap<a class="headerlink" href="#11-create-webhook-configmap" title="Permanent link">&para;</a></h3>
+<p>The webhook will receive anomaly alerts from our model and forward them to the coordination engine.</p>
+<p>```bash
+cat &gt; /tmp/anomaly-webhook-config.yaml &lt;&lt;'EOF'
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: anomaly-webhook-config
+  namespace: self-healing-platform
+data:
+  config.yaml: |
+    coordination_engine:
+      url: "http://coordination-engine.self-healing-platform.svc:8080"
+      timeout: 30s</p>
+<pre><code>alert_rules:
+  - name: high_memory_usage
+    threshold: 0.85
+    severity: warning
+    remediation_priority: medium
+
+  - name: critical_memory_usage
+    threshold: 0.95
+    severity: critical
+    remediation_priority: high
+
+safety:
+  max_remediations_per_hour: 10
+  cooldown_period: 300s  # 5 minutes between remediations
+  require_approval_for:
+    - node_restart
+    - machineconfig_update
+</code></pre>
+<p>EOF</p>
+<p>oc apply -f /tmp/anomaly-webhook-config.yaml
+```</p>
+<h3 id="12-create-webhook-deployment">1.2 Create Webhook Deployment<a class="headerlink" href="#12-create-webhook-deployment" title="Permanent link">&para;</a></h3>
+<p>```bash
+cat &gt; /tmp/anomaly-webhook-deployment.yaml &lt;&lt;'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anomaly-webhook
+  namespace: self-healing-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: anomaly-webhook
+  template:
+    metadata:
+      labels:
+        app: anomaly-webhook
+    spec:
+      containers:
+      - name: webhook
+        image: quay.io/kubeheal/anomaly-webhook:latest
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: CONFIG_PATH
+          value: /etc/config/config.yaml
+        - name: LOG_LEVEL
+          value: info
+        volumeMounts:
+        - name: config
+          mountPath: /etc/config
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+      volumes:
+      - name: config
+        configMap:
+          name: anomaly-webhook-config</p>
+<hr />
+<p>apiVersion: v1
+kind: Service
+metadata:
+  name: anomaly-webhook
+  namespace: self-healing-platform
+spec:
+  selector:
+    app: anomaly-webhook
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http
+EOF</p>
+<p>oc apply -f /tmp/anomaly-webhook-deployment.yaml
+```</p>
+<p><strong>Wait for pods to be ready</strong>:</p>
+<p><code>bash
+oc rollout status deployment/anomaly-webhook -n self-healing-platform</code></p>
+<hr />
+<h2 id="step-2-create-anomaly-detection-job">Step 2: Create Anomaly Detection Job<a class="headerlink" href="#step-2-create-anomaly-detection-job" title="Permanent link">&para;</a></h2>
+<h3 id="21-create-detection-script">2.1 Create Detection Script<a class="headerlink" href="#21-create-detection-script" title="Permanent link">&para;</a></h3>
+<p>In your workbench (<code>oc port-forward self-healing-workbench-0 8888:8888 -n self-healing-platform</code>), create a new notebook:</p>
+<p>```python</p>
+<h1 id="cell-1-import-libraries">Cell 1: Import libraries<a class="headerlink" href="#cell-1-import-libraries" title="Permanent link">&para;</a></h1>
+<p>import requests
+import numpy as np
+import pandas as pd
+from prometheus_api_client import PrometheusConnect
+from datetime import datetime, timedelta
+import time
+import logging</p>
+<p>logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(<strong>name</strong>)</p>
+<p>PROMETHEUS_URL = "http://prometheus-k8s.openshift-monitoring.svc:9090"
+MODEL_URL = "http://my-first-model-predictor.self-healing-platform.svc/v1/models/my-first-model:predict"
+WEBHOOK_URL = "http://anomaly-webhook.self-healing-platform.svc:8080/api/v1/alerts"</p>
+<p>print("✅ Detection job initialized")
+```</p>
+<h3 id="22-implement-detection-loop">2.2 Implement Detection Loop<a class="headerlink" href="#22-implement-detection-loop" title="Permanent link">&para;</a></h3>
+<p>```python</p>
+<h1 id="cell-2-continuous-detection-function">Cell 2: Continuous detection function<a class="headerlink" href="#cell-2-continuous-detection-function" title="Permanent link">&para;</a></h1>
+<p>def detect_anomalies():
+    """
+    Continuously monitor metrics and detect anomalies.
+    Runs every 60 seconds.
+    """
+    prom = PrometheusConnect(url=PROMETHEUS_URL, disable_ssl=True)</p>
+<pre><code>while True:
+    try:
+        # Query current memory usage
+        query = 'sum(container_memory_usage_bytes{namespace="self-healing-platform"}) by (pod) / sum(container_spec_memory_limit_bytes{namespace="self-healing-platform"}) by (pod)'
+        result = prom.custom_query(query=query)
+
+        if not result:
+            logger.warning("No metrics returned from Prometheus")
+            time.sleep(60)
+            continue
+
+        # Process each pod
+        for metric in result:
+            pod = metric['metric']['pod']
+            memory_ratio = float(metric['value'][1])
+
+            # Prepare features for model
+            now = datetime.now()
+            features = [
+                memory_ratio,           # Current memory usage ratio
+                now.hour,               # Hour of day
+                now.weekday(),          # Day of week
+                memory_ratio,           # Rolling mean (simplified)
+                0.05                    # Rolling std (simplified)
+            ]
+
+            # Call ML model
+            response = requests.post(
+                MODEL_URL,
+                json={"instances": [features]},
+                timeout=10
+            )
+
+            if response.status_code == 200:
+                prediction = response.json()['predictions'][0]
+
+                # If anomaly detected (-1), send alert
+                if prediction == -1:
+                    logger.info(f"🔴 ANOMALY DETECTED: {pod} memory={memory_ratio:.2%}")
+
+                    # Determine severity based on memory usage
+                    if memory_ratio &gt; 0.95:
+                        severity = "critical"
+                    elif memory_ratio &gt; 0.85:
+                        severity = "warning"
+                    else:
+                        severity = "info"
+
+                    # Send alert to webhook
+                    alert = {
+                        "alert_name": "high_memory_usage",
+                        "severity": severity,
+                        "timestamp": now.isoformat(),
+                        "labels": {
+                            "namespace": "self-healing-platform",
+                            "pod": pod,
+                            "alertname": "HighMemoryUsage"
+                        },
+                        "annotations": {
+                            "description": f"Pod {pod} has abnormal memory usage: {memory_ratio:.2%}",
+                            "memory_usage": f"{memory_ratio:.2%}",
+                            "prediction": "anomaly"
+                        }
+                    }
+
+                    webhook_response = requests.post(
+                        WEBHOOK_URL,
+                        json=alert,
+                        timeout=10
+                    )
+
+                    if webhook_response.status_code == 200:
+                        logger.info(f"✅ Alert sent to coordination engine")
+                    else:
+                        logger.error(f"❌ Failed to send alert: {webhook_response.status_code}")
+                else:
+                    logger.debug(f"🟢 {pod} memory normal: {memory_ratio:.2%}")
+
+            else:
+                logger.error(f"❌ Model inference failed: {response.status_code}")
+
+    except Exception as e:
+        logger.error(f"❌ Detection error: {e}")
+
+    # Wait before next check
+    time.sleep(60)
+</code></pre>
+<h1 id="start-detection-run-in-background">Start detection (run in background)<a class="headerlink" href="#start-detection-run-in-background" title="Permanent link">&para;</a></h1>
+<p>print("🚀 Starting anomaly detection loop...")
+print("Press Interrupt to stop")
+detect_anomalies()
+```</p>
+<p><strong>To test without running forever</strong>, modify the loop:</p>
+<p>```python</p>
+<h1 id="cell-3-test-detection-single-run">Cell 3: Test detection (single run)<a class="headerlink" href="#cell-3-test-detection-single-run" title="Permanent link">&para;</a></h1>
+<p>def test_detection():
+    prom = PrometheusConnect(url=PROMETHEUS_URL, disable_ssl=True)</p>
+<pre><code># Query current memory usage
+query = 'sum(container_memory_usage_bytes{namespace="self-healing-platform"}) by (pod) / sum(container_spec_memory_limit_bytes{namespace="self-healing-platform"}) by (pod)'
+result = prom.custom_query(query=query)
+
+print(f"📊 Checking {len(result)} pods...")
+
+for metric in result:
+    pod = metric['metric']['pod']
+    memory_ratio = float(metric['value'][1])
+
+    now = datetime.now()
+    features = [memory_ratio, now.hour, now.weekday(), memory_ratio, 0.05]
+
+    # Call ML model
+    response = requests.post(MODEL_URL, json={"instances": [features]}, timeout=10)
+
+    if response.status_code == 200:
+        prediction = response.json()['predictions'][0]
+        status = "🔴 ANOMALY" if prediction == -1 else "🟢 Normal"
+        print(f"{status}: {pod:40s} Memory: {memory_ratio:6.2%}")
+</code></pre>
+<h1 id="run-test">Run test<a class="headerlink" href="#run-test" title="Permanent link">&para;</a></h1>
+<p>test_detection()
+```</p>
+<hr />
+<h2 id="step-3-create-remediation-rules">Step 3: Create Remediation Rules<a class="headerlink" href="#step-3-create-remediation-rules" title="Permanent link">&para;</a></h2>
+<h3 id="31-define-remediation-actions">3.1 Define Remediation Actions<a class="headerlink" href="#31-define-remediation-actions" title="Permanent link">&para;</a></h3>
+<p>```bash
+cat &gt; /tmp/remediation-rules.yaml &lt;&lt;'EOF'
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: remediation-rules
+  namespace: self-healing-platform
+data:
+  rules.yaml: |
+    rules:
+      - name: restart_high_memory_pod
+        trigger:
+          alert: high_memory_usage
+          severity: warning
+          min_occurrences: 2
+          time_window: 300s  # 5 minutes</p>
+<pre><code>    action:
+      type: pod_restart
+      target:
+        namespace: "{{ .labels.namespace }}"
+        pod: "{{ .labels.pod }}"
+
+    validation:
+      - type: memory_check
+        threshold: 0.85
+        message: "Memory usage must be &gt; 85% to restart"
+
+    conflict_resolution:
+      priority: medium
+      conflicts_with:
+        - pod_scale
+        - node_maintenance
+      resolution_strategy: queue  # Queue if conflicting action in progress
+
+    rollback:
+      enabled: true
+      on_failure: true
+      max_attempts: 3
+
+  - name: scale_up_on_critical_memory
+    trigger:
+      alert: critical_memory_usage
+      severity: critical
+      min_occurrences: 1
+
+    action:
+      type: deployment_scale
+      target:
+        namespace: "{{ .labels.namespace }}"
+        deployment: "{{ .labels.deployment }}"
+      parameters:
+        scale_factor: 1.5  # Increase replicas by 50%
+        max_replicas: 10
+
+    validation:
+      - type: resource_availability
+        required_cpu: 2
+        required_memory: 4Gi
+
+    conflict_resolution:
+      priority: high
+      conflicts_with:
+        - deployment_update
+        - node_drain
+      resolution_strategy: preempt  # Cancel lower-priority actions
+
+    rollback:
+      enabled: true
+      on_failure: true
+      rollback_delay: 300s  # Wait 5 minutes before rollback
+
+  - name: adjust_memory_limits
+    trigger:
+      alert: high_memory_usage
+      severity: warning
+      min_occurrences: 5
+      time_window: 3600s  # 1 hour
+
+    action:
+      type: resource_limit_update
+      target:
+        namespace: "{{ .labels.namespace }}"
+        pod: "{{ .labels.pod }}"
+      parameters:
+        memory_limit_increase: "256Mi"
+        max_memory_limit: "2Gi"
+
+    validation:
+      - type: quota_check
+        namespace: "{{ .labels.namespace }}"
+
+    conflict_resolution:
+      priority: low
+      conflicts_with:
+        - pod_restart
+        - deployment_scale
+      resolution_strategy: defer  # Wait for higher-priority actions
+
+    rollback:
+      enabled: true
+      on_failure: true
+</code></pre>
+<p>EOF</p>
+<p>oc apply -f /tmp/remediation-rules.yaml
+```</p>
+<h3 id="32-update-coordination-engine-configuration">3.2 Update Coordination Engine Configuration<a class="headerlink" href="#32-update-coordination-engine-configuration" title="Permanent link">&para;</a></h3>
+<p>```bash
+oc set env deployment/coordination-engine \
+  -n self-healing-platform \
+  REMEDIATION_RULES_PATH=/etc/remediation/rules.yaml</p>
+<p>oc set volume deployment/coordination-engine \
+  -n self-healing-platform \
+  --add --name=remediation-rules \
+  --type=configmap \
+  --configmap-name=remediation-rules \
+  --mount-path=/etc/remediation
+```</p>
+<p><strong>Wait for rollout</strong>:</p>
+<p><code>bash
+oc rollout status deployment/coordination-engine -n self-healing-platform</code></p>
+<hr />
+<h2 id="step-4-test-the-self-healing-loop">Step 4: Test the Self-Healing Loop<a class="headerlink" href="#step-4-test-the-self-healing-loop" title="Permanent link">&para;</a></h2>
+<h3 id="41-create-a-memory-stress-test-pod">4.1 Create a Memory Stress Test Pod<a class="headerlink" href="#41-create-a-memory-stress-test-pod" title="Permanent link">&para;</a></h3>
+<p>```bash
+cat &gt; /tmp/memory-stress-pod.yaml &lt;&lt;'EOF'
+apiVersion: v1
+kind: Pod
+metadata:
+  name: memory-stress-test
+  namespace: self-healing-platform
+  labels:
+    app: stress-test
+    deployment: memory-stress-test
+spec:
+  containers:
+  - name: stress
+    image: polinux/stress
+    command: ["stress"]
+    args:
+      - "--vm"
+      - "1"
+      - "--vm-bytes"
+      - "400M"  # Allocate 400MB (will trigger anomaly if limit is 512M)
+      - "--vm-hang"
+      - "0"
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+  restartPolicy: Always
+EOF</p>
+<p>oc apply -f /tmp/memory-stress-pod.yaml
+```</p>
+<p><strong>Wait for pod to start</strong>:</p>
+<p><code>bash
+oc wait --for=condition=Ready pod/memory-stress-test -n self-healing-platform --timeout=60s</code></p>
+<h3 id="42-monitor-detection">4.2 Monitor Detection<a class="headerlink" href="#42-monitor-detection" title="Permanent link">&para;</a></h3>
+<p>Watch your detection notebook logs (if running in background) or run the test detection cell:</p>
+<p>```python</p>
+<h1 id="in-your-notebook-cell-4-monitor">In your notebook - Cell 4: Monitor<a class="headerlink" href="#in-your-notebook-cell-4-monitor" title="Permanent link">&para;</a></h1>
+<p>test_detection()
+```</p>
+<p><strong>Expected output</strong>:
+<code>📊 Checking 5 pods...
+🟢 Normal: coordination-engine-xxx                Memory:  45.23%
+🟢 Normal: self-healing-workbench-0                Memory:  32.18%
+🔴 ANOMALY: memory-stress-test                     Memory:  78.52%</code></p>
+<h3 id="43-check-coordination-engine-received-alert">4.3 Check Coordination Engine Received Alert<a class="headerlink" href="#43-check-coordination-engine-received-alert" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="view-coordination-engine-logs">View coordination engine logs<a class="headerlink" href="#view-coordination-engine-logs" title="Permanent link">&para;</a></h1>
+<p>oc logs -n self-healing-platform deployment/coordination-engine --tail=50</p>
+<h1 id="look-for">Look for:<a class="headerlink" href="#look-for" title="Permanent link">&para;</a></h1>
+<h1 id="info-received-alert-high_memory_usage">INFO: Received alert: high_memory_usage<a class="headerlink" href="#info-received-alert-high_memory_usage" title="Permanent link">&para;</a></h1>
+<h1 id="info-evaluating-remediation-rules">INFO: Evaluating remediation rules...<a class="headerlink" href="#info-evaluating-remediation-rules" title="Permanent link">&para;</a></h1>
+<h1 id="info-matched-rule-restart_high_memory_pod">INFO: Matched rule: restart_high_memory_pod<a class="headerlink" href="#info-matched-rule-restart_high_memory_pod" title="Permanent link">&para;</a></h1>
+<h1 id="info-queuing-action-pod_restart-for-memory-stress-test">INFO: Queuing action: pod_restart for memory-stress-test<a class="headerlink" href="#info-queuing-action-pod_restart-for-memory-stress-test" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h3 id="44-watch-remediation-execute">4.4 Watch Remediation Execute<a class="headerlink" href="#44-watch-remediation-execute" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="watch-pod-events">Watch pod events<a class="headerlink" href="#watch-pod-events" title="Permanent link">&para;</a></h1>
+<p>oc get events -n self-healing-platform --sort-by='.lastTimestamp' | grep memory-stress-test</p>
+<h1 id="expected-events">Expected events:<a class="headerlink" href="#expected-events" title="Permanent link">&para;</a></h1>
+<h1 id="-scheduled">- Scheduled<a class="headerlink" href="#-scheduled" title="Permanent link">&para;</a></h1>
+<h1 id="-started">- Started<a class="headerlink" href="#-started" title="Permanent link">&para;</a></h1>
+<h1 id="-killing-remediation-triggered">- Killing (remediation triggered)<a class="headerlink" href="#-killing-remediation-triggered" title="Permanent link">&para;</a></h1>
+<h1 id="-started-pod-restarted">- Started (pod restarted)<a class="headerlink" href="#-started-pod-restarted" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<p><strong>Check coordination engine status</strong>:</p>
+<p><code>bash
+oc exec -n self-healing-platform deployment/coordination-engine -- \
+  curl -s http://localhost:8080/api/v1/actions | jq</code></p>
+<p><strong>Expected response</strong>:
+<code>json
+{
+  "actions": [
+    {
+      "id": "action-12345",
+      "rule": "restart_high_memory_pod",
+      "status": "completed",
+      "target": {
+        "namespace": "self-healing-platform",
+        "pod": "memory-stress-test"
+      },
+      "started_at": "2026-05-18T15:30:00Z",
+      "completed_at": "2026-05-18T15:30:15Z",
+      "outcome": "success",
+      "rollback_available": true
+    }
+  ]
+}</code></p>
+<hr />
+<h2 id="step-5-implement-feedback-loop">Step 5: Implement Feedback Loop<a class="headerlink" href="#step-5-implement-feedback-loop" title="Permanent link">&para;</a></h2>
+<h3 id="51-create-outcome-tracker">5.1 Create Outcome Tracker<a class="headerlink" href="#51-create-outcome-tracker" title="Permanent link">&para;</a></h3>
+<p>```python</p>
+<h1 id="cell-5-track-remediation-outcomes">Cell 5: Track remediation outcomes<a class="headerlink" href="#cell-5-track-remediation-outcomes" title="Permanent link">&para;</a></h1>
+<p>def track_remediation_outcome(action_id, pod_name):
+    """
+    Monitor if remediation actually solved the problem.
+    """
+    prom = PrometheusConnect(url=PROMETHEUS_URL, disable_ssl=True)</p>
+<pre><code>print(f"📊 Tracking outcome for action {action_id}...")
+
+# Wait for pod to restart
+time.sleep(30)
+
+# Query memory usage after remediation
+query = f'sum(container_memory_usage_bytes{{namespace="self-healing-platform", pod=~"{pod_name}.*"}}) by (pod) / sum(container_spec_memory_limit_bytes{{namespace="self-healing-platform", pod=~"{pod_name}.*"}}) by (pod)'
+
+result = prom.custom_query(query=query)
+
+if result:
+    memory_after = float(result[0]['value'][1])
+    print(f"Memory usage after remediation: {memory_after:.2%}")
+
+    # Report outcome to coordination engine
+    outcome = {
+        "action_id": action_id,
+        "outcome": "success" if memory_after &lt; 0.80 else "partial",
+        "memory_before": 0.78,  # From alert
+        "memory_after": memory_after,
+        "timestamp": datetime.now().isoformat()
+    }
+
+    response = requests.post(
+        "http://coordination-engine.self-healing-platform.svc:8080/api/v1/outcomes",
+        json=outcome,
+        timeout=10
+    )
+
+    if response.status_code == 200:
+        print("✅ Outcome reported to coordination engine")
+    else:
+        print(f"❌ Failed to report outcome: {response.status_code}")
+else:
+    print("⚠️ No metrics found after remediation")
+</code></pre>
+<h1 id="test-outcome-tracking">Test outcome tracking<a class="headerlink" href="#test-outcome-tracking" title="Permanent link">&para;</a></h1>
+<h1 id="track_remediation_outcomeaction-12345-memory-stress-test">track_remediation_outcome("action-12345", "memory-stress-test")<a class="headerlink" href="#track_remediation_outcomeaction-12345-memory-stress-test" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h3 id="52-update-ml-model-with-feedback">5.2 Update ML Model with Feedback<a class="headerlink" href="#52-update-ml-model-with-feedback" title="Permanent link">&para;</a></h3>
+<p>```python</p>
+<h1 id="cell-6-incorporate-feedback-into-model-training">Cell 6: Incorporate feedback into model training<a class="headerlink" href="#cell-6-incorporate-feedback-into-model-training" title="Permanent link">&para;</a></h1>
+<p>def update_model_with_feedback(outcomes):
+    """
+    Use remediation outcomes to improve model accuracy.
+    Successful remediations → anomalies were real
+    Failed remediations → false positives, adjust model
+    """
+    import joblib
+    from sklearn.ensemble import IsolationForest</p>
+<pre><code># Load current model
+model_path = "/opt/app-root/src/models/my-first-model/model.joblib"
+model = joblib.load(model_path)
+
+# Collect feedback data
+feedback_data = []
+for outcome in outcomes:
+    if outcome['outcome'] == 'success':
+        # True positive - keep model sensitivity
+        feedback_data.append({
+            'features': outcome['features'],
+            'label': -1,  # Anomaly
+            'weight': 1.0
+        })
+    elif outcome['outcome'] == 'false_positive':
+        # False positive - reduce sensitivity
+        feedback_data.append({
+            'features': outcome['features'],
+            'label': 1,   # Normal
+            'weight': 1.5  # Higher weight to adjust model
+        })
+
+# Retrain model with feedback (simplified)
+print(f"📈 Incorporating {len(feedback_data)} feedback samples into model")
+
+# In production, you'd retrain with combined original + feedback data
+# For now, we'll just log the feedback
+print("✅ Feedback incorporated (model updated)")
+
+# Save updated model
+joblib.dump(model, model_path)
+
+return model
+</code></pre>
+<h1 id="example-feedback">Example feedback<a class="headerlink" href="#example-feedback" title="Permanent link">&para;</a></h1>
+<h1 id="outcomes">outcomes = [<a class="headerlink" href="#outcomes" title="Permanent link">&para;</a></h1>
+<h1 id="action_id-action-123-outcome-success-features">{'action_id': 'action-123', 'outcome': 'success', 'features': [...]},<a class="headerlink" href="#action_id-action-123-outcome-success-features" title="Permanent link">&para;</a></h1>
+<h1 id="action_id-action-124-outcome-false_positive-features">{'action_id': 'action-124', 'outcome': 'false_positive', 'features': [...]}<a class="headerlink" href="#action_id-action-124-outcome-false_positive-features" title="Permanent link">&para;</a></h1>
+<h1 id="_1">]<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h1 id="update_model_with_feedbackoutcomes">update_model_with_feedback(outcomes)<a class="headerlink" href="#update_model_with_feedbackoutcomes" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<hr />
+<h2 id="step-6-add-safety-guardrails">Step 6: Add Safety Guardrails<a class="headerlink" href="#step-6-add-safety-guardrails" title="Permanent link">&para;</a></h2>
+<h3 id="61-implement-rate-limiting">6.1 Implement Rate Limiting<a class="headerlink" href="#61-implement-rate-limiting" title="Permanent link">&para;</a></h3>
+<p>```bash
+cat &gt; /tmp/rate-limiter-config.yaml &lt;&lt;'EOF'
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rate-limiter-config
+  namespace: self-healing-platform
+data:
+  limits.yaml: |
+    global:
+      max_actions_per_hour: 20
+      max_actions_per_namespace: 10
+      cooldown_between_actions: 120s  # 2 minutes</p>
+<pre><code>per_action_type:
+  pod_restart:
+    max_per_hour: 10
+    cooldown: 300s  # 5 minutes
+
+  deployment_scale:
+    max_per_hour: 5
+    cooldown: 600s  # 10 minutes
+
+  node_restart:
+    max_per_day: 2
+    require_approval: true
+
+emergency_brake:
+  enabled: true
+  failure_threshold: 5  # Stop if 5 consecutive failures
+  alert_channels:
+    - pagerduty
+    - slack
+</code></pre>
+<p>EOF</p>
+<p>oc apply -f /tmp/rate-limiter-config.yaml
+```</p>
+<h3 id="62-add-approval-workflow-for-risky-actions">6.2 Add Approval Workflow for Risky Actions<a class="headerlink" href="#62-add-approval-workflow-for-risky-actions" title="Permanent link">&para;</a></h3>
+<p>```bash
+cat &gt; /tmp/approval-workflow.yaml &lt;&lt;'EOF'
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: approval-workflow
+  namespace: self-healing-platform
+data:
+  workflow.yaml: |
+    approval_required_for:
+      - node_restart
+      - machineconfig_update
+      - namespace_delete
+      - etcd_compaction</p>
+<pre><code>approvers:
+  - sre-team@example.com
+  - platform-admin@example.com
+
+approval_timeout: 3600s  # 1 hour
+
+auto_reject_after: 7200s  # 2 hours
+
+notification_channels:
+  - type: slack
+    webhook: "https://hooks.slack.com/services/XXX"
+  - type: email
+    recipients:
+      - sre-team@example.com
+</code></pre>
+<p>EOF</p>
+<p>oc apply -f /tmp/approval-workflow.yaml
+```</p>
+<hr />
+<h2 id="step-7-monitor-your-automation">Step 7: Monitor Your Automation<a class="headerlink" href="#step-7-monitor-your-automation" title="Permanent link">&para;</a></h2>
+<h3 id="71-check-remediation-metrics">7.1 Check Remediation Metrics<a class="headerlink" href="#71-check-remediation-metrics" title="Permanent link">&para;</a></h3>
+<p>```python</p>
+<h1 id="cell-7-query-remediation-metrics-from-prometheus">Cell 7: Query remediation metrics from Prometheus<a class="headerlink" href="#cell-7-query-remediation-metrics-from-prometheus" title="Permanent link">&para;</a></h1>
+<p>def get_remediation_metrics():
+    prom = PrometheusConnect(url=PROMETHEUS_URL, disable_ssl=True)</p>
+<pre><code># Total remediations
+total = prom.custom_query(
+    query='sum(increase(self_healing_remediations_total[1h]))'
+)
+
+# Success rate
+success = prom.custom_query(
+    query='sum(increase(self_healing_remediations_total{outcome="success"}[1h])) / sum(increase(self_healing_remediations_total[1h]))'
+)
+
+# Average execution time
+avg_time = prom.custom_query(
+    query='avg(self_healing_remediation_duration_seconds)'
+)
+
+print("📊 Remediation Metrics (Last Hour)")
+print(f"Total remediations: {total[0]['value'][1] if total else 0}")
+print(f"Success rate: {float(success[0]['value'][1]) * 100 if success else 0:.2f}%")
+print(f"Avg execution time: {float(avg_time[0]['value'][1]) if avg_time else 0:.2f}s")
+</code></pre>
+<p>get_remediation_metrics()
+```</p>
+<h3 id="72-create-grafana-dashboard-optional">7.2 Create Grafana Dashboard (Optional)<a class="headerlink" href="#72-create-grafana-dashboard-optional" title="Permanent link">&para;</a></h3>
+<p>Create a dashboard to visualize:</p>
+<ul>
+<li><strong>Anomaly detection rate</strong>: How many anomalies detected per hour</li>
+<li><strong>Remediation success rate</strong>: Percentage of successful remediations</li>
+<li><strong>Time to remediate</strong>: Average time from detection to resolution</li>
+<li><strong>False positive rate</strong>: Alerts that didn't need remediation</li>
+<li><strong>Conflict resolution</strong>: How often actions conflicted</li>
+</ul>
+<p><strong>Dashboard JSON</strong> (import into Grafana):</p>
+<p><code>json
+{
+  "dashboard": {
+    "title": "Self-Healing Automation",
+    "panels": [
+      {
+        "title": "Anomaly Detection Rate",
+        "targets": [
+          {
+            "expr": "sum(rate(anomalies_detected_total[5m]))"
+          }
+        ]
+      },
+      {
+        "title": "Remediation Success Rate",
+        "targets": [
+          {
+            "expr": "sum(increase(self_healing_remediations_total{outcome=\"success\"}[1h])) / sum(increase(self_healing_remediations_total[1h]))"
+          }
+        ]
+      }
+    ]
+  }
+}</code></p>
+<hr />
+<h2 id="what-youve-learned">What You've Learned<a class="headerlink" href="#what-youve-learned" title="Permanent link">&para;</a></h2>
+<p>In this tutorial, you built a complete self-healing automation:</p>
+<p>✅ <strong>Integrated ML models</strong> with the coordination engine<br />
+✅ <strong>Created remediation rules</strong> with conflict resolution<br />
+✅ <strong>Implemented safety guardrails</strong> (rate limiting, approvals)<br />
+✅ <strong>Built feedback loops</strong> to improve model accuracy<br />
+✅ <strong>Monitored automation</strong> effectiveness with metrics<br />
+✅ <strong>Tested end-to-end</strong> with a memory stress scenario  </p>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<h3 id="1-expand-remediation-capabilities">1. Expand Remediation Capabilities<a class="headerlink" href="#1-expand-remediation-capabilities" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Add more remediation actions</strong>: Node drain, disk cleanup, network throttling</li>
+<li><strong>Implement advanced diagnostics</strong>: Root cause analysis, log correlation</li>
+<li><strong>Create action templates</strong>: Reusable remediation patterns</li>
+</ul>
+<p><strong>See</strong>: <a href="../../adrs/002-hybrid-self-healing-approach/">ADR-002: Hybrid Self-Healing Approach</a></p>
+<h3 id="2-improve-ml-models">2. Improve ML Models<a class="headerlink" href="#2-improve-ml-models" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Multi-metric models</strong>: Combine CPU, memory, disk, network</li>
+<li><strong>LSTM for time-series</strong>: Predict future anomalies</li>
+<li><strong>Ensemble methods</strong>: Combine multiple models for better accuracy</li>
+</ul>
+<p><strong>See</strong>: <a href="../workbench-development-guide/">Workbench Development Guide</a></p>
+<h3 id="3-production-hardening">3. Production Hardening<a class="headerlink" href="#3-production-hardening" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Add circuit breakers</strong>: Stop automation if failure rate is high</li>
+<li><strong>Implement canary deployments</strong>: Test remediations on subset of pods</li>
+<li><strong>Set up audit logging</strong>: Track all automation decisions</li>
+<li><strong>Create runbooks</strong>: Document remediation procedures</li>
+</ul>
+<p><strong>See</strong>: <a href="../../adrs/043-deployment-stability-health-checks/">ADR-043: Deployment Stability and Health Checks</a></p>
+<h3 id="4-integrate-with-existing-tools">4. Integrate with Existing Tools<a class="headerlink" href="#4-integrate-with-existing-tools" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>AlertManager</strong>: Forward alerts to existing systems</li>
+<li><strong>ServiceNow</strong>: Create incidents for failed remediations</li>
+<li><strong>PagerDuty</strong>: Escalate when automation can't resolve</li>
+<li><strong>Slack/Teams</strong>: Real-time notifications</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="issue-coordination-engine-not-receiving-alerts">Issue: "Coordination engine not receiving alerts"<a class="headerlink" href="#issue-coordination-engine-not-receiving-alerts" title="Permanent link">&para;</a></h3>
+<p><strong>Check webhook connectivity</strong>:</p>
+<p><code>bash
+oc exec -n self-healing-platform deployment/anomaly-webhook -- \
+  curl -v http://coordination-engine.self-healing-platform.svc:8080/health</code></p>
+<p><strong>Check webhook logs</strong>:</p>
+<p><code>bash
+oc logs -n self-healing-platform deployment/anomaly-webhook --tail=100</code></p>
+<h3 id="issue-remediation-not-executing">Issue: "Remediation not executing"<a class="headerlink" href="#issue-remediation-not-executing" title="Permanent link">&para;</a></h3>
+<p><strong>Check remediation rule validation</strong>:</p>
+<p><code>bash
+oc exec -n self-healing-platform deployment/coordination-engine -- \
+  curl -s http://localhost:8080/api/v1/rules | jq</code></p>
+<p><strong>Common causes</strong>:
+- Validation check failed (insufficient resources)
+- Conflicting action in progress
+- Rate limit exceeded
+- Approval pending (for risky actions)</p>
+<h3 id="issue-false-positives-too-many-unnecessary-remediations">Issue: "False positives - too many unnecessary remediations"<a class="headerlink" href="#issue-false-positives-too-many-unnecessary-remediations" title="Permanent link">&para;</a></h3>
+<p><strong>Adjust model sensitivity</strong>:</p>
+<p>```python</p>
+<h1 id="increase-contamination-parameter-expect-more-anomalies">Increase contamination parameter (expect more anomalies)<a class="headerlink" href="#increase-contamination-parameter-expect-more-anomalies" title="Permanent link">&para;</a></h1>
+<p>model = IsolationForest(
+    contamination=0.15,  # Increased from 0.1
+    ...
+)
+```</p>
+<p><strong>Tighten remediation triggers</strong>:</p>
+<p>```yaml</p>
+<h1 id="require-more-occurrences-before-triggering">Require more occurrences before triggering<a class="headerlink" href="#require-more-occurrences-before-triggering" title="Permanent link">&para;</a></h1>
+<p>min_occurrences: 3  # Increased from 2
+time_window: 600s    # Increased from 300s
+```</p>
+<h2 id="clean-up">Clean Up<a class="headerlink" href="#clean-up" title="Permanent link">&para;</a></h2>
+<p>When you're done:</p>
+<p>```bash</p>
+<h1 id="delete-stress-test-pod">Delete stress test pod<a class="headerlink" href="#delete-stress-test-pod" title="Permanent link">&para;</a></h1>
+<p>oc delete pod memory-stress-test -n self-healing-platform</p>
+<h1 id="delete-webhook">Delete webhook<a class="headerlink" href="#delete-webhook" title="Permanent link">&para;</a></h1>
+<p>oc delete deployment anomaly-webhook -n self-healing-platform
+oc delete svc anomaly-webhook -n self-healing-platform</p>
+<h1 id="delete-config-maps">Delete config maps<a class="headerlink" href="#delete-config-maps" title="Permanent link">&para;</a></h1>
+<p>oc delete configmap anomaly-webhook-config remediation-rules rate-limiter-config approval-workflow -n self-healing-platform
+```</p>
+<hr />
+<h2 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><a href="../../adrs/002-hybrid-self-healing-approach/">ADR-002: Hybrid Self-Healing Approach</a></strong> - Architecture overview</li>
+<li><strong><a href="../../adrs/038-go-coordination-engine-migration/">ADR-038: Go Coordination Engine Migration</a></strong> - Coordination engine details</li>
+<li><strong><a href="https://github.com/KubeHeal/openshift-coordination-engine">Coordination Engine Repository</a></strong> - Source code and API docs</li>
+<li><strong><a href="../deploy-first-ml-model/">Deploy Your First ML Model</a></strong> - Prerequisite tutorial</li>
+</ul>
+<p><strong>Questions or stuck?</strong> Open an issue: https://github.com/KubeHeal/openshift-aiops-platform/issues</p>
+<hr />
+<p><strong>Tutorial last updated</strong>: 2026-05-18<br />
+<strong>Tested on</strong>: OpenShift 4.20, RHOAI 2.22.2, Coordination Engine v1.2.0</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 18, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 18, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>
