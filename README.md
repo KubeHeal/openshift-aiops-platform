@@ -8,6 +8,8 @@
 
 > **AI-powered self-healing platform for OpenShift clusters combining deterministic automation with machine learning for intelligent incident response.**
 
+📖 **[Documentation](https://kubeheal.github.io/openshift-aiops-platform/)** | 🎓 **[Tutorials](https://kubeheal.github.io/openshift-aiops-platform/tutorials/)** | 🚀 **[Quick Start](#quick-start)** | 💬 **[Contributing](CONTRIBUTING.md)**
+
 ## 🎯 What is This?
 
 The **OpenShift AI Ops Self-Healing Platform** is a production-ready AIOps solution that:
