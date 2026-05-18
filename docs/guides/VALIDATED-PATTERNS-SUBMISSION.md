@@ -333,15 +333,16 @@ The OpenShift AIOps Self-Healing Platform is a production-ready AIOps solution t
 ## Documentation
 
 - **GitHub Pages**: https://kubeheal.github.io/openshift-aiops-platform/
-- **Deployment Guide**: [docs/guides/FRESH-CLUSTER-DEPLOYMENT.md](openshift-aiops-platform/docs/guides/FRESH-CLUSTER-DEPLOYMENT.md)
-- **Architecture**: [docs/adrs/](openshift-aiops-platform/docs/adrs/) (59 ADRs)
-- **Troubleshooting**: [docs/guides/TROUBLESHOOTING-GUIDE.md](openshift-aiops-platform/docs/guides/TROUBLESHOOTING-GUIDE.md)
+- **Deployment Guide**: [docs/guides/FRESH-CLUSTER-DEPLOYMENT.md](FRESH-CLUSTER-DEPLOYMENT.md)
+- **Architecture**: [docs/adrs/](../adrs/) (59 ADRs)
+- **Troubleshooting**: [docs/guides/TROUBLESHOOTING-GUIDE.md](TROUBLESHOOTING-GUIDE.md)
 
 ## Screenshots
 
-![Workbench Notebooks](screenshots/workbench.png)
-![Model Training Pipeline](screenshots/pipelines.png)
-![InferenceServices](screenshots/kserve.png)
+<!-- Add screenshots before submission -->
+<!-- Example: ![Workbench Notebooks](../../screenshots/workbench.png) -->
+<!-- Example: ![Model Training Pipeline](../../screenshots/pipelines.png) -->
+<!-- Example: ![InferenceServices](../../screenshots/kserve.png) -->
 
 ## Demo
 
