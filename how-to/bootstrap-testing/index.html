@@ -12,7 +12,7 @@
         <meta name="author" content="KubeHeal Team">
       
       
-        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/reference/adrs/">
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/how-to/bootstrap-testing/">
       
       
       
@@ -22,7 +22,7 @@
     
     
       
-        <title>Architectural Decision Records (ADRs) - OpenShift AIOps Self-Healing Platform</title>
+        <title>Bootstrap Testing Guide - OpenShift AIOps Self-Healing Platform</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#architectural-decision-records-adrs" class="md-skip">
+        <a href="#bootstrap-testing-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architectural Decision Records (ADRs)
+              Bootstrap Testing Guide
             
           </span>
         </div>
@@ -272,7 +272,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../how-to/" class="md-tabs__link">
+        <a href="../" class="md-tabs__link">
           
   
   How-To Guides
@@ -290,7 +290,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../" class="md-tabs__link">
+        <a href="../../reference/" class="md-tabs__link">
           
   
   Reference
@@ -771,7 +771,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -792,7 +792,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/deploy-on-sno/" class="md-nav__link">
+      <a href="../deploy-on-sno/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -813,7 +813,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/access-workbench/" class="md-nav__link">
+      <a href="../access-workbench/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -834,7 +834,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/deploy-mcp-server-lightspeed/" class="md-nav__link">
+      <a href="../deploy-mcp-server-lightspeed/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -904,7 +904,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../reference/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -946,7 +946,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-documentation/" class="md-nav__link">
+      <a href="../../reference/api-documentation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1533,64 +1533,46 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#testing-overview" class="md-nav__link">
     <span class="md-ellipsis">
-      Overview
+      🎯 Testing Overview
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#adr-index" class="md-nav__link">
+  <a href="#pre-deployment-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      ADR Index
+      🧪 Pre-Deployment Testing
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adr-categories" class="md-nav__link">
-    <span class="md-ellipsis">
-      ADR Categories
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="ADR Categories">
+    <nav class="md-nav" aria-label="🧪 Pre-Deployment Testing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#infrastructure-decisions" class="md-nav__link">
+  <a href="#1-container-image-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      Infrastructure Decisions
+      1. Container Image Testing
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#architecture-design" class="md-nav__link">
+  <a href="#2-kustomize-configuration-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      Architecture &amp; Design
+      2. Kustomize Configuration Testing
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#aiml-platform" class="md-nav__link">
+  <a href="#3-script-validation-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      AI/ML Platform
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#monitoring-operations" class="md-nav__link">
-    <span class="md-ellipsis">
-      Monitoring &amp; Operations
+      3. Script Validation Testing
     </span>
   </a>
   
@@ -1602,55 +1584,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#key-architectural-principles" class="md-nav__link">
+  <a href="#deployment-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      Key Architectural Principles
+      🚀 Deployment Testing
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Architectural Principles">
+    <nav class="md-nav" aria-label="🚀 Deployment Testing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-hybrid-intelligence-adr-002" class="md-nav__link">
+  <a href="#1-development-environment-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Hybrid Intelligence (ADR-002)
+      1. Development Environment Testing
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-cloud-native-design-adr-001-adr-005" class="md-nav__link">
+  <a href="#2-validation-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      2. Cloud-Native Design (ADR-001, ADR-005)
+      2. Validation Testing
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-aiml-first-adr-003-adr-004-adr-006" class="md-nav__link">
+  <a href="#3-component-functionality-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      3. AI/ML First (ADR-003, ADR-004, ADR-006)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-observability-driven-adr-007" class="md-nav__link">
-    <span class="md-ellipsis">
-      4. Observability-Driven (ADR-007)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-developer-experience-adr-011" class="md-nav__link">
-    <span class="md-ellipsis">
-      5. Developer Experience (ADR-011)
+      3. Component Functionality Testing
     </span>
   </a>
   
@@ -1662,37 +1626,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#implementation-status" class="md-nav__link">
+  <a href="#failure-scenario-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      Implementation Status
+      🔄 Failure Scenario Testing
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Implementation Status">
+    <nav class="md-nav" aria-label="🔄 Failure Scenario Testing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#completed" class="md-nav__link">
+  <a href="#1-prerequisite-failure-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      ✅ Completed
+      1. Prerequisite Failure Testing
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#in-progress" class="md-nav__link">
+  <a href="#2-deployment-failure-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      🚧 In Progress
+      2. Deployment Failure Testing
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#planned" class="md-nav__link">
+  <a href="#3-recovery-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      📋 Planned
+      3. Recovery Testing
     </span>
   </a>
   
@@ -1704,46 +1668,28 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision-dependencies" class="md-nav__link">
+  <a href="#performance-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      Decision Dependencies
+      📊 Performance Testing
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage-guidelines" class="md-nav__link">
-    <span class="md-ellipsis">
-      Usage Guidelines
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Usage Guidelines">
+    <nav class="md-nav" aria-label="📊 Performance Testing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#for-developers" class="md-nav__link">
+  <a href="#1-deployment-timing" class="md-nav__link">
     <span class="md-ellipsis">
-      For Developers
+      1. Deployment Timing
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-operators" class="md-nav__link">
+  <a href="#2-resource-usage-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      For Operators
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#for-architects" class="md-nav__link">
-    <span class="md-ellipsis">
-      For Architects
+      2. Resource Usage Testing
     </span>
   </a>
   
@@ -1755,28 +1701,19 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adr-lifecycle" class="md-nav__link">
+  <a href="#cleanup-testing" class="md-nav__link">
     <span class="md-ellipsis">
-      ADR Lifecycle
+      🧹 Cleanup Testing
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="ADR Lifecycle">
+    <nav class="md-nav" aria-label="🧹 Cleanup Testing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#status-definitions" class="md-nav__link">
+  <a href="#1-complete-environment-cleanup" class="md-nav__link">
     <span class="md-ellipsis">
-      Status Definitions
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#update-process" class="md-nav__link">
-    <span class="md-ellipsis">
-      Update Process
+      1. Complete Environment Cleanup
     </span>
   </a>
   
@@ -1788,9 +1725,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#related-documentation" class="md-nav__link">
+  <a href="#test-automation-script" class="md-nav__link">
     <span class="md-ellipsis">
-      Related Documentation
+      📋 Test Automation Script
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Success Criteria
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Success Criteria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deployment-success-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Success Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Benchmarks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reliability-targets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reliability Targets
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      📚 References
     </span>
   </a>
   
@@ -1811,7 +1799,7 @@
                   
 
   
-    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/reference/adrs.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/how-to/bootstrap-testing.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
     </a>
@@ -1819,254 +1807,396 @@
   
 
 
-<h1 id="architectural-decision-records-adrs">Architectural Decision Records (ADRs)<a class="headerlink" href="#architectural-decision-records-adrs" title="Permanent link">&para;</a></h1>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>This document provides a comprehensive reference to all Architectural Decision Records (ADRs) for the OpenShift AIOps Self-Healing Platform. ADRs document the key architectural decisions, their context, and rationale.</p>
-<h2 id="adr-index">ADR Index<a class="headerlink" href="#adr-index" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ADR</th>
-<th>Title</th>
-<th>Status</th>
-<th>Date</th>
-<th>Category</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="../../adrs/001-openshift-platform-selection/">ADR-001</a></td>
-<td>OpenShift Platform Selection</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>Infrastructure</td>
-</tr>
-<tr>
-<td><a href="../../adrs/002-hybrid-self-healing-approach/">ADR-002</a></td>
-<td>Hybrid Deterministic-AI Self-Healing Approach</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>Architecture</td>
-</tr>
-<tr>
-<td><a href="../../adrs/003-openshift-ai-ml-platform/">ADR-003</a></td>
-<td>OpenShift AI ML Platform Integration</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>AI/ML</td>
-</tr>
-<tr>
-<td><a href="../../adrs/004-kserve-model-serving/">ADR-004</a></td>
-<td>KServe Model Serving Infrastructure</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>AI/ML</td>
-</tr>
-<tr>
-<td><a href="../../adrs/005-machine-config-operator-automation/">ADR-005</a></td>
-<td>Machine Config Operator for Node Management</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>Infrastructure</td>
-</tr>
-<tr>
-<td><a href="../../adrs/006-nvidia-gpu-management/">ADR-006</a></td>
-<td>NVIDIA GPU Operator for AI Workload Management</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>Hardware</td>
-</tr>
-<tr>
-<td><a href="../../adrs/007-prometheus-monitoring-integration/">ADR-007</a></td>
-<td>Prometheus-Based Monitoring and Data Collection</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>Monitoring</td>
-</tr>
-<tr>
-<td><a href="../../adrs/008-kubeflow-pipelines-mlops/">ADR-008</a></td>
-<td>Kubeflow Pipelines for MLOps Automation</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>MLOps</td>
-</tr>
-<tr>
-<td><a href="../../adrs/009-bootstrap-deployment-automation/">ADR-009</a></td>
-<td>Bootstrap Deployment Automation Architecture</td>
-<td>Accepted</td>
-<td>2025-01-09</td>
-<td>Deployment</td>
-</tr>
-<tr>
-<td><a href="../../adrs/010-openshift-data-foundation-requirement/">ADR-010</a></td>
-<td>OpenShift Data Foundation as Storage Infrastructure Requirement</td>
-<td>Accepted</td>
-<td>2025-10-13</td>
-<td>Storage</td>
-</tr>
-<tr>
-<td><a href="../../adrs/011-self-healing-workbench-base-image/">ADR-011</a></td>
-<td>Self-Healing Workbench Base Image Selection</td>
-<td>Accepted</td>
-<td>2025-10-13</td>
-<td>Development</td>
-</tr>
-<tr>
-<td><a href="../../adrs/012-notebook-architecture-for-end-to-end-workflows/">ADR-012</a></td>
-<td>Notebook Architecture for End-to-End Self-Healing Workflows</td>
-<td>Proposed</td>
-<td>2025-10-13</td>
-<td>Development</td>
-</tr>
-<tr>
-<td><a href="../../adrs/013-data-collection-and-preprocessing-workflows/">ADR-013</a></td>
-<td>Data Collection and Preprocessing Workflows</td>
-<td>Proposed</td>
-<td>2025-10-13</td>
-<td>AI/ML</td>
-</tr>
-<tr>
-<td><a href="../../adrs/014-openshift-aiops-platform-mcp-server/">ADR-014</a></td>
-<td>MCP Server Integration Architecture for Development and Operations</td>
-<td>Proposed</td>
-<td>2025-10-13</td>
-<td>Development</td>
-</tr>
-</tbody>
-</table>
-<h2 id="adr-categories">ADR Categories<a class="headerlink" href="#adr-categories" title="Permanent link">&para;</a></h2>
-<h3 id="infrastructure-decisions">Infrastructure Decisions<a class="headerlink" href="#infrastructure-decisions" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>ADR-001</strong>: Platform selection (OpenShift 4.18+)</li>
-<li><strong>ADR-005</strong>: Node management strategy</li>
-<li><strong>ADR-010</strong>: Storage infrastructure requirements</li>
-</ul>
-<h3 id="architecture-design">Architecture &amp; Design<a class="headerlink" href="#architecture-design" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>ADR-002</strong>: Hybrid self-healing approach combining deterministic rules with AI</li>
-<li><strong>ADR-009</strong>: Bootstrap and deployment automation</li>
-</ul>
-<h3 id="aiml-platform">AI/ML Platform<a class="headerlink" href="#aiml-platform" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>ADR-003</strong>: OpenShift AI integration for ML workloads</li>
-<li><strong>ADR-004</strong>: Model serving with KServe</li>
-<li><strong>ADR-006</strong>: GPU acceleration for AI workloads</li>
-<li><strong>ADR-008</strong>: MLOps pipeline automation</li>
-<li><strong>ADR-011</strong>: Development environment setup</li>
-</ul>
-<h3 id="monitoring-operations">Monitoring &amp; Operations<a class="headerlink" href="#monitoring-operations" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>ADR-007</strong>: Prometheus-based monitoring and alerting</li>
-</ul>
-<h2 id="key-architectural-principles">Key Architectural Principles<a class="headerlink" href="#key-architectural-principles" title="Permanent link">&para;</a></h2>
-<p>Based on the ADRs, the platform follows these principles:</p>
-<h3 id="1-hybrid-intelligence-adr-002">1. Hybrid Intelligence (ADR-002)<a class="headerlink" href="#1-hybrid-intelligence-adr-002" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Deterministic Rules</strong>: Fast, predictable responses for known issues</li>
-<li><strong>AI-Driven Analysis</strong>: Machine learning for complex pattern recognition</li>
-<li><strong>Coordinated Approach</strong>: Intelligent orchestration between rule-based and AI systems</li>
-</ul>
-<h3 id="2-cloud-native-design-adr-001-adr-005">2. Cloud-Native Design (ADR-001, ADR-005)<a class="headerlink" href="#2-cloud-native-design-adr-001-adr-005" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>OpenShift Foundation</strong>: Enterprise Kubernetes platform</li>
-<li><strong>Operator Pattern</strong>: Kubernetes-native management</li>
-<li><strong>GitOps Principles</strong>: Declarative configuration management</li>
-</ul>
-<h3 id="3-aiml-first-adr-003-adr-004-adr-006">3. AI/ML First (ADR-003, ADR-004, ADR-006)<a class="headerlink" href="#3-aiml-first-adr-003-adr-004-adr-006" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>GPU Acceleration</strong>: NVIDIA GPU support for training and inference</li>
-<li><strong>Model Serving</strong>: KServe for production model deployment</li>
-<li><strong>MLOps Integration</strong>: Automated model lifecycle management</li>
-</ul>
-<h3 id="4-observability-driven-adr-007">4. Observability-Driven (ADR-007)<a class="headerlink" href="#4-observability-driven-adr-007" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Prometheus Metrics</strong>: Comprehensive monitoring</li>
-<li><strong>Alert-Based Triggers</strong>: Proactive issue detection</li>
-<li><strong>Data-Driven Decisions</strong>: Metrics inform self-healing actions</li>
-</ul>
-<h3 id="5-developer-experience-adr-011">5. Developer Experience (ADR-011)<a class="headerlink" href="#5-developer-experience-adr-011" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Enterprise Base Images</strong>: Red Hat supported containers</li>
-<li><strong>Integrated Development</strong>: Jupyter-based AI/ML development</li>
-<li><strong>Persistent Storage</strong>: Shared model and data artifacts</li>
-</ul>
-<h2 id="implementation-status">Implementation Status<a class="headerlink" href="#implementation-status" title="Permanent link">&para;</a></h2>
-<h3 id="completed">✅ Completed<a class="headerlink" href="#completed" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Infrastructure</strong>: OpenShift cluster with ODF storage</li>
-<li><strong>Development Environment</strong>: PyTorch workbench with GPU support</li>
-<li><strong>Coordination Engine</strong>: Basic self-healing framework</li>
-<li><strong>Bootstrap Automation</strong>: Deployment and validation scripts</li>
-</ul>
-<h3 id="in-progress">🚧 In Progress<a class="headerlink" href="#in-progress" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Model Serving</strong>: KServe integration</li>
-<li><strong>Monitoring</strong>: ServiceMonitor and PrometheusRule setup</li>
-<li><strong>MLOps Pipeline</strong>: Kubeflow Pipelines integration</li>
-</ul>
-<h3 id="planned">📋 Planned<a class="headerlink" href="#planned" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Advanced AI Models</strong>: Anomaly detection algorithms</li>
-<li><strong>Self-Healing Logic</strong>: Production-ready remediation</li>
-<li><strong>Security Hardening</strong>: Compliance and security policies</li>
-</ul>
-<h2 id="decision-dependencies">Decision Dependencies<a class="headerlink" href="#decision-dependencies" title="Permanent link">&para;</a></h2>
-<pre class="highlight"><code class="language-mermaid">graph TD
-    ADR001[ADR-001: OpenShift Platform] --&gt; ADR003[ADR-003: OpenShift AI]
-    ADR001 --&gt; ADR005[ADR-005: Machine Config]
-    ADR001 --&gt; ADR010[ADR-010: ODF Storage]
+<h1 id="bootstrap-testing-guide">Bootstrap Testing Guide<a class="headerlink" href="#bootstrap-testing-guide" title="Permanent link">&para;</a></h1>
+<p>This guide provides comprehensive testing procedures for the Self-Healing Platform Bootstrap system, ensuring reliable deployment automation.</p>
+<h2 id="testing-overview">🎯 <strong>Testing Overview</strong><a class="headerlink" href="#testing-overview" title="Permanent link">&para;</a></h2>
+<p>The bootstrap system requires testing at multiple levels:
+1. <strong>Unit Testing</strong>: Individual script functions and Kustomize configurations
+2. <strong>Integration Testing</strong>: End-to-end deployment workflows
+3. <strong>Environment Testing</strong>: Development and production environment validation
+4. <strong>Failure Testing</strong>: Error handling and recovery scenarios
+5. <strong>Performance Testing</strong>: Deployment timing and resource usage</p>
+<h2 id="pre-deployment-testing">🧪 <strong>Pre-Deployment Testing</strong><a class="headerlink" href="#pre-deployment-testing" title="Permanent link">&para;</a></h2>
+<h3 id="1-container-image-testing"><strong>1. Container Image Testing</strong><a class="headerlink" href="#1-container-image-testing" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Test image build process
+./build-images.sh
 
-    ADR003 --&gt; ADR004[ADR-004: KServe]
-    ADR003 --&gt; ADR006[ADR-006: GPU Operator]
-    ADR003 --&gt; ADR008[ADR-008: Kubeflow]
-    ADR003 --&gt; ADR011[ADR-011: Workbench]
+# Verify images are created
+podman images | grep -E "(coordination-engine|anomaly-detector)"
 
-    ADR002[ADR-002: Hybrid Approach] --&gt; ADR007[ADR-007: Monitoring]
-    ADR002 --&gt; ADR009[ADR-009: Bootstrap]
+# Test coordination engine locally
+podman run --rm -p 8080:8080 -p 8090:8090 coordination-engine:latest &amp;
+sleep 10
 
-    ADR010 --&gt; ADR011
-    ADR006 --&gt; ADR011</code></pre>
-<h2 id="usage-guidelines">Usage Guidelines<a class="headerlink" href="#usage-guidelines" title="Permanent link">&para;</a></h2>
-<h3 id="for-developers">For Developers<a class="headerlink" href="#for-developers" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Read ADR-011</strong> for workbench setup and development workflow</li>
-<li><strong>Review ADR-002</strong> to understand the self-healing architecture</li>
-<li><strong>Check ADR-003 and ADR-004</strong> for AI/ML integration patterns</li>
-</ol>
-<h3 id="for-operators">For Operators<a class="headerlink" href="#for-operators" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Follow ADR-009</strong> for deployment procedures</li>
-<li><strong>Implement ADR-007</strong> for monitoring setup</li>
-<li><strong>Use ADR-010</strong> for storage configuration</li>
-</ol>
-<h3 id="for-architects">For Architects<a class="headerlink" href="#for-architects" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Study ADR-002</strong> for system design principles</li>
-<li><strong>Review all ADRs</strong> for comprehensive understanding</li>
-<li><strong>Update ADRs</strong> when making architectural changes</li>
-</ol>
-<h2 id="adr-lifecycle">ADR Lifecycle<a class="headerlink" href="#adr-lifecycle" title="Permanent link">&para;</a></h2>
-<h3 id="status-definitions">Status Definitions<a class="headerlink" href="#status-definitions" title="Permanent link">&para;</a></h3>
+# Test health endpoint
+curl -f http://localhost:8080/health
+echo "Health check: $?"
+
+# Test metrics endpoint
+curl -f http://localhost:8090/metrics
+echo "Metrics check: $?"
+
+# Cleanup
+pkill -f coordination-engine</code></pre>
+<h3 id="2-kustomize-configuration-testing"><strong>2. Kustomize Configuration Testing</strong><a class="headerlink" href="#2-kustomize-configuration-testing" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Validate base configuration
+kustomize build k8s/base/
+echo "Base build status: $?"
+
+# Validate development overlay
+kustomize build k8s/overlays/development/
+echo "Development build status: $?"
+
+# Validate production overlay
+kustomize build k8s/overlays/production/
+echo "Production build status: $?"
+
+# Test dry-run deployment
+kustomize build k8s/overlays/development/ | oc apply --dry-run=client -f -
+echo "Dry-run status: $?"
+
+# Validate YAML syntax
+find k8s/ -name "*.yaml" -exec yamllint {} \;</code></pre>
+<h3 id="3-script-validation-testing"><strong>3. Script Validation Testing</strong><a class="headerlink" href="#3-script-validation-testing" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Test bootstrap script help
+./bootstrap.sh --help
+echo "Help display status: $?"
+
+# Test invalid environment parameter
+./bootstrap.sh --environment invalid 2&gt;&amp;1 | grep -q "Unknown option"
+echo "Error handling status: $?"
+
+# Test prerequisite checking (without deployment)
+# Modify bootstrap.sh temporarily to exit after prerequisites
+sed -i.bak 's/phase1_kustomize_deployment/echo "Prerequisites passed"; exit 0/' bootstrap.sh
+./bootstrap.sh --environment development
+PREREQ_STATUS=$?
+mv bootstrap.sh.bak bootstrap.sh
+echo "Prerequisites status: $PREREQ_STATUS"</code></pre>
+<h2 id="deployment-testing">🚀 <strong>Deployment Testing</strong><a class="headerlink" href="#deployment-testing" title="Permanent link">&para;</a></h2>
+<h3 id="1-development-environment-testing"><strong>1. Development Environment Testing</strong><a class="headerlink" href="#1-development-environment-testing" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Full development deployment test
+echo "=== Development Deployment Test ==="
+./bootstrap.sh --environment development 2&gt;&amp;1 | tee deployment-dev.log
+
+# Check deployment status
+DEPLOYMENT_STATUS=$?
+echo "Deployment exit code: $DEPLOYMENT_STATUS"
+
+# Verify namespace creation
+oc get namespace self-healing-platform-dev
+echo "Namespace status: $?"
+
+# Check all pods are running
+oc get pods -n self-healing-platform-dev
+PODS_READY=$(oc get pods -n self-healing-platform-dev --no-headers | grep -c "Running")
+TOTAL_PODS=$(oc get pods -n self-healing-platform-dev --no-headers | wc -l)
+echo "Pods ready: $PODS_READY/$TOTAL_PODS"
+
+# Test service accessibility
+oc port-forward -n self-healing-platform-dev svc/coordination-engine 8080:8080 &amp;
+PF_PID=$!
+sleep 5
+curl -f http://localhost:8080/health
+HEALTH_STATUS=$?
+kill $PF_PID
+echo "Service health status: $HEALTH_STATUS"</code></pre>
+<h3 id="2-validation-testing"><strong>2. Validation Testing</strong><a class="headerlink" href="#2-validation-testing" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Run comprehensive validation
+echo "=== Validation Testing ==="
+./validate_bootstrap.sh 2&gt;&amp;1 | tee validation.log
+
+VALIDATION_STATUS=$?
+echo "Validation exit code: $VALIDATION_STATUS"
+
+# Count passed/failed checks
+PASSED_CHECKS=$(grep -c "✅" validation.log)
+FAILED_CHECKS=$(grep -c "❌" validation.log)
+WARNING_CHECKS=$(grep -c "⚠️" validation.log)
+
+echo "Validation Results:"
+echo "  Passed: $PASSED_CHECKS"
+echo "  Failed: $FAILED_CHECKS"
+echo "  Warnings: $WARNING_CHECKS"
+
+# Check critical validations
+CRITICAL_FAILURES=$(grep -A5 -B5 "❌.*critical" validation.log | wc -l)
+echo "Critical failures: $CRITICAL_FAILURES"</code></pre>
+<h3 id="3-component-functionality-testing"><strong>3. Component Functionality Testing</strong><a class="headerlink" href="#3-component-functionality-testing" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Test Jupyter notebook accessibility
+echo "=== Component Testing ==="
+
+# Check if notebook is ready
+NOTEBOOK_STATUS=$(oc get notebook self-healing-workbench -n self-healing-platform-dev -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2&gt;/dev/null)
+echo "Notebook ready status: $NOTEBOOK_STATUS"
+
+# Test model serving endpoints (if deployed)
+ANOMALY_DETECTOR=$(oc get inferenceservice anomaly-detector -n self-healing-platform-dev -o jsonpath='{.status.url}' 2&gt;/dev/null)
+if [ -n "$ANOMALY_DETECTOR" ]; then
+    echo "Anomaly detector URL: $ANOMALY_DETECTOR"
+    # Test with sample data (if accessible)
+    # curl -X POST "$ANOMALY_DETECTOR/v1/models/anomaly-detector:predict" -d '{"instances": [[1,2,3,4,5]]}'
+fi
+
+# Test Prometheus integration
+PROMETHEUS_TARGETS=$(oc get servicemonitor self-healing-platform-monitor -n self-healing-platform-dev -o jsonpath='{.spec.selector.matchLabels}' 2&gt;/dev/null)
+echo "Prometheus targets configured: $?"
+
+# Test storage accessibility
+PVC_STATUS=$(oc get pvc -n self-healing-platform-dev --no-headers | grep -c "Bound")
+TOTAL_PVCS=$(oc get pvc -n self-healing-platform-dev --no-headers | wc -l)
+echo "PVCs bound: $PVC_STATUS/$TOTAL_PVCS"</code></pre>
+<h2 id="failure-scenario-testing">🔄 <strong>Failure Scenario Testing</strong><a class="headerlink" href="#failure-scenario-testing" title="Permanent link">&para;</a></h2>
+<h3 id="1-prerequisite-failure-testing"><strong>1. Prerequisite Failure Testing</strong><a class="headerlink" href="#1-prerequisite-failure-testing" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Test cluster access failure
+echo "=== Prerequisite Failure Testing ==="
+
+# Temporarily break cluster access
+export KUBECONFIG="/tmp/invalid-kubeconfig"
+./bootstrap.sh --environment development 2&gt;&amp;1 | grep -q "Not logged into OpenShift"
+CLUSTER_FAIL_TEST=$?
+unset KUBECONFIG
+echo "Cluster access failure test: $CLUSTER_FAIL_TEST"
+
+# Test missing operator scenario
+# (This would require temporarily removing an operator, which is destructive)
+echo "Operator failure test: SKIPPED (destructive)"</code></pre>
+<h3 id="2-deployment-failure-testing"><strong>2. Deployment Failure Testing</strong><a class="headerlink" href="#2-deployment-failure-testing" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Test invalid Kustomize configuration
+echo "=== Deployment Failure Testing ==="
+
+# Create invalid configuration
+cp k8s/base/kustomization.yaml k8s/base/kustomization.yaml.bak
+echo "invalid: yaml: content" &gt;&gt; k8s/base/kustomization.yaml
+
+# Test deployment with invalid config
+./bootstrap.sh --environment development 2&gt;&amp;1 | grep -q "Failed to build Kustomize"
+INVALID_CONFIG_TEST=$?
+
+# Restore configuration
+mv k8s/base/kustomization.yaml.bak k8s/base/kustomization.yaml
+echo "Invalid configuration test: $INVALID_CONFIG_TEST"
+
+# Test resource quota exceeded (if applicable)
+# This would require setting up resource quotas
+echo "Resource quota test: SKIPPED (requires quota setup)"</code></pre>
+<h3 id="3-recovery-testing"><strong>3. Recovery Testing</strong><a class="headerlink" href="#3-recovery-testing" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Test deployment cleanup and retry
+echo "=== Recovery Testing ==="
+
+# Deploy once
+./bootstrap.sh --environment development &gt; /dev/null 2&gt;&amp;1
+
+# Delete some resources to simulate partial failure
+oc delete deployment coordination-engine -n self-healing-platform-dev --ignore-not-found
+
+# Retry deployment
+./bootstrap.sh --environment development 2&gt;&amp;1 | tee recovery.log
+RECOVERY_STATUS=$?
+
+# Check if missing resources were recreated
+oc get deployment coordination-engine -n self-healing-platform-dev
+RECOVERY_SUCCESS=$?
+
+echo "Recovery test status: $RECOVERY_STATUS"
+echo "Resource recreation: $RECOVERY_SUCCESS"</code></pre>
+<h2 id="performance-testing">📊 <strong>Performance Testing</strong><a class="headerlink" href="#performance-testing" title="Permanent link">&para;</a></h2>
+<h3 id="1-deployment-timing"><strong>1. Deployment Timing</strong><a class="headerlink" href="#1-deployment-timing" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Measure deployment time
+echo "=== Performance Testing ==="
+
+# Clean environment
+oc delete namespace self-healing-platform-dev --ignore-not-found
+oc wait --for=delete namespace/self-healing-platform-dev --timeout=300s
+
+# Time the deployment
+START_TIME=$(date +%s)
+./bootstrap.sh --environment development &gt; /dev/null 2&gt;&amp;1
+DEPLOYMENT_STATUS=$?
+END_TIME=$(date +%s)
+
+DEPLOYMENT_TIME=$((END_TIME - START_TIME))
+echo "Deployment time: ${DEPLOYMENT_TIME}s"
+echo "Deployment status: $DEPLOYMENT_STATUS"
+
+# Time validation
+START_TIME=$(date +%s)
+./validate_bootstrap.sh &gt; /dev/null 2&gt;&amp;1
+VALIDATION_STATUS=$?
+END_TIME=$(date +%s)
+
+VALIDATION_TIME=$((END_TIME - START_TIME))
+echo "Validation time: ${VALIDATION_TIME}s"
+echo "Validation status: $VALIDATION_STATUS"</code></pre>
+<h3 id="2-resource-usage-testing"><strong>2. Resource Usage Testing</strong><a class="headerlink" href="#2-resource-usage-testing" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Monitor resource usage during deployment
+echo "=== Resource Usage Testing ==="
+
+# Get baseline resource usage
+BASELINE_CPU=$(oc adm top nodes --no-headers | awk '{sum+=$3} END {print sum}')
+BASELINE_MEMORY=$(oc adm top nodes --no-headers | awk '{sum+=$5} END {print sum}')
+
+echo "Baseline CPU: ${BASELINE_CPU}m"
+echo "Baseline Memory: ${BASELINE_MEMORY}Mi"
+
+# Deploy and monitor
+./bootstrap.sh --environment development &amp;
+DEPLOY_PID=$!
+
+# Monitor during deployment
+for i in {1..10}; do
+    sleep 30
+    if ! kill -0 $DEPLOY_PID 2&gt;/dev/null; then
+        break
+    fi
+
+    CURRENT_CPU=$(oc adm top nodes --no-headers | awk '{sum+=$3} END {print sum}')
+    CURRENT_MEMORY=$(oc adm top nodes --no-headers | awk '{sum+=$5} END {print sum}')
+
+    echo "Time ${i}0s - CPU: ${CURRENT_CPU}m, Memory: ${CURRENT_MEMORY}Mi"
+done
+
+wait $DEPLOY_PID
+FINAL_STATUS=$?
+
+# Get final resource usage
+FINAL_CPU=$(oc adm top nodes --no-headers | awk '{sum+=$3} END {print sum}')
+FINAL_MEMORY=$(oc adm top nodes --no-headers | awk '{sum+=$5} END {print sum}')
+
+echo "Final CPU: ${FINAL_CPU}m"
+echo "Final Memory: ${FINAL_MEMORY}Mi"
+echo "Deployment status: $FINAL_STATUS"</code></pre>
+<h2 id="cleanup-testing">🧹 <strong>Cleanup Testing</strong><a class="headerlink" href="#cleanup-testing" title="Permanent link">&para;</a></h2>
+<h3 id="1-complete-environment-cleanup"><strong>1. Complete Environment Cleanup</strong><a class="headerlink" href="#1-complete-environment-cleanup" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Test cleanup procedures
+echo "=== Cleanup Testing ==="
+
+# Record initial state
+INITIAL_NAMESPACES=$(oc get namespaces --no-headers | wc -l)
+INITIAL_PVCS=$(oc get pvc --all-namespaces --no-headers | wc -l)
+
+# Deploy environment
+./bootstrap.sh --environment development &gt; /dev/null 2&gt;&amp;1
+
+# Record deployed state
+DEPLOYED_NAMESPACES=$(oc get namespaces --no-headers | wc -l)
+DEPLOYED_PVCS=$(oc get pvc --all-namespaces --no-headers | wc -l)
+
+# Cleanup
+oc delete namespace self-healing-platform-dev
+oc wait --for=delete namespace/self-healing-platform-dev --timeout=300s
+
+# Verify cleanup
+FINAL_NAMESPACES=$(oc get namespaces --no-headers | wc -l)
+FINAL_PVCS=$(oc get pvc --all-namespaces --no-headers | wc -l)
+
+echo "Namespace count - Initial: $INITIAL_NAMESPACES, Deployed: $DEPLOYED_NAMESPACES, Final: $FINAL_NAMESPACES"
+echo "PVC count - Initial: $INITIAL_PVCS, Deployed: $DEPLOYED_PVCS, Final: $FINAL_PVCS"
+
+# Check for resource leaks
+if [ "$FINAL_NAMESPACES" -eq "$INITIAL_NAMESPACES" ] &amp;&amp; [ "$FINAL_PVCS" -eq "$INITIAL_PVCS" ]; then
+    echo "Cleanup test: PASSED"
+else
+    echo "Cleanup test: FAILED (resource leak detected)"
+fi</code></pre>
+<h2 id="test-automation-script">📋 <strong>Test Automation Script</strong><a class="headerlink" href="#test-automation-script" title="Permanent link">&para;</a></h2>
+<pre class="highlight"><code class="language-bash">#!/bin/bash
+# automated-bootstrap-test.sh - Comprehensive bootstrap testing
+
+set -e
+
+RESULTS_DIR="test-results-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$RESULTS_DIR"
+
+echo "Starting comprehensive bootstrap testing..."
+echo "Results will be saved to: $RESULTS_DIR"
+
+# Run all test categories
+{
+    echo "=== PRE-DEPLOYMENT TESTS ==="
+    # Container image tests
+    # Kustomize configuration tests
+    # Script validation tests
+
+    echo "=== DEPLOYMENT TESTS ==="
+    # Development environment tests
+    # Validation tests
+    # Component functionality tests
+
+    echo "=== FAILURE SCENARIO TESTS ==="
+    # Prerequisite failure tests
+    # Deployment failure tests
+    # Recovery tests
+
+    echo "=== PERFORMANCE TESTS ==="
+    # Deployment timing tests
+    # Resource usage tests
+
+    echo "=== CLEANUP TESTS ==="
+    # Complete environment cleanup tests
+
+} 2&gt;&amp;1 | tee "$RESULTS_DIR/test-execution.log"
+
+# Generate test report
+cat &gt; "$RESULTS_DIR/test-report.md" &lt;&lt; EOF
+# Bootstrap Testing Report
+
+**Date**: $(date)
+**Environment**: $(oc cluster-info | head -1)
+**OpenShift Version**: $(oc version -o json | jq -r '.openshiftVersion')
+
+## Test Results Summary
+
+- **Pre-deployment Tests**: [PASS/FAIL]
+- **Deployment Tests**: [PASS/FAIL]
+- **Failure Scenario Tests**: [PASS/FAIL]
+- **Performance Tests**: [PASS/FAIL]
+- **Cleanup Tests**: [PASS/FAIL]
+
+## Detailed Results
+
+See test-execution.log for detailed output.
+
+## Recommendations
+
+[Add any recommendations based on test results]
+EOF
+
+echo "Testing completed. Results available in: $RESULTS_DIR"</code></pre>
+<h2 id="success-criteria">🎯 <strong>Success Criteria</strong><a class="headerlink" href="#success-criteria" title="Permanent link">&para;</a></h2>
+<h3 id="deployment-success-metrics"><strong>Deployment Success Metrics</strong><a class="headerlink" href="#deployment-success-metrics" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Proposed</strong>: Under consideration and review</li>
-<li><strong>Accepted</strong>: Approved and being implemented</li>
-<li><strong>Deprecated</strong>: No longer valid but kept for history</li>
-<li><strong>Superseded</strong>: Replaced by a newer decision</li>
+<li>✅ All container images build successfully</li>
+<li>✅ Kustomize configurations validate without errors</li>
+<li>✅ Bootstrap deployment completes in &lt;10 minutes</li>
+<li>✅ All validation checks pass (&gt;95% success rate)</li>
+<li>✅ All critical components are healthy</li>
+<li>✅ No resource leaks after cleanup</li>
 </ul>
-<h3 id="update-process">Update Process<a class="headerlink" href="#update-process" title="Permanent link">&para;</a></h3>
-<ol>
-<li>Create new ADR for significant architectural changes</li>
-<li>Update existing ADRs when implementation details change</li>
-<li>Mark ADRs as deprecated when no longer applicable</li>
-<li>Reference related ADRs to maintain traceability</li>
-</ol>
-<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<h3 id="performance-benchmarks"><strong>Performance Benchmarks</strong><a class="headerlink" href="#performance-benchmarks" title="Permanent link">&para;</a></h3>
 <ul>
-<li><a href="../../how-to/bootstrap-testing/">Bootstrap Testing Guide</a></li>
-<li><a href="../../tutorials/workbench-development-guide/">Workbench Development Guide</a></li>
-<li><a href="../../how-to/deploy-to-production/">Deployment Procedures</a></li>
-<li><a href="../../explanation/architecture-overview/">Architecture Overview</a></li>
+<li><strong>Development Deployment</strong>: &lt;5 minutes</li>
+<li><strong>Production Deployment</strong>: &lt;15 minutes</li>
+<li><strong>Validation Execution</strong>: &lt;2 minutes</li>
+<li><strong>Resource Overhead</strong>: &lt;10% cluster capacity</li>
+<li><strong>Recovery Time</strong>: &lt;3 minutes</li>
 </ul>
+<h3 id="reliability-targets"><strong>Reliability Targets</strong><a class="headerlink" href="#reliability-targets" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Deployment Success Rate</strong>: &gt;95%</li>
+<li><strong>Validation Accuracy</strong>: &gt;98%</li>
+<li><strong>Error Recovery</strong>: 100% for transient failures</li>
+<li><strong>Documentation Coverage</strong>: 100% of failure scenarios</li>
+</ul>
+<h2 id="references">📚 <strong>References</strong><a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="adrs/009-bootstrap-deployment-automation.md">ADR-009: Bootstrap Deployment Automation</a></li>
+<li><a href="PRE_BOOTSTRAP_CHECKLIST.md">Pre-Bootstrap Checklist</a></li>
+<li><a href="DEVELOPMENT_WORKFLOW.md">Development Workflow</a></li>
+<li><a href="diagrams/bootstrap-architecture.md">Bootstrap Architecture Diagrams</a></li>
+</ul>
+<hr />
+<p><strong>Note</strong>: Run these tests in a dedicated test cluster to avoid impacting production environments. Always backup important data before running destructive tests.</p>
 
 
 
@@ -2089,7 +2219,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 18, 2026</span>
   </span>
 
     

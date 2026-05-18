@@ -12,7 +12,7 @@
         <meta name="author" content="KubeHeal Team">
       
       
-        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/reference/adrs/">
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/how-to/deploy-to-production/">
       
       
       
@@ -22,7 +22,7 @@
     
     
       
-        <title>Architectural Decision Records (ADRs) - OpenShift AIOps Self-Healing Platform</title>
+        <title>Deploy to Production - OpenShift AIOps Self-Healing Platform</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#architectural-decision-records-adrs" class="md-skip">
+        <a href="#deploy-to-production" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architectural Decision Records (ADRs)
+              Deploy to Production
             
           </span>
         </div>
@@ -272,7 +272,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../how-to/" class="md-tabs__link">
+        <a href="../" class="md-tabs__link">
           
   
   How-To Guides
@@ -290,7 +290,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../" class="md-tabs__link">
+        <a href="../../reference/" class="md-tabs__link">
           
   
   Reference
@@ -771,7 +771,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -792,7 +792,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/deploy-on-sno/" class="md-nav__link">
+      <a href="../deploy-on-sno/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -813,7 +813,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/access-workbench/" class="md-nav__link">
+      <a href="../access-workbench/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -834,7 +834,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/deploy-mcp-server-lightspeed/" class="md-nav__link">
+      <a href="../deploy-mcp-server-lightspeed/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -904,7 +904,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../reference/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -946,7 +946,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-documentation/" class="md-nav__link">
+      <a href="../../reference/api-documentation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1533,64 +1533,64 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
-      Overview
+      Prerequisites
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#adr-index" class="md-nav__link">
+  <a href="#production-readiness-checklist" class="md-nav__link">
     <span class="md-ellipsis">
-      ADR Index
+      Production Readiness Checklist
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adr-categories" class="md-nav__link">
-    <span class="md-ellipsis">
-      ADR Categories
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="ADR Categories">
+    <nav class="md-nav" aria-label="Production Readiness Checklist">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#infrastructure-decisions" class="md-nav__link">
+  <a href="#infrastructure" class="md-nav__link">
     <span class="md-ellipsis">
-      Infrastructure Decisions
+      Infrastructure
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#architecture-design" class="md-nav__link">
+  <a href="#security" class="md-nav__link">
     <span class="md-ellipsis">
-      Architecture &amp; Design
+      Security
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#aiml-platform" class="md-nav__link">
+  <a href="#configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      AI/ML Platform
+      Configuration
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#monitoring-operations" class="md-nav__link">
+  <a href="#mlai-components" class="md-nav__link">
     <span class="md-ellipsis">
-      Monitoring &amp; Operations
+      ML/AI Components
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-and-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation and Testing
     </span>
   </a>
   
@@ -1602,55 +1602,127 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#key-architectural-principles" class="md-nav__link">
+  <a href="#production-deployment-steps" class="md-nav__link">
     <span class="md-ellipsis">
-      Key Architectural Principles
+      Production Deployment Steps
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Architectural Principles">
+    <nav class="md-nav" aria-label="Production Deployment Steps">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-hybrid-intelligence-adr-002" class="md-nav__link">
+  <a href="#step-1-prepare-production-environment" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Hybrid Intelligence (ADR-002)
+      Step 1: Prepare Production Environment
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-cloud-native-design-adr-001-adr-005" class="md-nav__link">
+  <a href="#step-2-configure-production-values" class="md-nav__link">
     <span class="md-ellipsis">
-      2. Cloud-Native Design (ADR-001, ADR-005)
+      Step 2: Configure Production Values
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-aiml-first-adr-003-adr-004-adr-006" class="md-nav__link">
+  <a href="#step-3-verify-cluster-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      3. AI/ML First (ADR-003, ADR-004, ADR-006)
+      Step 3: Verify Cluster Configuration
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-observability-driven-adr-007" class="md-nav__link">
+  <a href="#step-4-configure-infrastructure" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Observability-Driven (ADR-007)
+      Step 4: Configure Infrastructure
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-developer-experience-adr-011" class="md-nav__link">
+  <a href="#step-5-deploy-execution-environment" class="md-nav__link">
     <span class="md-ellipsis">
-      5. Developer Experience (ADR-011)
+      Step 5: Deploy Execution Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-run-pre-deployment-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 6: Run Pre-Deployment Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-deploy-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 7: Deploy Platform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-monitor-deployment-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 8: Monitor Deployment Progress
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-9-validate-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 9: Validate Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10-verify-model-training-pipelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 10: Verify Model Training Pipelines
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-11-configure-monitoring-and-alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 11: Configure Monitoring and Alerting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-12-post-deployment-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 12: Post-Deployment Verification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-13-clean-up-extra-namespaces-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 13: Clean Up Extra Namespaces (Optional)
     </span>
   </a>
   
@@ -1662,37 +1734,46 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#implementation-status" class="md-nav__link">
+  <a href="#post-deployment-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      Implementation Status
+      Post-Deployment Configuration
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Implementation Status">
+    <nav class="md-nav" aria-label="Post-Deployment Configuration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#completed" class="md-nav__link">
+  <a href="#enable-external-access-if-needed" class="md-nav__link">
     <span class="md-ellipsis">
-      ✅ Completed
+      Enable External Access (if needed)
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#in-progress" class="md-nav__link">
+  <a href="#configure-backup-and-recovery" class="md-nav__link">
     <span class="md-ellipsis">
-      🚧 In Progress
+      Configure Backup and Recovery
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#planned" class="md-nav__link">
+  <a href="#configure-log-aggregation-optional" class="md-nav__link">
     <span class="md-ellipsis">
-      📋 Planned
+      Configure Log Aggregation (Optional)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Tuning
     </span>
   </a>
   
@@ -1704,46 +1785,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision-dependencies" class="md-nav__link">
+  <a href="#production-maintenance" class="md-nav__link">
     <span class="md-ellipsis">
-      Decision Dependencies
+      Production Maintenance
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage-guidelines" class="md-nav__link">
-    <span class="md-ellipsis">
-      Usage Guidelines
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Usage Guidelines">
+    <nav class="md-nav" aria-label="Production Maintenance">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#for-developers" class="md-nav__link">
+  <a href="#rolling-updates" class="md-nav__link">
     <span class="md-ellipsis">
-      For Developers
+      Rolling Updates
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-operators" class="md-nav__link">
+  <a href="#model-retraining" class="md-nav__link">
     <span class="md-ellipsis">
-      For Operators
+      Model Retraining
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-architects" class="md-nav__link">
+  <a href="#monitoring-health" class="md-nav__link">
     <span class="md-ellipsis">
-      For Architects
+      Monitoring Health
     </span>
   </a>
   
@@ -1755,28 +1827,28 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adr-lifecycle" class="md-nav__link">
+  <a href="#rollback-procedures" class="md-nav__link">
     <span class="md-ellipsis">
-      ADR Lifecycle
+      Rollback Procedures
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="ADR Lifecycle">
+    <nav class="md-nav" aria-label="Rollback Procedures">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#status-definitions" class="md-nav__link">
+  <a href="#rollback-argocd-application" class="md-nav__link">
     <span class="md-ellipsis">
-      Status Definitions
+      Rollback ArgoCD Application
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#update-process" class="md-nav__link">
+  <a href="#rollback-model-deployment" class="md-nav__link">
     <span class="md-ellipsis">
-      Update Process
+      Rollback Model Deployment
     </span>
   </a>
   
@@ -1784,6 +1856,66 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#argocd-application-not-syncing" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArgoCD Application Not Syncing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coordination-engine-not-responding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Coordination Engine Not Responding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-training-pipeline-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Training Pipeline Fails
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#production-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Production Best Practices
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
   
 </li>
       
@@ -1791,6 +1923,15 @@
   <a href="#related-documentation" class="md-nav__link">
     <span class="md-ellipsis">
       Related Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Support
     </span>
   </a>
   
@@ -1811,7 +1952,7 @@
                   
 
   
-    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/reference/adrs.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/how-to/deploy-to-production.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
     </a>
@@ -1819,253 +1960,548 @@
   
 
 
-<h1 id="architectural-decision-records-adrs">Architectural Decision Records (ADRs)<a class="headerlink" href="#architectural-decision-records-adrs" title="Permanent link">&para;</a></h1>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>This document provides a comprehensive reference to all Architectural Decision Records (ADRs) for the OpenShift AIOps Self-Healing Platform. ADRs document the key architectural decisions, their context, and rationale.</p>
-<h2 id="adr-index">ADR Index<a class="headerlink" href="#adr-index" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ADR</th>
-<th>Title</th>
-<th>Status</th>
-<th>Date</th>
-<th>Category</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="../../adrs/001-openshift-platform-selection/">ADR-001</a></td>
-<td>OpenShift Platform Selection</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>Infrastructure</td>
-</tr>
-<tr>
-<td><a href="../../adrs/002-hybrid-self-healing-approach/">ADR-002</a></td>
-<td>Hybrid Deterministic-AI Self-Healing Approach</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>Architecture</td>
-</tr>
-<tr>
-<td><a href="../../adrs/003-openshift-ai-ml-platform/">ADR-003</a></td>
-<td>OpenShift AI ML Platform Integration</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>AI/ML</td>
-</tr>
-<tr>
-<td><a href="../../adrs/004-kserve-model-serving/">ADR-004</a></td>
-<td>KServe Model Serving Infrastructure</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>AI/ML</td>
-</tr>
-<tr>
-<td><a href="../../adrs/005-machine-config-operator-automation/">ADR-005</a></td>
-<td>Machine Config Operator for Node Management</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>Infrastructure</td>
-</tr>
-<tr>
-<td><a href="../../adrs/006-nvidia-gpu-management/">ADR-006</a></td>
-<td>NVIDIA GPU Operator for AI Workload Management</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>Hardware</td>
-</tr>
-<tr>
-<td><a href="../../adrs/007-prometheus-monitoring-integration/">ADR-007</a></td>
-<td>Prometheus-Based Monitoring and Data Collection</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>Monitoring</td>
-</tr>
-<tr>
-<td><a href="../../adrs/008-kubeflow-pipelines-mlops/">ADR-008</a></td>
-<td>Kubeflow Pipelines for MLOps Automation</td>
-<td>Accepted</td>
-<td>2025-10-09</td>
-<td>MLOps</td>
-</tr>
-<tr>
-<td><a href="../../adrs/009-bootstrap-deployment-automation/">ADR-009</a></td>
-<td>Bootstrap Deployment Automation Architecture</td>
-<td>Accepted</td>
-<td>2025-01-09</td>
-<td>Deployment</td>
-</tr>
-<tr>
-<td><a href="../../adrs/010-openshift-data-foundation-requirement/">ADR-010</a></td>
-<td>OpenShift Data Foundation as Storage Infrastructure Requirement</td>
-<td>Accepted</td>
-<td>2025-10-13</td>
-<td>Storage</td>
-</tr>
-<tr>
-<td><a href="../../adrs/011-self-healing-workbench-base-image/">ADR-011</a></td>
-<td>Self-Healing Workbench Base Image Selection</td>
-<td>Accepted</td>
-<td>2025-10-13</td>
-<td>Development</td>
-</tr>
-<tr>
-<td><a href="../../adrs/012-notebook-architecture-for-end-to-end-workflows/">ADR-012</a></td>
-<td>Notebook Architecture for End-to-End Self-Healing Workflows</td>
-<td>Proposed</td>
-<td>2025-10-13</td>
-<td>Development</td>
-</tr>
-<tr>
-<td><a href="../../adrs/013-data-collection-and-preprocessing-workflows/">ADR-013</a></td>
-<td>Data Collection and Preprocessing Workflows</td>
-<td>Proposed</td>
-<td>2025-10-13</td>
-<td>AI/ML</td>
-</tr>
-<tr>
-<td><a href="../../adrs/014-openshift-aiops-platform-mcp-server/">ADR-014</a></td>
-<td>MCP Server Integration Architecture for Development and Operations</td>
-<td>Proposed</td>
-<td>2025-10-13</td>
-<td>Development</td>
-</tr>
-</tbody>
-</table>
-<h2 id="adr-categories">ADR Categories<a class="headerlink" href="#adr-categories" title="Permanent link">&para;</a></h2>
-<h3 id="infrastructure-decisions">Infrastructure Decisions<a class="headerlink" href="#infrastructure-decisions" title="Permanent link">&para;</a></h3>
+<h1 id="deploy-to-production">Deploy to Production<a class="headerlink" href="#deploy-to-production" title="Permanent link">&para;</a></h1>
+<p>This guide provides production-specific deployment procedures for the OpenShift AIOps Self-Healing Platform.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<p>Before deploying to production, ensure you've:</p>
+<p>✅ <strong>Tested on non-production environments</strong> (development, staging)<br />
+✅ <strong>Reviewed all ADRs</strong> in <a href="../../adrs/">docs/adrs/</a><br />
+✅ <strong>Completed deployment readiness checklist</strong> (see below)<br />
+✅ <strong>Obtained necessary approvals</strong> from security, operations, and stakeholders</p>
+<h2 id="production-readiness-checklist">Production Readiness Checklist<a class="headerlink" href="#production-readiness-checklist" title="Permanent link">&para;</a></h2>
+<h3 id="infrastructure">Infrastructure<a class="headerlink" href="#infrastructure" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>ADR-001</strong>: Platform selection (OpenShift 4.18+)</li>
-<li><strong>ADR-005</strong>: Node management strategy</li>
-<li><strong>ADR-010</strong>: Storage infrastructure requirements</li>
+<li>[ ] <strong>High Availability (HA) cluster topology</strong></li>
+<li>3+ control plane nodes</li>
+<li>3+ worker nodes</li>
+<li>GPU nodes for ML workloads (optional but recommended)</li>
+<li>
+<p>Verified with: <code>make show-cluster-info</code></p>
+</li>
+<li>
+<p>[ ] <strong>OpenShift Data Foundation (ODF) deployed</strong></p>
+</li>
+<li>Full ODF (Ceph + NooBaa), not MCG-only</li>
+<li>Storage classes available: <code>ocs-storagecluster-cephfs</code>, <code>ocs-storagecluster-ceph-rbd</code></li>
+<li>
+<p>Verified with: <code>oc get storagecluster -n openshift-storage</code></p>
+</li>
+<li>
+<p>[ ] <strong>Network configuration validated</strong></p>
+</li>
+<li>DNS resolution for all services</li>
+<li>Ingress routes accessible</li>
+<li>
+<p>Firewall rules configured for external access (if needed)</p>
+</li>
+<li>
+<p>[ ] <strong>Resource quotas and limits defined</strong></p>
+</li>
+<li>Namespace resource quotas</li>
+<li>Pod resource requests/limits</li>
+<li>Cluster autoscaling configured (if using cloud provider)</li>
 </ul>
-<h3 id="architecture-design">Architecture &amp; Design<a class="headerlink" href="#architecture-design" title="Permanent link">&para;</a></h3>
+<h3 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>ADR-002</strong>: Hybrid self-healing approach combining deterministic rules with AI</li>
-<li><strong>ADR-009</strong>: Bootstrap and deployment automation</li>
+<li>[ ] <strong>Secrets management configured</strong></li>
+<li>External Secrets Operator deployed (ADR-026 - <strong>MANDATORY</strong>)</li>
+<li>Secrets stored in external vault (not in Git)</li>
+<li>
+<p>Service account permissions reviewed</p>
+</li>
+<li>
+<p>[ ] <strong>RBAC policies reviewed</strong></p>
+</li>
+<li>Principle of least privilege applied</li>
+<li>Role bindings audited</li>
+<li>
+<p>Cluster admin permissions limited</p>
+</li>
+<li>
+<p>[ ] <strong>Network policies enforced</strong></p>
+</li>
+<li>Namespace isolation configured</li>
+<li>Ingress/egress rules defined</li>
+<li>
+<p>Pod-to-pod communication restricted</p>
+</li>
+<li>
+<p>[ ] <strong>Image security</strong></p>
+</li>
+<li>Container images from trusted registries</li>
+<li>Image vulnerability scanning enabled</li>
+<li>Image pull policies configured (<code>Always</code> or <code>IfNotPresent</code>)</li>
 </ul>
-<h3 id="aiml-platform">AI/ML Platform<a class="headerlink" href="#aiml-platform" title="Permanent link">&para;</a></h3>
+<h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>ADR-003</strong>: OpenShift AI integration for ML workloads</li>
-<li><strong>ADR-004</strong>: Model serving with KServe</li>
-<li><strong>ADR-006</strong>: GPU acceleration for AI workloads</li>
-<li><strong>ADR-008</strong>: MLOps pipeline automation</li>
-<li><strong>ADR-011</strong>: Development environment setup</li>
+<li>[ ] <strong>Values files customized for production</strong></li>
+<li><code>values-global.yaml</code> updated with production Git repository</li>
+<li><code>values-hub.yaml</code> configured with production settings</li>
+<li>Resource limits appropriate for production workloads</li>
+<li>
+<p>Replica counts set for high availability</p>
+</li>
+<li>
+<p>[ ] <strong>GitOps repository configured</strong></p>
+</li>
+<li>Fork created at your organization's GitHub/GitLab</li>
+<li><code>repoURL</code> updated in both values files</li>
+<li>Branch protection rules enabled on main branch</li>
+<li>
+<p>PR approval workflow configured</p>
+</li>
+<li>
+<p>[ ] <strong>Monitoring and observability</strong></p>
+</li>
+<li>Prometheus deployed and configured</li>
+<li>Alertmanager rules defined</li>
+<li>Grafana dashboards imported</li>
+<li>Log aggregation configured (optional: OpenShift Logging)</li>
 </ul>
-<h3 id="monitoring-operations">Monitoring &amp; Operations<a class="headerlink" href="#monitoring-operations" title="Permanent link">&para;</a></h3>
+<h3 id="mlai-components">ML/AI Components<a class="headerlink" href="#mlai-components" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>ADR-007</strong>: Prometheus-based monitoring and alerting</li>
+<li>[ ] <strong>Model storage configured</strong></li>
+<li>S3-compatible object storage (NooBaa) available</li>
+<li>Model versioning strategy defined</li>
+<li>
+<p>Backup policy for trained models</p>
+</li>
+<li>
+<p>[ ] <strong>GPU resources allocated</strong> (if using GPU)</p>
+</li>
+<li>NVIDIA GPU Operator deployed</li>
+<li>GPU node affinity/tolerations configured</li>
+<li>
+<p>GPU resource limits defined in workloads</p>
+</li>
+<li>
+<p>[ ] <strong>Model serving validated</strong></p>
+</li>
+<li>KServe InferenceServices tested</li>
+<li>Model endpoints accessible</li>
+<li>Inference performance acceptable</li>
 </ul>
-<h2 id="key-architectural-principles">Key Architectural Principles<a class="headerlink" href="#key-architectural-principles" title="Permanent link">&para;</a></h2>
-<p>Based on the ADRs, the platform follows these principles:</p>
-<h3 id="1-hybrid-intelligence-adr-002">1. Hybrid Intelligence (ADR-002)<a class="headerlink" href="#1-hybrid-intelligence-adr-002" title="Permanent link">&para;</a></h3>
+<h3 id="validation-and-testing">Validation and Testing<a class="headerlink" href="#validation-and-testing" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Deterministic Rules</strong>: Fast, predictable responses for known issues</li>
-<li><strong>AI-Driven Analysis</strong>: Machine learning for complex pattern recognition</li>
-<li><strong>Coordinated Approach</strong>: Intelligent orchestration between rule-based and AI systems</li>
+<li>[ ] <strong>Deployment validation pipeline passed</strong></li>
+<li>Tekton validation pipeline: <code>tkn pipeline start deployment-validation-pipeline --showlog</code></li>
+<li>All 26 validation checks passed</li>
+<li>
+<p>No errors in ArgoCD applications</p>
+</li>
+<li>
+<p>[ ] <strong>Model training pipelines tested</strong></p>
+</li>
+<li>Anomaly detector training successful</li>
+<li>Predictive analytics training successful (if using GPU)</li>
+<li>
+<p>Models deployed to KServe</p>
+</li>
+<li>
+<p>[ ] <strong>Self-healing workflows verified</strong></p>
+</li>
+<li>Coordination engine responding</li>
+<li>Health endpoints accessible</li>
+<li>Integration with Prometheus/AlertManager working</li>
 </ul>
-<h3 id="2-cloud-native-design-adr-001-adr-005">2. Cloud-Native Design (ADR-001, ADR-005)<a class="headerlink" href="#2-cloud-native-design-adr-001-adr-005" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>OpenShift Foundation</strong>: Enterprise Kubernetes platform</li>
-<li><strong>Operator Pattern</strong>: Kubernetes-native management</li>
-<li><strong>GitOps Principles</strong>: Declarative configuration management</li>
-</ul>
-<h3 id="3-aiml-first-adr-003-adr-004-adr-006">3. AI/ML First (ADR-003, ADR-004, ADR-006)<a class="headerlink" href="#3-aiml-first-adr-003-adr-004-adr-006" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>GPU Acceleration</strong>: NVIDIA GPU support for training and inference</li>
-<li><strong>Model Serving</strong>: KServe for production model deployment</li>
-<li><strong>MLOps Integration</strong>: Automated model lifecycle management</li>
-</ul>
-<h3 id="4-observability-driven-adr-007">4. Observability-Driven (ADR-007)<a class="headerlink" href="#4-observability-driven-adr-007" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Prometheus Metrics</strong>: Comprehensive monitoring</li>
-<li><strong>Alert-Based Triggers</strong>: Proactive issue detection</li>
-<li><strong>Data-Driven Decisions</strong>: Metrics inform self-healing actions</li>
-</ul>
-<h3 id="5-developer-experience-adr-011">5. Developer Experience (ADR-011)<a class="headerlink" href="#5-developer-experience-adr-011" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Enterprise Base Images</strong>: Red Hat supported containers</li>
-<li><strong>Integrated Development</strong>: Jupyter-based AI/ML development</li>
-<li><strong>Persistent Storage</strong>: Shared model and data artifacts</li>
-</ul>
-<h2 id="implementation-status">Implementation Status<a class="headerlink" href="#implementation-status" title="Permanent link">&para;</a></h2>
-<h3 id="completed">✅ Completed<a class="headerlink" href="#completed" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Infrastructure</strong>: OpenShift cluster with ODF storage</li>
-<li><strong>Development Environment</strong>: PyTorch workbench with GPU support</li>
-<li><strong>Coordination Engine</strong>: Basic self-healing framework</li>
-<li><strong>Bootstrap Automation</strong>: Deployment and validation scripts</li>
-</ul>
-<h3 id="in-progress">🚧 In Progress<a class="headerlink" href="#in-progress" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Model Serving</strong>: KServe integration</li>
-<li><strong>Monitoring</strong>: ServiceMonitor and PrometheusRule setup</li>
-<li><strong>MLOps Pipeline</strong>: Kubeflow Pipelines integration</li>
-</ul>
-<h3 id="planned">📋 Planned<a class="headerlink" href="#planned" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Advanced AI Models</strong>: Anomaly detection algorithms</li>
-<li><strong>Self-Healing Logic</strong>: Production-ready remediation</li>
-<li><strong>Security Hardening</strong>: Compliance and security policies</li>
-</ul>
-<h2 id="decision-dependencies">Decision Dependencies<a class="headerlink" href="#decision-dependencies" title="Permanent link">&para;</a></h2>
-<pre class="highlight"><code class="language-mermaid">graph TD
-    ADR001[ADR-001: OpenShift Platform] --&gt; ADR003[ADR-003: OpenShift AI]
-    ADR001 --&gt; ADR005[ADR-005: Machine Config]
-    ADR001 --&gt; ADR010[ADR-010: ODF Storage]
+<hr />
+<h2 id="production-deployment-steps">Production Deployment Steps<a class="headerlink" href="#production-deployment-steps" title="Permanent link">&para;</a></h2>
+<h3 id="step-1-prepare-production-environment">Step 1: Prepare Production Environment<a class="headerlink" href="#step-1-prepare-production-environment" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Clone your organization's fork
+git clone https://github.com/YOUR-ORG/openshift-aiops-platform.git
+cd openshift-aiops-platform
 
-    ADR003 --&gt; ADR004[ADR-004: KServe]
-    ADR003 --&gt; ADR006[ADR-006: GPU Operator]
-    ADR003 --&gt; ADR008[ADR-008: Kubeflow]
-    ADR003 --&gt; ADR011[ADR-011: Workbench]
+# Create production branch (optional but recommended)
+git checkout -b production</code></pre>
+<h3 id="step-2-configure-production-values">Step 2: Configure Production Values<a class="headerlink" href="#step-2-configure-production-values" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Create production values files
+cp values-global.yaml.example values-global.yaml
+cp values-hub.yaml.example values-hub.yaml
 
-    ADR002[ADR-002: Hybrid Approach] --&gt; ADR007[ADR-007: Monitoring]
-    ADR002 --&gt; ADR009[ADR-009: Bootstrap]
+# Update repoURL to your organization's fork
+vi values-global.yaml
+# Change: repoURL: "https://github.com/YOUR-ORG/openshift-aiops-platform.git"
 
-    ADR010 --&gt; ADR011
-    ADR006 --&gt; ADR011</code></pre>
-<h2 id="usage-guidelines">Usage Guidelines<a class="headerlink" href="#usage-guidelines" title="Permanent link">&para;</a></h2>
-<h3 id="for-developers">For Developers<a class="headerlink" href="#for-developers" title="Permanent link">&para;</a></h3>
+vi values-hub.yaml
+# Change: repoURL: "https://github.com/YOUR-ORG/openshift-aiops-platform.git"</code></pre>
+<p><strong>Production-specific values.yaml settings</strong>:</p>
+<pre class="highlight"><code class="language-yaml"># values-hub.yaml - Production settings
+cluster:
+  topology: "ha"  # High Availability
+
+workbench:
+  replicas: 2  # HA for workbench (optional)
+  resources:
+    requests:
+      cpu: "4"
+      memory: "16Gi"
+    limits:
+      cpu: "8"
+      memory: "32Gi"
+
+coordinationEngine:
+  replicas: 3  # HA for coordination engine
+  resources:
+    requests:
+      cpu: "2"
+      memory: "4Gi"
+    limits:
+      cpu: "4"
+      memory: "8Gi"
+
+storage:
+  modelStorage:
+    size: "100Gi"  # Larger for production models
+    storageClass: "ocs-storagecluster-cephfs"
+
+objectStore:
+  enabled: true  # Required for model artifacts</code></pre>
+<h3 id="step-3-verify-cluster-configuration">Step 3: Verify Cluster Configuration<a class="headerlink" href="#step-3-verify-cluster-configuration" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Login to production cluster
+oc login &lt;production-cluster-api-url&gt;
+
+# Verify cluster topology
+make show-cluster-info
+
+# Expected output:
+# Cluster Topology Information:
+#   Type: HA (HighlyAvailable)
+#   Control Plane: HighlyAvailable
+#   Infrastructure: HighlyAvailable</code></pre>
+<h3 id="step-4-configure-infrastructure">Step 4: Configure Infrastructure<a class="headerlink" href="#step-4-configure-infrastructure" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Install ODF and scale MachineSets (if needed)
+make configure-cluster
+
+# This command will:
+# - Install OpenShift Data Foundation (full ODF)
+# - Scale MachineSets to ensure sufficient workers
+# - Wait for storage cluster to be ready</code></pre>
+<p><strong>Note</strong>: This step takes 10-15 minutes on HA clusters.</p>
+<h3 id="step-5-deploy-execution-environment">Step 5: Deploy Execution Environment<a class="headerlink" href="#step-5-deploy-execution-environment" title="Permanent link">&para;</a></h3>
+<p><strong>Option A: Use Pre-Built Image</strong> (Recommended)</p>
+<pre class="highlight"><code class="language-bash">podman pull quay.io/takinosh/openshift-aiops-platform-ee:latest
+podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest \
+  openshift-aiops-platform-ee:latest</code></pre>
+<p><strong>Option B: Build Locally</strong> (if customized)</p>
+<pre class="highlight"><code class="language-bash">export ANSIBLE_HUB_TOKEN='your-token-here'
+podman login registry.redhat.io
+make token
+make build-ee</code></pre>
+<h3 id="step-6-run-pre-deployment-validation">Step 6: Run Pre-Deployment Validation<a class="headerlink" href="#step-6-run-pre-deployment-validation" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Validate cluster prerequisites
+make check-prerequisites
+
+# Expected output:
+# ✅ OpenShift version: 4.18+
+# ✅ Cluster admin access: confirmed
+# ✅ ODF deployed: yes
+# ✅ Storage classes: available</code></pre>
+<h3 id="step-7-deploy-platform">Step 7: Deploy Platform<a class="headerlink" href="#step-7-deploy-platform" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Run Ansible prerequisites
+make operator-deploy-prereqs
+
+# Deploy via Validated Patterns Operator
+make operator-deploy</code></pre>
+<p><strong>What happens</strong>:
+1. Creates namespaces (<code>self-healing-platform</code>, <code>self-healing-platform-hub</code>)
+2. Deploys RBAC resources (ServiceAccounts, Roles, ClusterRoles)
+3. Creates External Secrets configuration
+4. Deploys Validated Patterns Operator
+5. Creates Pattern CR
+6. Operator creates ArgoCD Application
+7. ArgoCD deploys all platform components</p>
+<h3 id="step-8-monitor-deployment-progress">Step 8: Monitor Deployment Progress<a class="headerlink" href="#step-8-monitor-deployment-progress" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Watch ArgoCD application sync
+watch oc get application -n self-healing-platform-hub
+
+# Check pod status
+watch oc get pods -n self-healing-platform
+
+# View ArgoCD logs
+oc logs -n self-healing-platform-hub \
+  deployment/hub-gitops-application-controller -f</code></pre>
+<h3 id="step-9-validate-deployment">Step 9: Validate Deployment<a class="headerlink" href="#step-9-validate-deployment" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Run ArgoCD health check
+make argo-healthcheck
+
+# Expected output:
+# ✅ self-healing-platform: Healthy, Synced
+# ✅ All applications: Healthy
+
+# Run Tekton validation pipeline
+tkn pipeline start deployment-validation-pipeline --showlog
+
+# Expected: All 26 checks pass</code></pre>
+<h3 id="step-10-verify-model-training-pipelines">Step 10: Verify Model Training Pipelines<a class="headerlink" href="#step-10-verify-model-training-pipelines" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Check initial model training status
+tkn pipelinerun list -n self-healing-platform
+
+# If training failed or wasn't triggered, manually start:
+
+# Anomaly Detector (CPU-based)
+tkn pipeline start model-training-pipeline \
+  -p model-name=anomaly-detector \
+  -p notebook-path=notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb \
+  -p data-source=prometheus \
+  -p training-hours=168 \
+  -p inference-service-name=anomaly-detector \
+  -p health-check-enabled=true \
+  -p git-url=https://github.com/YOUR-ORG/openshift-aiops-platform.git \
+  -p git-ref=main \
+  -n self-healing-platform --showlog
+
+# Predictive Analytics (GPU-based, if GPU available)
+tkn pipeline start model-training-pipeline-gpu \
+  -p model-name=predictive-analytics \
+  -p notebook-path=notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb \
+  -p data-source=prometheus \
+  -p training-hours=720 \
+  -p inference-service-name=predictive-analytics \
+  -p health-check-enabled=true \
+  -p git-url=https://github.com/YOUR-ORG/openshift-aiops-platform.git \
+  -p git-ref=main \
+  -n self-healing-platform --showlog</code></pre>
+<h3 id="step-11-configure-monitoring-and-alerting">Step 11: Configure Monitoring and Alerting<a class="headerlink" href="#step-11-configure-monitoring-and-alerting" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Verify Prometheus is scraping platform metrics
+oc get servicemonitor -n self-healing-platform
+
+# Check Grafana dashboards (if installed)
+# Import dashboards from: docs/monitoring/grafana-dashboards/
+
+# Configure Alertmanager for production alerts
+# Edit AlertManager configuration:
+oc edit secret alertmanager-main -n openshift-monitoring</code></pre>
+<p><strong>Recommended alerts</strong>:
+- Coordination engine unhealthy
+- Model inference errors
+- KServe predictor pods failing
+- High anomaly detection rate
+- Workbench pod failures</p>
+<h3 id="step-12-post-deployment-verification">Step 12: Post-Deployment Verification<a class="headerlink" href="#step-12-post-deployment-verification" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Access workbench
+oc port-forward self-healing-workbench-0 8888:8888 -n self-healing-platform
+# Open http://localhost:8888
+
+# Test coordination engine
+oc exec -n self-healing-platform \
+  deployment/self-healing-coordination-engine -- \
+  curl -s http://localhost:8080/health
+
+# Test model endpoints
+oc get inferenceservices -n self-healing-platform</code></pre>
+<h3 id="step-13-clean-up-extra-namespaces-optional">Step 13: Clean Up Extra Namespaces (Optional)<a class="headerlink" href="#step-13-clean-up-extra-namespaces-optional" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Remove example namespaces created by Validated Patterns defaults
+oc delete namespace self-healing-platform-example imperative --ignore-not-found=true</code></pre>
+<hr />
+<h2 id="post-deployment-configuration">Post-Deployment Configuration<a class="headerlink" href="#post-deployment-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="enable-external-access-if-needed">Enable External Access (if needed)<a class="headerlink" href="#enable-external-access-if-needed" title="Permanent link">&para;</a></h3>
+<p>If users need to access services from outside the cluster:</p>
+<pre class="highlight"><code class="language-bash"># Create routes for coordination engine (example)
+oc create route edge coordination-engine \
+  --service=coordination-engine \
+  --port=8080 \
+  -n self-healing-platform
+
+# Get route URL
+oc get route coordination-engine -n self-healing-platform \
+  -o jsonpath='{.spec.host}'</code></pre>
+<h3 id="configure-backup-and-recovery">Configure Backup and Recovery<a class="headerlink" href="#configure-backup-and-recovery" title="Permanent link">&para;</a></h3>
+<p><strong>Backup strategy</strong>:</p>
 <ol>
-<li><strong>Read ADR-011</strong> for workbench setup and development workflow</li>
-<li><strong>Review ADR-002</strong> to understand the self-healing architecture</li>
-<li><strong>Check ADR-003 and ADR-004</strong> for AI/ML integration patterns</li>
+<li><strong>Etcd backups</strong> (cluster-level) - configure via OpenShift</li>
+<li><strong>Model artifacts</strong> - stored in S3 (NooBaa) with versioning enabled</li>
+<li><strong>Configuration</strong> - stored in Git (GitOps principle)</li>
 </ol>
-<h3 id="for-operators">For Operators<a class="headerlink" href="#for-operators" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Verify ODF/NooBaa backup configuration
+oc get objectbucketclaim model-storage -n self-healing-platform -o yaml
+
+# Enable versioning on S3 bucket (via NooBaa UI or AWS S3 API)</code></pre>
+<h3 id="configure-log-aggregation-optional">Configure Log Aggregation (Optional)<a class="headerlink" href="#configure-log-aggregation-optional" title="Permanent link">&para;</a></h3>
+<p>If using OpenShift Logging:</p>
+<pre class="highlight"><code class="language-bash"># Create ClusterLogForwarder to send platform logs to central location
+cat &lt;&lt;EOF | oc apply -f -
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  pipelines:
+  - name: self-healing-platform-logs
+    inputRefs:
+    - application
+    outputRefs:
+    - default
+    parse: json
+    labels:
+      platform: "aiops"
+EOF</code></pre>
+<h3 id="performance-tuning">Performance Tuning<a class="headerlink" href="#performance-tuning" title="Permanent link">&para;</a></h3>
+<p><strong>Coordination Engine</strong>:</p>
+<pre class="highlight"><code class="language-yaml"># Increase replicas for higher load
+coordinationEngine:
+  replicas: 5
+  resources:
+    requests:
+      cpu: "4"
+      memory: "8Gi"</code></pre>
+<p><strong>KServe Predictors</strong>:</p>
+<pre class="highlight"><code class="language-yaml"># Auto-scaling configuration
+inferenceService:
+  scaleTarget: 70  # CPU utilization target
+  scaleMetric: cpu
+  minReplicas: 2
+  maxReplicas: 10</code></pre>
+<hr />
+<h2 id="production-maintenance">Production Maintenance<a class="headerlink" href="#production-maintenance" title="Permanent link">&para;</a></h2>
+<h3 id="rolling-updates">Rolling Updates<a class="headerlink" href="#rolling-updates" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Update values in Git repository
+git add values-hub.yaml
+git commit -s -m "feat: Increase coordination engine replicas"
+git push origin production
+
+# ArgoCD will automatically sync changes
+# Monitor sync progress:
+watch oc get application self-healing-platform -n self-healing-platform-hub</code></pre>
+<h3 id="model-retraining">Model Retraining<a class="headerlink" href="#model-retraining" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Schedule periodic model retraining (example: weekly)
+# Create CronJob for model training pipeline
+cat &lt;&lt;EOF | oc apply -f -
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: model-retraining-weekly
+  namespace: self-healing-platform
+spec:
+  schedule: "0 2 * * 0"  # Every Sunday at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: tekton-triggers-sa
+          containers:
+          - name: trigger-training
+            image: quay.io/openshift/origin-cli:latest
+            command:
+            - /bin/bash
+            - -c
+            - |
+              tkn pipeline start model-training-pipeline \
+                -p model-name=anomaly-detector \
+                -p notebook-path=notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb \
+                -n self-healing-platform
+          restartPolicy: OnFailure
+EOF</code></pre>
+<h3 id="monitoring-health">Monitoring Health<a class="headerlink" href="#monitoring-health" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Create monitoring dashboard
+# Check platform health daily:
+make argo-healthcheck
+
+# Review model inference metrics:
+oc exec -n self-healing-platform \
+  deployment/self-healing-coordination-engine -- \
+  curl -s http://localhost:8090/metrics | grep inference</code></pre>
+<hr />
+<h2 id="rollback-procedures">Rollback Procedures<a class="headerlink" href="#rollback-procedures" title="Permanent link">&para;</a></h2>
+<h3 id="rollback-argocd-application">Rollback ArgoCD Application<a class="headerlink" href="#rollback-argocd-application" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Rollback to previous sync
+oc patch application self-healing-platform \
+  -n self-healing-platform-hub \
+  --type merge \
+  -p '{"operation":{"initiatedBy":{"automated":false}}}'
+
+# Revert Git commit
+git revert HEAD
+git push origin production</code></pre>
+<h3 id="rollback-model-deployment">Rollback Model Deployment<a class="headerlink" href="#rollback-model-deployment" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Redeploy previous model version
+# Models are versioned in S3 storage
+# Update InferenceService to point to previous model path
+oc edit inferenceservice anomaly-detector -n self-healing-platform</code></pre>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="argocd-application-not-syncing">ArgoCD Application Not Syncing<a class="headerlink" href="#argocd-application-not-syncing" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom</strong>: Application shows "Unknown" or "Missing" health status</p>
+<p><strong>Solution</strong>:</p>
+<pre class="highlight"><code class="language-bash"># Check Pattern CR status
+oc get pattern self-healing-platform -n openshift-operators -o yaml
+
+# Verify ArgoCD controller has cluster-admin
+oc get clusterrolebinding | grep hub-gitops-argocd-application-controller
+
+# Re-run prerequisites if missing
+make operator-deploy-prereqs
+
+# Manually trigger sync
+oc annotate application self-healing-platform \
+  -n self-healing-platform-hub \
+  argocd.argoproj.io/refresh=hard --overwrite</code></pre>
+<h3 id="coordination-engine-not-responding">Coordination Engine Not Responding<a class="headerlink" href="#coordination-engine-not-responding" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom</strong>: Health endpoint returns 503 or connection refused</p>
+<p><strong>Solution</strong>:</p>
+<pre class="highlight"><code class="language-bash"># Check pod status
+oc get pods -n self-healing-platform -l app.kubernetes.io/component=coordination-engine
+
+# View logs
+oc logs -n self-healing-platform \
+  -l app.kubernetes.io/component=coordination-engine --tail=100
+
+# Restart deployment
+oc rollout restart deployment/coordination-engine -n self-healing-platform</code></pre>
+<h3 id="model-training-pipeline-fails">Model Training Pipeline Fails<a class="headerlink" href="#model-training-pipeline-fails" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom</strong>: PipelineRun shows "Failed" status</p>
+<p><strong>Solution</strong>:</p>
+<pre class="highlight"><code class="language-bash"># View pipeline logs
+tkn pipelinerun logs &lt;pipelinerun-name&gt; -n self-healing-platform
+
+# Check S3 bucket credentials
+oc get externalsecret model-storage-secret -n self-healing-platform
+
+# Re-run prerequisites
+make operator-deploy-prereqs
+
+# Manually restart training pipeline (see Step 10)</code></pre>
+<hr />
+<h2 id="production-best-practices">Production Best Practices<a class="headerlink" href="#production-best-practices" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Follow ADR-009</strong> for deployment procedures</li>
-<li><strong>Implement ADR-007</strong> for monitoring setup</li>
-<li><strong>Use ADR-010</strong> for storage configuration</li>
+<li><strong>Use GitOps</strong> - All configuration in Git, deployed via ArgoCD</li>
+<li><strong>Immutable infrastructure</strong> - Rebuild, don't patch in place</li>
+<li><strong>Test first</strong> - Validate in dev/staging before production</li>
+<li><strong>Monitor continuously</strong> - Set up alerts for critical components</li>
+<li><strong>Document changes</strong> - Update ADRs for architectural decisions</li>
+<li><strong>Regular backups</strong> - Verify backup and restore procedures</li>
+<li><strong>Security scanning</strong> - Scan images and dependencies regularly</li>
+<li><strong>Resource limits</strong> - Always set requests and limits</li>
+<li><strong>High availability</strong> - Run multiple replicas of critical services</li>
+<li><strong>Disaster recovery</strong> - Have a tested recovery plan</li>
 </ol>
-<h3 id="for-architects">For Architects<a class="headerlink" href="#for-architects" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Study ADR-002</strong> for system design principles</li>
-<li><strong>Review all ADRs</strong> for comprehensive understanding</li>
-<li><strong>Update ADRs</strong> when making architectural changes</li>
-</ol>
-<h2 id="adr-lifecycle">ADR Lifecycle<a class="headerlink" href="#adr-lifecycle" title="Permanent link">&para;</a></h2>
-<h3 id="status-definitions">Status Definitions<a class="headerlink" href="#status-definitions" title="Permanent link">&para;</a></h3>
+<hr />
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>After successful production deployment:</p>
 <ul>
-<li><strong>Proposed</strong>: Under consideration and review</li>
-<li><strong>Accepted</strong>: Approved and being implemented</li>
-<li><strong>Deprecated</strong>: No longer valid but kept for history</li>
-<li><strong>Superseded</strong>: Replaced by a newer decision</li>
+<li>📊 <strong>Configure dashboards</strong> - Import Grafana dashboards for monitoring</li>
+<li>🔔 <strong>Set up alerts</strong> - Configure Alertmanager rules for critical events</li>
+<li>📝 <strong>Document runbooks</strong> - Create operational procedures for your team</li>
+<li>🧪 <strong>Test recovery</strong> - Practice backup and restore procedures</li>
+<li>📈 <strong>Monitor performance</strong> - Establish baseline metrics and SLOs</li>
+<li>🔄 <strong>Plan updates</strong> - Schedule regular platform updates and model retraining</li>
 </ul>
-<h3 id="update-process">Update Process<a class="headerlink" href="#update-process" title="Permanent link">&para;</a></h3>
-<ol>
-<li>Create new ADR for significant architectural changes</li>
-<li>Update existing ADRs when implementation details change</li>
-<li>Mark ADRs as deprecated when no longer applicable</li>
-<li>Reference related ADRs to maintain traceability</li>
-</ol>
+<hr />
 <h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../../how-to/bootstrap-testing/">Bootstrap Testing Guide</a></li>
-<li><a href="../../tutorials/workbench-development-guide/">Workbench Development Guide</a></li>
-<li><a href="../../how-to/deploy-to-production/">Deployment Procedures</a></li>
-<li><a href="../../explanation/architecture-overview/">Architecture Overview</a></li>
+<li><a href="../../DEPLOYMENT.md">Deployment Guide</a> - Complete step-by-step deployment</li>
+<li><a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/">Fresh Cluster Deployment</a> - First-time deployment</li>
+<li><a href="../../guides/TROUBLESHOOTING-GUIDE/">Troubleshooting Guide</a> - Common issues and solutions</li>
+<li><a href="../../adrs/">ADRs</a> - Architectural decisions</li>
+<li><a href="../../guides/PATTERN-CR-BEST-PRACTICES/">Pattern CR Best Practices</a> - Advanced configuration</li>
+</ul>
+<hr />
+<h2 id="support">Support<a class="headerlink" href="#support" title="Permanent link">&para;</a></h2>
+<p>For issues or questions:</p>
+<ul>
+<li>🐛 <strong>Report bugs</strong>: https://github.com/KubeHeal/openshift-aiops-platform/issues</li>
+<li>📖 <strong>Read documentation</strong>: https://kubeheal.github.io/openshift-aiops-platform/</li>
+<li>💬 <strong>Ask questions</strong>: Open a GitHub Discussion</li>
 </ul>
 
 
@@ -2089,7 +2525,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 18, 2026</span>
   </span>
 
     
@@ -2099,7 +2535,7 @@
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 18, 2026</span>
   </span>
 
     
