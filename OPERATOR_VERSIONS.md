@@ -43,6 +43,29 @@ spec:
   targetNamespaces: []  # Empty = AllNamespaces mode (REQUIRED)
 ```
 
+**Container Image Requirement** (CRITICAL):
+```yaml
+notebooks:
+  validation:
+    containerImage: image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest
+```
+
+**Why Custom Image Required**:
+- Base RHODS images (s2i-minimal-notebook, pytorch) run in Python virtualenv
+- Standard `pip install --user` fails with: "Can not perform a '--user' install. User site-packages are not visible in this virtualenv"
+- Custom notebook-validator image has Papermill and dependencies pre-installed via BuildConfig
+
+**DO NOT USE**:
+- ❌ `image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/s2i-minimal-notebook:2025.1`
+- ❌ `image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.1`
+
+**BuildConfig Details**:
+- Name: `notebook-validator`
+- Namespace: `self-healing-platform`
+- Output: `notebook-validator:latest` ImageStreamTag
+- Build Type: Docker (Git source)
+- Pre-installs: Papermill, boto3, kubernetes, prometheus-api-client
+
 **Related Issues**: #66  
 **Related ADRs**: ADR-029, ADR-054
 
