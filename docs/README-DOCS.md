@@ -12,13 +12,95 @@ The following files are **copies** of root-level files, duplicated here because 
 - `CODE_OF_CONDUCT.md` → Copy of `../CODE_OF_CONDUCT.md`
 - `AGENTS.md` → Copy of `../AGENTS.md`
 
-**IMPORTANT**: The **root files are the source of truth**. If you update these files:
+**IMPORTANT**: The **root files are the source of truth**. When you update these files, they are **automatically synced** to docs/ by a GitHub Actions workflow.
 
-1. Edit the file in the repository root (e.g., `../README.md`)
-2. Copy the updated file to docs/ (e.g., `cp ../README.md README.md`)
-3. Commit both files
+### Automatic Sync (Recommended)
+
+Just edit the root file and commit - the sync happens automatically:
+
+```bash
+# 1. Edit the root file
+vi ../README.md
+
+# 2. Commit (sync happens automatically via GitHub Actions)
+git add ../README.md
+git commit -s -m "docs: Update README"
+git push origin main
+
+# 3. GitHub Actions automatically:
+#    - Copies ../README.md to docs/README.md
+#    - Commits the synced file
+#    - Triggers documentation deployment
+```
+
+**Workflow**: `.github/workflows/sync-docs.yml`
+
+### Manual Sync (Alternative)
+
+If you prefer to sync manually or need immediate local testing:
+
+```bash
+# 1. Edit the root file
+vi ../README.md
+
+# 2. Run sync script
+../scripts/sync-docs.sh
+
+# 3. Commit both files
+git add ../README.md docs/README.md
+git commit -s -m "docs: Update README"
+git push origin main
+```
 
 **Why this duplication?** MkDocs design requires all documentation to be within the `docs_dir` (which is `docs/` in our case). We cannot use the repository root as `docs_dir` because it would include all non-documentation files and cause build errors.
+
+## How Automatic Sync Works
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ Developer Updates Root File                                      │
+│                                                                   │
+│  $ vim README.md                                                 │
+│  $ git add README.md                                             │
+│  $ git commit -m "docs: Update README"                           │
+│  $ git push origin main                                          │
+└──────────────────────┬────────────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ GitHub Actions: sync-docs.yml (Automatic)                        │
+│                                                                   │
+│  Triggered by: Changes to README.md, DEPLOYMENT.md, etc.        │
+│                                                                   │
+│  Actions:                                                        │
+│   1. cp README.md docs/README.md                                │
+│   2. git commit -m "docs: Auto-sync root files to docs/"        │
+│   3. git push origin main                                        │
+└──────────────────────┬────────────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ GitHub Actions: deploy-docs.yml (Automatic)                      │
+│                                                                   │
+│  Triggered by: Changes to docs/**                               │
+│                                                                   │
+│  Actions:                                                        │
+│   1. pip install -r requirements-docs.txt                        │
+│   2. mkdocs build                                                │
+│   3. mkdocs gh-deploy --force (pushes to gh-pages branch)       │
+└──────────────────────┬────────────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ GitHub Pages: Site Updated                                       │
+│                                                                   │
+│  https://kubeheal.github.io/openshift-aiops-platform/           │
+│                                                                   │
+│  Updated files visible within 1-2 minutes                        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Timeline**: Root file update → Auto-sync (30s) → Deploy (2 min) → Live (1 min) = **~3-4 minutes total**
 
 ## Directory Structure
 

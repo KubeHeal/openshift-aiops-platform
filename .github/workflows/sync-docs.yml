@@ -1,0 +1,69 @@
+name: Sync Root Files to Docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'README.md'
+      - 'DEPLOYMENT.md'
+      - 'CONTRIBUTING.md'
+      - 'CODE_OF_CONDUCT.md'
+      - 'AGENTS.md'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync root files to docs/
+        run: |
+          echo "🔄 Syncing root files to docs/..."
+
+          # Copy files
+          cp README.md docs/README.md
+          cp DEPLOYMENT.md docs/DEPLOYMENT.md
+          cp CONTRIBUTING.md docs/CONTRIBUTING.md
+          cp CODE_OF_CONDUCT.md docs/CODE_OF_CONDUCT.md
+          cp AGENTS.md docs/AGENTS.md
+
+          echo "✅ Files synced"
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet docs/; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No changes to commit"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "📝 Changes detected"
+          fi
+
+      - name: Commit and push if changed
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add docs/README.md docs/DEPLOYMENT.md docs/CONTRIBUTING.md docs/CODE_OF_CONDUCT.md docs/AGENTS.md
+
+          git commit -m "docs: Auto-sync root files to docs/
+
+Automatically synced by .github/workflows/sync-docs.yml
+
+Root files updated in this commit triggered automatic sync to docs/.
+This ensures GitHub Pages shows the latest content.
+
+Changed files:
+$(git diff --cached --name-only | grep '^docs/' || echo '  (none)')"
+
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
