@@ -301,6 +301,34 @@
   when: deploy_cluster_rbac | default(true) | bool
 
 # ==============================================================================
+# Coordination Engine Prometheus ClusterRoleBinding
+# ==============================================================================
+# Issue #73: Coordination engine blocked - missing ClusterRoleBinding for Prometheus access
+# The coordination engine needs to query Prometheus metrics for anomaly detection
+
+- name: Deploy Coordination Engine Prometheus ClusterRoleBinding
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: self-healing-operator-prometheus
+        labels:
+          app.kubernetes.io/component: coordination-engine
+          app.kubernetes.io/name: self-healing-platform
+          app.kubernetes.io/managed-by: ansible
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: cluster-monitoring-view
+      subjects:
+        - kind: ServiceAccount
+          name: self-healing-operator
+          namespace: "{{ pattern_namespace }}"
+  when: deploy_cluster_rbac | default(true) | bool
+
+# ==============================================================================
 # Jupyter Notebook Validator Operator ClusterRole
 # ==============================================================================
 
@@ -370,6 +398,7 @@
       - ClusterRole: self-healing-platform-mcp-server-cluster
       - ClusterRoleBinding: self-healing-platform-mcp-server-cluster
       - ClusterRoleBinding: self-healing-platform-mcp-prometheus
+      - ClusterRoleBinding: self-healing-operator-prometheus (Coordination Engine)
       - ClusterRole: jupyter-notebook-validator-operator
       - ClusterRoleBinding: jupyter-notebook-validator-operator
 
@@ -381,4 +410,5 @@
       - Hub-GitOps ArgoCD: Manage cluster-scoped resources from namespaced mode (ADR-030)
       - MCP Server: Read-only cluster-wide access for monitoring and diagnostics
       - MCP Server: Prometheus metrics access
+      - Coordination Engine: Prometheus metrics access for anomaly detection (#73)
       - Jupyter Notebook Validator: Manage NotebookValidationJob CRs and pods

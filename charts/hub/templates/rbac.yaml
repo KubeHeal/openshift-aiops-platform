@@ -6,8 +6,9 @@ metadata:
     app.kubernetes.io/component: rbac
     app.kubernetes.io/name: self-healing-platform
   annotations:
-    # Sync wave - must be created before noobaa-credentials-init job (wave -5)
-    argocd.argoproj.io/sync-wave: "-6"
+    # Sync wave - must be created before noobaa-credentials-init job (wave -7)
+    # Issue #80: Fixed sync wave ordering - Role must exist before Job runs
+    argocd.argoproj.io/sync-wave: "-8"
 rules:
 # Core API resources
 - apiGroups: [""]
@@ -82,8 +83,9 @@ metadata:
     app.kubernetes.io/component: rbac
     app.kubernetes.io/name: self-healing-platform
   annotations:
-    # Sync wave - must be created before noobaa-credentials-init job (wave -5)
-    argocd.argoproj.io/sync-wave: "-6"
+    # Sync wave - must be created before noobaa-credentials-init job (wave -7)
+    # Issue #80: Fixed sync wave ordering - SA must exist before Job runs
+    argocd.argoproj.io/sync-wave: "-8"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -93,8 +95,9 @@ metadata:
     app.kubernetes.io/component: rbac
     app.kubernetes.io/name: self-healing-platform
   annotations:
-    # Sync wave - must be created before noobaa-credentials-init job (wave -5)
-    argocd.argoproj.io/sync-wave: "-6"
+    # Sync wave - must be created before noobaa-credentials-init job (wave -7)
+    # Issue #80: Fixed sync wave ordering - RoleBinding must exist before Job runs
+    argocd.argoproj.io/sync-wave: "-8"
 subjects:
 - kind: ServiceAccount
   name: self-healing-operator
@@ -337,6 +340,25 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: self-healing-workbench
+  namespace: self-healing-platform
+roleRef:
+  kind: ClusterRole
+  name: cluster-monitoring-view
+  apiGroup: rbac.authorization.k8s.io
+---
+# ClusterRoleBinding for coordination engine to access Prometheus metrics
+# Issue #73: Coordination engine blocked - missing ClusterRoleBinding for Prometheus access
+# The coordination engine needs to query Prometheus metrics for anomaly detection
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: self-healing-operator-prometheus
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/name: self-healing-platform
+subjects:
+- kind: ServiceAccount
+  name: self-healing-operator
   namespace: self-healing-platform
 roleRef:
   kind: ClusterRole

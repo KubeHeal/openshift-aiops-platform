@@ -73,6 +73,12 @@ git commit -s -m "feat: your commit message"
 - [ ] All issues in the target milestone are closed or moved to next milestone
 - [ ] `CHANGELOG.md` `[Unreleased]` section is complete
 - [ ] All ADRs for new features are in `Accepted` or `Implemented` status
+- [ ] **Patternizer scaffolding up-to-date** (for v1.1.0+, see [ADR-059](./docs/adrs/059-patternizer-adoption.md)):
+  - [ ] Run `podman run --pull=newer -v "$PWD:$PWD:z" -w "$PWD" quay.io/validatedpatterns/patternizer init --with-secrets`
+  - [ ] Review generated files (values-global.yaml, values-hub.yaml, pattern.sh, Makefile-common, ansible.cfg)
+  - [ ] Update repoURL in values files to match your fork
+  - [ ] Commit Patternizer-generated files with message: `chore: update Patternizer scaffolding`
+  - [ ] Test deployment workflow: `./pattern.sh make install` or `make operator-deploy`
 - [ ] CI green on `main` — all required checks pass (issue [#49](https://github.com/KubeHeal/openshift-aiops-platform/issues/49))
 - [ ] Notebook test paths correct in `ci.yml` (issue [#53](https://github.com/KubeHeal/openshift-aiops-platform/issues/53))
 - [ ] All image references pinned to explicit tags in `values-hub.yaml` (issue [#51](https://github.com/KubeHeal/openshift-aiops-platform/issues/51))
@@ -127,11 +133,14 @@ gh release create "$VERSION" \
 ## Validated Patterns (VP) Submission Checklist
 
 The platform targets VP **Sandbox** tier submission (issue [#54](https://github.com/KubeHeal/openshift-aiops-platform/issues/54)).
-See [ADR-019](./docs/adrs/019-validated-patterns-framework-adoption.md) for the adoption decision.
+See [ADR-019](./docs/adrs/019-validated-patterns-framework-adoption.md) for the VP framework adoption and [ADR-059](./docs/adrs/059-patternizer-adoption.md) for Patternizer scaffolding automation.
 
 ### Pre-Submission Requirements
 
-- [ ] `patternizer init --with-secrets` run and output committed
+- [ ] **Patternizer scaffolding complete** (see [ADR-059](./docs/adrs/059-patternizer-adoption.md)):
+  - [ ] Run `podman run --pull=newer -v "$PWD:$PWD:z" -w "$PWD" quay.io/validatedpatterns/patternizer init --with-secrets`
+  - [ ] Generated files committed (values-global.yaml, values-hub.yaml, pattern.sh, Makefile-common, ansible.cfg)
+  - [ ] Manual `.example` files removed (values-global.yaml.example, values-hub.yaml.example)
 - [ ] `values-hub.yaml` uses `pattern.clusterGroupName` and VP secret conventions
 - [ ] `common/` submodule pinned to correct VP framework commit
 - [ ] VP Operator installs cleanly: `make install` or `pattern.sh make install`
