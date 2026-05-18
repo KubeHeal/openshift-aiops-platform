@@ -1648,137 +1648,144 @@
 <h1 id="bootstrap-architecture-diagrams">Bootstrap Architecture Diagrams<a class="headerlink" href="#bootstrap-architecture-diagrams" title="Permanent link">&para;</a></h1>
 <p>This document contains visual diagrams for the Self-Healing Platform Bootstrap Architecture (ADR-009).</p>
 <h2 id="system-overview">System Overview<a class="headerlink" href="#system-overview" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TB
+<p>```mermaid
+graph TB
     subgraph "Developer Workstation"
         A[Developer] --&gt; B[build-images.sh]
         A --&gt; C[bootstrap.sh]
         A --&gt; D[validate_bootstrap.sh]
-    end
+    end</p>
+<pre><code>subgraph "Container Registry"
+    E[coordination-engine:latest]
+    F[anomaly-detector:latest]
+    G[predictive-analytics:latest]
+end
 
-    subgraph "Container Registry"
-        E[coordination-engine:latest]
-        F[anomaly-detector:latest]
-        G[predictive-analytics:latest]
-    end
+subgraph "OpenShift Cluster"
+    H[self-healing-platform namespace]
+    I[self-healing-platform-dev namespace]
+    J[self-healing-platform-prod namespace]
+end
 
-    subgraph "OpenShift Cluster"
-        H[self-healing-platform namespace]
-        I[self-healing-platform-dev namespace]
-        J[self-healing-platform-prod namespace]
-    end
+subgraph "Kustomize Configuration"
+    K[k8s/base/]
+    L[k8s/overlays/development/]
+    M[k8s/overlays/production/]
+end
 
-    subgraph "Kustomize Configuration"
-        K[k8s/base/]
-        L[k8s/overlays/development/]
-        M[k8s/overlays/production/]
-    end
+B --&gt; E
+B --&gt; F
+B --&gt; G
 
-    B --&gt; E
-    B --&gt; F
-    B --&gt; G
+C --&gt; K
+C --&gt; L
+C --&gt; M
 
-    C --&gt; K
-    C --&gt; L
-    C --&gt; M
+K --&gt; H
+L --&gt; I
+M --&gt; J
 
-    K --&gt; H
-    L --&gt; I
-    M --&gt; J
-
-    D --&gt; H
-    D --&gt; I
-    D --&gt; J</code></pre>
+D --&gt; H
+D --&gt; I
+D --&gt; J
+</code></pre>
+<p>```</p>
 <h2 id="bootstrap-execution-flow">Bootstrap Execution Flow<a class="headerlink" href="#bootstrap-execution-flow" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>sequenceDiagram
+<p>```mermaid
+sequenceDiagram
     participant U as User
     participant B as bootstrap.sh
     participant K as Kustomize
     participant OC as OpenShift Cluster
-    participant V as validate_bootstrap.sh
+    participant V as validate_bootstrap.sh</p>
+<pre><code>U-&gt;&gt;B: ./bootstrap.sh --environment development
 
-    U-&gt;&gt;B: ./bootstrap.sh --environment development
+Note over B: Phase 1: Prerequisites
+B-&gt;&gt;B: check_prerequisites()
+B-&gt;&gt;OC: oc whoami
+B-&gt;&gt;OC: oc get csv -A
+B-&gt;&gt;B: determine_environment()
 
-    Note over B: Phase 1: Prerequisites
-    B-&gt;&gt;B: check_prerequisites()
-    B-&gt;&gt;OC: oc whoami
-    B-&gt;&gt;OC: oc get csv -A
-    B-&gt;&gt;B: determine_environment()
+Note over B: Phase 2: Kustomize Deployment
+B-&gt;&gt;K: validate_kustomize_config()
+K--&gt;&gt;B: Configuration valid
+B-&gt;&gt;K: kustomize build k8s/overlays/development
+K--&gt;&gt;B: Generated manifest
+B-&gt;&gt;OC: oc apply -f manifest
+OC--&gt;&gt;B: Resources created
 
-    Note over B: Phase 2: Kustomize Deployment
-    B-&gt;&gt;K: validate_kustomize_config()
-    K--&gt;&gt;B: Configuration valid
-    B-&gt;&gt;K: kustomize build k8s/overlays/development
-    K--&gt;&gt;B: Generated manifest
-    B-&gt;&gt;OC: oc apply -f manifest
-    OC--&gt;&gt;B: Resources created
+Note over B: Phase 3: Post-Deployment
+B-&gt;&gt;OC: Verify resource creation
+B-&gt;&gt;OC: Check service readiness
+B-&gt;&gt;B: configure_gitea_integration()
+B-&gt;&gt;OC: oc get all -n gitea
 
-    Note over B: Phase 3: Post-Deployment
-    B-&gt;&gt;OC: Verify resource creation
-    B-&gt;&gt;OC: Check service readiness
-    B-&gt;&gt;B: configure_gitea_integration()
-    B-&gt;&gt;OC: oc get all -n gitea
-
-    Note over B: Phase 4: Validation
-    B-&gt;&gt;V: ./validate_bootstrap.sh
-    V-&gt;&gt;OC: Run validation checks
-    OC--&gt;&gt;V: Validation results
-    V--&gt;&gt;U: Deployment report</code></pre>
+Note over B: Phase 4: Validation
+B-&gt;&gt;V: ./validate_bootstrap.sh
+V-&gt;&gt;OC: Run validation checks
+OC--&gt;&gt;V: Validation results
+V--&gt;&gt;U: Deployment report
+</code></pre>
+<p>```</p>
 <h2 id="component-deployment-architecture">Component Deployment Architecture<a class="headerlink" href="#component-deployment-architecture" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TD
+<p>```mermaid
+graph TD
     subgraph "Namespace: self-healing-platform-dev"
         subgraph "Core Components"
             A[Coordination Engine Pod]
             B[Coordination Engine Service]
             A --&gt; B
-        end
-
-        subgraph "AI/ML Components"
-            C[Jupyter Notebook Pod]
-            D[Anomaly Detector InferenceService]
-            E[Predictive Analytics InferenceService]
-        end
-
-        subgraph "Storage"
-            F[Data PVC - 5Gi]
-            G[Model Artifacts PVC - 10Gi]
-            C --&gt; F
-            C --&gt; G
-            D --&gt; G
-            E --&gt; G
-        end
-
-        subgraph "Monitoring"
-            H[ServiceMonitor]
-            I[PrometheusRule]
-            B --&gt; H
-            H --&gt; J[Prometheus]
-            I --&gt; J
-        end
-
-        subgraph "Configuration"
-            K[ConfigMap: platform-config]
-            L[Secret: model-storage-config]
-            A --&gt; K
-            A --&gt; L
-            C --&gt; K
-        end
+        end</p>
+<pre><code>    subgraph "AI/ML Components"
+        C[Jupyter Notebook Pod]
+        D[Anomaly Detector InferenceService]
+        E[Predictive Analytics InferenceService]
     end
 
-    subgraph "External Dependencies"
-        M[OpenShift AI Operator]
-        N[KServe Operator]
-        O[Prometheus Operator]
-        P[NVIDIA GPU Operator]
+    subgraph "Storage"
+        F[Data PVC - 5Gi]
+        G[Model Artifacts PVC - 10Gi]
+        C --&gt; F
+        C --&gt; G
+        D --&gt; G
+        E --&gt; G
     end
 
-    C -.-&gt; M
-    D -.-&gt; N
-    E -.-&gt; N
-    J -.-&gt; O
-    C -.-&gt; P
-    E -.-&gt; P</code></pre>
+    subgraph "Monitoring"
+        H[ServiceMonitor]
+        I[PrometheusRule]
+        B --&gt; H
+        H --&gt; J[Prometheus]
+        I --&gt; J
+    end
+
+    subgraph "Configuration"
+        K[ConfigMap: platform-config]
+        L[Secret: model-storage-config]
+        A --&gt; K
+        A --&gt; L
+        C --&gt; K
+    end
+end
+
+subgraph "External Dependencies"
+    M[OpenShift AI Operator]
+    N[KServe Operator]
+    O[Prometheus Operator]
+    P[NVIDIA GPU Operator]
+end
+
+C -.-&gt; M
+D -.-&gt; N
+E -.-&gt; N
+J -.-&gt; O
+C -.-&gt; P
+E -.-&gt; P
+</code></pre>
+<p>```</p>
 <h2 id="kustomize-overlay-strategy">Kustomize Overlay Strategy<a class="headerlink" href="#kustomize-overlay-strategy" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph LR
+<p>```mermaid
+graph LR
     subgraph "Base Configuration"
         A[kustomization.yaml]
         B[namespace.yaml]
@@ -1788,111 +1795,117 @@
         F[coordination-engine.yaml]
         G[ai-ml-workbench.yaml]
         H[model-serving.yaml]
-    end
+    end</p>
+<pre><code>subgraph "Development Overlay"
+    I[kustomization.yaml]
+    I --&gt; J[Resource Patches]
+    J --&gt; K[CPU: 100m-500m]
+    J --&gt; L[Memory: 128Mi-1Gi]
+    J --&gt; M[Storage: 5Gi-10Gi]
+    J --&gt; N[Replicas: 1]
+    J --&gt; O[GPU: Disabled]
+end
 
-    subgraph "Development Overlay"
-        I[kustomization.yaml]
-        I --&gt; J[Resource Patches]
-        J --&gt; K[CPU: 100m-500m]
-        J --&gt; L[Memory: 128Mi-1Gi]
-        J --&gt; M[Storage: 5Gi-10Gi]
-        J --&gt; N[Replicas: 1]
-        J --&gt; O[GPU: Disabled]
-    end
+subgraph "Production Overlay"
+    P[kustomization.yaml]
+    P --&gt; Q[Resource Patches]
+    Q --&gt; R[CPU: 500m-2]
+    Q --&gt; S[Memory: 512Mi-4Gi]
+    Q --&gt; T[Storage: 50Gi-200Gi]
+    Q --&gt; U[Replicas: 3]
+    Q --&gt; V[GPU: Enabled]
+end
 
-    subgraph "Production Overlay"
-        P[kustomization.yaml]
-        P --&gt; Q[Resource Patches]
-        Q --&gt; R[CPU: 500m-2]
-        Q --&gt; S[Memory: 512Mi-4Gi]
-        Q --&gt; T[Storage: 50Gi-200Gi]
-        Q --&gt; U[Replicas: 3]
-        Q --&gt; V[GPU: Enabled]
-    end
+A --&gt; I
+A --&gt; P
 
-    A --&gt; I
-    A --&gt; P
-
-    style I fill:#e1f5fe
-    style P fill:#fff3e0</code></pre>
+style I fill:#e1f5fe
+style P fill:#fff3e0
+</code></pre>
+<p>```</p>
 <h2 id="validation-framework-architecture">Validation Framework Architecture<a class="headerlink" href="#validation-framework-architecture" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TD
+<p>```mermaid
+graph TD
     A[validate_bootstrap.sh] --&gt; B[Infrastructure Validation]
     A --&gt; C[Component Validation]
     A --&gt; D[Integration Validation]
-    A --&gt; E[Security Validation]
+    A --&gt; E[Security Validation]</p>
+<pre><code>B --&gt; B1[Namespace Exists]
+B --&gt; B2[RBAC Configured]
+B --&gt; B3[Storage Available]
+B --&gt; B4[Operators Running]
 
-    B --&gt; B1[Namespace Exists]
-    B --&gt; B2[RBAC Configured]
-    B --&gt; B3[Storage Available]
-    B --&gt; B4[Operators Running]
+C --&gt; C1[Coordination Engine Health]
+C --&gt; C2[Jupyter Notebook Ready]
+C --&gt; C3[Model Serving Active]
+C --&gt; C4[Monitoring Configured]
 
-    C --&gt; C1[Coordination Engine Health]
-    C --&gt; C2[Jupyter Notebook Ready]
-    C --&gt; C3[Model Serving Active]
-    C --&gt; C4[Monitoring Configured]
+D --&gt; D1[Prometheus Integration]
+D --&gt; D2[Gitea Integration]
+D --&gt; D3[Storage Integration]
+D --&gt; D4[Network Connectivity]
 
-    D --&gt; D1[Prometheus Integration]
-    D --&gt; D2[Gitea Integration]
-    D --&gt; D3[Storage Integration]
-    D --&gt; D4[Network Connectivity]
+E --&gt; E1[Secrets Configured]
+E --&gt; E2[RBAC Compliance]
+E --&gt; E3[Network Policies]
+E --&gt; E4[Pod Security]
 
-    E --&gt; E1[Secrets Configured]
-    E --&gt; E2[RBAC Compliance]
-    E --&gt; E3[Network Policies]
-    E --&gt; E4[Pod Security]
+B1 --&gt; F[Validation Report]
+B2 --&gt; F
+B3 --&gt; F
+B4 --&gt; F
+C1 --&gt; F
+C2 --&gt; F
+C3 --&gt; F
+C4 --&gt; F
+D1 --&gt; F
+D2 --&gt; F
+D3 --&gt; F
+D4 --&gt; F
+E1 --&gt; F
+E2 --&gt; F
+E3 --&gt; F
+E4 --&gt; F
 
-    B1 --&gt; F[Validation Report]
-    B2 --&gt; F
-    B3 --&gt; F
-    B4 --&gt; F
-    C1 --&gt; F
-    C2 --&gt; F
-    C3 --&gt; F
-    C4 --&gt; F
-    D1 --&gt; F
-    D2 --&gt; F
-    D3 --&gt; F
-    D4 --&gt; F
-    E1 --&gt; F
-    E2 --&gt; F
-    E3 --&gt; F
-    E4 --&gt; F
-
-    F --&gt; G{All Checks Pass?}
-    G --&gt;|Yes| H[✅ Deployment Ready]
-    G --&gt;|No| I[❌ Issues Found]
-    I --&gt; J[Remediation Guide]</code></pre>
+F --&gt; G{All Checks Pass?}
+G --&gt;|Yes| H[✅ Deployment Ready]
+G --&gt;|No| I[❌ Issues Found]
+I --&gt; J[Remediation Guide]
+</code></pre>
+<p>```</p>
 <h2 id="container-image-build-pipeline">Container Image Build Pipeline<a class="headerlink" href="#container-image-build-pipeline" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TD
+<p>```mermaid
+graph TD
     A[build-images.sh] --&gt; B{Container Runtime?}
     B --&gt;|Podman| C[Use Podman]
     B --&gt;|Docker| D[Use Docker]
-    B --&gt;|None| E[❌ Error: No Runtime]
+    B --&gt;|None| E[❌ Error: No Runtime]</p>
+<pre><code>C --&gt; F[Build Coordination Engine]
+D --&gt; F
 
-    C --&gt; F[Build Coordination Engine]
-    D --&gt; F
+F --&gt; G[Build Model Containers]
+G --&gt; H[Build Additional Components]
 
-    F --&gt; G[Build Model Containers]
-    G --&gt; H[Build Additional Components]
+H --&gt; I{Registry Configured?}
+I --&gt;|Yes| J[Tag for Registry]
+I --&gt;|No| K[Keep Local Only]
 
-    H --&gt; I{Registry Configured?}
-    I --&gt;|Yes| J[Tag for Registry]
-    I --&gt;|No| K[Keep Local Only]
+J --&gt; L[Push to Registry]
+L --&gt; M{Push Success?}
+M --&gt;|Yes| N[Update Kustomize Images]
+M --&gt;|No| O[⚠️ Warning: Push Failed]
 
-    J --&gt; L[Push to Registry]
-    L --&gt; M{Push Success?}
-    M --&gt;|Yes| N[Update Kustomize Images]
-    M --&gt;|No| O[⚠️ Warning: Push Failed]
+K --&gt; P[✅ Build Complete]
+N --&gt; P
+O --&gt; P
 
-    K --&gt; P[✅ Build Complete]
-    N --&gt; P
-    O --&gt; P
-
-    P --&gt; Q[Generate Build Report]
-    Q --&gt; R[Ready for Bootstrap]</code></pre>
+P --&gt; Q[Generate Build Report]
+Q --&gt; R[Ready for Bootstrap]
+</code></pre>
+<p>```</p>
 <h2 id="environment-configuration-matrix">Environment Configuration Matrix<a class="headerlink" href="#environment-configuration-matrix" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TD
+<p>```mermaid
+graph TD
     subgraph "Development Environment"
         A[Namespace: self-healing-platform-dev]
         B[Resources: Minimal]
@@ -1901,138 +1914,145 @@
         E[Logging: DEBUG]
         F[Replicas: 1]
         G[Security: Basic]
-    end
+    end</p>
+<pre><code>subgraph "Production Environment"
+    H[Namespace: self-healing-platform]
+    I[Resources: High Performance]
+    J[Storage: Premium Classes]
+    K[GPU: Enabled]
+    L[Logging: INFO]
+    M[Replicas: 3 (HA)]
+    N[Security: Enhanced]
+end
 
-    subgraph "Production Environment"
-        H[Namespace: self-healing-platform]
-        I[Resources: High Performance]
-        J[Storage: Premium Classes]
-        K[GPU: Enabled]
-        L[Logging: INFO]
-        M[Replicas: 3 (HA)]
-        N[Security: Enhanced]
-    end
+subgraph "Base Configuration"
+    O[Common Resources]
+    P[Shared Labels]
+    Q[Standard Configurations]
+end
 
-    subgraph "Base Configuration"
-        O[Common Resources]
-        P[Shared Labels]
-        Q[Standard Configurations]
-    end
+O --&gt; A
+O --&gt; H
+P --&gt; A
+P --&gt; H
+Q --&gt; A
+Q --&gt; H
 
-    O --&gt; A
-    O --&gt; H
-    P --&gt; A
-    P --&gt; H
-    Q --&gt; A
-    Q --&gt; H
-
-    style A fill:#e8f5e8
-    style H fill:#fff5f5</code></pre>
+style A fill:#e8f5e8
+style H fill:#fff5f5
+</code></pre>
+<p>```</p>
 <h2 id="integration-points">Integration Points<a class="headerlink" href="#integration-points" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TD
+<p>```mermaid
+graph TD
     subgraph "Self-Healing Platform"
         A[Coordination Engine]
         B[AI/ML Workbench]
         C[Model Serving]
         D[Monitoring]
-    end
+    end</p>
+<pre><code>subgraph "OpenShift Platform"
+    E[OpenShift AI]
+    F[KServe]
+    G[Prometheus]
+    H[Machine Config Operator]
+    I[NVIDIA GPU Operator]
+end
 
-    subgraph "OpenShift Platform"
-        E[OpenShift AI]
-        F[KServe]
-        G[Prometheus]
-        H[Machine Config Operator]
-        I[NVIDIA GPU Operator]
-    end
+subgraph "External Integrations"
+    J[Gitea Repository]
+    K[External Registries]
+    L[Backup Systems]
+    M[External Monitoring]
+end
 
-    subgraph "External Integrations"
-        J[Gitea Repository]
-        K[External Registries]
-        L[Backup Systems]
-        M[External Monitoring]
-    end
+A --&gt; H
+A --&gt; G
+B --&gt; E
+B --&gt; I
+C --&gt; F
+D --&gt; G
 
-    A --&gt; H
-    A --&gt; G
-    B --&gt; E
-    B --&gt; I
-    C --&gt; F
-    D --&gt; G
+A -.-&gt; J
+B -.-&gt; J
+C -.-&gt; K
+D -.-&gt; M
 
-    A -.-&gt; J
-    B -.-&gt; J
-    C -.-&gt; K
-    D -.-&gt; M
-
-    style A fill:#ffeb3b
-    style B fill:#4caf50
-    style C fill:#2196f3
-    style D fill:#ff9800</code></pre>
+style A fill:#ffeb3b
+style B fill:#4caf50
+style C fill:#2196f3
+style D fill:#ff9800
+</code></pre>
+<p>```</p>
 <h2 id="deployment-timeline">Deployment Timeline<a class="headerlink" href="#deployment-timeline" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>gantt
+<p>```mermaid
+gantt
     title Bootstrap Deployment Timeline
     dateFormat  X
-    axisFormat %s
+    axisFormat %s</p>
+<pre><code>section Prerequisites
+Check Cluster Access    :0, 10
+Validate Operators      :10, 20
+Build Images           :20, 60
 
-    section Prerequisites
-    Check Cluster Access    :0, 10
-    Validate Operators      :10, 20
-    Build Images           :20, 60
+section Phase 1
+Kustomize Build        :60, 70
+Resource Deployment    :70, 120
+Initial Verification   :120, 140
 
-    section Phase 1
-    Kustomize Build        :60, 70
-    Resource Deployment    :70, 120
-    Initial Verification   :120, 140
+section Phase 2
+Service Readiness      :140, 180
+Health Checks         :180, 200
+Integration Setup     :200, 240
 
-    section Phase 2
-    Service Readiness      :140, 180
-    Health Checks         :180, 200
-    Integration Setup     :200, 240
+section Phase 3
+Environment Config     :240, 280
+Gitea Integration     :280, 300
+Final Validation      :300, 360
 
-    section Phase 3
-    Environment Config     :240, 280
-    Gitea Integration     :280, 300
-    Final Validation      :300, 360
-
-    section Completion
-    Validation Report     :360, 380
-    Documentation        :380, 400</code></pre>
+section Completion
+Validation Report     :360, 380
+Documentation        :380, 400
+</code></pre>
+<p>```</p>
 <h2 id="error-handling-flow">Error Handling Flow<a class="headerlink" href="#error-handling-flow" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>graph TD
+<p>```mermaid
+graph TD
     A[Bootstrap Execution] --&gt; B{Prerequisites OK?}
     B --&gt;|No| C[❌ Prerequisite Error]
-    B --&gt;|Yes| D[Kustomize Build]
+    B --&gt;|Yes| D[Kustomize Build]</p>
+<pre><code>D --&gt; E{Build Success?}
+E --&gt;|No| F[❌ Configuration Error]
+E --&gt;|Yes| G[Deploy to Cluster]
 
-    D --&gt; E{Build Success?}
-    E --&gt;|No| F[❌ Configuration Error]
-    E --&gt;|Yes| G[Deploy to Cluster]
+G --&gt; H{Deployment Success?}
+H --&gt;|No| I[❌ Deployment Error]
+H --&gt;|Yes| J[Post-Deployment Setup]
 
-    G --&gt; H{Deployment Success?}
-    H --&gt;|No| I[❌ Deployment Error]
-    H --&gt;|Yes| J[Post-Deployment Setup]
+J --&gt; K{Services Ready?}
+K --&gt;|No| L[⚠️ Service Warning]
+K --&gt;|Yes| M[Environment Configuration]
 
-    J --&gt; K{Services Ready?}
-    K --&gt;|No| L[⚠️ Service Warning]
-    K --&gt;|Yes| M[Environment Configuration]
+M --&gt; N{Integration Success?}
+N --&gt;|No| O[⚠️ Integration Warning]
+N --&gt;|Yes| P[✅ Deployment Complete]
 
-    M --&gt; N{Integration Success?}
-    N --&gt;|No| O[⚠️ Integration Warning]
-    N --&gt;|Yes| P[✅ Deployment Complete]
+C --&gt; Q[Error Report &amp; Exit]
+F --&gt; Q
+I --&gt; Q
+L --&gt; R[Continue with Warnings]
+O --&gt; R
+R --&gt; S[Partial Success Report]
+P --&gt; T[Success Report]
 
-    C --&gt; Q[Error Report &amp; Exit]
-    F --&gt; Q
-    I --&gt; Q
-    L --&gt; R[Continue with Warnings]
-    O --&gt; R
-    R --&gt; S[Partial Success Report]
-    P --&gt; T[Success Report]
-
-    style C fill:#ffcdd2
-    style F fill:#ffcdd2
-    style I fill:#ffcdd2
-    style L fill:#fff3e0
-    style O fill:#fff3e0
-    style P fill:#c8e6c9</code></pre>
+style C fill:#ffcdd2
+style F fill:#ffcdd2
+style I fill:#ffcdd2
+style L fill:#fff3e0
+style O fill:#fff3e0
+style P fill:#c8e6c9
+</code></pre>
+<p>```</p>
 <p>These diagrams provide comprehensive visual documentation of the Bootstrap Deployment Automation Architecture, supporting ADR-009 with clear illustrations of the system design, execution flow, and component relationships.</p>
 
 

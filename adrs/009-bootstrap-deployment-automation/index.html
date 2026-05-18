@@ -1818,43 +1818,46 @@
 </ul>
 <h2 id="architecture-diagrams">Architecture Diagrams<a class="headerlink" href="#architecture-diagrams" title="Permanent link">&para;</a></h2>
 <h3 id="bootstrap-process-flow">Bootstrap Process Flow<a class="headerlink" href="#bootstrap-process-flow" title="Permanent link">&para;</a></h3>
-<pre class="mermaid"><code>graph TD
+<p>```mermaid
+graph TD
     A[User Runs bootstrap.sh] --&gt; B{Environment Specified?}
     B --&gt;|No| C[Interactive Environment Selection]
     B --&gt;|Yes| D[Validate Environment Parameter]
     C --&gt; E[Check Prerequisites]
-    D --&gt; E
+    D --&gt; E</p>
+<pre><code>E --&gt; F{Prerequisites OK?}
+F --&gt;|No| G[Error: Missing Requirements]
+F --&gt;|Yes| H[Determine Environment Configuration]
 
-    E --&gt; F{Prerequisites OK?}
-    F --&gt;|No| G[Error: Missing Requirements]
-    F --&gt;|Yes| H[Determine Environment Configuration]
+H --&gt; I[Validate Kustomize Configuration]
+I --&gt; J{Kustomize Valid?}
+J --&gt;|No| K[Error: Invalid Configuration]
+J --&gt;|Yes| L[Phase 1: Kustomize Deployment]
 
-    H --&gt; I[Validate Kustomize Configuration]
-    I --&gt; J{Kustomize Valid?}
-    J --&gt;|No| K[Error: Invalid Configuration]
-    J --&gt;|Yes| L[Phase 1: Kustomize Deployment]
+L --&gt; M[Build Kustomize Manifest]
+M --&gt; N[Apply to Cluster]
+N --&gt; O{Deployment Success?}
+O --&gt;|No| P[Error: Deployment Failed]
+O --&gt;|Yes| Q[Phase 2: Post-Deployment Setup]
 
-    L --&gt; M[Build Kustomize Manifest]
-    M --&gt; N[Apply to Cluster]
-    N --&gt; O{Deployment Success?}
-    O --&gt;|No| P[Error: Deployment Failed]
-    O --&gt;|Yes| Q[Phase 2: Post-Deployment Setup]
+Q --&gt; R[Verify Resource Creation]
+R --&gt; S[Check Service Readiness]
+S --&gt; T[Configure Integrations]
+T --&gt; U[Phase 3: Environment Configuration]
 
-    Q --&gt; R[Verify Resource Creation]
-    R --&gt; S[Check Service Readiness]
-    S --&gt; T[Configure Integrations]
-    T --&gt; U[Phase 3: Environment Configuration]
+U --&gt; V{Gitea Available?}
+V --&gt;|Yes| W[Configure Gitea Integration]
+V --&gt;|No| X[Skip Gitea Configuration]
+W --&gt; Y[Deployment Complete]
+X --&gt; Y
 
-    U --&gt; V{Gitea Available?}
-    V --&gt;|Yes| W[Configure Gitea Integration]
-    V --&gt;|No| X[Skip Gitea Configuration]
-    W --&gt; Y[Deployment Complete]
-    X --&gt; Y
-
-    Y --&gt; Z[Run Validation Script]
-    Z --&gt; AA[Generate Deployment Report]</code></pre>
+Y --&gt; Z[Run Validation Script]
+Z --&gt; AA[Generate Deployment Report]
+</code></pre>
+<p>```</p>
 <h3 id="kustomize-configuration-hierarchy">Kustomize Configuration Hierarchy<a class="headerlink" href="#kustomize-configuration-hierarchy" title="Permanent link">&para;</a></h3>
-<pre class="mermaid"><code>graph TD
+<p>```mermaid
+graph TD
     A[k8s/base/] --&gt; B[kustomization.yaml]
     A --&gt; C[namespace.yaml]
     A --&gt; D[rbac.yaml]
@@ -1862,112 +1865,119 @@
     A --&gt; F[monitoring.yaml]
     A --&gt; G[coordination-engine.yaml]
     A --&gt; H[ai-ml-workbench.yaml]
-    A --&gt; I[model-serving.yaml]
+    A --&gt; I[model-serving.yaml]</p>
+<pre><code>J[k8s/overlays/development/] --&gt; K[kustomization.yaml]
+K --&gt; L[Patches: Reduced Resources]
+K --&gt; M[Patches: CPU-Only Mode]
+K --&gt; N[Patches: Debug Logging]
 
-    J[k8s/overlays/development/] --&gt; K[kustomization.yaml]
-    K --&gt; L[Patches: Reduced Resources]
-    K --&gt; M[Patches: CPU-Only Mode]
-    K --&gt; N[Patches: Debug Logging]
+O[k8s/overlays/production/] --&gt; P[kustomization.yaml]
+P --&gt; Q[Patches: HA Configuration]
+P --&gt; R[Patches: GPU Support]
+P --&gt; S[Patches: Production Security]
 
-    O[k8s/overlays/production/] --&gt; P[kustomization.yaml]
-    P --&gt; Q[Patches: HA Configuration]
-    P --&gt; R[Patches: GPU Support]
-    P --&gt; S[Patches: Production Security]
+B --&gt; T[Common Labels &amp; Annotations]
+B --&gt; U[ConfigMap Generation]
+B --&gt; V[Secret Generation]
 
-    B --&gt; T[Common Labels &amp; Annotations]
-    B --&gt; U[ConfigMap Generation]
-    B --&gt; V[Secret Generation]
-
-    K --&gt; B
-    P --&gt; B</code></pre>
+K --&gt; B
+P --&gt; B
+</code></pre>
+<p>```</p>
 <h3 id="component-deployment-dependencies">Component Deployment Dependencies<a class="headerlink" href="#component-deployment-dependencies" title="Permanent link">&para;</a></h3>
-<pre class="mermaid"><code>graph TD
+<p>```mermaid
+graph TD
     A[Namespace Creation] --&gt; B[RBAC Setup]
     B --&gt; C[Storage Provisioning]
-    C --&gt; D[ConfigMaps &amp; Secrets]
+    C --&gt; D[ConfigMaps &amp; Secrets]</p>
+<pre><code>D --&gt; E[Monitoring Setup]
+D --&gt; F[Coordination Engine]
+D --&gt; G[AI/ML Workbench]
+D --&gt; H[Model Serving]
 
-    D --&gt; E[Monitoring Setup]
-    D --&gt; F[Coordination Engine]
-    D --&gt; G[AI/ML Workbench]
-    D --&gt; H[Model Serving]
+E --&gt; I[ServiceMonitor]
+E --&gt; J[PrometheusRule]
 
-    E --&gt; I[ServiceMonitor]
-    E --&gt; J[PrometheusRule]
+F --&gt; K[Coordination Engine Service]
+F --&gt; L[Health Check Endpoints]
 
-    F --&gt; K[Coordination Engine Service]
-    F --&gt; L[Health Check Endpoints]
+G --&gt; M[Jupyter Notebook]
+G --&gt; N[Data Science Libraries]
 
-    G --&gt; M[Jupyter Notebook]
-    G --&gt; N[Data Science Libraries]
+H --&gt; O[KServe InferenceServices]
+H --&gt; P[Model Storage Access]
 
-    H --&gt; O[KServe InferenceServices]
-    H --&gt; P[Model Storage Access]
-
-    I --&gt; Q[Prometheus Integration]
-    J --&gt; Q
-    K --&gt; Q
-    L --&gt; R[Validation Checks]
-    M --&gt; R
-    O --&gt; R</code></pre>
+I --&gt; Q[Prometheus Integration]
+J --&gt; Q
+K --&gt; Q
+L --&gt; R[Validation Checks]
+M --&gt; R
+O --&gt; R
+</code></pre>
+<p>```</p>
 <h3 id="container-image-build-pipeline">Container Image Build Pipeline<a class="headerlink" href="#container-image-build-pipeline" title="Permanent link">&para;</a></h3>
-<pre class="mermaid"><code>graph TD
+<p>```mermaid
+graph TD
     A[build-images.sh] --&gt; B[Check Prerequisites]
     B --&gt; C{Podman/Docker Available?}
     C --&gt;|No| D[Error: Container Runtime Missing]
-    C --&gt;|Yes| E[Check OpenShift Access]
+    C --&gt;|Yes| E[Check OpenShift Access]</p>
+<pre><code>E --&gt; F{Cluster Access OK?}
+F --&gt;|No| G[Error: Cluster Access Failed]
+F --&gt;|Yes| H[Create/Verify Namespace]
 
-    E --&gt; F{Cluster Access OK?}
-    F --&gt;|No| G[Error: Cluster Access Failed]
-    F --&gt;|Yes| H[Create/Verify Namespace]
+H --&gt; I[Build Coordination Engine]
+I --&gt; J[Build Model Containers]
+J --&gt; K[Build Additional Components]
 
-    H --&gt; I[Build Coordination Engine]
-    I --&gt; J[Build Model Containers]
-    J --&gt; K[Build Additional Components]
+K --&gt; L[Tag Images for Registry]
+L --&gt; M{Registry Push Enabled?}
+M --&gt;|Yes| N[Push to Registry]
+M --&gt;|No| O[Keep Local Images]
 
-    K --&gt; L[Tag Images for Registry]
-    L --&gt; M{Registry Push Enabled?}
-    M --&gt;|Yes| N[Push to Registry]
-    M --&gt;|No| O[Keep Local Images]
+N --&gt; P{Push Success?}
+P --&gt;|No| Q[Warning: Registry Push Failed]
+P --&gt;|Yes| R[Update Kustomize References]
 
-    N --&gt; P{Push Success?}
-    P --&gt;|No| Q[Warning: Registry Push Failed]
-    P --&gt;|Yes| R[Update Kustomize References]
+O --&gt; S[Build Complete]
+Q --&gt; S
+R --&gt; S
 
-    O --&gt; S[Build Complete]
-    Q --&gt; S
-    R --&gt; S
-
-    S --&gt; T[Generate Build Report]</code></pre>
+S --&gt; T[Generate Build Report]
+</code></pre>
+<p>```</p>
 <h3 id="validation-architecture">Validation Architecture<a class="headerlink" href="#validation-architecture" title="Permanent link">&para;</a></h3>
-<pre class="mermaid"><code>graph TD
+<p>```mermaid
+graph TD
     A[validate_bootstrap.sh] --&gt; B[Infrastructure Validation]
     B --&gt; C[Check Namespace]
     B --&gt; D[Check RBAC]
-    B --&gt; E[Check Storage]
+    B --&gt; E[Check Storage]</p>
+<pre><code>F[Component Validation] --&gt; G[Coordination Engine]
+F --&gt; H[AI/ML Workbench]
+F --&gt; I[Model Serving]
+F --&gt; J[Monitoring]
 
-    F[Component Validation] --&gt; G[Coordination Engine]
-    F --&gt; H[AI/ML Workbench]
-    F --&gt; I[Model Serving]
-    F --&gt; J[Monitoring]
+K[Integration Validation] --&gt; L[Prometheus Integration]
+K --&gt; M[Gitea Integration]
+K --&gt; N[Storage Integration]
 
-    K[Integration Validation] --&gt; L[Prometheus Integration]
-    K --&gt; M[Gitea Integration]
-    K --&gt; N[Storage Integration]
+O[Security Validation] --&gt; P[Secret Configuration]
+O --&gt; Q[Network Policies]
+O --&gt; R[RBAC Compliance]
 
-    O[Security Validation] --&gt; P[Secret Configuration]
-    O --&gt; Q[Network Policies]
-    O --&gt; R[RBAC Compliance]
+B --&gt; S[Validation Report]
+F --&gt; S
+K --&gt; S
+O --&gt; S
 
-    B --&gt; S[Validation Report]
-    F --&gt; S
-    K --&gt; S
-    O --&gt; S
+S --&gt; T{All Checks Pass?}
+T --&gt;|Yes| U[Success: Deployment Ready]
+T --&gt;|No| V[Error: Issues Found]
 
-    S --&gt; T{All Checks Pass?}
-    T --&gt;|Yes| U[Success: Deployment Ready]
-    T --&gt;|No| V[Error: Issues Found]
-
-    V --&gt; W[Generate Remediation Guide]</code></pre>
+V --&gt; W[Generate Remediation Guide]
+</code></pre>
+<p>```</p>
 <h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">&para;</a></h2>
 <h3 id="1-bootstrap-script-architecture">1. <strong>Bootstrap Script Architecture</strong><a class="headerlink" href="#1-bootstrap-script-architecture" title="Permanent link">&para;</a></h3>
 <p>The <code>bootstrap.sh</code> script implements a modular, phase-based deployment approach:</p>
