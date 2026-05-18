@@ -26,4 +26,15 @@ This section contains how-to documentation following the Diataxis framework.
 
 ### Deployment and Operations
 
-- **[Deploy to Production](./deploy-to-production.md)** - Instructions for deploying the Self-Healing Platform to production environments
+- **[Deploy on SNO](./deploy-on-sno.md)** - Deploy the platform on Single Node OpenShift with MCG-only storage
+- **[Deploy to Production](./deploy-to-production.md)** - Production deployment procedures with readiness checklist, HA configuration, and monitoring
+- **[Deploy MCP Server](./deploy-mcp-server-lightspeed.md)** - Deploy Model Context Protocol server for OpenShift Lightspeed integration
+
+### Testing and Validation
+
+- **[Bootstrap Testing](./bootstrap-testing.md)** - Comprehensive testing procedures for bootstrap system and deployment automation
+
+### Integration and Advanced Topics
+
+- **[Lightspeed Notebook Feedback Loop](./lightspeed-notebook-feedback-loop.md)** - Integrate notebooks with OpenShift Lightspeed for AI-powered assistance
+- **[Test Custom Applications with MCP](./test-custom-applications-with-mcp.md)** - Test custom AI applications using Model Context Protocol
