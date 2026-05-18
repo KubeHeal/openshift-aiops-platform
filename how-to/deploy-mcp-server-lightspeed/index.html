@@ -1,0 +1,2432 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/how-to/deploy-mcp-server-lightspeed/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>How-To: Deploy MCP Server and Configure OpenShift Lightspeed - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-to-deploy-mcp-server-and-configure-openshift-lightspeed" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              How-To: Deploy MCP Server and Configure OpenShift Lightspeed
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Start
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-deploy-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Deploy MCP Server
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/how-to/deploy-mcp-server-lightspeed.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="how-to-deploy-mcp-server-and-configure-openshift-lightspeed">How-To: Deploy MCP Server and Configure OpenShift Lightspeed<a class="headerlink" href="#how-to-deploy-mcp-server-and-configure-openshift-lightspeed" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>This guide provides quick deployment instructions for the Cluster Health MCP Server and its integration with OpenShift Lightspeed. For architectural details, see <a href="../../adrs/014-openshift-aiops-platform-mcp-server/">ADR-014</a>.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<ul>
+<li>OpenShift 4.18+ cluster with admin access</li>
+<li>Self-healing platform deployed (<code>self-healing-platform</code> namespace exists)</li>
+<li>OpenShift Lightspeed operator installed</li>
+<li>MCP server image built (via BuildConfig)</li>
+</ul>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<h3 id="1-deploy-mcp-server">1. Deploy MCP Server<a class="headerlink" href="#1-deploy-mcp-server" title="Permanent link">&para;</a></h3>
+<p>Deploy the MCP server using Kustomize:</p>
+<p>```bash</p>
+<h1 id="development-deployment-with-debug-logging">Development deployment (with debug logging)<a class="headerlink" href="#development-deployment-with-debug-logging" title="Permanent link">&para;</a></h1>
+<p>oc apply -k k8s/mcp-server/overlays/development</p>
+<h1 id="or-production-deployment">OR: Production deployment<a class="headerlink" href="#or-production-deployment" title="Permanent link">&para;</a></h1>
+<p>oc apply -k k8s/mcp-server/base
+```</p>
+<p><strong>Verify deployment:</strong></p>
+<p><code>bash
+oc get deployment cluster-health-mcp-server -n self-healing-platform
+oc get service cluster-health-mcp-server -n self-healing-platform
+oc logs deployment/cluster-health-mcp-server -n self-healing-platform</code></p>
+<h3 id="2-llm-provider-configuration">2. LLM Provider Configuration<a class="headerlink" href="#2-llm-provider-configuration" title="Permanent link">&para;</a></h3>
+<p>OpenShift Lightspeed supports multiple LLM providers. For complete configuration details, see the <a href="https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/1.0/html/configure/ols-configuring-openshift-lightspeed">official Red Hat documentation</a>.</p>
+<h4 id="supported-providers">Supported Providers<a class="headerlink" href="#supported-providers" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Type</th>
+<th>Secret Key Name</th>
+<th>Example Config</th>
+<th>Get API Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenAI</td>
+<td><code>openai</code></td>
+<td><code>apitoken</code></td>
+<td><code>olsconfig-openai.yaml</code></td>
+<td>https://platform.openai.com/api-keys</td>
+</tr>
+<tr>
+<td>Google Gemini</td>
+<td><code>openai</code> (compatible)</td>
+<td><code>apitoken</code></td>
+<td><code>olsconfig-google.yaml</code></td>
+<td>https://aistudio.google.com/apikey</td>
+</tr>
+<tr>
+<td>Anthropic Claude</td>
+<td><code>openai</code> (compatible)</td>
+<td><code>apitoken</code></td>
+<td><code>olsconfig-anthropic.yaml</code></td>
+<td>https://console.anthropic.com/</td>
+</tr>
+<tr>
+<td>Red Hat AI vLLM</td>
+<td><code>rhelai_vllm</code></td>
+<td><code>apitoken</code></td>
+<td><code>olsconfig-rhelai-vllm.yaml</code></td>
+<td>Internal Red Hat AI</td>
+</tr>
+<tr>
+<td>Azure OpenAI</td>
+<td><code>azure_openai</code></td>
+<td><code>apitoken</code></td>
+<td>See official docs</td>
+<td>https://portal.azure.com</td>
+</tr>
+<tr>
+<td>IBM watsonx</td>
+<td><code>watsonx</code></td>
+<td><code>apitoken</code></td>
+<td>See official docs</td>
+<td>IBM Cloud Console</td>
+</tr>
+</tbody>
+</table>
+<p><strong>IMPORTANT</strong>: The secret key must be named <code>apitoken</code> (not <code>apiKey</code>, <code>api_key</code>, etc.). OpenShift Lightspeed validates this and will fail reconciliation if the key name is incorrect.</p>
+<h4 id="secret-creation-examples">Secret Creation Examples<a class="headerlink" href="#secret-creation-examples" title="Permanent link">&para;</a></h4>
+<p><strong>OpenAI</strong>:
+```bash</p>
+<h1 id="get-api-key-from-httpsplatformopenaicomapi-keys">Get API key from https://platform.openai.com/api-keys<a class="headerlink" href="#get-api-key-from-httpsplatformopenaicomapi-keys" title="Permanent link">&para;</a></h1>
+<p>oc create secret generic openai-api-key \
+  -n openshift-lightspeed \
+  --from-literal=apitoken='sk-proj-...'
+```</p>
+<p><strong>Google Gemini</strong>:
+```bash</p>
+<h1 id="get-api-key-from-httpsaistudiogooglecomapikey">Get API key from https://aistudio.google.com/apikey<a class="headerlink" href="#get-api-key-from-httpsaistudiogooglecomapikey" title="Permanent link">&para;</a></h1>
+<h1 id="enable-generative-language-api-httpsconsolecloudgooglecomapislibrarygenerativelanguagegoogleapiscom">Enable Generative Language API: https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com<a class="headerlink" href="#enable-generative-language-api-httpsconsolecloudgooglecomapislibrarygenerativelanguagegoogleapiscom" title="Permanent link">&para;</a></h1>
+<h1 id="ensure-billing-is-enabled-on-your-google-cloud-project">Ensure billing is enabled on your Google Cloud project<a class="headerlink" href="#ensure-billing-is-enabled-on-your-google-cloud-project" title="Permanent link">&para;</a></h1>
+<p>oc create secret generic google-api-key \
+  -n openshift-lightspeed \
+  --from-literal=apitoken='AIzaSy...'
+```</p>
+<p><strong>Anthropic Claude</strong>:
+```bash</p>
+<h1 id="get-api-key-from-httpsconsoleanthropiccom">Get API key from https://console.anthropic.com/<a class="headerlink" href="#get-api-key-from-httpsconsoleanthropiccom" title="Permanent link">&para;</a></h1>
+<p>oc create secret generic anthropic-api-key \
+  -n openshift-lightspeed \
+  --from-literal=apitoken='sk-ant-...'
+```</p>
+<p><strong>Red Hat AI vLLM</strong>:
+```bash</p>
+<h1 id="for-internal-red-hat-ai-deployments">For internal Red Hat AI deployments<a class="headerlink" href="#for-internal-red-hat-ai-deployments" title="Permanent link">&para;</a></h1>
+<p>oc create secret generic rhelai-api-key \
+  -n openshift-lightspeed \
+  --from-literal=apitoken='YOUR_RHELAI_TOKEN'
+```</p>
+<h3 id="3-create-olsconfig">3. Create OLSConfig<a class="headerlink" href="#3-create-olsconfig" title="Permanent link">&para;</a></h3>
+<p>Create an OLSConfig resource to integrate the MCP server with OpenShift Lightspeed. This configuration is <strong>manually customized</strong> based on your LLM provider.</p>
+<p><strong>IMPORTANT</strong>: See the <a href="https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/1.0/html/configure/ols-configuring-openshift-lightspeed">official Red Hat OpenShift Lightspeed documentation</a> for complete provider configuration details.</p>
+<h4 id="olsconfig-structure">OLSConfig Structure<a class="headerlink" href="#olsconfig-structure" title="Permanent link">&para;</a></h4>
+<p>The OLSConfig supports multiple LLM providers. Choose the configuration that matches your provider:</p>
+<p>```yaml
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  name: cluster  # MUST be 'cluster' (cluster-scoped singleton)
+spec:
+  # Enable MCP Server integration
+  featureGates:
+    - MCPServer</p>
+<p># LLM Provider configuration (choose one or configure multiple)
+  llm:
+    providers:
+      # OpenAI (GPT-4, GPT-4o)
+      - name: openai
+        type: openai
+        url: "https://api.openai.com/v1"
+        credentialsSecretRef:
+          name: openai-api-key
+        models:
+          - name: gpt-5.2-codex    #  Target for complex tasks
+          - name: gpt-5-mini       #  Target for default
+          - name: gpt-4o           #  Legacy</p>
+<pre><code>  # Google Gemini (OpenAI-compatible endpoint)
+  - name: google
+    type: openai
+    url: "https://generativelanguage.googleapis.com/v1beta/openai"
+    credentialsSecretRef:
+      name: google-api-key
+    models:
+      - name: gemini-3-pro-preview  #  Multimodal &amp; Reasoning
+      - name: gemini-2.5-flash      #  High speed / Low cost
+
+  # IBM BAM (Granite models)
+  - name: bam
+    type: bam
+    url: "https://bam-api.res.ibm.com"
+    credentialsSecretRef:
+      name: bam-api-key
+    models:
+      - name: ibm/granite-4-h-small  #  Enterprise Workhorse
+      - name: ibm/granite-4-h-tiny   #  Edge/Low-Latency
+
+  # Azure OpenAI
+  - name: azure
+    type: azure_openai
+    url: "https://YOUR_RESOURCE.openai.azure.com"
+    credentialsSecretRef:
+      name: azure-openai-key
+    models:
+      - name: gpt-5            #  Requires matching deployment
+      - name: gpt-5-mini       #  High efficiency
+      - name: gpt-4.1          # [16] Stable baseline
+</code></pre>
+<p># MCP Server configuration (integrates with self-healing platform)
+  mcpServers:
+    - name: cluster-health
+      streamableHTTP:
+        url: http://mcp-server.self-healing-platform.svc:8080/mcp
+        timeout: 30
+        enableSSE: true</p>
+<p># OLS deployment configuration
+  ols:
+    defaultModel: gpt-4o-mini     # Choose your default model
+    defaultProvider: openai        # Choose your default provider
+    deployment:
+      replicas: 1
+    conversationCache:
+      type: postgres               # REQUIRED: Only 'postgres' is supported
+      redis:
+        maxMemory: "2000mb"
+        maxMemoryPolicy: "allkeys-lru"</p>
+<p># Console plugin configuration
+  console:
+    enabled: true
+```</p>
+<p><strong>Apply your customized configuration:</strong></p>
+<p>```bash</p>
+<h1 id="save-the-above-yaml-to-a-file-eg-olsconfigyaml-with-your-provider-details">Save the above YAML to a file (e.g., olsconfig.yaml) with your provider details<a class="headerlink" href="#save-the-above-yaml-to-a-file-eg-olsconfigyaml-with-your-provider-details" title="Permanent link">&para;</a></h1>
+<h1 id="then-apply-it">Then apply it:<a class="headerlink" href="#then-apply-it" title="Permanent link">&para;</a></h1>
+<p>oc apply -f olsconfig.yaml
+```</p>
+<p><strong>Verify configuration:</strong></p>
+<p>```bash</p>
+<h1 id="check-olsconfig-exists-name-must-be-cluster">Check OLSConfig exists (name must be 'cluster')<a class="headerlink" href="#check-olsconfig-exists-name-must-be-cluster" title="Permanent link">&para;</a></h1>
+<p>oc get olsconfig cluster</p>
+<h1 id="view-detailed-status">View detailed status<a class="headerlink" href="#view-detailed-status" title="Permanent link">&para;</a></h1>
+<p>oc describe olsconfig cluster
+```</p>
+<p><strong>Check reconciliation status:</strong>
+```bash</p>
+<h1 id="watch-for-all-conditions-to-become-ready">Watch for all conditions to become Ready<a class="headerlink" href="#watch-for-all-conditions-to-become-ready" title="Permanent link">&para;</a></h1>
+<p>oc get olsconfig cluster -o jsonpath='{.status.conditions[<em>].type}' &amp;&amp; echo
+oc get olsconfig cluster -o jsonpath='{.status.conditions[</em>].status}' &amp;&amp; echo</p>
+<h1 id="check-specific-conditions">Check specific conditions<a class="headerlink" href="#check-specific-conditions" title="Permanent link">&para;</a></h1>
+<h1 id="-consolepluginready-true">- ConsolePluginReady: True<a class="headerlink" href="#-consolepluginready-true" title="Permanent link">&para;</a></h1>
+<h1 id="-cacheready-true">- CacheReady: True<a class="headerlink" href="#-cacheready-true" title="Permanent link">&para;</a></h1>
+<h1 id="-apiready-true-requires-valid-api-key">- ApiReady: True (requires valid API key)<a class="headerlink" href="#-apiready-true-requires-valid-api-key" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h4 id="configuration-requirements">Configuration Requirements<a class="headerlink" href="#configuration-requirements" title="Permanent link">&para;</a></h4>
+<p>Per <a href="https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/1.0/html/configure/ols-olsconfig-api-reference">Red Hat OpenShift Lightspeed CRD specification</a>:</p>
+<ol>
+<li><strong>metadata.name</strong>: MUST be <code>cluster</code> (cluster-scoped singleton resource)</li>
+<li><strong>conversationCache.type</strong>: MUST be <code>postgres</code> (only supported type, not <code>memory</code>)</li>
+<li><strong>Secret key name</strong>: MUST be <code>apitoken</code> (not <code>apiKey</code>, <code>api_key</code>, etc.)</li>
+<li><strong>MCP transport</strong>: MUST use <code>streamableHTTP</code> configuration (stdio not supported by CRD)</li>
+<li><strong>Feature gates</strong>: Include <code>MCPServer</code> to enable MCP functionality</li>
+<li><strong>Models</strong>: MUST be nested inside each provider's <code>models</code> array</li>
+<li><strong>Provider types</strong>: Supported values are <code>azure_openai</code>, <code>bam</code>, <code>openai</code>, <code>watsonx</code>, <code>rhoai_vllm</code>, <code>rhelai_vllm</code>, <code>fake_provider</code></li>
+</ol>
+<h4 id="provider-specific-notes">Provider-Specific Notes<a class="headerlink" href="#provider-specific-notes" title="Permanent link">&para;</a></h4>
+<p><strong>Google Gemini</strong>:
+- Configured as <code>openai</code> type (Google provides OpenAI-compatible endpoint)
+- URL: <code>https://generativelanguage.googleapis.com/v1beta/openai</code>
+- Models: <code>gemini-1.5-pro</code>, <code>gemini-1.5-flash</code>, or <code>models/gemini-3-pro-preview</code> (experimental)
+- Requires Generative Language API enabled and billing configured</p>
+<p><strong>Anthropic Claude</strong>:
+- Configured as <code>openai</code> type (Anthropic provides OpenAI-compatible API)
+- URL: <code>https://api.anthropic.com/v1</code>
+- Models: <code>claude-3-5-sonnet-20241022</code>, <code>claude-3-5-haiku-20241022</code></p>
+<p><strong>Red Hat AI vLLM</strong>:
+- Uses dedicated <code>rhelai_vllm</code> provider type
+- URL: Internal cluster service (e.g., <code>http://vllm-service.rhelai.svc.cluster.local:8000/v1</code>)
+- Models: IBM Granite models (<code>granite-3.1-8b-instruct</code>, <code>granite-3.1-2b-instruct</code>)</p>
+<h3 id="4-test-integration">4. Test Integration<a class="headerlink" href="#4-test-integration" title="Permanent link">&para;</a></h3>
+<p>Test the MCP server health endpoint:</p>
+<p>```bash</p>
+<h1 id="from-a-test-pod">From a test pod<a class="headerlink" href="#from-a-test-pod" title="Permanent link">&para;</a></h1>
+<p>oc run test-curl --image=registry.access.redhat.com/ubi9/ubi-minimal:latest \
+  --rm -i --restart=Never -n self-healing-platform -- \
+  curl -s http://cluster-health-mcp-server:3000/health
+```</p>
+<p>Expected response:</p>
+<p><code>json
+{
+  "status": "healthy",
+  "mcpServer": "cluster-health",
+  "version": "1.0.0"
+}</code></p>
+<h2 id="detailed-configuration">Detailed Configuration<a class="headerlink" href="#detailed-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="mcp-server-environment-variables">MCP Server Environment Variables<a class="headerlink" href="#mcp-server-environment-variables" title="Permanent link">&para;</a></h3>
+<p>Customize the deployment by editing environment variables:</p>
+<p>```yaml</p>
+<h1 id="k8smcp-serverbasedeploymentyaml">k8s/mcp-server/base/deployment.yaml<a class="headerlink" href="#k8smcp-serverbasedeploymentyaml" title="Permanent link">&para;</a></h1>
+<p>env:
+  - name: MCP_TRANSPORT
+    value: "stdio"  # or "http" for HTTP transport
+  - name: COORDINATION_ENGINE_URL
+    value: "http://coordination-engine:8080"
+  - name: LOG_LEVEL
+    value: "info"  # or "debug" for detailed logs
+  - name: NODE_ENV
+    value: "production"
+```</p>
+<h3 id="olsconfig-options">OLSConfig Options<a class="headerlink" href="#olsconfig-options" title="Permanent link">&para;</a></h3>
+<p>The OLSConfig supports multiple LLM providers:</p>
+<p>```yaml
+spec:
+  llm:
+    providers:
+      # OpenAI (default)
+      - name: openai
+        type: openai
+        url: "https://api.openai.com/v1"
+        credentialsSecretRef:
+          name: openai-api-key</p>
+<pre><code>  # IBM BAM (Granite models)
+  - name: bam
+    type: bam
+    url: "https://bam-api.res.ibm.com"
+    credentialsSecretRef:
+      name: bam-api-key
+
+  # Azure OpenAI
+  - name: azure
+    type: azure_openai
+    url: "https://YOUR_RESOURCE.openai.azure.com"
+    credentialsSecretRef:
+      name: azure-openai-key
+
+models:
+  - name: gpt-4o-mini      # Recommended for cost/performance
+    provider: openai
+  - name: gpt-4o           # For complex reasoning
+    provider: openai
+  - name: granite-13b-chat-v2  # Open source option
+    provider: bam
+</code></pre>
+<p>ols:
+    defaultModel: gpt-4o-mini  # Choose your default
+    defaultProvider: openai
+```</p>
+<h3 id="mcp-server-tools-and-resources">MCP Server Tools and Resources<a class="headerlink" href="#mcp-server-tools-and-resources" title="Permanent link">&para;</a></h3>
+<p>The MCP server exposes these capabilities to OpenShift Lightspeed:</p>
+<p><strong>Tools</strong> (Actions):
+- <code>trigger-remediation</code> - Initiate self-healing actions
+- <code>analyze-anomalies</code> - Run anomaly detection analysis
+- <code>get-cluster-health</code> - Retrieve current cluster health status
+- <code>query-incidents</code> - Search incident history</p>
+<p><strong>Resources</strong> (Data):
+- <code>cluster://health</code> - Real-time cluster health metrics
+- <code>cluster://incidents</code> - Incident history and details
+- <code>cluster://nodes</code> - Node health and status
+- <code>cluster://anomalies</code> - Detected anomalies</p>
+<h2 id="usage-examples">Usage Examples<a class="headerlink" href="#usage-examples" title="Permanent link">&para;</a></h2>
+<h3 id="ask-openshift-lightspeed">Ask OpenShift Lightspeed<a class="headerlink" href="#ask-openshift-lightspeed" title="Permanent link">&para;</a></h3>
+<p>Once configured, you can ask Lightspeed natural language questions:</p>
+<p>```
+You: "Show me the current cluster health"
+Lightspeed: <em>Uses MCP server's cluster://health resource</em></p>
+<p>You: "What incidents happened in the last hour?"
+Lightspeed: <em>Uses query-incidents tool</em></p>
+<p>You: "Trigger remediation for incident INC-12345"
+Lightspeed: <em>Uses trigger-remediation tool</em>
+```</p>
+<h3 id="programmatic-access-from-notebooks">Programmatic Access (from Notebooks)<a class="headerlink" href="#programmatic-access-from-notebooks" title="Permanent link">&para;</a></h3>
+<p>```python
+import requests</p>
+<h1 id="mcp-server-health">MCP server health<a class="headerlink" href="#mcp-server-health" title="Permanent link">&para;</a></h1>
+<p>response = requests.get('http://cluster-health-mcp-server.self-healing-platform.svc:3000/health')
+print(response.json())</p>
+<h1 id="openshift-lightspeed-query-requires-auth-token">OpenShift Lightspeed query (requires auth token)<a class="headerlink" href="#openshift-lightspeed-query-requires-auth-token" title="Permanent link">&para;</a></h1>
+<p>import openai
+openai.api_base = "https://lightspeed-console-openshift-lightspeed.apps.YOUR_CLUSTER/api"
+response = openai.ChatCompletion.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": "Show cluster health"}]
+)
+print(response.choices[0].message.content)
+```</p>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="mcp-server-not-starting">MCP Server Not Starting<a class="headerlink" href="#mcp-server-not-starting" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="check-pod-status">Check pod status<a class="headerlink" href="#check-pod-status" title="Permanent link">&para;</a></h1>
+<p>oc get pods -n self-healing-platform -l app=cluster-health-mcp-server</p>
+<h1 id="check-logs">Check logs<a class="headerlink" href="#check-logs" title="Permanent link">&para;</a></h1>
+<p>oc logs deployment/cluster-health-mcp-server -n self-healing-platform --tail=50</p>
+<h1 id="common-issues">Common issues:<a class="headerlink" href="#common-issues" title="Permanent link">&para;</a></h1>
+<h1 id="1-image-not-found-ensure-buildconfig-completed">1. Image not found - ensure BuildConfig completed<a class="headerlink" href="#1-image-not-found-ensure-buildconfig-completed" title="Permanent link">&para;</a></h1>
+<p>oc get build -n self-healing-platform | grep mcp-server</p>
+<h1 id="2-serviceaccount-missing-create-if-needed">2. ServiceAccount missing - create if needed<a class="headerlink" href="#2-serviceaccount-missing-create-if-needed" title="Permanent link">&para;</a></h1>
+<p>oc get sa self-healing-operator -n self-healing-platform
+```</p>
+<h3 id="openshift-lightspeed-not-connecting">OpenShift Lightspeed Not Connecting<a class="headerlink" href="#openshift-lightspeed-not-connecting" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="check-olsconfig-status">Check OLSConfig status<a class="headerlink" href="#check-olsconfig-status" title="Permanent link">&para;</a></h1>
+<p>oc get olsconfig cluster-health-assistant -o yaml</p>
+<h1 id="verify-mcp-server-service">Verify MCP server service<a class="headerlink" href="#verify-mcp-server-service" title="Permanent link">&para;</a></h1>
+<p>oc get service cluster-health-mcp-server -n self-healing-platform</p>
+<h1 id="test-connectivity-from-lightspeed-namespace">Test connectivity from Lightspeed namespace<a class="headerlink" href="#test-connectivity-from-lightspeed-namespace" title="Permanent link">&para;</a></h1>
+<p>oc run test-curl -n openshift-lightspeed --image=curlimages/curl:latest \
+  --rm -i --restart=Never -- \
+  curl -v http://cluster-health-mcp-server.self-healing-platform.svc:3000/health
+```</p>
+<h3 id="llm-provider-issues">LLM Provider Issues<a class="headerlink" href="#llm-provider-issues" title="Permanent link">&para;</a></h3>
+<p><strong>Error: "missing key 'apitoken'"</strong></p>
+<p>This is the most common error. The secret must have a key named <code>apitoken</code>.</p>
+<p>```bash</p>
+<h1 id="check-current-secret-keys">Check current secret keys<a class="headerlink" href="#check-current-secret-keys" title="Permanent link">&para;</a></h1>
+<p>oc get secret google-api-key -n openshift-lightspeed -o jsonpath='{.data}' | jq</p>
+<h1 id="if-it-shows-apikey-instead-of-apitoken-fix-it">If it shows "apiKey" instead of "apitoken", fix it:<a class="headerlink" href="#if-it-shows-apikey-instead-of-apitoken-fix-it" title="Permanent link">&para;</a></h1>
+<h1 id="1-get-the-current-value">1. Get the current value<a class="headerlink" href="#1-get-the-current-value" title="Permanent link">&para;</a></h1>
+<p>API_KEY=$(oc get secret google-api-key -n openshift-lightspeed -o jsonpath='{.data.apiKey}' | base64 -d)</p>
+<h1 id="2-delete-and-recreate-with-correct-key">2. Delete and recreate with correct key<a class="headerlink" href="#2-delete-and-recreate-with-correct-key" title="Permanent link">&para;</a></h1>
+<p>oc delete secret google-api-key -n openshift-lightspeed
+oc create secret generic google-api-key -n openshift-lightspeed --from-literal=apitoken="$API_KEY"
+```</p>
+<p><strong>Error: "Unsupported value: \"google\""</strong></p>
+<p>Google is not a native provider type. Use <code>type: openai</code> with Google's OpenAI-compatible endpoint:
+<code>yaml
+providers:
+  - name: google-gemini
+    type: openai
+    url: "https://generativelanguage.googleapis.com/v1beta/openai"</code></p>
+<p><strong>Error: "Unsupported value: \"memory\""</strong></p>
+<p>Only <code>postgres</code> is supported for conversation cache:
+<code>yaml
+conversationCache:
+  type: postgres</code></p>
+<p><strong>Error: "Required value for field spec.llm.providers[0].models"</strong></p>
+<p>Models must be inside each provider configuration:
+<code>yaml
+providers:
+  - name: google-gemini
+    type: openai
+    models:              # ✅ Inside provider
+      - name: gemini-1.5-pro</code></p>
+<p><strong>General Debugging</strong>:
+```bash</p>
+<h1 id="check-api-key-secret">Check API key secret<a class="headerlink" href="#check-api-key-secret" title="Permanent link">&para;</a></h1>
+<p>oc get secret google-api-key -n openshift-lightspeed -o yaml</p>
+<h1 id="verify-olsconfig-provider-configuration">Verify OLSConfig provider configuration<a class="headerlink" href="#verify-olsconfig-provider-configuration" title="Permanent link">&para;</a></h1>
+<p>oc get olsconfig cluster -o jsonpath='{.spec.llm.providers}' | jq .</p>
+<h1 id="check-reconciliation-status-and-errors">Check reconciliation status and errors<a class="headerlink" href="#check-reconciliation-status-and-errors" title="Permanent link">&para;</a></h1>
+<p>oc get olsconfig cluster -o yaml | grep -A 10 "conditions:"</p>
+<h1 id="check-lightspeed-app-server-logs-for-llm-connection-errors">Check lightspeed-app-server logs for LLM connection errors<a class="headerlink" href="#check-lightspeed-app-server-logs-for-llm-connection-errors" title="Permanent link">&para;</a></h1>
+<p>oc logs -n openshift-lightspeed deployment/lightspeed-app-server -c lightspeed-service-api --tail=50 | grep -i "llm|error"
+```</p>
+<h3 id="provider-specific-issues">Provider-Specific Issues<a class="headerlink" href="#provider-specific-issues" title="Permanent link">&para;</a></h3>
+<p>For detailed provider configuration, see <a href="https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/1.0/html/configure/ols-configuring-openshift-lightspeed">Red Hat OpenShift Lightspeed documentation</a>.</p>
+<p><strong>OpenAI</strong>:</p>
+<p>Error: <code>API key not valid</code>
+```bash</p>
+<h1 id="verify-api-key-is-correct">Verify API key is correct<a class="headerlink" href="#verify-api-key-is-correct" title="Permanent link">&para;</a></h1>
+<h1 id="get-new-key-from-httpsplatformopenaicomapi-keys">Get new key from: https://platform.openai.com/api-keys<a class="headerlink" href="#get-new-key-from-httpsplatformopenaicomapi-keys" title="Permanent link">&para;</a></h1>
+<h1 id="check-key-format-should-start-with-sk-proj-or-sk-">Check key format (should start with 'sk-proj-' or 'sk-')<a class="headerlink" href="#check-key-format-should-start-with-sk-proj-or-sk-" title="Permanent link">&para;</a></h1>
+<p>oc get secret openai-api-key -n openshift-lightspeed -o jsonpath='{.data.apitoken}' | base64 -d</p>
+<h1 id="recreate-secret-if-needed">Recreate secret if needed<a class="headerlink" href="#recreate-secret-if-needed" title="Permanent link">&para;</a></h1>
+<p>oc delete secret openai-api-key -n openshift-lightspeed
+oc create secret generic openai-api-key \
+  -n openshift-lightspeed \
+  --from-literal=apitoken='sk-proj-YOUR_KEY_HERE'
+```</p>
+<p>Error: <code>Rate limit exceeded</code>
+- Upgrade to paid tier at https://platform.openai.com/account/billing
+- Or wait for rate limit reset (depends on your plan)
+- Consider using <code>gpt-4o-mini</code> for lower costs</p>
+<p><strong>Google Gemini</strong>:</p>
+<p>Error: <code>API key not valid. Please pass a valid API key</code>
+```bash</p>
+<h1 id="1-get-api-key-from-httpsaistudiogooglecomapikey">1. Get API key from: https://aistudio.google.com/apikey<a class="headerlink" href="#1-get-api-key-from-httpsaistudiogooglecomapikey" title="Permanent link">&para;</a></h1>
+<h1 id="2-enable-generative-language-api">2. Enable Generative Language API:<a class="headerlink" href="#2-enable-generative-language-api" title="Permanent link">&para;</a></h1>
+<h1 id="httpsconsolecloudgooglecomapislibrarygenerativelanguagegoogleapiscom">https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com<a class="headerlink" href="#httpsconsolecloudgooglecomapislibrarygenerativelanguagegoogleapiscom" title="Permanent link">&para;</a></h1>
+<h1 id="3-ensure-billing-is-enabled-on-your-google-cloud-project">3. Ensure billing is enabled on your Google Cloud project<a class="headerlink" href="#3-ensure-billing-is-enabled-on-your-google-cloud-project" title="Permanent link">&para;</a></h1>
+<h1 id="4-recreate-secret-with-correct-api-key-starts-with-aizasy">4. Recreate secret with correct API key (starts with 'AIzaSy')<a class="headerlink" href="#4-recreate-secret-with-correct-api-key-starts-with-aizasy" title="Permanent link">&para;</a></h1>
+<p>oc delete secret google-api-key -n openshift-lightspeed
+oc create secret generic google-api-key \
+  -n openshift-lightspeed \
+  --from-literal=apitoken='AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'</p>
+<h1 id="restart-lightspeed-pods-to-pick-up-new-key">Restart lightspeed pods to pick up new key<a class="headerlink" href="#restart-lightspeed-pods-to-pick-up-new-key" title="Permanent link">&para;</a></h1>
+<p>oc rollout restart deployment lightspeed-app-server -n openshift-lightspeed
+```</p>
+<p>Error: <code>Model not found</code>
+- Google Gemini models via OpenAI-compatible endpoint: <code>gemini-1.5-pro</code>, <code>gemini-1.5-flash</code>
+- Experimental models may require <code>models/</code> prefix: <code>models/gemini-3-pro-preview</code>
+- Check available models at: https://ai.google.dev/gemini-api/docs/models/gemini</p>
+<p>Configuration:
+- Provider type: <code>openai</code> (not <code>google</code>)
+- URL: <code>https://generativelanguage.googleapis.com/v1beta/openai</code></p>
+<p><strong>Anthropic Claude</strong>:</p>
+<p>Error: <code>Invalid API key</code>
+```bash</p>
+<h1 id="get-api-key-from-httpsconsoleanthropiccom_1">Get API key from: https://console.anthropic.com/<a class="headerlink" href="#get-api-key-from-httpsconsoleanthropiccom_1" title="Permanent link">&para;</a></h1>
+<h1 id="api-key-format-starts-with-sk-ant-">API key format: starts with 'sk-ant-'<a class="headerlink" href="#api-key-format-starts-with-sk-ant-" title="Permanent link">&para;</a></h1>
+<p>oc delete secret anthropic-api-key -n openshift-lightspeed
+oc create secret generic anthropic-api-key \
+  -n openshift-lightspeed \
+  --from-literal=apitoken='sk-ant-YOUR_KEY_HERE'
+```</p>
+<p>Error: <code>Model not found</code>
+- Anthropic Claude models: <code>claude-3-5-sonnet-20241022</code>, <code>claude-3-5-haiku-20241022</code>, <code>claude-3-opus-20240229</code>
+- Use full model name with date suffix
+- Check latest models at: https://docs.anthropic.com/en/docs/about-claude/models</p>
+<p>Configuration:
+- Provider type: <code>openai</code> (Anthropic supports OpenAI-compatible API)
+- URL: <code>https://api.anthropic.com/v1</code></p>
+<p><strong>Red Hat AI vLLM</strong>:</p>
+<p>Error: <code>Connection refused</code> or <code>Service not found</code>
+```bash</p>
+<h1 id="check-vllm-service-exists">Check vLLM service exists<a class="headerlink" href="#check-vllm-service-exists" title="Permanent link">&para;</a></h1>
+<p>oc get service vllm-service -n rhelai</p>
+<h1 id="verify-service-url-in-olsconfig-matches-actual-deployment">Verify service URL in OLSConfig matches actual deployment<a class="headerlink" href="#verify-service-url-in-olsconfig-matches-actual-deployment" title="Permanent link">&para;</a></h1>
+<p>oc get olsconfig cluster -o jsonpath='{.spec.llm.providers[?(@.name=="rhelai-vllm")].url}'</p>
+<h1 id="test-connectivity-from-lightspeed-namespace_1">Test connectivity from lightspeed namespace<a class="headerlink" href="#test-connectivity-from-lightspeed-namespace_1" title="Permanent link">&para;</a></h1>
+<p>oc run test-curl -n openshift-lightspeed --image=curlimages/curl:latest \
+  --rm -i --restart=Never -- \
+  curl -v http://vllm-service.rhelai.svc.cluster.local:8000/v1/models
+```</p>
+<p>Error: <code>Model not found</code>
+- Verify model name matches deployed model in vLLM service
+- Common IBM Granite models: <code>granite-3.1-8b-instruct</code>, <code>granite-3.1-2b-instruct</code>
+- Check deployed models:
+  <code>bash
+  oc exec -n rhelai &lt;vllm-pod&gt; -- curl http://localhost:8000/v1/models</code></p>
+<p>Configuration:
+- Provider type: <code>rhelai_vllm</code> (specific type for Red Hat AI)
+- URL: Internal cluster service (e.g., <code>http://vllm-service.rhelai.svc.cluster.local:8000/v1</code>)
+- Requires internal Red Hat AI deployment</p>
+<p><strong>Azure OpenAI</strong>:</p>
+<p>For Azure OpenAI configuration, see <a href="https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/1.0/html/configure/ols-configuring-openshift-lightspeed#ols-creating-lightspeed-cr-file-using-cli_ols-configuring-openshift-lightspeed">Red Hat official documentation</a>.</p>
+<p><strong>IBM watsonx</strong>:</p>
+<p>For IBM watsonx configuration, see <a href="https://docs.redhat.com/en/documentation/red_hat_openshift_lightspeed/1.0/html/configure/ols-configuring-openshift-lightspeed#ols-creating-lightspeed-cr-file-using-cli_ols-configuring-openshift-lightspeed">Red Hat official documentation</a>.</p>
+<h2 id="interacting-with-mcp-server-via-openshift-lightspeed">Interacting with MCP Server via OpenShift Lightspeed<a class="headerlink" href="#interacting-with-mcp-server-via-openshift-lightspeed" title="Permanent link">&para;</a></h2>
+<h3 id="overview_1">Overview<a class="headerlink" href="#overview_1" title="Permanent link">&para;</a></h3>
+<p>Once the MCP server is integrated with OpenShift Lightspeed, you can interact with your self-healing platform using natural language queries. The MCP server exposes cluster health data, incident management, and remediation tools through conversational AI.</p>
+<h3 id="accessing-openshift-lightspeed">Accessing OpenShift Lightspeed<a class="headerlink" href="#accessing-openshift-lightspeed" title="Permanent link">&para;</a></h3>
+<p><strong>Option 1: OpenShift Console</strong>
+1. Navigate to <strong>OpenShift Console</strong> → <strong>Help</strong> (top right)
+2. Click <strong>OpenShift Lightspeed</strong> or the chatbot icon
+3. Start asking questions about your cluster</p>
+<p><strong>Option 2: Command Line (if CLI integration available)</strong>
+```bash</p>
+<h1 id="check-if-lightspeed-cli-is-available">Check if Lightspeed CLI is available<a class="headerlink" href="#check-if-lightspeed-cli-is-available" title="Permanent link">&para;</a></h1>
+<p>oc lightspeed --help</p>
+<h1 id="example-query">Example query<a class="headerlink" href="#example-query" title="Permanent link">&para;</a></h1>
+<p>oc lightspeed query "What is the current cluster health status?"
+```</p>
+<h3 id="example-queries-and-mcp-tools">Example Queries and MCP Tools<a class="headerlink" href="#example-queries-and-mcp-tools" title="Permanent link">&para;</a></h3>
+<p>The MCP server provides several tools and resources. Here's how to interact with them:</p>
+<h4 id="1-cluster-health-queries">1. Cluster Health Queries<a class="headerlink" href="#1-cluster-health-queries" title="Permanent link">&para;</a></h4>
+<p><strong>Query</strong>: "What is the current health status of my cluster?"</p>
+<p><strong>MCP Tool Used</strong>: <code>get-cluster-health</code></p>
+<p><strong>Response Example</strong>:
+<code>The cluster is healthy with:
+- 7 nodes (3 control-plane, 4 workers)
+- 95% node availability
+- 2 active InferenceServices
+- 1 coordination engine running
+- No critical alerts</code></p>
+<p><strong>Related Notebook</strong>: <code>notebooks/00-setup/00-platform-readiness-validation.ipynb</code>
+- <strong>Update When</strong>: Health checks fail, new validation criteria needed
+- <strong>What to Update</strong>: Add new validation functions, update health scoring logic</p>
+<hr />
+<h4 id="2-incident-and-anomaly-queries">2. Incident and Anomaly Queries<a class="headerlink" href="#2-incident-and-anomaly-queries" title="Permanent link">&para;</a></h4>
+<p><strong>Query</strong>: "Show me recent anomalies detected in the last hour"</p>
+<p><strong>MCP Tool Used</strong>: <code>query-incidents</code></p>
+<p><strong>Response Example</strong>:
+```
+Found 3 anomalies in the last hour:
+1. High CPU usage on worker-2 (95% @ 14:23 UTC)
+2. Memory pressure on predictive-analytics pod (87% @ 14:45 UTC)
+3. Increased API latency in coordination-engine (450ms @ 15:01 UTC)</p>
+<p>All anomalies are being monitored. No immediate action required.
+```</p>
+<p><strong>Related Notebooks</strong>:
+- <code>notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb</code>
+- <code>notebooks/02-anomaly-detection/02-time-series-anomaly-detection.ipynb</code></p>
+<p><strong>Update When</strong>:
+- False positives/negatives detected
+- New anomaly patterns emerge
+- Model accuracy drops below threshold</p>
+<p><strong>What to Update</strong>:
+- Adjust isolation forest contamination parameter
+- Retrain time-series models with recent data
+- Update threshold values based on observed patterns</p>
+<hr />
+<h4 id="3-remediation-workflow-queries">3. Remediation Workflow Queries<a class="headerlink" href="#3-remediation-workflow-queries" title="Permanent link">&para;</a></h4>
+<p><strong>Query</strong>: "Trigger remediation for the high memory usage anomaly"</p>
+<p><strong>MCP Tool Used</strong>: <code>trigger-remediation</code></p>
+<p><strong>Response Example</strong>:
+```
+Remediation initiated for incident #1234:
+- Type: Memory pressure
+- Target: predictive-analytics-predictor
+- Action: Scale down replicas and restart
+- Status: In progress
+- Estimated completion: 2 minutes</p>
+<p>Tracking remediation workflow...
+```</p>
+<p><strong>Related Notebooks</strong>:
+- <code>notebooks/03-self-healing-logic/coordination-engine-integration.ipynb</code>
+- <code>notebooks/03-self-healing-logic/hybrid-healing-workflows.ipynb</code></p>
+<p><strong>Update When</strong>:
+- Remediation actions fail or incomplete
+- New remediation strategies needed
+- Coordination engine logic requires tuning</p>
+<p><strong>What to Update</strong>:
+- Add new remediation action types
+- Update coordination engine decision logic
+- Adjust priority scoring for conflicts</p>
+<hr />
+<h4 id="4-model-serving-health-queries">4. Model Serving Health Queries<a class="headerlink" href="#4-model-serving-health-queries" title="Permanent link">&para;</a></h4>
+<p><strong>Query</strong>: "How are my InferenceServices performing?"</p>
+<p><strong>MCP Resource Used</strong>: <code>cluster://anomalies</code></p>
+<p><strong>Response Example</strong>:
+```
+InferenceService Status:
+1. predictive-analytics: Ready (2 replicas, 99.5% uptime)
+   - Average latency: 45ms
+   - Requests/min: 120
+   - Error rate: 0.1%</p>
+<ol>
+<li>anomaly-detector: Ready (1 replica, 98.2% uptime)</li>
+<li>Average latency: 78ms</li>
+<li>Requests/min: 85</li>
+<li>Error rate: 0.3%
+```</li>
+</ol>
+<p><strong>Related Notebooks</strong>:
+- <code>notebooks/04-model-serving/kserve-model-deployment.ipynb</code>
+- <code>notebooks/07-monitoring-operations/model-performance-monitoring.ipynb</code></p>
+<p><strong>Update When</strong>:
+- Model performance degrades
+- Latency increases beyond SLA
+- Error rates spike</p>
+<p><strong>What to Update</strong>:
+- Retrain models with recent data
+- Adjust KServe autoscaling configuration
+- Optimize model inference code
+- Update model serving resources (CPU/memory)</p>
+<hr />
+<h4 id="5-advanced-analytics-queries">5. Advanced Analytics Queries<a class="headerlink" href="#5-advanced-analytics-queries" title="Permanent link">&para;</a></h4>
+<p><strong>Query</strong>: "Run anomaly analysis on the past week's metrics"</p>
+<p><strong>MCP Tool Used</strong>: <code>analyze-anomalies</code></p>
+<p><strong>Response Example</strong>:
+```
+Weekly Anomaly Analysis (Dec 2-9, 2025):
+- Total anomalies detected: 47
+- Critical: 3, High: 12, Medium: 18, Low: 14
+- Most common: Resource exhaustion (18 instances)
+- Peak anomaly times: 14:00-16:00 UTC
+- Accuracy: 94% (based on validated incidents)</p>
+<p>Recommendations:
+1. Scale up during peak hours (14:00-16:00)
+2. Review resource limits for high-usage pods
+3. Consider adding predictive scaling policies
+```</p>
+<p><strong>Related Notebooks</strong>:
+- <code>notebooks/05-end-to-end-scenarios/resource-exhaustion-detection.ipynb</code>
+- <code>notebooks/05-end-to-end-scenarios/pod-crash-loop-healing.ipynb</code></p>
+<p><strong>Update When</strong>:
+- Analysis reveals new patterns
+- Recommendations not actionable
+- Accuracy drops below 90%</p>
+<p><strong>What to Update</strong>:
+- Enhance feature engineering
+- Add new anomaly detection algorithms
+- Update recommendation logic
+- Create new end-to-end scenario notebooks</p>
+<hr />
+<h3 id="iterative-improvement-workflow">Iterative Improvement Workflow<a class="headerlink" href="#iterative-improvement-workflow" title="Permanent link">&para;</a></h3>
+<p>Use this cycle to continuously improve your notebooks based on OpenShift Lightspeed interactions:</p>
+<p><code>┌─────────────────────────────────────────────────┐
+│  1. Interact with OpenShift Lightspeed          │
+│     └─&gt; Ask questions, trigger actions          │
+└────────────┬────────────────────────────────────┘
+             │
+             ▼
+┌─────────────────────────────────────────────────┐
+│  2. Monitor MCP Server Logs                     │
+│     └─&gt; oc logs deployment/cluster-health-mcp-  │
+│         server -n self-healing-platform          │
+└────────────┬────────────────────────────────────┘
+             │
+             ▼
+┌─────────────────────────────────────────────────┐
+│  3. Identify Gaps or Issues                     │
+│     - Inaccurate responses                      │
+│     - Missing data or tools                     │
+│     - Poor model performance                    │
+│     - Failed remediation actions                │
+└────────────┬────────────────────────────────────┘
+             │
+             ▼
+┌─────────────────────────────────────────────────┐
+│  4. Update Corresponding Notebooks              │
+│     └─&gt; See "Related Notebooks" above           │
+└────────────┬────────────────────────────────────┘
+             │
+             ▼
+┌─────────────────────────────────────────────────┐
+│  5. Run Updated Notebooks                       │
+│     - Train new models                          │
+│     - Update logic/thresholds                   │
+│     - Deploy via NotebookValidationJob          │
+└────────────┬────────────────────────────────────┘
+             │
+             ▼
+┌─────────────────────────────────────────────────┐
+│  6. Verify Improvements                         │
+│     └─&gt; Re-test with OpenShift Lightspeed      │
+└────────────┬────────────────────────────────────┘
+             │
+             └──────&gt; Repeat ───────────────────────┘</code></p>
+<h3 id="monitoring-mcp-server-interactions">Monitoring MCP Server Interactions<a class="headerlink" href="#monitoring-mcp-server-interactions" title="Permanent link">&para;</a></h3>
+<p><strong>Check MCP Server Logs</strong>:
+```bash</p>
+<h1 id="real-time-log-streaming">Real-time log streaming<a class="headerlink" href="#real-time-log-streaming" title="Permanent link">&para;</a></h1>
+<p>oc logs -f deployment/cluster-health-mcp-server -n self-healing-platform</p>
+<h1 id="filter-for-tool-invocations">Filter for tool invocations<a class="headerlink" href="#filter-for-tool-invocations" title="Permanent link">&para;</a></h1>
+<p>oc logs deployment/cluster-health-mcp-server -n self-healing-platform \
+  | grep "Tool invoked"</p>
+<h1 id="check-for-errors">Check for errors<a class="headerlink" href="#check-for-errors" title="Permanent link">&para;</a></h1>
+<p>oc logs deployment/cluster-health-mcp-server -n self-healing-platform \
+  | grep -i error | tail -20
+```</p>
+<p><strong>Log Patterns to Watch</strong>:
+- <code>Tool invoked: &lt;tool-name&gt;</code> - Which tools are being used
+- <code>Response time: &lt;ms&gt;</code> - Performance metrics
+- <code>Error:</code> - Failed tool invocations or data access issues
+- <code>Model inference failed</code> - Model serving problems</p>
+<h3 id="notebook-update-decision-matrix">Notebook Update Decision Matrix<a class="headerlink" href="#notebook-update-decision-matrix" title="Permanent link">&para;</a></h3>
+<p>Use this matrix to decide which notebooks to update based on MCP server interactions:</p>
+<table>
+<thead>
+<tr>
+<th>Issue Observed</th>
+<th>Notebook to Update</th>
+<th>Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Health check failure</td>
+<td><code>00-setup/00-platform-readiness-validation.ipynb</code></td>
+<td>HIGH</td>
+</tr>
+<tr>
+<td>False positive anomaly</td>
+<td><code>02-anomaly-detection/01-isolation-forest-implementation.ipynb</code></td>
+<td>HIGH</td>
+</tr>
+<tr>
+<td>Missed anomaly</td>
+<td><code>02-anomaly-detection/02-time-series-anomaly-detection.ipynb</code></td>
+<td>HIGH</td>
+</tr>
+<tr>
+<td>Remediation failure</td>
+<td><code>03-self-healing-logic/coordination-engine-integration.ipynb</code></td>
+<td>CRITICAL</td>
+</tr>
+<tr>
+<td>Model serving timeout</td>
+<td><code>04-model-serving/kserve-model-deployment.ipynb</code></td>
+<td>HIGH</td>
+</tr>
+<tr>
+<td>Slow inference</td>
+<td><code>07-monitoring-operations/model-performance-monitoring.ipynb</code></td>
+<td>MEDIUM</td>
+</tr>
+<tr>
+<td>Inaccurate recommendations</td>
+<td><code>05-end-to-end-scenarios/*.ipynb</code></td>
+<td>MEDIUM</td>
+</tr>
+<tr>
+<td>New use case identified</td>
+<td>Create new notebook in appropriate category</td>
+<td>MEDIUM</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-complete-interaction-notebook-update-cycle">Example: Complete Interaction → Notebook Update Cycle<a class="headerlink" href="#example-complete-interaction-notebook-update-cycle" title="Permanent link">&para;</a></h3>
+<p><strong>Step 1: User Query</strong>
+<code>User: "Why is the predictive-analytics pod restarting frequently?"</code></p>
+<p><strong>Step 2: MCP Server Response</strong>
+<code>Lightspeed: "The predictive-analytics pod has restarted 12 times in the last hour
+due to memory pressure (OOMKilled). Current memory usage: 1.8GB / 2GB limit."</code></p>
+<p><strong>Step 3: Identify Gap</strong>
+- Memory limit too low for current workload
+- No proactive detection of memory pressure before OOM</p>
+<p><strong>Step 4: Update Notebooks</strong>
+1. <strong><code>02-anomaly-detection/03-lstm-based-prediction.ipynb</code></strong>
+   - Add memory pressure detection
+   - Train model to predict OOM before it happens
+   - Adjust warning thresholds</p>
+<ol>
+<li><strong><code>05-end-to-end-scenarios/resource-exhaustion-detection.ipynb</code></strong></li>
+<li>Add memory pressure scenario</li>
+<li>
+<p>Implement proactive scaling logic</p>
+</li>
+<li>
+<p><strong><code>04-model-serving/kserve-model-deployment.ipynb</code></strong></p>
+</li>
+<li>Update resource requests/limits based on actual usage</li>
+<li>Add autoscaling based on memory metrics</li>
+</ol>
+<p><strong>Step 5: Deploy Updates</strong>
+```bash</p>
+<h1 id="run-validation-jobs-to-retrain-models">Run validation jobs to retrain models<a class="headerlink" href="#run-validation-jobs-to-retrain-models" title="Permanent link">&para;</a></h1>
+<p>oc get notebookvalidationjob -n self-healing-platform</p>
+<h1 id="or-manually-run-in-workbench">Or manually run in workbench<a class="headerlink" href="#or-manually-run-in-workbench" title="Permanent link">&para;</a></h1>
+<p>oc port-forward self-healing-workbench-0 8888:8888 -n self-healing-platform</p>
+<h1 id="open-notebooks-and-execute">Open notebooks and execute<a class="headerlink" href="#open-notebooks-and-execute" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<p><strong>Step 6: Verify</strong>
+<code>User: "Are there any memory pressure issues now?"
+Lightspeed: "No memory pressure detected. All pods are within 70% of memory limits.
+Proactive scaling recommendations are now available in the coordination engine."</code></p>
+<hr />
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Explore MCP Tools</strong>: Try different tools via Lightspeed queries</li>
+<li><strong>Monitor Interactions</strong>: Track which queries are most common</li>
+<li><strong>Iterative Improvement</strong>: Use the workflow above to enhance notebooks</li>
+<li><strong>Scale</strong>: Increase replicas for high-traffic environments</li>
+</ul>
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../adrs/014-openshift-aiops-platform-mcp-server/">ADR-014: Cluster Health MCP Server</a> - Architecture and design decisions</li>
+<li><a href="../../notebooks/06-mcp-lightspeed-integration/mcp-server-integration.ipynb">Notebook: MCP Server Integration</a> - Development and testing</li>
+<li><a href="../../notebooks/06-mcp-lightspeed-integration/openshift-lightspeed-integration.ipynb">Notebook: OpenShift Lightspeed Integration</a> - Advanced usage</li>
+<li><a href="https://modelcontextprotocol.io/">MCP Protocol Documentation</a> - Upstream MCP specification</li>
+</ul>
+<h2 id="support">Support<a class="headerlink" href="#support" title="Permanent link">&para;</a></h2>
+<p>For issues, questions, or contributions:
+- Check existing ADRs in <code>docs/adrs/</code>
+- Review notebooks in <code>notebooks/06-mcp-lightspeed-integration/</code>
+- Open an issue in the project repository</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 9, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

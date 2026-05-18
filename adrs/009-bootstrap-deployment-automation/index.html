@@ -1,0 +1,2195 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/adrs/009-bootstrap-deployment-automation/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>ADR-009: Bootstrap Deployment Automation Architecture - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-009-bootstrap-deployment-automation-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-009: Bootstrap Deployment Automation Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Status
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supersession-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supersession Notice
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-deployment-challenges" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Deployment Challenges
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technology-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technology Constraints
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decision">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-layered-configuration-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Layered Configuration Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-three-phase-deployment-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Three-Phase Deployment Process
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-container-image-management-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Container Image Management Strategy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-diagrams" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Diagrams
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture Diagrams">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bootstrap-process-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bootstrap Process Flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kustomize-configuration-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kustomize Configuration Hierarchy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-deployment-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Component Deployment Dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-image-build-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Container Image Build Pipeline
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Architecture
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-bootstrap-script-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Bootstrap Script Architecture
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/adrs/009-bootstrap-deployment-automation.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="adr-009-bootstrap-deployment-automation-architecture">ADR-009: Bootstrap Deployment Automation Architecture<a class="headerlink" href="#adr-009-bootstrap-deployment-automation-architecture" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> ACCEPTED</p>
+<h2 id="status">Status<a class="headerlink" href="#status" title="Permanent link">&para;</a></h2>
+<p><strong>SUPERSEDED</strong> - 2025-10-31 by ADR-019 (Validated Patterns Framework Adoption)</p>
+<p><strong>Original Status</strong>: ACCEPTED - 2025-01-09</p>
+<h2 id="supersession-notice">Supersession Notice<a class="headerlink" href="#supersession-notice" title="Permanent link">&para;</a></h2>
+<p>This ADR has been superseded by <strong>ADR-019: Validated Patterns Framework Adoption</strong>, which replaces the custom Kustomize-based bootstrap system with the industry-standard Validated Patterns OpenShift Framework using Helm + ArgoCD + Ansible roles.</p>
+<p><strong>Migration Path</strong>:
+- Custom <code>bootstrap.sh</code> → <code>make install</code> (Validated Patterns)
+- Kustomize configuration → Helm charts + values files
+- Manual validation → Ansible role-based validation
+- Custom Ansible tasks → 8 production-ready Ansible roles</p>
+<p>See ADR-019 for the new deployment architecture and ADR-020 for the unified bootstrap lifecycle.</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>The Self-Healing Platform requires a sophisticated deployment automation system that can:</p>
+<ol>
+<li><strong>Deploy Complex Multi-Component Architecture</strong>: Coordinate deployment of coordination engine, ML models, monitoring, storage, and AI/ML workbenches</li>
+<li><strong>Support Multiple Environments</strong>: Handle development, staging, and production deployments with different configurations</li>
+<li><strong>Ensure Deployment Reliability</strong>: Validate prerequisites, handle failures gracefully, and provide comprehensive validation</li>
+<li><strong>Integrate with GitOps</strong>: Support both manual deployment and GitOps workflows</li>
+<li><strong>Handle Container Image Management</strong>: Build, tag, and deploy custom container images</li>
+<li><strong>Provide Operational Visibility</strong>: Comprehensive logging, validation, and troubleshooting capabilities</li>
+</ol>
+<h3 id="current-deployment-challenges">Current Deployment Challenges<a class="headerlink" href="#current-deployment-challenges" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Manual Deployment Complexity</strong>: 8+ ADRs translate to 20+ Kubernetes resources across multiple namespaces</li>
+<li><strong>Environment Configuration Management</strong>: Different resource requirements, security policies, and integrations per environment</li>
+<li><strong>Dependency Management</strong>: Complex interdependencies between operators, storage, networking, and custom applications</li>
+<li><strong>Validation Requirements</strong>: Need to verify ADR compliance and operational readiness</li>
+<li><strong>Container Image Lifecycle</strong>: Custom images need building, testing, and registry management</li>
+</ul>
+<h3 id="technology-constraints">Technology Constraints<a class="headerlink" href="#technology-constraints" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>OpenShift 4.18+</strong>: Must leverage OpenShift-specific features and operators</li>
+<li><strong>Kustomize</strong>: Native Kubernetes configuration management</li>
+<li><strong>Existing Operators</strong>: Red Hat OpenShift AI, KServe, NVIDIA GPU Operator, etc.</li>
+<li><strong>Security Requirements</strong>: RBAC, network policies, secret management</li>
+<li><strong>Resource Constraints</strong>: GPU availability, storage classes, compute limits</li>
+</ul>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<p>We will implement a <strong>Kustomize-based Bootstrap Automation System</strong> with the following architecture:</p>
+<h3 id="1-layered-configuration-architecture">1. <strong>Layered Configuration Architecture</strong><a class="headerlink" href="#1-layered-configuration-architecture" title="Permanent link">&para;</a></h3>
+<p><code>Bootstrap System Architecture
+├── build-images.sh           # Container image build automation
+├── bootstrap.sh              # Main deployment orchestration
+├── validate_bootstrap.sh     # Post-deployment validation
+└── k8s/                      # Kustomize configuration hierarchy
+    ├── base/                 # Base configuration (environment-agnostic)
+    │   ├── kustomization.yaml
+    │   ├── namespace.yaml
+    │   ├── rbac.yaml
+    │   ├── storage.yaml
+    │   ├── monitoring.yaml
+    │   ├── coordination-engine.yaml
+    │   ├── ai-ml-workbench.yaml
+    │   └── model-serving.yaml
+    └── overlays/              # Environment-specific configurations
+        ├── development/
+        │   └── kustomization.yaml
+        └── production/
+            └── kustomization.yaml</code></p>
+<h3 id="2-three-phase-deployment-process">2. <strong>Three-Phase Deployment Process</strong><a class="headerlink" href="#2-three-phase-deployment-process" title="Permanent link">&para;</a></h3>
+<p><strong>Phase 1: Kustomize Deployment</strong>
+- Environment detection and validation
+- Kustomize configuration building and validation
+- Atomic deployment of all resources
+- Initial resource verification</p>
+<p><strong>Phase 2: Post-Deployment Setup</strong>
+- Service readiness verification
+- Integration configuration (Gitea, monitoring)
+- Secret validation and warnings
+- Component health checks</p>
+<p><strong>Phase 3: Environment-Specific Configuration</strong>
+- Development vs. production optimizations
+- Resource scaling and GPU allocation
+- Security policy application
+- Monitoring and alerting setup</p>
+<h3 id="3-container-image-management-strategy">3. <strong>Container Image Management Strategy</strong><a class="headerlink" href="#3-container-image-management-strategy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Build Automation</strong>: <code>build-images.sh</code> handles multi-component image building</li>
+<li><strong>Registry Integration</strong>: Support for OpenShift internal registry and external registries</li>
+<li><strong>Image Versioning</strong>: Semantic versioning with environment-specific tags</li>
+<li><strong>Security Scanning</strong>: Integration with OpenShift image security scanning</li>
+</ul>
+<h2 id="architecture-diagrams">Architecture Diagrams<a class="headerlink" href="#architecture-diagrams" title="Permanent link">&para;</a></h2>
+<h3 id="bootstrap-process-flow">Bootstrap Process Flow<a class="headerlink" href="#bootstrap-process-flow" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>graph TD
+    A[User Runs bootstrap.sh] --&gt; B{Environment Specified?}
+    B --&gt;|No| C[Interactive Environment Selection]
+    B --&gt;|Yes| D[Validate Environment Parameter]
+    C --&gt; E[Check Prerequisites]
+    D --&gt; E
+
+    E --&gt; F{Prerequisites OK?}
+    F --&gt;|No| G[Error: Missing Requirements]
+    F --&gt;|Yes| H[Determine Environment Configuration]
+
+    H --&gt; I[Validate Kustomize Configuration]
+    I --&gt; J{Kustomize Valid?}
+    J --&gt;|No| K[Error: Invalid Configuration]
+    J --&gt;|Yes| L[Phase 1: Kustomize Deployment]
+
+    L --&gt; M[Build Kustomize Manifest]
+    M --&gt; N[Apply to Cluster]
+    N --&gt; O{Deployment Success?}
+    O --&gt;|No| P[Error: Deployment Failed]
+    O --&gt;|Yes| Q[Phase 2: Post-Deployment Setup]
+
+    Q --&gt; R[Verify Resource Creation]
+    R --&gt; S[Check Service Readiness]
+    S --&gt; T[Configure Integrations]
+    T --&gt; U[Phase 3: Environment Configuration]
+
+    U --&gt; V{Gitea Available?}
+    V --&gt;|Yes| W[Configure Gitea Integration]
+    V --&gt;|No| X[Skip Gitea Configuration]
+    W --&gt; Y[Deployment Complete]
+    X --&gt; Y
+
+    Y --&gt; Z[Run Validation Script]
+    Z --&gt; AA[Generate Deployment Report]</code></pre>
+<h3 id="kustomize-configuration-hierarchy">Kustomize Configuration Hierarchy<a class="headerlink" href="#kustomize-configuration-hierarchy" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>graph TD
+    A[k8s/base/] --&gt; B[kustomization.yaml]
+    A --&gt; C[namespace.yaml]
+    A --&gt; D[rbac.yaml]
+    A --&gt; E[storage.yaml]
+    A --&gt; F[monitoring.yaml]
+    A --&gt; G[coordination-engine.yaml]
+    A --&gt; H[ai-ml-workbench.yaml]
+    A --&gt; I[model-serving.yaml]
+
+    J[k8s/overlays/development/] --&gt; K[kustomization.yaml]
+    K --&gt; L[Patches: Reduced Resources]
+    K --&gt; M[Patches: CPU-Only Mode]
+    K --&gt; N[Patches: Debug Logging]
+
+    O[k8s/overlays/production/] --&gt; P[kustomization.yaml]
+    P --&gt; Q[Patches: HA Configuration]
+    P --&gt; R[Patches: GPU Support]
+    P --&gt; S[Patches: Production Security]
+
+    B --&gt; T[Common Labels &amp; Annotations]
+    B --&gt; U[ConfigMap Generation]
+    B --&gt; V[Secret Generation]
+
+    K --&gt; B
+    P --&gt; B</code></pre>
+<h3 id="component-deployment-dependencies">Component Deployment Dependencies<a class="headerlink" href="#component-deployment-dependencies" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>graph TD
+    A[Namespace Creation] --&gt; B[RBAC Setup]
+    B --&gt; C[Storage Provisioning]
+    C --&gt; D[ConfigMaps &amp; Secrets]
+
+    D --&gt; E[Monitoring Setup]
+    D --&gt; F[Coordination Engine]
+    D --&gt; G[AI/ML Workbench]
+    D --&gt; H[Model Serving]
+
+    E --&gt; I[ServiceMonitor]
+    E --&gt; J[PrometheusRule]
+
+    F --&gt; K[Coordination Engine Service]
+    F --&gt; L[Health Check Endpoints]
+
+    G --&gt; M[Jupyter Notebook]
+    G --&gt; N[Data Science Libraries]
+
+    H --&gt; O[KServe InferenceServices]
+    H --&gt; P[Model Storage Access]
+
+    I --&gt; Q[Prometheus Integration]
+    J --&gt; Q
+    K --&gt; Q
+    L --&gt; R[Validation Checks]
+    M --&gt; R
+    O --&gt; R</code></pre>
+<h3 id="container-image-build-pipeline">Container Image Build Pipeline<a class="headerlink" href="#container-image-build-pipeline" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>graph TD
+    A[build-images.sh] --&gt; B[Check Prerequisites]
+    B --&gt; C{Podman/Docker Available?}
+    C --&gt;|No| D[Error: Container Runtime Missing]
+    C --&gt;|Yes| E[Check OpenShift Access]
+
+    E --&gt; F{Cluster Access OK?}
+    F --&gt;|No| G[Error: Cluster Access Failed]
+    F --&gt;|Yes| H[Create/Verify Namespace]
+
+    H --&gt; I[Build Coordination Engine]
+    I --&gt; J[Build Model Containers]
+    J --&gt; K[Build Additional Components]
+
+    K --&gt; L[Tag Images for Registry]
+    L --&gt; M{Registry Push Enabled?}
+    M --&gt;|Yes| N[Push to Registry]
+    M --&gt;|No| O[Keep Local Images]
+
+    N --&gt; P{Push Success?}
+    P --&gt;|No| Q[Warning: Registry Push Failed]
+    P --&gt;|Yes| R[Update Kustomize References]
+
+    O --&gt; S[Build Complete]
+    Q --&gt; S
+    R --&gt; S
+
+    S --&gt; T[Generate Build Report]</code></pre>
+<h3 id="validation-architecture">Validation Architecture<a class="headerlink" href="#validation-architecture" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>graph TD
+    A[validate_bootstrap.sh] --&gt; B[Infrastructure Validation]
+    B --&gt; C[Check Namespace]
+    B --&gt; D[Check RBAC]
+    B --&gt; E[Check Storage]
+
+    F[Component Validation] --&gt; G[Coordination Engine]
+    F --&gt; H[AI/ML Workbench]
+    F --&gt; I[Model Serving]
+    F --&gt; J[Monitoring]
+
+    K[Integration Validation] --&gt; L[Prometheus Integration]
+    K --&gt; M[Gitea Integration]
+    K --&gt; N[Storage Integration]
+
+    O[Security Validation] --&gt; P[Secret Configuration]
+    O --&gt; Q[Network Policies]
+    O --&gt; R[RBAC Compliance]
+
+    B --&gt; S[Validation Report]
+    F --&gt; S
+    K --&gt; S
+    O --&gt; S
+
+    S --&gt; T{All Checks Pass?}
+    T --&gt;|Yes| U[Success: Deployment Ready]
+    T --&gt;|No| V[Error: Issues Found]
+
+    V --&gt; W[Generate Remediation Guide]</code></pre>
+<h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">&para;</a></h2>
+<h3 id="1-bootstrap-script-architecture">1. <strong>Bootstrap Script Architecture</strong><a class="headerlink" href="#1-bootstrap-script-architecture" title="Permanent link">&para;</a></h3>
+<p>The <code>bootstrap.sh</code> script implements a modular, phase-based deployment approach:</p>
+<p>```bash</p>
+<h1 id="core-functions">Core Functions<a class="headerlink" href="#core-functions" title="Permanent link">&para;</a></h1>
+<p>check_prerequisites()     # Validate cluster, operators, tools
+determine_environment()   # Interactive or CLI environment selection
+validate_kustomize_config() # Pre-deployment validation
+phase1_kustomize_deployment() # Main deployment phase
+phase2_post_deployment_setup() # Service verification
+phase3_environment_config() # Environment-specific setup
+configure_gitea_integration() # Optional Gitea setup
+```</p>
+<p><strong>Key Design Decisions</strong>:
+- <strong>Fail-Fast Validation</strong>: Comprehensive prerequisite checking before deployment
+- <strong>Atomic Deployment</strong>: Single Kustomize apply for consistency
+- <strong>Graceful Degradation</strong>: Continue deployment if optional components fail
+- <strong>Comprehensive Logging</strong>: Detailed logging with timestamps and log levels</p>
+<h3 id="2-kustomize-configuration-strategy">2. <strong>Kustomize Configuration Strategy</strong><a class="headerlink" href="#2-kustomize-configuration-strategy" title="Permanent link">&para;</a></h3>
+<p><strong>Base Configuration Principles</strong>:
+- <strong>Single Source of Truth</strong>: All resources defined in base configuration
+- <strong>Environment Agnostic</strong>: Base contains no environment-specific settings
+- <strong>Comprehensive Coverage</strong>: All 8 ADRs represented in base resources
+- <strong>Consistent Labeling</strong>: Common labels for resource management</p>
+<p><strong>Overlay Strategy</strong>:
+- <strong>Minimal Patches</strong>: Only override what's different per environment
+- <strong>Resource Scaling</strong>: CPU, memory, and replica adjustments
+- <strong>Feature Toggles</strong>: GPU support, debug logging, security policies
+- <strong>Storage Classes</strong>: Environment-appropriate storage configurations</p>
+<h3 id="3-container-image-management">3. <strong>Container Image Management</strong><a class="headerlink" href="#3-container-image-management" title="Permanent link">&para;</a></h3>
+<p><strong>Build Strategy</strong>:
+- <strong>Multi-Stage Builds</strong>: Optimized container images with security scanning
+- <strong>Registry Flexibility</strong>: Support internal OpenShift registry and external registries
+- <strong>Version Management</strong>: Semantic versioning with environment tags
+- <strong>Security Hardening</strong>: Non-root users, minimal base images, vulnerability scanning</p>
+<p><strong>Image Update Process</strong>:
+```bash</p>
+<h1 id="automatic-kustomize-updates-when-using-custom-registry">Automatic Kustomize updates when using custom registry<a class="headerlink" href="#automatic-kustomize-updates-when-using-custom-registry" title="Permanent link">&para;</a></h1>
+<p>if [ "$REGISTRY" != "registry.redhat.io" ]; then
+    sed -i "s|old-image|$REGISTRY/$NAMESPACE/new-image:$TAG|g" k8s/base/*.yaml
+fi
+```</p>
+<h3 id="4-validation-framework">4. <strong>Validation Framework</strong><a class="headerlink" href="#4-validation-framework" title="Permanent link">&para;</a></h3>
+<p><strong>Multi-Layer Validation</strong>:
+- <strong>Pre-Deployment</strong>: Kustomize syntax, cluster access, prerequisites
+- <strong>Deployment-Time</strong>: Resource creation, service startup, health checks
+- <strong>Post-Deployment</strong>: End-to-end functionality, integration testing
+- <strong>Ongoing</strong>: Continuous monitoring and alerting</p>
+<p><strong>ADR Compliance Validation</strong>:
+Each ADR has specific validation checks:
+- <strong>ADR-001</strong>: OpenShift version and feature availability
+- <strong>ADR-002</strong>: Coordination engine deployment and API accessibility
+- <strong>ADR-003</strong>: OpenShift AI operator and notebook functionality
+- <strong>ADR-004</strong>: KServe deployment and model serving capability
+- <strong>ADR-005</strong>: MCO access permissions and configuration
+- <strong>ADR-006</strong>: GPU operator and resource allocation
+- <strong>ADR-007</strong>: Prometheus integration and metrics collection
+- <strong>ADR-008</strong>: Kubeflow pipeline availability and execution</p>
+<h2 id="alternatives-considered">Alternatives Considered<a class="headerlink" href="#alternatives-considered" title="Permanent link">&para;</a></h2>
+<h3 id="1-helm-based-deployment">1. <strong>Helm-Based Deployment</strong><a class="headerlink" href="#1-helm-based-deployment" title="Permanent link">&para;</a></h3>
+<p><strong>Rejected</strong> because:
+- Less native Kubernetes integration than Kustomize
+- More complex templating for environment management
+- Additional tool dependency (Helm CLI)
+- OpenShift prefers Kustomize for GitOps workflows</p>
+<h3 id="2-operator-based-deployment">2. <strong>Operator-Based Deployment</strong><a class="headerlink" href="#2-operator-based-deployment" title="Permanent link">&para;</a></h3>
+<p><strong>Rejected</strong> because:
+- Significant development overhead for custom operator
+- Complex lifecycle management for multi-component system
+- Overkill for deployment automation needs
+- Would delay implementation timeline</p>
+<h3 id="3-argocd-only-deployment">3. <strong>ArgoCD-Only Deployment</strong><a class="headerlink" href="#3-argocd-only-deployment" title="Permanent link">&para;</a></h3>
+<p><strong>Rejected</strong> because:
+- Requires ArgoCD to be pre-installed and configured
+- Less flexibility for development and testing workflows
+- Bootstrap script provides immediate deployment capability
+- Can be integrated with ArgoCD later (GitOps evolution)</p>
+<h3 id="4-shell-script-with-inline-yaml">4. <strong>Shell Script with Inline YAML</strong><a class="headerlink" href="#4-shell-script-with-inline-yaml" title="Permanent link">&para;</a></h3>
+<p><strong>Rejected</strong> because:
+- Poor maintainability and version control
+- No environment configuration management
+- Difficult to validate and test
+- Not compatible with GitOps workflows</p>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h3 id="positive-consequences">Positive Consequences<a class="headerlink" href="#positive-consequences" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Deployment Reliability</strong></li>
+<li>Comprehensive validation reduces deployment failures</li>
+<li>Atomic deployment ensures consistency</li>
+<li>
+<p>Rollback capabilities through Kustomize</p>
+</li>
+<li>
+<p><strong>Environment Management</strong></p>
+</li>
+<li>Clean separation of environment-specific configurations</li>
+<li>Easy to add new environments (staging, integration)</li>
+<li>
+<p>Consistent deployment process across environments</p>
+</li>
+<li>
+<p><strong>Operational Excellence</strong></p>
+</li>
+<li>Detailed logging and validation reporting</li>
+<li>Clear troubleshooting guidance</li>
+<li>
+<p>Automated integration detection and configuration</p>
+</li>
+<li>
+<p><strong>Developer Experience</strong></p>
+</li>
+<li>Simple command-line interface (<code>./bootstrap.sh --environment dev</code>)</li>
+<li>Comprehensive documentation and guides</li>
+<li>
+<p>Local testing capabilities</p>
+</li>
+<li>
+<p><strong>GitOps Readiness</strong></p>
+</li>
+<li>Kustomize configurations work directly with ArgoCD</li>
+<li>Version-controlled infrastructure as code</li>
+<li>Audit trail for all configuration changes</li>
+</ol>
+<h3 id="negative-consequences">Negative Consequences<a class="headerlink" href="#negative-consequences" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Complexity</strong></li>
+<li>Multiple scripts and configuration files to maintain</li>
+<li>Learning curve for team members unfamiliar with Kustomize</li>
+<li>
+<p>Debugging requires understanding of multiple layers</p>
+</li>
+<li>
+<p><strong>Tool Dependencies</strong></p>
+</li>
+<li>Requires Kustomize CLI or OpenShift CLI with Kustomize support</li>
+<li>Container runtime (Podman/Docker) for image building</li>
+<li>
+<p>OpenShift cluster with specific operator versions</p>
+</li>
+<li>
+<p><strong>Initial Setup Overhead</strong></p>
+</li>
+<li>Container images must be built before first deployment</li>
+<li>Registry configuration required for custom images</li>
+<li>Comprehensive testing needed for each environment</li>
+</ol>
+<h2 id="implementation-status">Implementation Status<a class="headerlink" href="#implementation-status" title="Permanent link">&para;</a></h2>
+<h3 id="completed-components">Completed Components<a class="headerlink" href="#completed-components" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Bootstrap script with three-phase deployment</li>
+<li>✅ Kustomize base configuration for all ADRs</li>
+<li>✅ Development and production overlays</li>
+<li>✅ Container image build automation</li>
+<li>✅ Comprehensive validation framework</li>
+<li>✅ Gitea integration detection and configuration</li>
+<li>✅ Documentation and troubleshooting guides</li>
+<li>✅ <strong>Delete/cleanup functionality</strong> (<code>--delete</code> flag)</li>
+<li>✅ <strong>OpenShift Data Foundation integration</strong> (RWX storage support)</li>
+</ul>
+<h3 id="remaining-work">Remaining Work<a class="headerlink" href="#remaining-work" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Production-specific network policies and security configurations</li>
+<li>[ ] Backup and disaster recovery integration</li>
+<li>[ ] Advanced monitoring dashboard deployment</li>
+<li>[ ] Integration testing automation</li>
+<li>[ ] Performance benchmarking integration</li>
+</ul>
+<h2 id="monitoring-and-success-metrics">Monitoring and Success Metrics<a class="headerlink" href="#monitoring-and-success-metrics" title="Permanent link">&para;</a></h2>
+<h3 id="deployment-success-metrics">Deployment Success Metrics<a class="headerlink" href="#deployment-success-metrics" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Deployment Success Rate</strong>: Target &gt;95% for development, &gt;99% for production</li>
+<li><strong>Deployment Time</strong>: Target &lt;10 minutes for development, &lt;15 minutes for production</li>
+<li><strong>Validation Pass Rate</strong>: Target &gt;98% for all validation checks</li>
+<li><strong>Time to Recovery</strong>: Target &lt;5 minutes for deployment rollbacks</li>
+</ul>
+<h3 id="operational-metrics">Operational Metrics<a class="headerlink" href="#operational-metrics" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Component Availability</strong>: Target &gt;99.9% uptime for critical components</li>
+<li><strong>Integration Success</strong>: Target &gt;95% success rate for optional integrations</li>
+<li><strong>Documentation Accuracy</strong>: Target &lt;2% of deployments requiring additional documentation</li>
+<li><strong>Developer Satisfaction</strong>: Target &gt;4.5/5 rating for deployment experience</li>
+</ul>
+<h2 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>ADR-001</strong>: OpenShift Platform Selection - Bootstrap validates OpenShift version and features</li>
+<li><strong>ADR-002</strong>: Hybrid Self-Healing Approach - Bootstrap deploys coordination engine</li>
+<li><strong>ADR-003</strong>: OpenShift AI ML Platform - Bootstrap configures AI/ML workbench</li>
+<li><strong>ADR-004</strong>: KServe Model Serving - Bootstrap deploys model serving infrastructure</li>
+<li><strong>ADR-005</strong>: Machine Config Operator - Bootstrap configures MCO access permissions</li>
+<li><strong>ADR-006</strong>: NVIDIA GPU Management - Bootstrap handles GPU resource allocation</li>
+<li><strong>ADR-007</strong>: Prometheus Monitoring - Bootstrap integrates monitoring and alerting</li>
+<li><strong>ADR-008</strong>: Kubeflow Pipelines MLOps - Bootstrap prepares MLOps environment</li>
+</ul>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://kustomize.io/">Kustomize Documentation</a></li>
+<li><a href="https://docs.openshift.com/container-platform/4.18/applications/working_with_kustomize.html">OpenShift Kustomize Guide</a></li>
+<li><a href="../../bootstrap.sh">Bootstrap Script Implementation</a></li>
+<li><a href="../../k8s/">Kustomize Configuration</a></li>
+<li><a href="../../PRE_BOOTSTRAP_CHECKLIST.md">Pre-Bootstrap Checklist</a></li>
+<li><a href="../../DEVELOPMENT_WORKFLOW.md">Development Workflow</a></li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 6, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

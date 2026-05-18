@@ -1,0 +1,2064 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/adrs/051-predictive-analytics-model-training/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>ADR-051: Predictive Analytics Model Training and Data Strategy - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-051-predictive-analytics-model-training-and-data-strategy" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-051: Predictive Analytics Model Training and Data Strategy
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Status
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#problem-scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problem Scenario
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Requirements
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decision">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model-specifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Specifications
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-source-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Source Strategy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-metrics-predicted" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prometheus Metrics Predicted
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#training-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Parameters
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/adrs/051-predictive-analytics-model-training.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="adr-051-predictive-analytics-model-training-and-data-strategy">ADR-051: Predictive Analytics Model Training and Data Strategy<a class="headerlink" href="#adr-051-predictive-analytics-model-training-and-data-strategy" title="Permanent link">&para;</a></h1>
+<h2 id="status">Status<a class="headerlink" href="#status" title="Permanent link">&para;</a></h2>
+<p>accepted - 2026-01-27</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>The <strong>predictive-analytics</strong> InferenceService provides resource usage forecasting for proactive scaling and capacity planning. Unlike the anomaly-detector model (ADR-050), this model already has a NotebookValidationJob configured. However, several gaps remain:</p>
+<ol>
+<li><strong>No architectural documentation</strong>: Training strategy not formally documented</li>
+<li><strong>Synthetic-only data</strong>: Only uses synthetic time series, not real Prometheus metrics</li>
+<li><strong>Unclear forecast horizon</strong>: No documentation of prediction window</li>
+<li><strong>No production data integration</strong>: Models trained without real cluster patterns</li>
+<li><strong>Missing data strategy</strong>: No plan for hybrid synthetic/Prometheus approach</li>
+</ol>
+<h3 id="problem-scenario">Problem Scenario<a class="headerlink" href="#problem-scenario" title="Permanent link">&para;</a></h3>
+<p>The predictive-analytics model currently:
+- ✅ Has NotebookValidationJob configured (isolation-forest does not)
+- ✅ Automatically restarts InferenceService on successful training
+- ❌ Only trains on synthetic data (disconnected from real cluster)
+- ❌ No documented forecast methodology
+- ❌ No strategy for using Prometheus historical data</p>
+<h3 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Document the model architecture and forecasting strategy</li>
+<li>Define forecast horizon and lookback window</li>
+<li>Specify data source strategy (synthetic vs Prometheus vs hybrid)</li>
+<li>Maintain existing NotebookValidationJob automation</li>
+<li>Enable Prometheus historical data integration</li>
+<li>Support both development (synthetic) and production (real metrics) scenarios</li>
+</ol>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<p>Establish <strong>predictive-analytics</strong> as a production-grade forecasting model with documented training strategy:</p>
+<h3 id="model-specifications">Model Specifications<a class="headerlink" href="#model-specifications" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Model Type</strong></td>
+<td>Random Forest Regressor (ensemble forecasting)</td>
+</tr>
+<tr>
+<td><strong>Purpose</strong></td>
+<td>Predict future resource usage (1 hour ahead)</td>
+</tr>
+<tr>
+<td><strong>Training Notebook</strong></td>
+<td><code>05-predictive-analytics-kserve.ipynb</code></td>
+</tr>
+<tr>
+<td><strong>Model Location</strong></td>
+<td><code>/mnt/models/predictive-analytics/model.pkl</code></td>
+</tr>
+<tr>
+<td><strong>InferenceService</strong></td>
+<td><code>predictive-analytics</code></td>
+</tr>
+<tr>
+<td><strong>Training Frequency</strong></td>
+<td>Weekly via NotebookValidationJob</td>
+</tr>
+<tr>
+<td><strong>Auto-Deployment</strong></td>
+<td>✅ Already configured (maintain)</td>
+</tr>
+<tr>
+<td><strong>Forecast Horizon</strong></td>
+<td>12 time steps (1 hour at 5-min intervals)</td>
+</tr>
+<tr>
+<td><strong>Lookback Window</strong></td>
+<td>24 time steps (2 hours of history)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="data-source-strategy">Data Source Strategy<a class="headerlink" href="#data-source-strategy" title="Permanent link">&para;</a></h3>
+<p><strong>Development Phase</strong>: 100% synthetic time series
+- Fast iteration and testing
+- Reproducible results
+- Controlled seasonal patterns (daily, weekly)
+- No Prometheus dependency</p>
+<p><strong>Staging Phase</strong>: Hybrid (50% synthetic, 50% Prometheus)
+- Validate model on real cluster time series
+- Test Prometheus historical query integration
+- Compare synthetic vs real patterns</p>
+<p><strong>Production Phase</strong>: Hybrid (80% Prometheus, 20% synthetic)
+- Majority real historical metrics (30-day lookback)
+- Synthetic data for edge cases and seasonality testing
+- Continuous adaptation to cluster growth patterns</p>
+<h3 id="prometheus-metrics-predicted">Prometheus Metrics Predicted<a class="headerlink" href="#prometheus-metrics-predicted" title="Permanent link">&para;</a></h3>
+<p>Training data fetched from Prometheus (30-day historical lookback):</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Prometheus Query</th>
+<th>Forecast Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU usage</td>
+<td><code>avg(rate(node_cpu_seconds_total{mode!="idle"}[5m]))</code></td>
+<td>Predict CPU demand</td>
+</tr>
+<tr>
+<td>Memory usage</td>
+<td><code>avg(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))</code></td>
+<td>Predict memory pressure</td>
+</tr>
+<tr>
+<td>Disk usage</td>
+<td><code>avg(1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes))</code></td>
+<td>Predict storage needs</td>
+</tr>
+<tr>
+<td>Network ingress</td>
+<td><code>avg(rate(container_network_receive_bytes_total[5m]))</code></td>
+<td>Predict inbound traffic</td>
+</tr>
+<tr>
+<td>Network egress</td>
+<td><code>avg(rate(container_network_transmit_bytes_total[5m]))</code></td>
+<td>Predict outbound traffic</td>
+</tr>
+</tbody>
+</table>
+<p>Sample interval: <strong>5 minutes</strong> (matches production inference cadence)
+Historical range: <strong>30 days</strong> (captures monthly seasonality patterns)</p>
+<h3 id="training-configuration">Training Configuration<a class="headerlink" href="#training-configuration" title="Permanent link">&para;</a></h3>
+<p><strong>NotebookValidationJob Settings</strong> (already configured):
+<code>yaml
+name: predictive-analytics-kserve-validation
+notebook: notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb
+tier: tier3  # Higher tier due to computational requirements
+blockNextWave: true  # Ensure forecasting works before dependent services
+inferenceServiceTrigger:
+  name: predictive-analytics  # Auto-restart after successful training
+validationConfig:
+  level: production
+  strictMode: true
+  detectSilentFailures: true
+comparisonConfig:
+  strategy: normalized
+  floatingPointTolerance: 0.01
+  ignoreTimestamps: true</code></p>
+<p><strong>Environment Variables</strong> (to be added):
+<code>yaml
+env:
+  - name: DATA_SOURCE
+    value: "hybrid"  # synthetic|prometheus|hybrid
+  - name: PROMETHEUS_URL
+    value: "http://prometheus-k8s.openshift-monitoring.svc:9090"
+  - name: TRAINING_DAYS
+    value: "30"  # Prometheus lookback window (30 days for seasonality)
+  - name: FORECAST_HORIZON
+    value: "12"  # Number of future time steps (1 hour)
+  - name: LOOKBACK_WINDOW
+    value: "24"  # Number of historical time steps (2 hours)</code></p>
+<h3 id="model-parameters">Model Parameters<a class="headerlink" href="#model-parameters" title="Permanent link">&para;</a></h3>
+<p><strong>Random Forest Hyperparameters</strong>:
+<code>python
+RandomForestRegressor(
+    n_estimators=100,          # Number of trees in forest
+    max_depth=20,              # Maximum tree depth
+    min_samples_split=5,       # Minimum samples to split node
+    min_samples_leaf=2,        # Minimum samples at leaf node
+    random_state=42,           # Reproducibility
+    n_jobs=-1                  # Parallel processing
+)</code></p>
+<p><strong>Feature Engineering</strong>:
+- Lookback window: 24 samples (2 hours)
+- Rolling statistics: mean, std, min, max over [6, 12, 24] windows
+- Lag features: 1, 3, 6, 12 time steps
+- Time features: hour of day, day of week, is_weekend
+- Trend features: linear trend over lookback window
+- Total features: ~40 per predicted metric</p>
+<p><strong>Multi-Output Strategy</strong>:
+```python</p>
+<h1 id="train-separate-model-for-each-forecast-time-step">Train separate model for each forecast time step<a class="headerlink" href="#train-separate-model-for-each-forecast-time-step" title="Permanent link">&para;</a></h1>
+<p>models = {}
+for horizon in range(1, 13):  # 12 time steps ahead
+    models[f'horizon_{horizon}'] = RandomForestRegressor(...)
+    models[f'horizon_{horizon}'].fit(X_train, y_train[:, horizon-1])
+```</p>
+<h3 id="forecasting-workflow">Forecasting Workflow<a class="headerlink" href="#forecasting-workflow" title="Permanent link">&para;</a></h3>
+<p><strong>Input</strong>: Current metrics (last 2 hours, 24 samples)
+<code>json
+{
+  "instances": [
+    [0.45, 0.62, 0.38, 1024.5, 512.8, ...]  // 24 samples × 5 metrics = 120 values
+  ]
+}</code></p>
+<p><strong>Output</strong>: Future predictions (next 1 hour, 12 samples)
+<code>json
+{
+  "predictions": [
+    {
+      "cpu": [0.47, 0.48, 0.50, 0.52, 0.54, 0.56, 0.58, 0.59, 0.60, 0.61, 0.62, 0.63],
+      "memory": [0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.70, 0.71, 0.72, 0.73, 0.74, 0.75],
+      "disk": [...],
+      "network_in": [...],
+      "network_out": [...]
+    }
+  ]
+}</code></p>
+<h3 id="automated-workflow">Automated Workflow<a class="headerlink" href="#automated-workflow" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Weekly Trigger</strong>: NotebookValidationJob scheduled via CronJob</li>
+<li><strong>Data Collection</strong>: Fetch Prometheus historical metrics (last 30 days)</li>
+<li><strong>Synthetic Blending</strong>: Add synthetic time series for edge cases</li>
+<li><strong>Feature Engineering</strong>: Create lagged features and rolling statistics</li>
+<li><strong>Model Training</strong>: Train 12 Random Forest models (one per forecast step)</li>
+<li><strong>Model Validation</strong>: Test on held-out validation set (RMSE, MAE metrics)</li>
+<li><strong>Model Persistence</strong>: Save to <code>/mnt/models/predictive-analytics/model.pkl</code></li>
+<li><strong>Auto-Deployment</strong>: Trigger InferenceService restart (already configured)</li>
+<li><strong>Health Check</strong>: Verify new model loads and predictions are reasonable</li>
+</ol>
+<h2 id="rationale">Rationale<a class="headerlink" href="#rationale" title="Permanent link">&para;</a></h2>
+<h3 id="why-random-forest-for-forecasting">Why Random Forest for Forecasting<a class="headerlink" href="#why-random-forest-for-forecasting" title="Permanent link">&para;</a></h3>
+<p><strong>Alternatives Considered</strong>:</p>
+<ol>
+<li><strong>LSTM (Deep Learning)</strong></li>
+<li>❌ Requires significantly more training data</li>
+<li>❌ Longer training time (hours vs minutes)</li>
+<li>❌ GPU dependency for reasonable training speed</li>
+<li>❌ Harder to interpret predictions</li>
+<li>
+<p>✅ Better at capturing complex temporal patterns</p>
+</li>
+<li>
+<p><strong>ARIMA / Prophet</strong></p>
+</li>
+<li>❌ Designed for univariate time series (we need multivariate)</li>
+<li>❌ Assumes specific seasonality patterns (hourly, daily, weekly)</li>
+<li>❌ Slower inference for multiple metrics</li>
+<li>✅ Better theoretical guarantees for stationary series</li>
+<li>
+<p>✅ Better uncertainty quantification</p>
+</li>
+<li>
+<p><strong>XGBoost</strong></p>
+</li>
+<li>✅ Comparable accuracy to Random Forest</li>
+<li>✅ Often faster training</li>
+<li>⚠️ More hyperparameters to tune</li>
+<li>⚠️ Less robust to outliers</li>
+</ol>
+<p><strong>Random Forest Advantages</strong>:
+- ✅ Fast training and inference (no GPU required)
+- ✅ Handles multivariate forecasting naturally
+- ✅ Robust to outliers and missing data
+- ✅ Requires minimal hyperparameter tuning
+- ✅ Works well with moderate-sized datasets
+- ✅ Feature importance for interpretability</p>
+<h3 id="why-1-hour-forecast-horizon">Why 1-Hour Forecast Horizon<a class="headerlink" href="#why-1-hour-forecast-horizon" title="Permanent link">&para;</a></h3>
+<p><strong>Shorter Horizon (15-30 minutes)</strong> (Rejected):
+- ❌ Too short for proactive scaling decisions
+- ❌ Not enough lead time for human intervention
+- ✅ Higher accuracy</p>
+<p><strong>Longer Horizon (4-12 hours)</strong> (Rejected):
+- ❌ Prediction accuracy degrades significantly
+- ❌ Too many uncertainties (workload changes, deployments)
+- ✅ Better for capacity planning</p>
+<p><strong>1-Hour Horizon</strong> (Chosen):
+- ✅ Sufficient time for autoscaling actions
+- ✅ Reasonable prediction accuracy
+- ✅ Aligns with typical operational response time
+- ✅ Captures short-term trends without excessive drift</p>
+<h3 id="why-30-day-historical-lookback">Why 30-Day Historical Lookback<a class="headerlink" href="#why-30-day-historical-lookback" title="Permanent link">&para;</a></h3>
+<p><strong>7-Day Lookback</strong> (Rejected):
+- ❌ Misses monthly seasonality patterns
+- ❌ Not enough data for robust training
+- ✅ Faster queries</p>
+<p><strong>90-Day Lookback</strong> (Rejected):
+- ❌ Slower Prometheus queries
+- ❌ Older data may not reflect current cluster state
+- ✅ More robust to weekly anomalies</p>
+<p><strong>30-Day Lookback</strong> (Chosen):
+- ✅ Captures weekly and monthly patterns
+- ✅ Sufficient data for model training
+- ✅ Recent enough to reflect current cluster behavior
+- ✅ Balances query performance and data richness</p>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ <strong>Documented Forecasting Strategy</strong>: Clear model architecture and methodology</li>
+<li>✅ <strong>Production Data Integration</strong>: Models trained on real cluster patterns</li>
+<li>✅ <strong>Already Automated</strong>: NotebookValidationJob and auto-restart exist</li>
+<li>✅ <strong>Interpretable Predictions</strong>: Feature importance shows what drives forecasts</li>
+<li>✅ <strong>Multivariate Support</strong>: Predicts all key resource metrics simultaneously</li>
+<li>✅ <strong>Fast Training</strong>: No GPU required, completes in minutes</li>
+<li>✅ <strong>Fallback Strategy</strong>: Graceful degradation if Prometheus unavailable</li>
+</ul>
+<h3 id="negative">Negative<a class="headerlink" href="#negative" title="Permanent link">&para;</a></h3>
+<ul>
+<li>⚠️ <strong>Prometheus Dependency</strong>: Production training requires Prometheus historical data</li>
+<li>⚠️ <strong>Limited Horizon</strong>: Only 1 hour ahead (not suitable for long-term planning)</li>
+<li>⚠️ <strong>No Uncertainty Quantification</strong>: Point predictions only (no confidence intervals)</li>
+<li>⚠️ <strong>Resource Overhead</strong>: Weekly training consumes cluster resources</li>
+<li>⚠️ <strong>Potential Downtime</strong>: InferenceService restarts during deployment</li>
+</ul>
+<h3 id="neutral">Neutral<a class="headerlink" href="#neutral" title="Permanent link">&para;</a></h3>
+<ul>
+<li>📝 <strong>Fixed Forecast Horizon</strong>: 1-hour window may not suit all use cases</li>
+<li>📝 <strong>Multi-Model Complexity</strong>: 12 separate models per metric (60 total)</li>
+<li>📝 <strong>No Online Learning</strong>: Models retrain weekly, not continuously</li>
+</ul>
+<h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
+<h3 id="files-createdmodified">Files Created/Modified<a class="headerlink" href="#files-createdmodified" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>ADR Documentation</strong>: <code>docs/adrs/051-predictive-analytics-model-training.md</code> (this file)</li>
+<li><strong>Validation Job Config</strong>: <code>charts/hub/values-notebooks-validation.yaml</code></li>
+<li>✅ Already configured (no changes needed)</li>
+<li>Add environment variables for Prometheus integration</li>
+<li><strong>Notebook Updates</strong>: <code>notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb</code></li>
+<li>Add Prometheus historical data fetching functions</li>
+<li>Add hybrid data source logic</li>
+<li>Add environment variable configuration</li>
+<li><strong>Training Guide</strong>: <code>docs/model-training-guide.md</code></li>
+<li>Document manual training procedure</li>
+<li>Add troubleshooting runbook</li>
+</ol>
+<h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="verify-notebookvalidationjob-exists-should-already-exist">Verify NotebookValidationJob exists (should already exist)<a class="headerlink" href="#verify-notebookvalidationjob-exists-should-already-exist" title="Permanent link">&para;</a></h1>
+<p>oc get notebookvalidationjobs -n self-healing-platform | grep predictive-analytics</p>
+<h1 id="manually-trigger-training">Manually trigger training<a class="headerlink" href="#manually-trigger-training" title="Permanent link">&para;</a></h1>
+<p>oc create job --from=notebookvalidationjob/predictive-analytics-kserve-validation \
+  manual-train-$(date +%s) -n self-healing-platform</p>
+<h1 id="monitor-training-progress">Monitor training progress<a class="headerlink" href="#monitor-training-progress" title="Permanent link">&para;</a></h1>
+<p>oc logs -f job/manual-train-* -n self-healing-platform</p>
+<h1 id="verify-model-file-updated">Verify model file updated<a class="headerlink" href="#verify-model-file-updated" title="Permanent link">&para;</a></h1>
+<p>oc exec deployment/model-troubleshooting-utilities -n self-healing-platform -- \
+  ls -lh /mnt/models/predictive-analytics/model.pkl</p>
+<h1 id="verify-inferenceservice-restarted">Verify InferenceService restarted<a class="headerlink" href="#verify-inferenceservice-restarted" title="Permanent link">&para;</a></h1>
+<p>oc get pods -l serving.kserve.io/inferenceservice=predictive-analytics \
+  -n self-healing-platform --sort-by=.metadata.creationTimestamp</p>
+<h1 id="test-forecast-endpoint">Test forecast endpoint<a class="headerlink" href="#test-forecast-endpoint" title="Permanent link">&para;</a></h1>
+<p>PREDICTOR_IP=$(oc get pod -l serving.kserve.io/inferenceservice=predictive-analytics \
+  -o jsonpath='{.items[0].status.podIP}')
+curl -X POST http://${PREDICTOR_IP}:8080/v1/models/predictive-analytics:predict \
+  -H 'Content-Type: application/json' \
+  -d '{"instances": [[0.45, 0.62, 0.38, ...]]}'  # 120 values (24 samples × 5 metrics)</p>
+<h1 id="expected-12-step-forecast-for-each-metric">Expected: 12-step forecast for each metric<a class="headerlink" href="#expected-12-step-forecast-for-each-metric" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h2 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../004-kserve-model-serving/">ADR-004: KServe for Model Serving Infrastructure</a></li>
+<li><a href="../007-prometheus-monitoring-integration/">ADR-007: Prometheus Monitoring Integration</a></li>
+<li><a href="../012-notebook-architecture-for-end-to-end-workflows/">ADR-012: Notebook Architecture for End-to-End Workflows</a></li>
+<li><a href="../013-data-collection-and-preprocessing-workflows/">ADR-013: Data Collection and Preprocessing Workflows</a></li>
+<li><a href="../029-jupyter-notebook-validator-operator/">ADR-029: Jupyter Notebook Validator Operator</a></li>
+<li><a href="../037-mlops-workflow-strategy/">ADR-037: MLOps Workflow Strategy</a></li>
+<li><a href="../041-model-storage-and-versioning-strategy/">ADR-041: Model Storage and Versioning Strategy</a></li>
+<li><a href="../050-anomaly-detector-model-training/">ADR-050: Anomaly Detector Model Training</a> (companion ADR)</li>
+<li><a href="../052-model-training-data-sources/">ADR-052: Model Training Data Source Selection Strategy</a> (companion ADR)</li>
+</ul>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Random Forest paper: Breiman (2001) "Random Forests"</li>
+<li>scikit-learn documentation: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html</li>
+<li>Prometheus query API: https://prometheus.io/docs/prometheus/latest/querying/api/</li>
+<li>KServe sklearn server: https://github.com/kserve/kserve/tree/master/python/sklearnserver</li>
+<li>Notebook: <code>notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb</code></li>
+</ul>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p><strong>Immediate (This ADR)</strong>:
+1. ✅ NotebookValidationJob already exists (maintain configuration)
+2. ✅ Update notebook to support Prometheus historical data fetching
+3. ✅ Add environment variables for data source configuration
+4. ✅ Document manual training procedure</p>
+<p><strong>Future Enhancements</strong>:
+1. Add uncertainty quantification (prediction intervals)
+2. Implement multi-horizon forecasting (15min, 1hr, 4hr, 24hr)
+3. Add model performance monitoring (forecast accuracy tracking)
+4. Evaluate LSTM for longer-term forecasting
+5. Implement online learning for continuous adaptation
+6. Add SHAP for forecast explainability (which features drive predictions)
+7. Integrate with cluster autoscaler for proactive scaling</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 6, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 27, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2425 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/guides/OPERATOR-TRAINING-GUIDE/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Operator Training Guide - OpenShift AI Ops Self-Healing Platform - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#operator-training-guide-openshift-ai-ops-self-healing-platform" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Operator Training Guide - OpenShift AI Ops Self-Healing Platform
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#required-skills-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required Skills Matrix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#training-path-by-week" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training Path by Week
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Training Path by Week">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#week-1-openshift-kubernetes-fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Week 1: OpenShift &amp; Kubernetes Fundamentals
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Week 1: OpenShift & Kubernetes Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#day-1-2-openshift-basics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Day 1-2: OpenShift Basics
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/guides/OPERATOR-TRAINING-GUIDE.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="operator-training-guide-openshift-ai-ops-self-healing-platform">Operator Training Guide - OpenShift AI Ops Self-Healing Platform<a class="headerlink" href="#operator-training-guide-openshift-ai-ops-self-healing-platform" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>This guide provides a comprehensive training roadmap for operators managing the OpenShift AI Ops Self-Healing Platform. It covers the essential skills, tools, and technologies needed to effectively operate, monitor, and troubleshoot the platform.</p>
+<p><strong>Target Audience:</strong>
+- Site Reliability Engineers (SREs)
+- Platform Engineers
+- DevOps Engineers
+- Operations Team Members</p>
+<p><strong>Prerequisites:</strong>
+- Basic Linux administration
+- Basic networking concepts
+- Familiarity with containers and Kubernetes</p>
+<h2 id="required-skills-matrix">Required Skills Matrix<a class="headerlink" href="#required-skills-matrix" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Skill Area</th>
+<th>Priority</th>
+<th>Estimated Time</th>
+<th>Resources</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OpenShift Fundamentals</strong></td>
+<td>🔴 Critical</td>
+<td>40 hours</td>
+<td>Red Hat DO180, ADR-001</td>
+</tr>
+<tr>
+<td><strong>Machine Config Operator (MCO)</strong></td>
+<td>🟡 High</td>
+<td>16 hours</td>
+<td>Red Hat Docs, ADR-005</td>
+</tr>
+<tr>
+<td><strong>NVIDIA GPU Operator</strong></td>
+<td>🟡 High</td>
+<td>8 hours</td>
+<td>NVIDIA Docs, ADR-006</td>
+</tr>
+<tr>
+<td><strong>OpenShift AI (RHODS)</strong></td>
+<td>🔴 Critical</td>
+<td>40 hours</td>
+<td>Red Hat DO374, ADR-003</td>
+</tr>
+<tr>
+<td><strong>KServe Model Serving</strong></td>
+<td>🟡 High</td>
+<td>16 hours</td>
+<td>KServe Docs, ADR-004</td>
+</tr>
+<tr>
+<td><strong>Prometheus &amp; PromQL</strong></td>
+<td>🔴 Critical</td>
+<td>24 hours</td>
+<td>prometheus.io, ADR-007</td>
+</tr>
+<tr>
+<td><strong>Tekton Pipelines</strong></td>
+<td>🟢 Medium</td>
+<td>16 hours</td>
+<td>tekton.dev, ADR-021</td>
+</tr>
+<tr>
+<td><strong>ArgoCD GitOps</strong></td>
+<td>🟢 Medium</td>
+<td>12 hours</td>
+<td>argoproj.io, ADR-027</td>
+</tr>
+<tr>
+<td><strong>Jupyter Notebooks</strong></td>
+<td>🟡 High</td>
+<td>16 hours</td>
+<td>jupyter.org, ADR-012</td>
+</tr>
+<tr>
+<td><strong>Coordination Engine</strong></td>
+<td>🟡 High</td>
+<td>8 hours</td>
+<td>src/coordination-engine/README.md</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total Estimated Training Time</strong>: ~196 hours (~5 weeks full-time)</p>
+<hr />
+<h2 id="training-path-by-week">Training Path by Week<a class="headerlink" href="#training-path-by-week" title="Permanent link">&para;</a></h2>
+<h3 id="week-1-openshift-kubernetes-fundamentals">Week 1: OpenShift &amp; Kubernetes Fundamentals<a class="headerlink" href="#week-1-openshift-kubernetes-fundamentals" title="Permanent link">&para;</a></h3>
+<h4 id="day-1-2-openshift-basics">Day 1-2: OpenShift Basics<a class="headerlink" href="#day-1-2-openshift-basics" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Understand OpenShift architecture (control plane, workers, etcd)
+- Navigate OpenShift Console
+- Use <code>oc</code> CLI for basic operations
+- Understand pods, deployments, services</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-11-explore-cluster-topology">Lab 1.1: Explore cluster topology<a class="headerlink" href="#lab-11-explore-cluster-topology" title="Permanent link">&para;</a></h1>
+<p>oc get nodes
+oc describe node <node-name>
+oc get clusterversion</p>
+<h1 id="lab-12-navigate-namespaces">Lab 1.2: Navigate namespaces<a class="headerlink" href="#lab-12-navigate-namespaces" title="Permanent link">&para;</a></h1>
+<p>oc projects
+oc get all -n self-healing-platform
+oc get pods -A</p>
+<h1 id="lab-13-view-logs-and-events">Lab 1.3: View logs and events<a class="headerlink" href="#lab-13-view-logs-and-events" title="Permanent link">&para;</a></h1>
+<p>oc logs <pod-name> -f
+oc describe pod <pod-name>
+oc get events -n self-healing-platform --sort-by='.lastTimestamp'
+```</p>
+<p><strong>Resources:</strong>
+- <strong>Red Hat DO180</strong>: Introduction to Containers, Kubernetes, and Red Hat OpenShift
+- <strong>OpenShift Documentation</strong>: https://docs.openshift.com/container-platform/4.18/</p>
+<h4 id="day-3-4-operators-custom-resources">Day 3-4: Operators &amp; Custom Resources<a class="headerlink" href="#day-3-4-operators-custom-resources" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Understand Operator pattern
+- Work with Custom Resource Definitions (CRDs)
+- Manage operator subscriptions
+- Troubleshoot operator issues</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-14-list-installed-operators">Lab 1.4: List installed operators<a class="headerlink" href="#lab-14-list-installed-operators" title="Permanent link">&para;</a></h1>
+<p>oc get csv -n openshift-operators
+oc get operators</p>
+<h1 id="lab-15-explore-crds">Lab 1.5: Explore CRDs<a class="headerlink" href="#lab-15-explore-crds" title="Permanent link">&para;</a></h1>
+<p>oc get crd | grep -E 'kserve|mlops|machineconfig'
+oc describe crd inferenceservices.serving.kserve.io</p>
+<h1 id="lab-16-check-operator-health">Lab 1.6: Check operator health<a class="headerlink" href="#lab-16-check-operator-health" title="Permanent link">&para;</a></h1>
+<p>oc get pods -n openshift-operators
+oc logs deployment/rhods-operator -n openshift-operators
+```</p>
+<p><strong>Key Operators in Platform:</strong>
+- Red Hat OpenShift AI Operator
+- NVIDIA GPU Operator
+- OpenShift GitOps Operator
+- OpenShift Pipelines Operator
+- KServe Controller</p>
+<h4 id="day-5-rbac-security">Day 5: RBAC &amp; Security<a class="headerlink" href="#day-5-rbac-security" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Understand ServiceAccounts, Roles, RoleBindings
+- Manage ClusterRoles and ClusterRoleBindings
+- Troubleshoot permission issues</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-17-explore-rbac">Lab 1.7: Explore RBAC<a class="headerlink" href="#lab-17-explore-rbac" title="Permanent link">&para;</a></h1>
+<p>oc get serviceaccounts -n self-healing-platform
+oc describe rolebinding coordination-engine-binding -n self-healing-platform</p>
+<h1 id="lab-18-check-permissions">Lab 1.8: Check permissions<a class="headerlink" href="#lab-18-check-permissions" title="Permanent link">&para;</a></h1>
+<p>oc auth can-i list pods --as=system:serviceaccount:self-healing-platform:coordination-engine-sa
+oc auth can-i create inferenceservices -n self-healing-platform</p>
+<h1 id="lab-19-troubleshoot-permission-denied">Lab 1.9: Troubleshoot permission denied<a class="headerlink" href="#lab-19-troubleshoot-permission-denied" title="Permanent link">&para;</a></h1>
+<p>oc get events -n self-healing-platform | grep "forbidden"
+```</p>
+<p><strong>Resources:</strong>
+- <a href="../../adrs/033-coordination-engine-rbac-permissions/">ADR-033: Coordination Engine RBAC Permissions</a></p>
+<hr />
+<h3 id="week-2-prometheus-monitoring-promql">Week 2: Prometheus Monitoring &amp; PromQL<a class="headerlink" href="#week-2-prometheus-monitoring-promql" title="Permanent link">&para;</a></h3>
+<h4 id="day-1-2-prometheus-fundamentals">Day 1-2: Prometheus Fundamentals<a class="headerlink" href="#day-1-2-prometheus-fundamentals" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Understand time-series data model
+- Navigate Prometheus UI
+- Write basic PromQL queries
+- Understand metrics types (counter, gauge, histogram, summary)</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-21-access-prometheus-ui">Lab 2.1: Access Prometheus UI<a class="headerlink" href="#lab-21-access-prometheus-ui" title="Permanent link">&para;</a></h1>
+<p>oc port-forward -n openshift-monitoring prometheus-k8s-0 9090:9090</p>
+<h1 id="navigate-to-httplocalhost9090">Navigate to http://localhost:9090<a class="headerlink" href="#navigate-to-httplocalhost9090" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<p><strong>Basic PromQL Queries:</strong>
+```promql</p>
+<h1 id="lab-22-node-metrics">Lab 2.2: Node metrics<a class="headerlink" href="#lab-22-node-metrics" title="Permanent link">&para;</a></h1>
+<h1 id="cpu-usage-by-node">CPU usage by node<a class="headerlink" href="#cpu-usage-by-node" title="Permanent link">&para;</a></h1>
+<p>100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)</p>
+<h1 id="memory-usage-by-node">Memory usage by node<a class="headerlink" href="#memory-usage-by-node" title="Permanent link">&para;</a></h1>
+<p>(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100</p>
+<h1 id="disk-usage">Disk usage<a class="headerlink" href="#disk-usage" title="Permanent link">&para;</a></h1>
+<p>(node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100
+```</p>
+<h4 id="day-3-container-pod-metrics">Day 3: Container &amp; Pod Metrics<a class="headerlink" href="#day-3-container-pod-metrics" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Query container resource usage
+- Monitor pod health
+- Track restarts and errors</p>
+<p><strong>PromQL Practice:</strong>
+```promql</p>
+<h1 id="lab-23-container-metrics">Lab 2.3: Container metrics<a class="headerlink" href="#lab-23-container-metrics" title="Permanent link">&para;</a></h1>
+<h1 id="cpu-usage-by-container">CPU usage by container<a class="headerlink" href="#cpu-usage-by-container" title="Permanent link">&para;</a></h1>
+<p>rate(container_cpu_usage_seconds_total{namespace="self-healing-platform"}[5m])</p>
+<h1 id="memory-working-set">Memory working set<a class="headerlink" href="#memory-working-set" title="Permanent link">&para;</a></h1>
+<p>container_memory_working_set_bytes{namespace="self-healing-platform"}</p>
+<h1 id="network-io">Network I/O<a class="headerlink" href="#network-io" title="Permanent link">&para;</a></h1>
+<p>rate(container_network_receive_bytes_total{namespace="self-healing-platform"}[5m])</p>
+<h1 id="pod-restart-rate">Pod restart rate<a class="headerlink" href="#pod-restart-rate" title="Permanent link">&para;</a></h1>
+<p>increase(kube_pod_container_status_restarts_total{namespace="self-healing-platform"}[1h])
+```</p>
+<h4 id="day-4-aggregations-functions">Day 4: Aggregations &amp; Functions<a class="headerlink" href="#day-4-aggregations-functions" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Use aggregation operators (sum, avg, max, min)
+- Apply rate, increase, delta functions
+- Calculate percentiles with histogram_quantile</p>
+<p><strong>PromQL Advanced:</strong>
+```promql</p>
+<h1 id="lab-24-aggregations">Lab 2.4: Aggregations<a class="headerlink" href="#lab-24-aggregations" title="Permanent link">&para;</a></h1>
+<h1 id="total-cpu-by-namespace">Total CPU by namespace<a class="headerlink" href="#total-cpu-by-namespace" title="Permanent link">&para;</a></h1>
+<p>sum by (namespace) (rate(container_cpu_usage_seconds_total[5m]))</p>
+<h1 id="average-memory-by-pod">Average memory by pod<a class="headerlink" href="#average-memory-by-pod" title="Permanent link">&para;</a></h1>
+<p>avg by (pod) (container_memory_working_set_bytes{namespace="self-healing-platform"})</p>
+<h1 id="95th-percentile-latency">95th percentile latency<a class="headerlink" href="#95th-percentile-latency" title="Permanent link">&para;</a></h1>
+<p>histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))</p>
+<h1 id="top-5-cpu-consumers">Top 5 CPU consumers<a class="headerlink" href="#top-5-cpu-consumers" title="Permanent link">&para;</a></h1>
+<p>topk(5, rate(container_cpu_usage_seconds_total[5m]))
+```</p>
+<h4 id="day-5-alerting-rules">Day 5: Alerting Rules<a class="headerlink" href="#day-5-alerting-rules" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Write alerting rules
+- Understand alert severity levels
+- Configure alert annotations</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-25-view-existing-alerts">Lab 2.5: View existing alerts<a class="headerlink" href="#lab-25-view-existing-alerts" title="Permanent link">&para;</a></h1>
+<p>oc get prometheusrules -n self-healing-platform</p>
+<h1 id="lab-26-create-custom-alert">Lab 2.6: Create custom alert<a class="headerlink" href="#lab-26-create-custom-alert" title="Permanent link">&para;</a></h1>
+<p>cat &lt;<EOF | oc apply -f -
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: custom-alerts
+  namespace: self-healing-platform
+spec:
+  groups:
+  - name: self_healing
+    rules:
+    - alert: HighPodMemoryUsage
+      expr: |
+        container_memory_working_set_bytes{namespace="self-healing-platform"}
+        / container_spec_memory_limit_bytes{namespace="self-healing-platform"} > 0.9
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Pod {{ \$labels.pod }} high memory usage"
+        description: "Memory usage is {{ \$value | humanizePercentage }}"
+EOF
+```</p>
+<p><strong>Resources:</strong>
+- <a href="../../adrs/007-prometheus-monitoring-integration/">ADR-007: Prometheus Monitoring Integration</a>
+- <strong>Prometheus Documentation</strong>: https://prometheus.io/docs/prometheus/latest/querying/basics/
+- <strong>PromQL Cheat Sheet</strong>: https://promlabs.com/promql-cheat-sheet/</p>
+<hr />
+<h3 id="week-3-machine-learning-operations">Week 3: Machine Learning Operations<a class="headerlink" href="#week-3-machine-learning-operations" title="Permanent link">&para;</a></h3>
+<h4 id="day-1-2-openshift-ai-rhods">Day 1-2: OpenShift AI (RHODS)<a class="headerlink" href="#day-1-2-openshift-ai-rhods" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Navigate RHODS dashboard
+- Create and manage workbenches
+- Understand data science pipelines
+- Configure notebook images</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-31-access-rhods-dashboard">Lab 3.1: Access RHODS dashboard<a class="headerlink" href="#lab-31-access-rhods-dashboard" title="Permanent link">&para;</a></h1>
+<p>oc get route rhods-dashboard -n redhat-ods-applications</p>
+<h1 id="lab-32-list-data-science-projects">Lab 3.2: List data science projects<a class="headerlink" href="#lab-32-list-data-science-projects" title="Permanent link">&para;</a></h1>
+<p>oc get datasciencepipelinesapplications -A</p>
+<h1 id="lab-33-check-workbench-status">Lab 3.3: Check workbench status<a class="headerlink" href="#lab-33-check-workbench-status" title="Permanent link">&para;</a></h1>
+<p>oc get notebook self-healing-workbench -n self-healing-platform -o yaml
+```</p>
+<h4 id="day-3-kserve-model-serving">Day 3: KServe Model Serving<a class="headerlink" href="#day-3-kserve-model-serving" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Understand InferenceService CRD
+- Deploy models via KServe
+- Test inference endpoints
+- Monitor model performance</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-34-list-inference-services">Lab 3.4: List inference services<a class="headerlink" href="#lab-34-list-inference-services" title="Permanent link">&para;</a></h1>
+<p>oc get inferenceservices -n self-healing-platform</p>
+<h1 id="lab-35-check-inferenceservice-status">Lab 3.5: Check InferenceService status<a class="headerlink" href="#lab-35-check-inferenceservice-status" title="Permanent link">&para;</a></h1>
+<p>oc describe inferenceservice anomaly-detector -n self-healing-platform</p>
+<h1 id="lab-36-test-inference-endpoint">Lab 3.6: Test inference endpoint<a class="headerlink" href="#lab-36-test-inference-endpoint" title="Permanent link">&para;</a></h1>
+<p>MODEL_URL=$(oc get inferenceservice anomaly-detector -n self-healing-platform \
+  -o jsonpath='{.status.url}')</p>
+<p>curl -X POST $MODEL_URL/v1/models/anomaly-detector:predict \
+  -H "Content-Type: application/json" \
+  -d '{"instances": [[0.5, 0.3, 0.8]]}'
+```</p>
+<p><strong>Common Issues:</strong>
+```bash</p>
+<h1 id="inferenceservice-not-ready">InferenceService not ready?<a class="headerlink" href="#inferenceservice-not-ready" title="Permanent link">&para;</a></h1>
+<h1 id="check-predictor-pod-logs">Check predictor pod logs<a class="headerlink" href="#check-predictor-pod-logs" title="Permanent link">&para;</a></h1>
+<p>oc logs -n self-healing-platform -l serving.kserve.io/inferenceservice=anomaly-detector</p>
+<h1 id="check-events">Check events<a class="headerlink" href="#check-events" title="Permanent link">&para;</a></h1>
+<p>oc get events -n self-healing-platform --field-selector involvedObject.name=anomaly-detector
+```</p>
+<h4 id="day-4-jupyter-notebooks">Day 4: Jupyter Notebooks<a class="headerlink" href="#day-4-jupyter-notebooks" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Navigate Jupyter Lab
+- Run ML training notebooks
+- Understand notebook workflow
+- Save models to PVC</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-37-access-jupyter-workbench">Lab 3.7: Access Jupyter workbench<a class="headerlink" href="#lab-37-access-jupyter-workbench" title="Permanent link">&para;</a></h1>
+<p>oc port-forward self-healing-workbench-0 8888:8888 -n self-healing-platform</p>
+<h1 id="open-httplocalhost8888">Open http://localhost:8888<a class="headerlink" href="#open-httplocalhost8888" title="Permanent link">&para;</a></h1>
+<h1 id="lab-38-execute-training-notebook">Lab 3.8: Execute training notebook<a class="headerlink" href="#lab-38-execute-training-notebook" title="Permanent link">&para;</a></h1>
+<h1 id="navigate-to-notebooks02-anomaly-detection01-isolation-forest-implementationipynb">Navigate to: notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb<a class="headerlink" href="#navigate-to-notebooks02-anomaly-detection01-isolation-forest-implementationipynb" title="Permanent link">&para;</a></h1>
+<h1 id="execute-all-cells-shiftenter">Execute all cells (Shift+Enter)<a class="headerlink" href="#execute-all-cells-shiftenter" title="Permanent link">&para;</a></h1>
+<h1 id="lab-39-verify-model-saved">Lab 3.9: Verify model saved<a class="headerlink" href="#lab-39-verify-model-saved" title="Permanent link">&para;</a></h1>
+<p>oc exec -it self-healing-workbench-0 -n self-healing-platform -- \
+  ls -lh /opt/app-root/src/models/anomaly-detector/v1/
+```</p>
+<h4 id="day-5-gpu-management">Day 5: GPU Management<a class="headerlink" href="#day-5-gpu-management" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Understand GPU Operator
+- Monitor GPU utilization
+- Troubleshoot GPU issues</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-310-check-gpu-availability">Lab 3.10: Check GPU availability<a class="headerlink" href="#lab-310-check-gpu-availability" title="Permanent link">&para;</a></h1>
+<p>oc get nodes -l nvidia.com/gpu.present=true</p>
+<h1 id="lab-311-gpu-metrics">Lab 3.11: GPU metrics<a class="headerlink" href="#lab-311-gpu-metrics" title="Permanent link">&para;</a></h1>
+<h1 id="in-prometheus">In Prometheus:<a class="headerlink" href="#in-prometheus" title="Permanent link">&para;</a></h1>
+<p>DCGM_FI_DEV_GPU_UTIL
+DCGM_FI_DEV_MEM_COPY_UTIL
+DCGM_FI_DEV_GPU_TEMP</p>
+<h1 id="lab-312-verify-gpu-pod-allocation">Lab 3.12: Verify GPU pod allocation<a class="headerlink" href="#lab-312-verify-gpu-pod-allocation" title="Permanent link">&para;</a></h1>
+<p>oc describe node <gpu-node> | grep -A 5 "nvidia.com/gpu"
+```</p>
+<p><strong>Resources:</strong>
+- <a href="../../adrs/003-openshift-ai-ml-platform/">ADR-003: Red Hat OpenShift AI for ML Platform</a>
+- <a href="../../adrs/004-kserve-model-serving/">ADR-004: KServe for Model Serving Infrastructure</a>
+- <a href="../../adrs/006-nvidia-gpu-management/">ADR-006: NVIDIA GPU Operator</a></p>
+<hr />
+<h3 id="week-4-cicd-automation">Week 4: CI/CD &amp; Automation<a class="headerlink" href="#week-4-cicd-automation" title="Permanent link">&para;</a></h3>
+<h4 id="day-1-2-tekton-pipelines">Day 1-2: Tekton Pipelines<a class="headerlink" href="#day-1-2-tekton-pipelines" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Understand Tekton architecture (Tasks, Pipelines, PipelineRuns)
+- Run validation pipelines
+- Monitor pipeline execution
+- Debug failed pipeline runs</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-41-list-pipelines">Lab 4.1: List pipelines<a class="headerlink" href="#lab-41-list-pipelines" title="Permanent link">&para;</a></h1>
+<p>tkn pipeline list -n openshift-pipelines</p>
+<h1 id="lab-42-run-deployment-validation">Lab 4.2: Run deployment validation<a class="headerlink" href="#lab-42-run-deployment-validation" title="Permanent link">&para;</a></h1>
+<p>tkn pipeline start deployment-validation-pipeline \
+  -p namespace=self-healing-platform \
+  -p cluster-version=4.18 \
+  -n openshift-pipelines \
+  --showlog</p>
+<h1 id="lab-43-view-pipeline-run-history">Lab 4.3: View pipeline run history<a class="headerlink" href="#lab-43-view-pipeline-run-history" title="Permanent link">&para;</a></h1>
+<p>tkn pipelinerun list -n openshift-pipelines</p>
+<h1 id="lab-44-check-task-logs">Lab 4.4: Check task logs<a class="headerlink" href="#lab-44-check-task-logs" title="Permanent link">&para;</a></h1>
+<p>tkn taskrun logs <taskrun-name> -n openshift-pipelines
+```</p>
+<p><strong>Common Issues:</strong>
+```bash</p>
+<h1 id="pipeline-stuck-in-pending">Pipeline stuck in pending?<a class="headerlink" href="#pipeline-stuck-in-pending" title="Permanent link">&para;</a></h1>
+<p>oc get pipelinerun <run-name> -n openshift-pipelines -o yaml | grep -A 10 status</p>
+<h1 id="check-pod-logs">Check pod logs<a class="headerlink" href="#check-pod-logs" title="Permanent link">&para;</a></h1>
+<p>oc logs -n openshift-pipelines -l tekton.dev/pipelineRun=<run-name>
+```</p>
+<h4 id="day-3-argocd-gitops">Day 3: ArgoCD GitOps<a class="headerlink" href="#day-3-argocd-gitops" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Understand GitOps principles
+- Navigate ArgoCD UI
+- Sync applications
+- Troubleshoot out-of-sync applications</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-45-access-argocd-ui">Lab 4.5: Access ArgoCD UI<a class="headerlink" href="#lab-45-access-argocd-ui" title="Permanent link">&para;</a></h1>
+<p>oc get route openshift-gitops-server -n openshift-gitops</p>
+<h1 id="lab-46-list-argocd-applications">Lab 4.6: List ArgoCD applications<a class="headerlink" href="#lab-46-list-argocd-applications" title="Permanent link">&para;</a></h1>
+<p>oc get applications -n openshift-gitops</p>
+<h1 id="lab-47-check-sync-status">Lab 4.7: Check sync status<a class="headerlink" href="#lab-47-check-sync-status" title="Permanent link">&para;</a></h1>
+<p>oc describe application self-healing-platform -n openshift-gitops</p>
+<h1 id="lab-48-manual-sync">Lab 4.8: Manual sync<a class="headerlink" href="#lab-48-manual-sync" title="Permanent link">&para;</a></h1>
+<p>argocd app sync self-healing-platform
+```</p>
+<h4 id="day-4-5-coordination-engine">Day 4-5: Coordination Engine<a class="headerlink" href="#day-4-5-coordination-engine" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Understand hybrid self-healing approach
+- Monitor coordination engine
+- Submit anomalies via API
+- Troubleshoot conflict resolution</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-49-check-coordination-engine-health">Lab 4.9: Check coordination engine health<a class="headerlink" href="#lab-49-check-coordination-engine-health" title="Permanent link">&para;</a></h1>
+<p>curl http://coordination-engine.self-healing-platform.svc:8080/health</p>
+<h1 id="lab-410-view-engine-status">Lab 4.10: View engine status<a class="headerlink" href="#lab-410-view-engine-status" title="Permanent link">&para;</a></h1>
+<p>curl http://coordination-engine.self-healing-platform.svc:8080/api/v1/status | jq</p>
+<h1 id="lab-411-submit-test-anomaly">Lab 4.11: Submit test anomaly<a class="headerlink" href="#lab-411-submit-test-anomaly" title="Permanent link">&para;</a></h1>
+<p>curl -X POST http://coordination-engine:8080/api/v1/anomalies \
+  -H "Content-Type: application/json" \
+  -d '{
+    "timestamp": "2025-12-10T14:30:00Z",
+    "type": "test",
+    "severity": "low",
+    "confidence_score": 0.95,
+    "source": "manual_test"
+  }'</p>
+<h1 id="lab-412-monitor-metrics">Lab 4.12: Monitor metrics<a class="headerlink" href="#lab-412-monitor-metrics" title="Permanent link">&para;</a></h1>
+<p>curl http://coordination-engine:8080/metrics | grep coordination
+```</p>
+<p><strong>Resources:</strong>
+- <a href="../../adrs/002-hybrid-self-healing-approach/">ADR-002: Hybrid Deterministic-AI Self-Healing Approach</a>
+- <a href="../../adrs/021-tekton-pipeline-deployment-validation/">ADR-021: Tekton Pipeline for Post-Deployment Validation</a>
+- <a href="../../adrs/027-cicd-pipeline-automation/">ADR-027: CI/CD Pipeline Automation</a>
+- <a href="../../src/coordination-engine/README.md">Coordination Engine README</a></p>
+<hr />
+<h3 id="week-5-advanced-topics-troubleshooting">Week 5: Advanced Topics &amp; Troubleshooting<a class="headerlink" href="#week-5-advanced-topics-troubleshooting" title="Permanent link">&para;</a></h3>
+<h4 id="day-1-machine-config-operator-mco">Day 1: Machine Config Operator (MCO)<a class="headerlink" href="#day-1-machine-config-operator-mco" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Understand MachineConfig and MachineConfigPool
+- Apply node-level configurations
+- Monitor MCO updates
+- Troubleshoot MCO issues</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-51-list-machine-configs">Lab 5.1: List machine configs<a class="headerlink" href="#lab-51-list-machine-configs" title="Permanent link">&para;</a></h1>
+<p>oc get machineconfig</p>
+<h1 id="lab-52-check-machine-config-pools">Lab 5.2: Check machine config pools<a class="headerlink" href="#lab-52-check-machine-config-pools" title="Permanent link">&para;</a></h1>
+<p>oc get machineconfigpool</p>
+<h1 id="lab-53-view-rendered-config">Lab 5.3: View rendered config<a class="headerlink" href="#lab-53-view-rendered-config" title="Permanent link">&para;</a></h1>
+<p>oc get machineconfig rendered-worker-<hash> -o yaml</p>
+<h1 id="lab-54-monitor-mco-updates">Lab 5.4: Monitor MCO updates<a class="headerlink" href="#lab-54-monitor-mco-updates" title="Permanent link">&para;</a></h1>
+<p>oc get nodes -w
+oc get mcp -w
+```</p>
+<p><strong>Resources:</strong>
+- <a href="../../adrs/005-machine-config-operator-automation/">ADR-005: Machine Config Operator for Node-Level Automation</a></p>
+<h4 id="day-2-storage-data-management">Day 2: Storage &amp; Data Management<a class="headerlink" href="#day-2-storage-data-management" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Understand OpenShift Data Foundation (ODF)
+- Manage PVCs and storage classes
+- Monitor storage utilization
+- Troubleshoot storage issues</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-55-check-storage-classes">Lab 5.5: Check storage classes<a class="headerlink" href="#lab-55-check-storage-classes" title="Permanent link">&para;</a></h1>
+<p>oc get storageclass</p>
+<h1 id="lab-56-list-pvcs">Lab 5.6: List PVCs<a class="headerlink" href="#lab-56-list-pvcs" title="Permanent link">&para;</a></h1>
+<p>oc get pvc -n self-healing-platform</p>
+<h1 id="lab-57-check-odf-health">Lab 5.7: Check ODF health<a class="headerlink" href="#lab-57-check-odf-health" title="Permanent link">&para;</a></h1>
+<p>oc get cephcluster -n openshift-storage</p>
+<h1 id="lab-58-storage-metrics-prometheus">Lab 5.8: Storage metrics (Prometheus)<a class="headerlink" href="#lab-58-storage-metrics-prometheus" title="Permanent link">&para;</a></h1>
+<p>kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes
+```</p>
+<h4 id="day-3-secrets-management">Day 3: Secrets Management<a class="headerlink" href="#day-3-secrets-management" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Understand External Secrets Operator
+- Manage secrets backends (Vault, AWS)
+- Troubleshoot secret sync issues</p>
+<p><strong>Hands-On Labs:</strong>
+```bash</p>
+<h1 id="lab-59-check-external-secrets">Lab 5.9: Check external secrets<a class="headerlink" href="#lab-59-check-external-secrets" title="Permanent link">&para;</a></h1>
+<p>oc get externalsecrets -n self-healing-platform</p>
+<h1 id="lab-510-check-secret-stores">Lab 5.10: Check secret stores<a class="headerlink" href="#lab-510-check-secret-stores" title="Permanent link">&para;</a></h1>
+<p>oc get secretstore -n self-healing-platform</p>
+<h1 id="lab-511-verify-secret-sync">Lab 5.11: Verify secret sync<a class="headerlink" href="#lab-511-verify-secret-sync" title="Permanent link">&para;</a></h1>
+<p>oc describe externalsecret coordination-engine-credentials -n self-healing-platform
+```</p>
+<p><strong>Resources:</strong>
+- <a href="../../adrs/026-secrets-management-automation/">ADR-026: Secrets Management Automation</a></p>
+<h4 id="day-4-incident-response">Day 4: Incident Response<a class="headerlink" href="#day-4-incident-response" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Respond to platform alerts
+- Perform root cause analysis
+- Execute remediation procedures
+- Document incidents</p>
+<p><strong>Incident Response Checklist:</strong>
+```markdown</p>
+<h2 id="incident-response-procedure">Incident Response Procedure<a class="headerlink" href="#incident-response-procedure" title="Permanent link">&para;</a></h2>
+<h3 id="1-alert-triage-5-min">1. Alert Triage (5 min)<a class="headerlink" href="#1-alert-triage-5-min" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Check Prometheus alerts: <code>oc get prometheusrule -A</code></li>
+<li>[ ] Check AlertManager: <code>oc get alertmanagers -A</code></li>
+<li>[ ] Assess severity (P1-Critical, P2-High, P3-Medium, P4-Low)</li>
+</ul>
+<h3 id="2-initial-investigation-10-min">2. Initial Investigation (10 min)<a class="headerlink" href="#2-initial-investigation-10-min" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Check affected components: <code>oc get pods -A | grep -v Running</code></li>
+<li>[ ] Review recent events: <code>oc get events -A --sort-by='.lastTimestamp' | tail -50</code></li>
+<li>[ ] Check coordination engine logs: <code>oc logs deployment/coordination-engine -n self-healing-platform --tail=100</code></li>
+</ul>
+<h3 id="3-gather-context-10-min">3. Gather Context (10 min)<a class="headerlink" href="#3-gather-context-10-min" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Prometheus metrics around incident time</li>
+<li>[ ] Recent deployments: <code>oc get events -A | grep -E 'Deploy|Sync'</code></li>
+<li>[ ] Resource utilization: CPU/Memory/Storage metrics</li>
+</ul>
+<h3 id="4-remediation-varies">4. Remediation (varies)<a class="headerlink" href="#4-remediation-varies" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Execute automated remediation (if available)</li>
+<li>[ ] Manual intervention (if required)</li>
+<li>[ ] Verify fix: Check metrics, logs, health endpoints</li>
+</ul>
+<h3 id="5-post-incident-30-min">5. Post-Incident (30 min)<a class="headerlink" href="#5-post-incident-30-min" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Document root cause</li>
+<li>[ ] Update runbooks</li>
+<li>[ ] Create follow-up tasks
+```</li>
+</ul>
+<h4 id="day-5-performance-tuning">Day 5: Performance Tuning<a class="headerlink" href="#day-5-performance-tuning" title="Permanent link">&para;</a></h4>
+<p><strong>Learning Objectives:</strong>
+- Identify performance bottlenecks
+- Optimize resource allocation
+- Tune operator configurations</p>
+<p><strong>Performance Tuning Labs:</strong>
+```bash</p>
+<h1 id="lab-512-resource-utilization-analysis">Lab 5.12: Resource utilization analysis<a class="headerlink" href="#lab-512-resource-utilization-analysis" title="Permanent link">&para;</a></h1>
+<h1 id="top-cpu-consumers">Top CPU consumers<a class="headerlink" href="#top-cpu-consumers" title="Permanent link">&para;</a></h1>
+<p>kubectl top pods -A --sort-by=cpu</p>
+<h1 id="top-memory-consumers">Top memory consumers<a class="headerlink" href="#top-memory-consumers" title="Permanent link">&para;</a></h1>
+<p>kubectl top pods -A --sort-by=memory</p>
+<h1 id="lab-513-identify-slow-queries-prometheus">Lab 5.13: Identify slow queries (Prometheus)<a class="headerlink" href="#lab-513-identify-slow-queries-prometheus" title="Permanent link">&para;</a></h1>
+<p>topk(10, rate(prometheus_rule_evaluation_duration_seconds_sum[5m]) /
+         rate(prometheus_rule_evaluation_duration_seconds_count[5m]))
+```</p>
+<hr />
+<h2 id="certification-paths">Certification Paths<a class="headerlink" href="#certification-paths" title="Permanent link">&para;</a></h2>
+<h3 id="recommended-certifications">Recommended Certifications<a class="headerlink" href="#recommended-certifications" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Certification</th>
+<th>Relevance</th>
+<th>Difficulty</th>
+<th>Time Investment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Red Hat Certified Specialist in OpenShift Administration (EX280)</strong></td>
+<td>High</td>
+<td>Medium</td>
+<td>80-120 hours</td>
+</tr>
+<tr>
+<td><strong>Certified Kubernetes Administrator (CKA)</strong></td>
+<td>High</td>
+<td>Medium</td>
+<td>60-80 hours</td>
+</tr>
+<tr>
+<td><strong>Red Hat Certified Specialist in AI/ML</strong></td>
+<td>Medium</td>
+<td>Medium</td>
+<td>40-60 hours</td>
+</tr>
+<tr>
+<td><strong>Prometheus Certified Associate (PCA)</strong></td>
+<td>Medium</td>
+<td>Low</td>
+<td>20-30 hours</td>
+</tr>
+</tbody>
+</table>
+<h3 id="study-resources">Study Resources<a class="headerlink" href="#study-resources" title="Permanent link">&para;</a></h3>
+<p><strong>Red Hat Training:</strong>
+- <strong>DO180</strong>: Introduction to Containers, Kubernetes, and Red Hat OpenShift
+- <strong>DO280</strong>: OpenShift Administration II
+- <strong>DO374</strong>: Developing Applications with Red Hat OpenShift AI</p>
+<p><strong>Online Resources:</strong>
+- <strong>Prometheus.io</strong>: Official Prometheus documentation
+- <strong>KServe Docs</strong>: https://kserve.github.io/website/
+- <strong>Tekton Tutorials</strong>: https://tekton.dev/docs/getting-started/
+- <strong>ArgoCD University</strong>: https://argo-cd.readthedocs.io/en/stable/</p>
+<hr />
+<h2 id="internal-training-schedule">Internal Training Schedule<a class="headerlink" href="#internal-training-schedule" title="Permanent link">&para;</a></h2>
+<h3 id="monthly-workshops">Monthly Workshops<a class="headerlink" href="#monthly-workshops" title="Permanent link">&para;</a></h3>
+<h4 id="promql-office-hours-2-hours-2nd-tuesday-each-month">"PromQL Office Hours" (2 hours, 2nd Tuesday each month)<a class="headerlink" href="#promql-office-hours-2-hours-2nd-tuesday-each-month" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Format</strong>: Interactive Q&amp;A session</li>
+<li><strong>Topics</strong>: Real-world PromQL queries, alerting best practices</li>
+<li><strong>Facilitator</strong>: Senior SRE</li>
+<li><strong>Location</strong>: Conference Room / Virtual</li>
+</ul>
+<h4 id="platform-deep-dive-1-hour-last-friday-each-month">"Platform Deep Dive" (1 hour, Last Friday each month)<a class="headerlink" href="#platform-deep-dive-1-hour-last-friday-each-month" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Format</strong>: Tech talk + demo</li>
+<li><strong>Topics</strong>: Rotate through platform components</li>
+<li><strong>Schedule</strong>:</li>
+<li>January: Coordination Engine internals</li>
+<li>February: KServe model deployment workflow</li>
+<li>March: Tekton pipeline debugging</li>
+<li>April: GPU troubleshooting</li>
+<li>(Repeat)</li>
+</ul>
+<h3 id="quarterly-training">Quarterly Training<a class="headerlink" href="#quarterly-training" title="Permanent link">&para;</a></h3>
+<h4 id="self-healing-platform-bootcamp-1-full-day-quarterly">"Self-Healing Platform Bootcamp" (1 full day, quarterly)<a class="headerlink" href="#self-healing-platform-bootcamp-1-full-day-quarterly" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Format</strong>: Hands-on workshop</li>
+<li><strong>Audience</strong>: New team members, refresher for existing</li>
+<li><strong>Curriculum</strong>:</li>
+<li>Morning: Platform architecture overview</li>
+<li>Afternoon: Hands-on labs (Weeks 1-5 condensed)</li>
+<li>Evening: Incident simulation exercise</li>
+</ul>
+<h3 id="on-demand-resources">On-Demand Resources<a class="headerlink" href="#on-demand-resources" title="Permanent link">&para;</a></h3>
+<h4 id="jupyter-notebook-walkthroughs-30-notebooks">Jupyter Notebook Walkthroughs (30+ notebooks)<a class="headerlink" href="#jupyter-notebook-walkthroughs-30-notebooks" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Access</strong>: OpenShift AI workbench</li>
+<li><strong>Location</strong>: <code>notebooks/</code> directory</li>
+<li><strong>Self-paced</strong>: Execute notebooks, read inline documentation</li>
+</ul>
+<h4 id="video-tutorials-coming-soon">Video Tutorials (Coming Soon)<a class="headerlink" href="#video-tutorials-coming-soon" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] "Your First PromQL Query"</li>
+<li>[ ] "Deploying a Model to KServe"</li>
+<li>[ ] "Debugging Failed Pipelines"</li>
+<li>[ ] "Coordination Engine API Tutorial"</li>
+</ul>
+<hr />
+<h2 id="skills-assessment">Skills Assessment<a class="headerlink" href="#skills-assessment" title="Permanent link">&para;</a></h2>
+<h3 id="self-assessment-checklist">Self-Assessment Checklist<a class="headerlink" href="#self-assessment-checklist" title="Permanent link">&para;</a></h3>
+<p><strong>OpenShift Fundamentals:</strong>
+- [ ] I can navigate the OpenShift Console fluently
+- [ ] I understand the difference between Projects and Namespaces
+- [ ] I can troubleshoot pod failures using <code>oc describe</code> and <code>oc logs</code>
+- [ ] I understand RBAC (ServiceAccounts, Roles, RoleBindings)</p>
+<p><strong>Prometheus &amp; Monitoring:</strong>
+- [ ] I can write basic PromQL queries for CPU/memory/network
+- [ ] I understand rate(), increase(), and aggregation functions
+- [ ] I can create custom alert rules
+- [ ] I can interpret Prometheus metrics in Grafana</p>
+<p><strong>Machine Learning Operations:</strong>
+- [ ] I understand how to access and use Jupyter notebooks
+- [ ] I can deploy a model to KServe
+- [ ] I can test inference endpoints
+- [ ] I understand GPU allocation and monitoring</p>
+<p><strong>Automation &amp; CI/CD:</strong>
+- [ ] I can run Tekton pipelines manually
+- [ ] I understand ArgoCD sync and health status
+- [ ] I can interact with the Coordination Engine API
+- [ ] I understand the hybrid self-healing approach</p>
+<p><strong>Advanced Topics:</strong>
+- [ ] I can apply node configurations via MCO
+- [ ] I understand External Secrets Operator
+- [ ] I can respond to platform incidents effectively
+- [ ] I can identify and resolve performance bottlenecks</p>
+<h3 id="hands-on-assessment-2-hours">Hands-On Assessment (2 hours)<a class="headerlink" href="#hands-on-assessment-2-hours" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario-Based Exam:</strong>
+1. <strong>Incident Response</strong> (30 min): Respond to simulated platform outage
+2. <strong>Troubleshooting</strong> (30 min): Debug failing InferenceService
+3. <strong>PromQL Challenge</strong> (30 min): Write queries for specific monitoring requirements
+4. <strong>Deployment</strong> (30 min): Deploy and validate a new model version</p>
+<p><strong>Pass Criteria:</strong>
+- Successfully complete 3 out of 4 scenarios
+- Demonstrate proper troubleshooting methodology
+- Use appropriate tools and commands</p>
+<hr />
+<h2 id="continuous-learning">Continuous Learning<a class="headerlink" href="#continuous-learning" title="Permanent link">&para;</a></h2>
+<h3 id="stay-updated">Stay Updated<a class="headerlink" href="#stay-updated" title="Permanent link">&para;</a></h3>
+<p><strong>Weekly:</strong>
+- [ ] Review platform alerts and incidents
+- [ ] Read Kubernetes/OpenShift release notes
+- [ ] Check platform metrics dashboards</p>
+<p><strong>Monthly:</strong>
+- [ ] Attend internal workshops
+- [ ] Review ADR updates
+- [ ] Practice PromQL queries</p>
+<p><strong>Quarterly:</strong>
+- [ ] Complete hands-on lab refresher
+- [ ] Review certification requirements
+- [ ] Evaluate new tools and technologies</p>
+<h3 id="knowledge-sharing">Knowledge Sharing<a class="headerlink" href="#knowledge-sharing" title="Permanent link">&para;</a></h3>
+<p><strong>Best Practices:</strong>
+- Document troubleshooting procedures in runbooks
+- Share useful PromQL queries in team wiki
+- Present "lessons learned" from incidents
+- Contribute to ADR creation and updates</p>
+<hr />
+<h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
+<h3 id="internal-resources">Internal Resources<a class="headerlink" href="#internal-resources" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Contact</th>
+<th>Response Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Platform Team Slack</strong></td>
+<td>#aiops-platform</td>
+<td>&lt; 1 hour (business hours)</td>
+</tr>
+<tr>
+<td><strong>On-Call Escalation</strong></td>
+<td>PagerDuty</td>
+<td>Immediate (24/7)</td>
+</tr>
+<tr>
+<td><strong>Documentation</strong></td>
+<td>docs/ directory</td>
+<td>Self-service</td>
+</tr>
+<tr>
+<td><strong>Training Questions</strong></td>
+<td>platform-training@company.com</td>
+<td>&lt; 24 hours</td>
+</tr>
+</tbody>
+</table>
+<h3 id="external-resources">External Resources<a class="headerlink" href="#external-resources" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>URL</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Red Hat Support</strong></td>
+<td>access.redhat.com</td>
+<td>OpenShift issues</td>
+</tr>
+<tr>
+<td><strong>OpenShift Forums</strong></td>
+<td>discuss.okd.io</td>
+<td>Community questions</td>
+</tr>
+<tr>
+<td><strong>KServe Slack</strong></td>
+<td>kubeflow.slack.com #kserve</td>
+<td>Model serving questions</td>
+</tr>
+<tr>
+<td><strong>CNCF Slack</strong></td>
+<td>cloud-native.slack.com</td>
+<td>General K8s questions</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-quick-reference">Appendix: Quick Reference<a class="headerlink" href="#appendix-quick-reference" title="Permanent link">&para;</a></h2>
+<h3 id="essential-commands-cheat-sheet">Essential Commands Cheat Sheet<a class="headerlink" href="#essential-commands-cheat-sheet" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="cluster-health">Cluster Health<a class="headerlink" href="#cluster-health" title="Permanent link">&para;</a></h1>
+<p>oc get nodes
+oc get clusterversion
+oc adm top nodes</p>
+<h1 id="platform-components">Platform Components<a class="headerlink" href="#platform-components" title="Permanent link">&para;</a></h1>
+<p>oc get pods -n self-healing-platform
+oc get inferenceservices -n self-healing-platform
+oc get pipelines -n openshift-pipelines
+oc get applications -n openshift-gitops</p>
+<h1 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h1>
+<p>oc logs <pod-name> -f
+oc describe pod <pod-name>
+oc get events -n <namespace> --sort-by='.lastTimestamp'
+oc debug node/<node-name></p>
+<h1 id="prometheus-access">Prometheus Access<a class="headerlink" href="#prometheus-access" title="Permanent link">&para;</a></h1>
+<p>oc port-forward -n openshift-monitoring prometheus-k8s-0 9090:9090</p>
+<h1 id="coordination-engine">Coordination Engine<a class="headerlink" href="#coordination-engine" title="Permanent link">&para;</a></h1>
+<p>curl http://coordination-engine:8080/health
+curl http://coordination-engine:8080/api/v1/status</p>
+<h1 id="model-serving">Model Serving<a class="headerlink" href="#model-serving" title="Permanent link">&para;</a></h1>
+<p>oc get inferenceservice -n self-healing-platform
+tkn pipeline start model-serving-validation-pipeline -n openshift-pipelines
+```</p>
+<h3 id="promql-quick-reference">PromQL Quick Reference<a class="headerlink" href="#promql-quick-reference" title="Permanent link">&para;</a></h3>
+<p>```promql</p>
+<h1 id="cpu">CPU<a class="headerlink" href="#cpu" title="Permanent link">&para;</a></h1>
+<p>rate(container_cpu_usage_seconds_total[5m])</p>
+<h1 id="memory">Memory<a class="headerlink" href="#memory" title="Permanent link">&para;</a></h1>
+<p>container_memory_working_set_bytes</p>
+<h1 id="network">Network<a class="headerlink" href="#network" title="Permanent link">&para;</a></h1>
+<p>rate(container_network_receive_bytes_total[5m])</p>
+<h1 id="disk">Disk<a class="headerlink" href="#disk" title="Permanent link">&para;</a></h1>
+<p>kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes</p>
+<h1 id="pod-restarts">Pod Restarts<a class="headerlink" href="#pod-restarts" title="Permanent link">&para;</a></h1>
+<p>increase(kube_pod_container_status_restarts_total[1h])</p>
+<h1 id="gpu-utilization">GPU Utilization<a class="headerlink" href="#gpu-utilization" title="Permanent link">&para;</a></h1>
+<p>DCGM_FI_DEV_GPU_UTIL
+```</p>
+<hr />
+<h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
+<p>This training guide is part of the OpenShift AI Ops Self-Healing Platform.</p>
+<p><strong>License</strong>: GNU General Public License v3.0</p>
+<p><strong>Version</strong>: 1.0
+<strong>Last Updated</strong>: 2025-12-10
+<strong>Contributors</strong>: Platform Engineering Team</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

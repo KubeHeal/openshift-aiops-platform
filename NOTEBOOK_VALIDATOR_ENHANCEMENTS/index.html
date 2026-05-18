@@ -1,0 +1,2626 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/NOTEBOOK_VALIDATOR_ENHANCEMENTS/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Notebook Validator Operator Enhancements - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#notebook-validator-operator-enhancements" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Notebook Validator Operator Enhancements
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design Principles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design Principles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-platform-abstraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Platform Abstraction
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-configuration-over-convention" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Configuration Over Convention
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-backward-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Backward Compatibility
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-project-specific-customization" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Project-Specific Customization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-clear-error-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Clear Error Messages
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proposed-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proposed Enhancements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Proposed Enhancements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enhancement-1-model-registration-name-validation-platform-agnostic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enhancement 1: Model Registration Name Validation (Platform-Agnostic)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/NOTEBOOK_VALIDATOR_ENHANCEMENTS.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="notebook-validator-operator-enhancements">Notebook Validator Operator Enhancements<a class="headerlink" href="#notebook-validator-operator-enhancements" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>This document specifies <strong>generic, reusable enhancements</strong> to the Jupyter Notebook Validator Operator to improve model serving validation for <strong>any project</strong> using KServe, OpenShift AI, or other model serving platforms.</p>
+<blockquote>
+<p><strong>Important</strong>: This operator is used by multiple projects. All enhancements must be:
+- ✅ <strong>Generic and configurable</strong> - not hardcoded to any specific project
+- ✅ <strong>Opt-in via CRD fields</strong> - backward compatible with existing users
+- ✅ <strong>Platform-agnostic</strong> - support KServe, OpenShift AI, vLLM, TensorFlow Serving, etc.
+- ✅ <strong>Documented with clear examples</strong> - easy for other projects to adopt</p>
+</blockquote>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p><strong>Use Case (Self-Healing Platform)</strong>: The self-healing platform discovered that KServe InferenceServices were missing the <code>--model_name</code> parameter, causing models to register as <code>"model"</code> instead of their actual names. This caused downstream integration errors.</p>
+<p><strong>Generic Problem</strong>: Model serving platforms often have configuration nuances that are hard to catch until runtime. Notebooks may train and save models correctly, but the serving configuration may be incorrect.</p>
+<p><strong>Current Notebook Validator Capabilities:</strong>
+- ✅ Validates notebooks execute successfully
+- ✅ Compares output with golden notebooks
+- ✅ Checks model serving platform availability (spec.modelValidation.enabled)
+- ✅ Validates predictions match expected output
+- ⚠️ <strong>MISSING</strong>: Does not verify model registration names match expectations
+- ⚠️ <strong>MISSING</strong>: Does not test platform-specific endpoints comprehensively
+- ⚠️ <strong>MISSING</strong>: Does not validate downstream integration (optional external service checks)</p>
+<h2 id="design-principles">Design Principles<a class="headerlink" href="#design-principles" title="Permanent link">&para;</a></h2>
+<p>All enhancements follow these principles to ensure the operator remains generic and reusable:</p>
+<h3 id="1-platform-abstraction">1. <strong>Platform Abstraction</strong><a class="headerlink" href="#1-platform-abstraction" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Support multiple platforms: KServe, OpenShift AI, vLLM, TensorFlow Serving, Triton, etc.</li>
+<li>✅ Platform-specific logic isolated in configuration dictionaries</li>
+<li>✅ Easy to add new platforms without core logic changes</li>
+</ul>
+<h3 id="2-configuration-over-convention">2. <strong>Configuration Over Convention</strong><a class="headerlink" href="#2-configuration-over-convention" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ All validations are <strong>opt-in via CRD fields</strong></li>
+<li>✅ Sensible defaults that work for most projects</li>
+<li>✅ Projects can override defaults with custom configurations</li>
+</ul>
+<h3 id="3-backward-compatibility">3. <strong>Backward Compatibility</strong><a class="headerlink" href="#3-backward-compatibility" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ All new fields are <strong>optional</strong></li>
+<li>✅ Existing NotebookValidationJobs continue to work without changes</li>
+<li>✅ Default behavior remains unchanged</li>
+</ul>
+<h3 id="4-project-specific-customization">4. <strong>Project-Specific Customization</strong><a class="headerlink" href="#4-project-specific-customization" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Projects define their own downstream services to test</li>
+<li>✅ No hardcoded service names in operator code</li>
+<li>✅ Each project configures validation to match their architecture</li>
+</ul>
+<h3 id="5-clear-error-messages">5. <strong>Clear Error Messages</strong><a class="headerlink" href="#5-clear-error-messages" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Generic errors with platform-specific hints</li>
+<li>✅ Actionable guidance (not just "failed")</li>
+<li>✅ Projects can provide custom documentation references</li>
+</ul>
+<h2 id="proposed-enhancements">Proposed Enhancements<a class="headerlink" href="#proposed-enhancements" title="Permanent link">&para;</a></h2>
+<h3 id="enhancement-1-model-registration-name-validation-platform-agnostic">Enhancement 1: Model Registration Name Validation (Platform-Agnostic)<a class="headerlink" href="#enhancement-1-model-registration-name-validation-platform-agnostic" title="Permanent link">&para;</a></h3>
+<p><strong>What:</strong> Verify that models register with expected names on the model serving platform.</p>
+<p><strong>Why:</strong> Many platforms have default registration names that may not match what users expect:
+- <strong>KServe</strong>: Defaults to <code>"model"</code> if <code>--model_name</code> not specified
+- <strong>OpenShift AI</strong>: May use InferenceService name or custom names
+- <strong>vLLM</strong>: Uses model path or explicit <code>--model-name</code> parameter
+- <strong>TensorFlow Serving</strong>: Uses model version path conventions</p>
+<p><strong>Configuration (via CRD):</strong></p>
+<p><code>yaml
+spec:
+  modelValidation:
+    enabled: true
+    targetModels:
+      - "expected-model-name"  # Expected registration name
+    registrationValidation:  # NEW SECTION
+      enabled: true
+      allowDefaultNames: false  # Fail if model registers as "model", "default", etc.
+      customValidation:  # Optional: platform-specific checks
+        kserve:
+          checkModelNameParameter: true  # Verify --model_name in args</code></p>
+<p><strong>Implementation (Generic):</strong></p>
+<ol>
+<li><strong>Detect platform</strong> from <code>spec.modelValidation.platform</code> (kserve, openshift-ai, vllm, etc.)</li>
+<li><strong>Get model endpoint</strong> using platform-specific service discovery</li>
+<li><strong>Query registration endpoint</strong> (platform-specific)</li>
+<li><strong>Verify expected model name</strong> is registered</li>
+</ol>
+<p><strong>Pseudo-code:</strong></p>
+<p>```python
+def validate_model_registration(
+    model_name: str,
+    namespace: str,
+    platform: str = "kserve",
+    allow_default_names: bool = False
+) -&gt; ValidationResult:
+    """
+    Generic model registration validation that works across platforms.</p>
+<pre><code>Args:
+    model_name: Expected model name (e.g., "predictive-analytics")
+    namespace: Kubernetes namespace
+    platform: Model serving platform (kserve, openshift-ai, vllm, etc.)
+    allow_default_names: Whether to allow default names like "model"
+
+Returns:
+    ValidationResult with success status and message
+"""
+# Platform-specific endpoint discovery
+endpoint_config = get_platform_endpoint_config(platform)
+
+# Get model service endpoint (platform-specific)
+model_endpoint = discover_model_endpoint(
+    model_name=model_name,
+    namespace=namespace,
+    platform=platform,
+    endpoint_config=endpoint_config
+)
+
+if not model_endpoint:
+    return ValidationResult(
+        success=False,
+        message=f"Model endpoint for {model_name} not found on platform {platform}"
+    )
+
+# Query models list (platform-specific)
+try:
+    models_list = query_models_list(model_endpoint, platform)
+
+    # Generic check for default names (configurable)
+    default_names = ["model", "default", "default-model"]
+    if not allow_default_names:
+        if any(name in models_list for name in default_names) and model_name not in models_list:
+            return ValidationResult(
+                success=False,
+                message=f"Model registered with default name instead of '{model_name}'. "
+                        f"Found: {models_list}. "
+                        f"Check platform-specific configuration (e.g., --model_name for KServe)."
+            )
+
+    # Verify expected model name is registered
+    if model_name not in models_list:
+        return ValidationResult(
+            success=False,
+            message=f"Model {model_name} not found in registered models. "
+                    f"Found: {models_list}"
+        )
+
+except Exception as e:
+    return ValidationResult(
+        success=False,
+        message=f"Failed to query models list: {str(e)}"
+    )
+
+return ValidationResult(
+    success=True,
+    message=f"Model {model_name} registered correctly on {platform}"
+)
+</code></pre>
+<h1 id="platform-specific-implementations">Platform-specific implementations<a class="headerlink" href="#platform-specific-implementations" title="Permanent link">&para;</a></h1>
+<p>def get_platform_endpoint_config(platform: str) -&gt; dict:
+    """Returns platform-specific endpoint configuration."""
+    configs = {
+        "kserve": {
+            "list_endpoint": "/v1/models",
+            "metadata_endpoint": "/v1/models/{model_name}",
+            "predict_endpoint": "/v1/models/{model_name}:predict",
+            "port": 8080,
+            "label_selector": "serving.kserve.io/inferenceservice={model_name}"
+        },
+        "openshift-ai": {
+            "list_endpoint": "/v2/models",
+            "metadata_endpoint": "/v2/models/{model_name}",
+            "predict_endpoint": "/v2/models/{model_name}/infer",
+            "port": 8080,
+            "label_selector": "serving.kserve.io/inferenceservice={model_name}"
+        },
+        "vllm": {
+            "list_endpoint": "/v1/models",
+            "metadata_endpoint": "/v1/models/{model_name}",
+            "predict_endpoint": "/v1/completions",
+            "port": 8000,
+            "label_selector": "app={model_name}"
+        },
+        # Add more platforms as needed
+    }
+    return configs.get(platform, configs["kserve"])  # Default to KServe
+```</p>
+<p><strong>CRD Changes:</strong> None required - this uses existing <code>spec.modelValidation.targetModels</code> field.</p>
+<p><strong>Status Update:</strong> Add to <code>status.modelValidationResult.existingEnvironmentCheck.modelsChecked[]</code>:
+<code>yaml
+modelsChecked:
+  - modelName: predictive-analytics
+    available: true
+    healthy: true
+    registrationNameCorrect: true  # NEW FIELD
+    message: "Model registered with correct name 'predictive-analytics'"</code></p>
+<h3 id="enhancement-2-kserve-endpoint-testing">Enhancement 2: KServe Endpoint Testing<a class="headerlink" href="#enhancement-2-kserve-endpoint-testing" title="Permanent link">&para;</a></h3>
+<p><strong>What:</strong> Test all critical KServe endpoints to ensure model is fully operational.</p>
+<p><strong>Why:</strong> Catches configuration issues, model loading errors, and network problems before deployment.</p>
+<p><strong>Endpoints to Test:</strong></p>
+<ol>
+<li><strong>GET /v1/models</strong> - List all models</li>
+<li><strong>GET /v1/models/{name}</strong> - Get model metadata and ready status</li>
+<li><strong>POST /v1/models/{name}:predict</strong> - Test prediction with sample data</li>
+</ol>
+<p><strong>Implementation:</strong></p>
+<p>```python
+def validate_kserve_endpoints(model_name: str, namespace: str, test_data: dict = None) -&gt; ValidationResult:
+    """
+    Validates all KServe endpoints for a model.</p>
+<pre><code>Args:
+    model_name: Model name (e.g., "predictive-analytics")
+    namespace: Kubernetes namespace
+    test_data: Optional test data for prediction (from spec.modelValidation.predictionValidation.testData)
+
+Returns:
+    ValidationResult with detailed endpoint test results
+"""
+pod_ip = get_predictor_pod_ip(
+    label_selector=f"serving.kserve.io/inferenceservice={model_name}",
+    namespace=namespace
+)
+
+results = {
+    "list_models": False,
+    "get_metadata": False,
+    "predict": False
+}
+messages = []
+
+# Test 1: List models
+try:
+    response = requests.get(f"http://{pod_ip}:8080/v1/models", timeout=10)
+    response.raise_for_status()
+    models = response.json().get("models", [])
+
+    if model_name in models:
+        results["list_models"] = True
+        messages.append(f"✅ GET /v1/models - Model found in list")
+    else:
+        messages.append(f"❌ GET /v1/models - Model {model_name} not in list: {models}")
+except Exception as e:
+    messages.append(f"❌ GET /v1/models - Failed: {str(e)}")
+
+# Test 2: Get model metadata
+try:
+    response = requests.get(f"http://{pod_ip}:8080/v1/models/{model_name}", timeout=10)
+    response.raise_for_status()
+    metadata = response.json()
+
+    # Check model is ready
+    if metadata.get("ready") == True:
+        results["get_metadata"] = True
+        messages.append(f"✅ GET /v1/models/{model_name} - Model ready")
+    else:
+        messages.append(f"❌ GET /v1/models/{model_name} - Model not ready: {metadata}")
+except Exception as e:
+    messages.append(f"❌ GET /v1/models/{model_name} - Failed: {str(e)}")
+
+# Test 3: Prediction endpoint
+if test_data:
+    try:
+        response = requests.post(
+            f"http://{pod_ip}:8080/v1/models/{model_name}:predict",
+            json=test_data,
+            headers={"Content-Type": "application/json"},
+            timeout=30
+        )
+        response.raise_for_status()
+        prediction = response.json()
+
+        if "predictions" in prediction:
+            results["predict"] = True
+            messages.append(f"✅ POST /v1/models/{model_name}:predict - Prediction successful")
+        else:
+            messages.append(f"❌ POST /v1/models/{model_name}:predict - No predictions in response: {prediction}")
+    except Exception as e:
+        messages.append(f"❌ POST /v1/models/{model_name}:predict - Failed: {str(e)}")
+else:
+    messages.append(f"⚠️ POST /v1/models/{model_name}:predict - Skipped (no test data)")
+    results["predict"] = True  # Don't fail if no test data provided
+
+all_passed = all(results.values())
+
+return ValidationResult(
+    success=all_passed,
+    message="\n".join(messages),
+    endpoint_results=results  # NEW: Detailed per-endpoint results
+)
+</code></pre>
+<p>```</p>
+<p><strong>CRD Usage:</strong> Use existing fields:
+- <code>spec.modelValidation.predictionValidation.testData</code> - JSON test data
+- <code>spec.modelValidation.predictionValidation.expectedOutput</code> - Expected prediction result
+- <code>spec.modelValidation.timeout</code> - Timeout for all tests</p>
+<p><strong>Example NotebookValidationJob:</strong>
+<code>yaml
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: predictive-analytics-validation
+spec:
+  notebook:
+    path: notebooks/predictive-analytics.ipynb
+    git:
+      url: https://github.com/org/repo.git
+      ref: main
+  modelValidation:
+    enabled: true
+    targetModels:
+      - predictive-analytics
+    predictionValidation:
+      enabled: true
+      testData: |
+        {
+          "instances": [
+            [0.5, 0.6, 0.4, 100, 80]
+          ]
+        }
+      tolerance: "0.01"
+  podConfig:
+    containerImage: quay.io/jupyter/minimal-notebook:latest</code></p>
+<h3 id="enhancement-3-downstream-integration-testing-generic">Enhancement 3: Downstream Integration Testing (Generic)<a class="headerlink" href="#enhancement-3-downstream-integration-testing-generic" title="Permanent link">&para;</a></h3>
+<p><strong>What:</strong> Verify downstream services/applications can reach and query the model.</p>
+<p><strong>Why:</strong> Catches network policy issues, service discovery problems, and integration errors. Different projects have different downstream services that consume models:
+- <strong>Self-healing platform</strong>: Coordination engine, MCP server
+- <strong>ML pipelines</strong>: Orchestrators, serving gateways
+- <strong>Applications</strong>: API gateways, microservices
+- <strong>Monitoring</strong>: Prometheus, custom health checkers</p>
+<p><strong>Configuration (via CRD - Fully Optional):</strong></p>
+<p><code>yaml
+spec:
+  modelValidation:
+    enabled: true
+    downstreamIntegration:  # NEW SECTION (optional)
+      enabled: true
+      services:  # List of downstream services to test
+        - name: "coordination-engine"
+          url: "http://coordination-engine:8080"
+          testConnectivity: true  # Test network connectivity
+          testModelAccess: true   # Test can query model endpoints
+          healthEndpoint: "/health"  # Optional health check
+        - name: "api-gateway"
+          url: "http://api-gateway:8000"
+          testConnectivity: true
+          testModelAccess: false  # Gateway may not directly query models</code></p>
+<p><strong>Implementation (Generic):</strong></p>
+<p>```python
+def validate_downstream_integration(
+    model_name: str,
+    namespace: str,
+    platform: str,
+    downstream_services: list = None
+) -&gt; ValidationResult:
+    """
+    Generic validation that downstream services can reach the model.</p>
+<pre><code>Args:
+    model_name: Model name
+    namespace: Kubernetes namespace
+    platform: Model serving platform
+    downstream_services: List of downstream service configurations
+
+Returns:
+    ValidationResult with downstream integration status
+"""
+if not downstream_services:
+    # No downstream services configured - skip this validation
+    return ValidationResult(
+        success=True,
+        message="No downstream services configured - skipping integration tests",
+        skipped=True
+    )
+
+# Get model service endpoint
+endpoint_config = get_platform_endpoint_config(platform)
+predictor_service = f"{model_name}-predictor.{namespace}.svc.cluster.local"
+port = endpoint_config.get("port", 8080)
+
+results = []
+all_passed = True
+
+for service in downstream_services:
+    service_name = service.get("name")
+    service_url = service.get("url")
+    test_connectivity = service.get("testConnectivity", True)
+    test_model_access = service.get("testModelAccess", False)
+
+    service_results = {
+        "service": service_name,
+        "dns_resolution": False,
+        "network_connectivity": False,
+        "model_access": False
+    }
+
+    # Test 1: DNS resolution (from validation pod perspective)
+    if test_connectivity:
+        try:
+            dns_result = socket.getaddrinfo(predictor_service, port)
+            service_results["dns_resolution"] = True
+        except Exception as e:
+            all_passed = False
+            results.append(f"❌ {service_name}: DNS resolution failed for {predictor_service}: {str(e)}")
+            continue
+
+    # Test 2: Network connectivity (model service reachable from validation pod)
+    if test_connectivity:
+        try:
+            list_endpoint = endpoint_config["list_endpoint"]
+            response = requests.get(
+                f"http://{predictor_service}:{port}{list_endpoint}",
+                timeout=10
+            )
+            response.raise_for_status()
+            service_results["network_connectivity"] = True
+            results.append(f"✅ {service_name}: Can reach model service")
+        except Exception as e:
+            all_passed = False
+            results.append(f"❌ {service_name}: Network connectivity failed: {str(e)}")
+            continue
+
+    # Test 3: Model access (if downstream service should query model directly)
+    # Note: This tests from validation pod, not from downstream service pod
+    # For true end-to-end testing, would need to exec into downstream service pod
+    if test_model_access:
+        try:
+            predict_endpoint = endpoint_config["predict_endpoint"].format(model_name=model_name)
+            # Make a simple test request
+            test_data = {"instances": [[1.0]]}  # Minimal test data
+            response = requests.post(
+                f"http://{predictor_service}:{port}{predict_endpoint}",
+                json=test_data,
+                timeout=10
+            )
+            response.raise_for_status()
+            service_results["model_access"] = True
+            results.append(f"✅ {service_name}: Can query model predictions")
+        except Exception as e:
+            # Don't fail - model access from downstream service may require specific auth/network
+            results.append(f"⚠️ {service_name}: Model access test inconclusive: {str(e)}")
+
+return ValidationResult(
+    success=all_passed,
+    message="\n".join(results),
+    downstream_results=service_results  # Detailed per-service results
+)
+</code></pre>
+<p>```</p>
+<p><strong>CRD Enhancement (Optional):</strong></p>
+<p><code>yaml
+spec:
+  modelValidation:
+    # Downstream integration testing (optional - project-specific)
+    downstreamIntegration:
+      enabled: false  # Default: disabled (opt-in)
+      services:
+        - name: "my-orchestrator"
+          url: "http://my-orchestrator:8080"
+          testConnectivity: true
+          testModelAccess: false
+          healthEndpoint: "/health"</code></p>
+<p><strong>Status Update:</strong>
+<code>yaml
+status:
+  modelValidationResult:
+    existingEnvironmentCheck:
+      downstreamIntegration:  # NEW SECTION (only if configured)
+        enabled: true
+        servicesChecked:
+          - serviceName: "coordination-engine"
+            dnsResolution: true
+            networkConnectivity: true
+            modelAccess: true
+            message: "All checks passed"
+        success: true</code></p>
+<p><strong>Usage Example (Self-Healing Platform):</strong></p>
+<p><code>yaml
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: predictive-analytics-validation
+spec:
+  modelValidation:
+    enabled: true
+    targetModels:
+      - predictive-analytics
+    downstreamIntegration:
+      enabled: true
+      services:
+        - name: "coordination-engine"
+          url: "http://coordination-engine:8080"
+          testConnectivity: true
+          testModelAccess: true
+        - name: "mcp-server"
+          url: "http://mcp-server:8080"
+          testConnectivity: true
+          testModelAccess: false</code></p>
+<h3 id="enhancement-4-retry-logic-for-model-loading">Enhancement 4: Retry Logic for Model Loading<a class="headerlink" href="#enhancement-4-retry-logic-for-model-loading" title="Permanent link">&para;</a></h3>
+<p><strong>What:</strong> Wait for models to load before running validation tests.</p>
+<p><strong>Why:</strong> KServe models can take 30-60 seconds to load after pod starts. Current validation may fail if run too early.</p>
+<p><strong>Implementation:</strong></p>
+<p>```python
+def wait_for_model_ready(model_name: str, namespace: str, timeout: int = 300, retry_interval: int = 10) -&gt; bool:
+    """
+    Waits for a KServe model to become ready.</p>
+<pre><code>Args:
+    model_name: Model name
+    namespace: Kubernetes namespace
+    timeout: Maximum wait time in seconds (default 5 minutes)
+    retry_interval: Time between retries in seconds (default 10s)
+
+Returns:
+    True if model becomes ready, False if timeout
+"""
+start_time = time.time()
+
+while time.time() - start_time &lt; timeout:
+    try:
+        # Check InferenceService status
+        inference_service = get_inference_service(model_name, namespace)
+
+        if inference_service.status.ready:
+            # Also verify pod is actually serving
+            pod_ip = get_predictor_pod_ip(
+                label_selector=f"serving.kserve.io/inferenceservice={model_name}",
+                namespace=namespace
+            )
+
+            if pod_ip:
+                try:
+                    response = requests.get(f"http://{pod_ip}:8080/v1/models/{model_name}", timeout=5)
+                    if response.status_code == 200 and response.json().get("ready"):
+                        return True
+                except:
+                    pass  # Not ready yet, continue waiting
+    except Exception as e:
+        logger.debug(f"Waiting for model {model_name}: {str(e)}")
+
+    time.sleep(retry_interval)
+
+return False
+</code></pre>
+<p>```</p>
+<p><strong>CRD Usage:</strong> Use existing <code>spec.modelValidation.timeout</code> field (default: 5m)</p>
+<p><strong>Logging:</strong>
+<code>[INFO] Waiting for model predictive-analytics to become ready...
+[INFO] Model predictive-analytics ready after 45 seconds</code></p>
+<h2 id="implementation-checklist">Implementation Checklist<a class="headerlink" href="#implementation-checklist" title="Permanent link">&para;</a></h2>
+<h3 id="operator-code-changes">Operator Code Changes<a class="headerlink" href="#operator-code-changes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Add <code>validate_model_registration()</code> function to existing environment check phase</li>
+<li>[ ] Add <code>validate_kserve_endpoints()</code> function with comprehensive endpoint testing</li>
+<li>[ ] Add <code>validate_coordination_engine_integration()</code> function for integration testing</li>
+<li>[ ] Add <code>wait_for_model_ready()</code> with retry logic and configurable timeout</li>
+<li>[ ] Update reconciliation loop to call new validation functions</li>
+<li>[ ] Add detailed error messages referencing MODEL_DEPLOYMENT_CHECKLIST.md</li>
+</ul>
+<h3 id="status-reporting-enhancements">Status Reporting Enhancements<a class="headerlink" href="#status-reporting-enhancements" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Add <code>registrationNameCorrect</code> field to <code>modelsChecked[]</code> status</li>
+<li>[ ] Add <code>endpointResults</code> section with per-endpoint test results</li>
+<li>[ ] Add <code>coordinationEngineIntegration</code> section to status</li>
+<li>[ ] Include specific error messages for common issues:</li>
+<li>Missing <code>--model_name</code> parameter</li>
+<li>Model file not found</li>
+<li>Network connectivity issues</li>
+<li>RBAC permission errors</li>
+</ul>
+<h3 id="crd-enhancements-optional">CRD Enhancements (Optional)<a class="headerlink" href="#crd-enhancements-optional" title="Permanent link">&para;</a></h3>
+<p>These are <strong>optional</strong> - existing CRD fields are sufficient for basic functionality:</p>
+<p>```yaml
+spec:
+  modelValidation:
+    # OPTIONAL: Coordination engine URL (defaults to http://coordination-engine:8080)
+    coordinationEngineURL: "http://coordination-engine:8080"</p>
+<pre><code># OPTIONAL: Retry configuration for model readiness
+readinessCheck:
+  enabled: true  # Default: true
+  timeout: "5m"  # Default: same as spec.modelValidation.timeout
+  retryInterval: "10s"  # Default: 10 seconds
+
+# OPTIONAL: Endpoint validation configuration
+endpointValidation:
+  enabled: true  # Default: true
+  testListModels: true  # Test GET /v1/models
+  testMetadata: true  # Test GET /v1/models/{name}
+  testPredict: true  # Test POST /v1/models/{name}:predict
+</code></pre>
+<p>```</p>
+<h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Update operator README with new validation features</li>
+<li>[ ] Add troubleshooting guide for common model registration issues</li>
+<li>[ ] Document how to use <code>spec.modelValidation.predictionValidation.testData</code></li>
+<li>[ ] Add examples of NotebookValidationJob with model validation enabled</li>
+</ul>
+<h2 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h2>
+<h3 id="unit-tests">Unit Tests<a class="headerlink" href="#unit-tests" title="Permanent link">&para;</a></h3>
+<p>```python
+def test_validate_model_registration_success():
+    """Test successful model registration validation."""
+    # Mock KServe API responses
+    mock_response = {"models": ["predictive-analytics"]}</p>
+<pre><code>result = validate_model_registration("predictive-analytics", "default")
+
+assert result.success == True
+assert "registered correctly" in result.message
+</code></pre>
+<p>def test_validate_model_registration_default_name():
+    """Test detection of default 'model' name issue."""
+    # Mock KServe API responses
+    mock_response = {"models": ["model"]}  # BUG: Using default name</p>
+<pre><code>result = validate_model_registration("predictive-analytics", "default")
+
+assert result.success == False
+assert "Missing --model_name parameter" in result.message
+assert "MODEL_DEPLOYMENT_CHECKLIST.md" in result.message
+</code></pre>
+<p>def test_validate_kserve_endpoints():
+    """Test KServe endpoint validation."""
+    test_data = {"instances": [[1, 2, 3]]}</p>
+<pre><code>result = validate_kserve_endpoints("predictive-analytics", "default", test_data)
+
+assert result.success == True
+assert result.endpoint_results["list_models"] == True
+assert result.endpoint_results["get_metadata"] == True
+assert result.endpoint_results["predict"] == True
+</code></pre>
+<p>def test_wait_for_model_ready_timeout():
+    """Test timeout when model doesn't become ready."""
+    result = wait_for_model_ready("nonexistent-model", "default", timeout=5)</p>
+<pre><code>assert result == False
+</code></pre>
+<p>```</p>
+<h3 id="integration-tests">Integration Tests<a class="headerlink" href="#integration-tests" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Deploy InferenceService WITHOUT --model_name</strong> → Validation should FAIL with helpful error</li>
+<li><strong>Deploy InferenceService WITH --model_name</strong> → Validation should PASS</li>
+<li><strong>Deploy model with invalid model file</strong> → Validation should FAIL with file not found error</li>
+<li><strong>Deploy model with network policy blocking coordination engine</strong> → Integration test should FAIL</li>
+</ol>
+<h3 id="e2e-test-scenario">E2E Test Scenario<a class="headerlink" href="#e2e-test-scenario" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="1-create-notebookvalidationjob-with-model-validation">1. Create NotebookValidationJob with model validation<a class="headerlink" href="#1-create-notebookvalidationjob-with-model-validation" title="Permanent link">&para;</a></h1>
+<p>oc apply -f - &lt;&lt;EOF
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: test-model-validation
+  namespace: self-healing-platform
+spec:
+  notebook:
+    path: notebooks/predictive-analytics.ipynb
+    git:
+      url: https://github.com/org/repo.git
+      ref: main
+  modelValidation:
+    enabled: true
+    targetModels:
+      - predictive-analytics
+    predictionValidation:
+      enabled: true
+      testData: '{"instances": [[0.5, 0.6, 0.4, 100, 80]]}'
+  podConfig:
+    containerImage: quay.io/jupyter/minimal-notebook:latest
+EOF</p>
+<h1 id="2-wait-for-completion">2. Wait for completion<a class="headerlink" href="#2-wait-for-completion" title="Permanent link">&para;</a></h1>
+<p>oc wait --for=jsonpath='{.status.phase}'=Succeeded \
+  notebookvalidationjob/test-model-validation \
+  -n self-healing-platform \
+  --timeout=10m</p>
+<h1 id="3-check-validation-results">3. Check validation results<a class="headerlink" href="#3-check-validation-results" title="Permanent link">&para;</a></h1>
+<p>oc get notebookvalidationjob test-model-validation -n self-healing-platform -o yaml</p>
+<h1 id="expected-status">Expected status:<a class="headerlink" href="#expected-status" title="Permanent link">&para;</a></h1>
+<h1 id="status">status:<a class="headerlink" href="#status" title="Permanent link">&para;</a></h1>
+<h1 id="phase-succeeded">phase: Succeeded<a class="headerlink" href="#phase-succeeded" title="Permanent link">&para;</a></h1>
+<h1 id="modelvalidationresult">modelValidationResult:<a class="headerlink" href="#modelvalidationresult" title="Permanent link">&para;</a></h1>
+<h1 id="success-true">success: true<a class="headerlink" href="#success-true" title="Permanent link">&para;</a></h1>
+<h1 id="existingenvironmentcheck">existingEnvironmentCheck:<a class="headerlink" href="#existingenvironmentcheck" title="Permanent link">&para;</a></h1>
+<h1 id="modelschecked">modelsChecked:<a class="headerlink" href="#modelschecked" title="Permanent link">&para;</a></h1>
+<h1 id="-modelname-predictive-analytics">- modelName: predictive-analytics<a class="headerlink" href="#-modelname-predictive-analytics" title="Permanent link">&para;</a></h1>
+<h1 id="available-true">available: true<a class="headerlink" href="#available-true" title="Permanent link">&para;</a></h1>
+<h1 id="healthy-true">healthy: true<a class="headerlink" href="#healthy-true" title="Permanent link">&para;</a></h1>
+<h1 id="registrationnamecorrect-true-new-check">registrationNameCorrect: true  # ✅ NEW CHECK<a class="headerlink" href="#registrationnamecorrect-true-new-check" title="Permanent link">&para;</a></h1>
+<h1 id="message-model-registered-with-correct-name-predictive-analytics">message: "Model registered with correct name 'predictive-analytics'"<a class="headerlink" href="#message-model-registered-with-correct-name-predictive-analytics" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h2 id="benefits">Benefits<a class="headerlink" href="#benefits" title="Permanent link">&para;</a></h2>
+<h3 id="immediate-benefits">Immediate Benefits<a class="headerlink" href="#immediate-benefits" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Catches configuration errors early</strong> - Missing <code>--model_name</code> detected during validation, not at runtime</li>
+<li><strong>Better error messages</strong> - Specific guidance on how to fix issues (references MODEL_DEPLOYMENT_CHECKLIST.md)</li>
+<li><strong>Prevents MCP server failures</strong> - Models validated before MCP server tries to query them</li>
+<li><strong>Faster troubleshooting</strong> - Validation results show exactly what's wrong</li>
+</ol>
+<h3 id="long-term-benefits">Long-term Benefits<a class="headerlink" href="#long-term-benefits" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Repeatability</strong> - Same validation process for all future models</li>
+<li><strong>Confidence</strong> - Know models will work before deploying to production</li>
+<li><strong>Documentation</strong> - Validation results document what was tested</li>
+<li><strong>Integration testing</strong> - Verifies end-to-end integration with coordination engine</li>
+</ol>
+<h2 id="migration-path">Migration Path<a class="headerlink" href="#migration-path" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-implement-in-operator-v106">Phase 1: Implement in Operator (v1.0.6)<a class="headerlink" href="#phase-1-implement-in-operator-v106" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add new validation functions to operator code</li>
+<li>Update status reporting with new fields</li>
+<li>No CRD changes required (use existing fields)</li>
+<li><strong>Backward compatible</strong> - existing NotebookValidationJobs continue to work</li>
+</ul>
+<h3 id="phase-2-update-documentation">Phase 2: Update Documentation<a class="headerlink" href="#phase-2-update-documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Create MODEL_DEPLOYMENT_CHECKLIST.md (✅ Done)</li>
+<li>Update operator README</li>
+<li>Add troubleshooting guide</li>
+<li>Document best practices</li>
+</ul>
+<h3 id="phase-3-update-existing-notebookvalidationjobs">Phase 3: Update Existing NotebookValidationJobs<a class="headerlink" href="#phase-3-update-existing-notebookvalidationjobs" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add <code>modelValidation.enabled: true</code> to predictive-analytics validation</li>
+<li>Add <code>predictionValidation.testData</code> for realistic test inputs</li>
+<li>Verify all models pass new validation checks</li>
+</ul>
+<h3 id="phase-4-crd-enhancements-v110-optional">Phase 4: CRD Enhancements (v1.1.0 - Optional)<a class="headerlink" href="#phase-4-crd-enhancements-v110-optional" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add optional fields for coordination engine URL</li>
+<li>Add retry configuration</li>
+<li>Add endpoint validation toggles</li>
+<li><strong>Backward compatible</strong> - all fields are optional with sensible defaults</li>
+</ul>
+<h2 id="success-criteria">Success Criteria<a class="headerlink" href="#success-criteria" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[ ] Validation detects missing <code>--model_name</code> parameter</li>
+<li>[ ] Validation tests all KServe endpoints (list, metadata, predict)</li>
+<li>[ ] Validation verifies coordination engine can reach model</li>
+<li>[ ] Validation waits for model to load before testing (retry logic)</li>
+<li>[ ] Error messages reference MODEL_DEPLOYMENT_CHECKLIST.md</li>
+<li>[ ] All existing NotebookValidationJobs continue to work (backward compatibility)</li>
+<li>[ ] New validation catches the exact issue from Issue #13</li>
+</ul>
+<h2 id="example-error-messages">Example Error Messages<a class="headerlink" href="#example-error-messages" title="Permanent link">&para;</a></h2>
+<h3 id="missing-model_name-parameter">Missing --model_name Parameter<a class="headerlink" href="#missing-model_name-parameter" title="Permanent link">&para;</a></h3>
+<p>```
+❌ Model Validation Failed: Model Registration Issue</p>
+<p>Model 'predictive-analytics' is registered as 'model' instead of 'predictive-analytics'.</p>
+<p>This usually means the InferenceService is missing the --model_name parameter.</p>
+<p>Fix:
+1. Edit charts/hub/templates/model-serving.yaml (or charts/hub/values.yaml if using model loop)
+2. Add --model_name parameter to InferenceService args:</p>
+<p>args:
+   - --model_name=predictive-analytics  # ← Add this line
+   - --model_dir=/mnt/models/predictive-analytics
+   - --http_port=8080</p>
+<ol>
+<li>Commit and sync with ArgoCD</li>
+</ol>
+<p>See docs/MODEL_DEPLOYMENT_CHECKLIST.md for detailed instructions.
+```</p>
+<h3 id="model-file-not-found">Model File Not Found<a class="headerlink" href="#model-file-not-found" title="Permanent link">&para;</a></h3>
+<p>```
+❌ Model Validation Failed: Model File Not Found</p>
+<p>KServe logs show: "failed to locate model file for model predictive-analytics under dir /mnt/models/predictive-analytics"</p>
+<p>This usually means:
+1. Notebook didn't save model to correct path
+2. PVC mount is not working
+3. Directory path doesn't match model name</p>
+<p>Fix:
+1. Verify model file exists:
+   oc exec deployment/predictive-analytics-predictor -- ls -lh /mnt/models/predictive-analytics/model.pkl</p>
+<ol>
+<li>Check notebook saves to correct path:
+   joblib.dump(model, "/mnt/models/predictive-analytics/model.pkl")</li>
+</ol>
+<p>See docs/MODEL_DEPLOYMENT_CHECKLIST.md for detailed instructions.
+```</p>
+<h2 id="related-resources">Related Resources<a class="headerlink" href="#related-resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../MODEL_DEPLOYMENT_CHECKLIST/">MODEL_DEPLOYMENT_CHECKLIST.md</a> - Deployment checklist for models</li>
+<li><a href="https://github.com/kserve/kserve/tree/master/python/sklearnserver">KServe SKLearn Server Documentation</a></li>
+<li><a href="https://github.com/org/jupyter-notebook-validator-operator">Jupyter Notebook Validator Operator Repository</a></li>
+<li>ADR-XXX: Model Validation Enhancement (to be created)</li>
+</ul>
+<h2 id="multi-project-usage-examples">Multi-Project Usage Examples<a class="headerlink" href="#multi-project-usage-examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-1-self-healing-platform-kserve-downstream-integration">Example 1: Self-Healing Platform (KServe + Downstream Integration)<a class="headerlink" href="#example-1-self-healing-platform-kserve-downstream-integration" title="Permanent link">&para;</a></h3>
+<p><code>yaml
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: predictive-analytics-validation
+  namespace: self-healing-platform
+spec:
+  notebook:
+    path: notebooks/predictive-analytics.ipynb
+    git:
+      url: https://github.com/org/openshift-aiops-platform.git
+      ref: main
+  modelValidation:
+    enabled: true
+    platform: kserve
+    targetModels:
+      - predictive-analytics
+    registrationValidation:
+      enabled: true
+      allowDefaultNames: false  # Fail if model registers as "model"
+    predictionValidation:
+      enabled: true
+      testData: '{"instances": [[0.5, 0.6, 0.4, 100, 80]]}'
+    downstreamIntegration:
+      enabled: true
+      services:
+        - name: "coordination-engine"
+          url: "http://coordination-engine:8080"
+          testConnectivity: true
+          testModelAccess: true
+        - name: "mcp-server"
+          url: "http://mcp-server:8080"
+          testConnectivity: true
+  podConfig:
+    containerImage: quay.io/jupyter/minimal-notebook:latest</code></p>
+<h3 id="example-2-ml-pipeline-openshift-ai-api-gateway">Example 2: ML Pipeline (OpenShift AI + API Gateway)<a class="headerlink" href="#example-2-ml-pipeline-openshift-ai-api-gateway" title="Permanent link">&para;</a></h3>
+<p><code>yaml
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: fraud-detection-validation
+  namespace: ml-pipeline
+spec:
+  notebook:
+    path: models/fraud-detection.ipynb
+    git:
+      url: https://github.com/org/ml-pipeline.git
+      ref: main
+  modelValidation:
+    enabled: true
+    platform: openshift-ai  # Different platform
+    targetModels:
+      - fraud-detection-v2
+    registrationValidation:
+      enabled: true
+      allowDefaultNames: false
+    predictionValidation:
+      enabled: true
+      testData: '{"inputs": [{"transaction_amount": 100.0, "location": "US"}]}'
+    downstreamIntegration:
+      enabled: true
+      services:
+        - name: "api-gateway"
+          url: "http://api-gateway:8000"
+          testConnectivity: true
+          testModelAccess: false  # Gateway doesn't directly query models
+        - name: "monitoring-service"
+          url: "http://prometheus:9090"
+          testConnectivity: true
+  podConfig:
+    containerImage: quay.io/opendatahub/workbench-images:latest</code></p>
+<h3 id="example-3-llm-serving-vllm-simple-validation">Example 3: LLM Serving (vLLM + Simple Validation)<a class="headerlink" href="#example-3-llm-serving-vllm-simple-validation" title="Permanent link">&para;</a></h3>
+<p><code>yaml
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: llama-fine-tune-validation
+  namespace: llm-serving
+spec:
+  notebook:
+    path: fine-tuning/llama-7b.ipynb
+    git:
+      url: https://github.com/org/llm-serving.git
+      ref: main
+  modelValidation:
+    enabled: true
+    platform: vllm  # LLM-specific platform
+    targetModels:
+      - llama-7b-fine-tuned
+    registrationValidation:
+      enabled: true
+    predictionValidation:
+      enabled: true
+      testData: '{"prompt": "Hello, how are you?", "max_tokens": 50}'
+    # No downstream integration - just model validation
+  podConfig:
+    containerImage: vllm/vllm-openai:latest</code></p>
+<h3 id="example-4-minimal-validation-just-check-model-exists">Example 4: Minimal Validation (Just Check Model Exists)<a class="headerlink" href="#example-4-minimal-validation-just-check-model-exists" title="Permanent link">&para;</a></h3>
+<p><code>yaml
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: simple-model-validation
+  namespace: data-science
+spec:
+  notebook:
+    path: experiments/model-v1.ipynb
+    git:
+      url: https://github.com/org/data-science.git
+      ref: main
+  modelValidation:
+    enabled: true
+    platform: kserve
+    targetModels:
+      - simple-model
+    # Only basic checks - just verify model is deployed and ready
+    # No registration validation, prediction tests, or downstream integration
+  podConfig:
+    containerImage: jupyter/scipy-notebook:latest</code></p>
+<h2 id="key-takeaways-for-other-projects">Key Takeaways for Other Projects<a class="headerlink" href="#key-takeaways-for-other-projects" title="Permanent link">&para;</a></h2>
+<h3 id="what-you-need-to-configure">✅ What You Need to Configure<a class="headerlink" href="#what-you-need-to-configure" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Platform</strong>: Set <code>spec.modelValidation.platform</code> to your model serving platform</li>
+<li><strong>Model Names</strong>: List expected model names in <code>spec.modelValidation.targetModels</code></li>
+<li><strong>Downstream Services</strong> (optional): Define services that need to reach your models</li>
+<li><strong>Test Data</strong> (optional): Provide sample input for prediction validation</li>
+</ol>
+<h3 id="what-the-operator-handles">✅ What the Operator Handles<a class="headerlink" href="#what-the-operator-handles" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Platform Detection</strong>: Automatically uses correct endpoints for your platform</li>
+<li><strong>Service Discovery</strong>: Finds model pods using platform-specific label selectors</li>
+<li><strong>Validation Logic</strong>: Runs appropriate checks based on your configuration</li>
+<li><strong>Error Reporting</strong>: Provides platform-specific error messages</li>
+</ol>
+<h3 id="adding-a-new-platform">✅ Adding a New Platform<a class="headerlink" href="#adding-a-new-platform" title="Permanent link">&para;</a></h3>
+<p>If you need to support a new platform:</p>
+<ol>
+<li>
+<p>Add platform configuration to <code>get_platform_endpoint_config()</code>:
+<code>python
+"my-platform": {
+    "list_endpoint": "/api/models",
+    "metadata_endpoint": "/api/models/{model_name}",
+    "predict_endpoint": "/api/models/{model_name}/predict",
+    "port": 8000,
+    "label_selector": "app.kubernetes.io/name={model_name}"
+}</code></p>
+</li>
+<li>
+<p>Use in your NotebookValidationJob:
+<code>yaml
+spec:
+  modelValidation:
+    platform: my-platform</code></p>
+</li>
+<li>
+<p>Submit PR to operator to add platform configuration permanently</p>
+</li>
+</ol>
+<h2 id="questions-for-implementation">Questions for Implementation<a class="headerlink" href="#questions-for-implementation" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Where is the operator source code?</strong> Need to locate the operator repository to implement these changes</li>
+<li><strong>What version should include these enhancements?</strong> Suggest v1.0.6 for bug fix, v1.1.0 for CRD changes</li>
+<li><strong>Should this be opt-in or opt-out?</strong> Suggest opt-in via <code>spec.modelValidation.enabled: true</code> (current behavior)</li>
+<li><strong>Should we add Prometheus metrics?</strong> Could track validation success/failure rates, model load times, etc.</li>
+<li><strong>Integration with ArgoCD health checks?</strong> Could use validation results in ArgoCD Application health status</li>
+<li><strong>Community feedback on platform support?</strong> Which platforms should we prioritize?</li>
+<li><strong>Documentation for other projects?</strong> Where should we publish examples for different use cases?</li>
+</ol>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 27, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 27, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2091 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/blog/05-lstm-deep-learning-anomalies/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Deep Learning for Cluster Anomalies: LSTM Networks - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#deep-learning-for-cluster-anomalies-lstm-networks" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Deep Learning for Cluster Anomalies: LSTM Networks
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      What You'll Learn
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-lstm-networks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding LSTM Networks
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding LSTM Networks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-lstm" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is LSTM?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-lstm-for-anomalies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why LSTM for Anomalies?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autoencoder-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Autoencoder Architecture
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-prepare-sequence-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Prepare Sequence Data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Prepare Sequence Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#open-the-lstm-notebook" class="md-nav__link">
+    <span class="md-ellipsis">
+      Open the LSTM Notebook
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create Sequences
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/blog/05-lstm-deep-learning-anomalies.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="deep-learning-for-cluster-anomalies-lstm-networks">Deep Learning for Cluster Anomalies: LSTM Networks<a class="headerlink" href="#deep-learning-for-cluster-anomalies-lstm-networks" title="Permanent link">&para;</a></h1>
+<p><em>Part 5 of the OpenShift AI Ops Learning Series</em></p>
+<hr />
+<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
+<p>Deep learning brings powerful sequence modeling capabilities to anomaly detection. LSTM (Long Short-Term Memory) networks excel at learning temporal patterns in time series data, making them ideal for detecting gradual degradation, memory leaks, and complex multi-metric anomalies.</p>
+<p>This guide walks you through building an LSTM autoencoder that learns normal cluster behavior and flags deviations as anomalies using reconstruction error.</p>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn<a class="headerlink" href="#what-youll-learn" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Introduction to LSTM neural networks</li>
+<li>Building autoencoders for anomaly detection</li>
+<li>Sequence-based anomaly detection</li>
+<li>Training on GPU with OpenShift AI</li>
+<li>When to use deep learning vs. traditional ML</li>
+</ul>
+<hr />
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<p>Before starting, ensure you have:</p>
+<ul>
+<li>[ ] Completed <a href="../03-isolation-forest-anomaly-detection/">Blog 3: Isolation Forest</a></li>
+<li>[ ] Completed <a href="../04-time-series-anomaly-detection/">Blog 4: Time Series Detection</a></li>
+<li>[ ] GPU-enabled node available (recommended)</li>
+<li>[ ] PyTorch installed in workbench</li>
+<li>[ ] Time series data collected</li>
+</ul>
+<hr />
+<h2 id="understanding-lstm-networks">Understanding LSTM Networks<a class="headerlink" href="#understanding-lstm-networks" title="Permanent link">&para;</a></h2>
+<h3 id="what-is-lstm">What is LSTM?<a class="headerlink" href="#what-is-lstm" title="Permanent link">&para;</a></h3>
+<p>LSTM (Long Short-Term Memory) is a type of recurrent neural network (RNN) designed to learn long-term dependencies in sequences.</p>
+<p><strong>Key Features:</strong>
+- <strong>Memory cells</strong>: Remember information for long periods
+- <strong>Gates</strong>: Control what to remember/forget (input, forget, output gates)
+- <strong>Sequential processing</strong>: Processes data point by point, maintaining context</p>
+<h3 id="why-lstm-for-anomalies">Why LSTM for Anomalies?<a class="headerlink" href="#why-lstm-for-anomalies" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ <strong>Sequence learning</strong>: Captures patterns across time steps</li>
+<li>✅ <strong>Context awareness</strong>: Understands relationships between past and present</li>
+<li>✅ <strong>Multi-metric</strong>: Can learn complex interactions between CPU, memory, network</li>
+<li>✅ <strong>Gradual changes</strong>: Detects slow memory leaks that threshold methods miss</li>
+</ul>
+<h3 id="autoencoder-architecture">Autoencoder Architecture<a class="headerlink" href="#autoencoder-architecture" title="Permanent link">&para;</a></h3>
+<p>An autoencoder learns to compress and reconstruct normal data:</p>
+<p><code>Input → Encoder → Latent Space → Decoder → Reconstruction</code></p>
+<p><strong>Anomaly Detection Principle:</strong>
+- Train on normal data only
+- Anomalies have high reconstruction error (can't be reconstructed well)
+- Threshold reconstruction error to flag anomalies</p>
+<hr />
+<h2 id="step-1-prepare-sequence-data">Step 1: Prepare Sequence Data<a class="headerlink" href="#step-1-prepare-sequence-data" title="Permanent link">&para;</a></h2>
+<h3 id="open-the-lstm-notebook">Open the LSTM Notebook<a class="headerlink" href="#open-the-lstm-notebook" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Navigate to <code>notebooks/02-anomaly-detection/</code></li>
+<li>Open <code>03-lstm-based-prediction.ipynb</code></li>
+</ol>
+<h3 id="create-sequences">Create Sequences<a class="headerlink" href="#create-sequences" title="Permanent link">&para;</a></h3>
+<p>LSTMs require sequences (windows of time steps):</p>
+<p>```python
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler</p>
+<p>def create_sequences(data, sequence_length=60):
+    """
+    Create sequences from time series data.</p>
+<pre><code>Args:
+    data: DataFrame with metrics
+    sequence_length: Number of time steps per sequence
+
+Returns:
+    X: Sequences of shape (samples, sequence_length, features)
+    y: Next value (for supervised) or reconstruction target
+"""
+sequences = []
+targets = []
+
+for i in range(len(data) - sequence_length):
+    seq = data.iloc[i:i+sequence_length].values
+    target = data.iloc[i+sequence_length].values
+    sequences.append(seq)
+    targets.append(target)
+
+return np.array(sequences), np.array(targets)
+</code></pre>
+<h1 id="load-metrics">Load metrics<a class="headerlink" href="#load-metrics" title="Permanent link">&para;</a></h1>
+<p>metrics = pd.read_parquet('/opt/app-root/src/data/prometheus/cpu_metrics.parquet')</p>
+<h1 id="normalize">Normalize<a class="headerlink" href="#normalize" title="Permanent link">&para;</a></h1>
+<p>scaler = StandardScaler()
+metrics_scaled = scaler.fit_transform(metrics[['cpu_usage', 'memory_usage']])</p>
+<h1 id="create-sequences-60-time-steps-1-hour-if-1-minute-intervals">Create sequences (60 time steps = 1 hour if 1-minute intervals)<a class="headerlink" href="#create-sequences-60-time-steps-1-hour-if-1-minute-intervals" title="Permanent link">&para;</a></h1>
+<p>X, y = create_sequences(pd.DataFrame(metrics_scaled), sequence_length=60)</p>
+<p>print(f"📊 Sequences created: {X.shape}")
+print(f"   Samples: {X.shape[0]}")
+print(f"   Sequence length: {X.shape[1]}")
+print(f"   Features: {X.shape[2]}")
+```</p>
+<hr />
+<h2 id="step-2-build-lstm-autoencoder">Step 2: Build LSTM Autoencoder<a class="headerlink" href="#step-2-build-lstm-autoencoder" title="Permanent link">&para;</a></h2>
+<h3 id="define-model-architecture">Define Model Architecture<a class="headerlink" href="#define-model-architecture" title="Permanent link">&para;</a></h3>
+<p>```python
+import torch
+import torch.nn as nn</p>
+<p>class LSTMAutoencoder(nn.Module):
+    """
+    LSTM Autoencoder for anomaly detection.</p>
+<pre><code>Architecture:
+- Encoder: LSTM layers compress input
+- Decoder: LSTM layers reconstruct output
+"""
+def __init__(self, input_dim, hidden_dim=64, num_layers=2):
+    super(LSTMAutoencoder, self).__init__()
+
+    # Encoder
+    self.encoder = nn.LSTM(
+        input_dim,
+        hidden_dim,
+        num_layers,
+        batch_first=True
+    )
+
+    # Latent representation
+    self.latent_dim = hidden_dim
+
+    # Decoder
+    self.decoder = nn.LSTM(
+        hidden_dim,
+        hidden_dim,
+        num_layers,
+        batch_first=True
+    )
+
+    # Output layer
+    self.output_layer = nn.Linear(hidden_dim, input_dim)
+
+def forward(self, x):
+    # Encode
+    encoded, (hidden, cell) = self.encoder(x)
+
+    # Use last hidden state as latent representation
+    latent = hidden[-1]  # Last layer's hidden state
+
+    # Repeat latent for decoder input
+    decoder_input = latent.unsqueeze(1).repeat(1, x.size(1), 1)
+
+    # Decode
+    decoded, _ = self.decoder(decoder_input)
+
+    # Output
+    output = self.output_layer(decoded)
+
+    return output, latent
+</code></pre>
+<p>```</p>
+<h3 id="initialize-model">Initialize Model<a class="headerlink" href="#initialize-model" title="Permanent link">&para;</a></h3>
+<p>```python</p>
+<h1 id="check-for-gpu">Check for GPU<a class="headerlink" href="#check-for-gpu" title="Permanent link">&para;</a></h1>
+<p>device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f"🖥️ Using device: {device}")</p>
+<h1 id="create-model">Create model<a class="headerlink" href="#create-model" title="Permanent link">&para;</a></h1>
+<p>model = LSTMAutoencoder(
+    input_dim=2,  # CPU and memory
+    hidden_dim=64,
+    num_layers=2
+).to(device)</p>
+<p>print(f"✅ Model created: {sum(p.numel() for p in model.parameters())} parameters")
+```</p>
+<hr />
+<h2 id="step-3-train-the-model">Step 3: Train the Model<a class="headerlink" href="#step-3-train-the-model" title="Permanent link">&para;</a></h2>
+<h3 id="prepare-data-loader">Prepare Data Loader<a class="headerlink" href="#prepare-data-loader" title="Permanent link">&para;</a></h3>
+<p>```python
+from torch.utils.data import DataLoader, TensorDataset</p>
+<h1 id="convert-to-tensors">Convert to tensors<a class="headerlink" href="#convert-to-tensors" title="Permanent link">&para;</a></h1>
+<p>X_tensor = torch.FloatTensor(X).to(device)
+y_tensor = torch.FloatTensor(y).to(device)</p>
+<h1 id="create-dataset-for-autoencoder-target-input">Create dataset (for autoencoder, target = input)<a class="headerlink" href="#create-dataset-for-autoencoder-target-input" title="Permanent link">&para;</a></h1>
+<p>dataset = TensorDataset(X_tensor, X_tensor)  # Reconstruct input</p>
+<h1 id="split-traintest-use-only-normal-data-for-training">Split train/test (use only normal data for training)<a class="headerlink" href="#split-traintest-use-only-normal-data-for-training" title="Permanent link">&para;</a></h1>
+<p>train_size = int(len(dataset) * 0.8)
+train_dataset = torch.utils.data.Subset(dataset, range(train_size))
+test_dataset = torch.utils.data.Subset(dataset, range(train_size, len(dataset)))</p>
+<h1 id="create-data-loaders">Create data loaders<a class="headerlink" href="#create-data-loaders" title="Permanent link">&para;</a></h1>
+<p>train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)</p>
+<p>print(f"📊 Training samples: {len(train_dataset)}")
+print(f"📊 Test samples: {len(test_dataset)}")
+```</p>
+<h3 id="training-loop">Training Loop<a class="headerlink" href="#training-loop" title="Permanent link">&para;</a></h3>
+<p>```python
+import torch.optim as optim</p>
+<h1 id="loss-function-mean-squared-error-for-reconstruction">Loss function (Mean Squared Error for reconstruction)<a class="headerlink" href="#loss-function-mean-squared-error-for-reconstruction" title="Permanent link">&para;</a></h1>
+<p>criterion = nn.MSELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)</p>
+<h1 id="training">Training<a class="headerlink" href="#training" title="Permanent link">&para;</a></h1>
+<p>num_epochs = 50
+model.train()</p>
+<p>for epoch in range(num_epochs):
+    total_loss = 0</p>
+<pre><code>for batch_x, batch_y in train_loader:
+    optimizer.zero_grad()
+
+    # Forward pass
+    reconstructed, latent = model(batch_x)
+
+    # Calculate reconstruction error
+    loss = criterion(reconstructed, batch_y)
+
+    # Backward pass
+    loss.backward()
+    optimizer.step()
+
+    total_loss += loss.item()
+
+avg_loss = total_loss / len(train_loader)
+
+if (epoch + 1) % 10 == 0:
+    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
+</code></pre>
+<p>print("✅ Training complete!")
+```</p>
+<hr />
+<h2 id="step-4-detect-anomalies">Step 4: Detect Anomalies<a class="headerlink" href="#step-4-detect-anomalies" title="Permanent link">&para;</a></h2>
+<h3 id="calculate-reconstruction-error">Calculate Reconstruction Error<a class="headerlink" href="#calculate-reconstruction-error" title="Permanent link">&para;</a></h3>
+<p>```python
+model.eval()
+reconstruction_errors = []</p>
+<p>with torch.no_grad():
+    for batch_x, batch_y in test_loader:
+        reconstructed, _ = model(batch_x)</p>
+<pre><code>    # Calculate MSE for each sample
+    mse = torch.mean((reconstructed - batch_y) ** 2, dim=(1, 2))
+    reconstruction_errors.extend(mse.cpu().numpy())
+</code></pre>
+<p>reconstruction_errors = np.array(reconstruction_errors)</p>
+<p>print(f"📊 Reconstruction errors calculated")
+print(f"   Mean: {reconstruction_errors.mean():.4f}")
+print(f"   Std: {reconstruction_errors.std():.4f}")
+print(f"   Max: {reconstruction_errors.max():.4f}")
+```</p>
+<h3 id="set-anomaly-threshold">Set Anomaly Threshold<a class="headerlink" href="#set-anomaly-threshold" title="Permanent link">&para;</a></h3>
+<p>```python</p>
+<h1 id="use-statistical-threshold-eg-mean-2std">Use statistical threshold (e.g., mean + 2*std)<a class="headerlink" href="#use-statistical-threshold-eg-mean-2std" title="Permanent link">&para;</a></h1>
+<p>threshold = reconstruction_errors.mean() + 2 * reconstruction_errors.std()</p>
+<h1 id="or-use-percentile-eg-top-5">Or use percentile (e.g., top 5%)<a class="headerlink" href="#or-use-percentile-eg-top-5" title="Permanent link">&para;</a></h1>
+<p>threshold_percentile = np.percentile(reconstruction_errors, 95)</p>
+<p>print(f"🔍 Anomaly threshold (mean+2σ): {threshold:.4f}")
+print(f"🔍 Anomaly threshold (95th percentile): {threshold_percentile:.4f}")</p>
+<h1 id="detect-anomalies">Detect anomalies<a class="headerlink" href="#detect-anomalies" title="Permanent link">&para;</a></h1>
+<p>anomalies = reconstruction_errors &gt; threshold</p>
+<p>print(f"⚠️ Detected {anomalies.sum()} anomalies ({anomalies.sum()/len(anomalies)*100:.1f}%)")
+```</p>
+<h3 id="visualize-anomalies">Visualize Anomalies<a class="headerlink" href="#visualize-anomalies" title="Permanent link">&para;</a></h3>
+<p>```python
+import matplotlib.pyplot as plt</p>
+<h1 id="plot-reconstruction-errors">Plot reconstruction errors<a class="headerlink" href="#plot-reconstruction-errors" title="Permanent link">&para;</a></h1>
+<p>plt.figure(figsize=(14, 6))
+plt.plot(reconstruction_errors, label='Reconstruction Error', alpha=0.7)
+plt.axhline(y=threshold, color='red', linestyle='--', label='Threshold')
+plt.scatter(np.where(anomalies)[0],
+           reconstruction_errors[anomalies],
+           color='red', s=50, marker='x', label='Anomalies', zorder=5)
+plt.xlabel('Sample')
+plt.ylabel('Reconstruction Error')
+plt.title('LSTM Anomaly Detection')
+plt.legend()
+plt.grid(True)
+plt.show()
+```</p>
+<hr />
+<h2 id="step-5-evaluate-performance">Step 5: Evaluate Performance<a class="headerlink" href="#step-5-evaluate-performance" title="Permanent link">&para;</a></h2>
+<p>If you have labeled anomaly data:</p>
+<p>```python
+from sklearn.metrics import precision_score, recall_score, f1_score</p>
+<h1 id="assuming-you-have-ground-truth">Assuming you have ground truth<a class="headerlink" href="#assuming-you-have-ground-truth" title="Permanent link">&para;</a></h1>
+<p>y_true = test_labels  # Boolean array: True = anomaly</p>
+<h1 id="calculate-metrics">Calculate metrics<a class="headerlink" href="#calculate-metrics" title="Permanent link">&para;</a></h1>
+<p>precision = precision_score(y_true, anomalies)
+recall = recall_score(y_true, anomalies)
+f1 = f1_score(y_true, anomalies)</p>
+<p>print("📊 LSTM Performance:")
+print(f"   Precision: {precision:.3f}")
+print(f"   Recall: {recall:.3f}")
+print(f"   F1-Score: {f1:.3f}")
+```</p>
+<hr />
+<h2 id="step-6-save-model-for-production">Step 6: Save Model for Production<a class="headerlink" href="#step-6-save-model-for-production" title="Permanent link">&para;</a></h2>
+<p>```python</p>
+<h1 id="save-model">Save model<a class="headerlink" href="#save-model" title="Permanent link">&para;</a></h1>
+<p>model_path = '/opt/app-root/src/models/lstm-predictor/lstm_autoencoder.pth'
+torch.save({
+    'model_state_dict': model.state_dict(),
+    'scaler': scaler,
+    'threshold': threshold,
+    'input_dim': 2,
+    'hidden_dim': 64,
+    'num_layers': 2
+}, model_path)</p>
+<p>print(f"✅ Model saved: {model_path}")
+```</p>
+<hr />
+<h2 id="what-just-happened">What Just Happened?<a class="headerlink" href="#what-just-happened" title="Permanent link">&para;</a></h2>
+<p>You've built a deep learning anomaly detector:</p>
+<h3 id="1-lstm-architecture">1. LSTM Architecture<a class="headerlink" href="#1-lstm-architecture" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Encoder</strong>: Compresses input sequences into latent representation</li>
+<li><strong>Decoder</strong>: Reconstructs sequences from latent representation</li>
+<li><strong>Memory cells</strong>: Remember long-term patterns in sequences</li>
+</ul>
+<h3 id="2-training-strategy">2. Training Strategy<a class="headerlink" href="#2-training-strategy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Unsupervised</strong>: Trained only on normal data</li>
+<li><strong>Reconstruction</strong>: Learns to reconstruct normal patterns</li>
+<li><strong>GPU acceleration</strong>: Fast training on NVIDIA GPUs</li>
+</ul>
+<h3 id="3-anomaly-detection">3. Anomaly Detection<a class="headerlink" href="#3-anomaly-detection" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reconstruction error</strong>: Anomalies can't be reconstructed well</li>
+<li><strong>Statistical threshold</strong>: Mean + 2 standard deviations</li>
+<li><strong>Sequence-aware</strong>: Detects anomalies in temporal context</li>
+</ul>
+<h3 id="4-advantages-over-traditional-ml">4. Advantages Over Traditional ML<a class="headerlink" href="#4-advantages-over-traditional-ml" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Complex patterns</strong>: Learns non-linear relationships</li>
+<li><strong>Multi-metric</strong>: Handles interactions between CPU, memory, network</li>
+<li><strong>Gradual changes</strong>: Detects slow memory leaks</li>
+<li><strong>Context</strong>: Understands sequences, not just individual points</li>
+</ul>
+<hr />
+<h2 id="when-to-use-lstm-vs-traditional-ml">When to Use LSTM vs. Traditional ML<a class="headerlink" href="#when-to-use-lstm-vs-traditional-ml" title="Permanent link">&para;</a></h2>
+<h3 id="use-lstm-when">Use LSTM When:<a class="headerlink" href="#use-lstm-when" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Complex temporal patterns (gradual degradation)</li>
+<li>✅ Multi-metric interactions (CPU + memory + network)</li>
+<li>✅ Long sequences (hours to days of data)</li>
+<li>✅ GPU available for training</li>
+<li>✅ Large dataset (&gt;10k samples)</li>
+</ul>
+<h3 id="use-traditional-ml-isolation-forest-when">Use Traditional ML (Isolation Forest) When:<a class="headerlink" href="#use-traditional-ml-isolation-forest-when" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Simple patterns (threshold-based)</li>
+<li>✅ Fast inference required (&lt;10ms)</li>
+<li>✅ Limited data (&lt;1k samples)</li>
+<li>✅ Interpretability important</li>
+<li>✅ No GPU available</li>
+</ul>
+<h3 id="use-both">Use Both:<a class="headerlink" href="#use-both" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Ensemble</strong>: Combine LSTM + Isolation Forest (see <a href="../06-ensemble-anomaly-methods/">Blog 6</a>)</li>
+<li><strong>Different use cases</strong>: LSTM for sequences, Isolation Forest for point anomalies</li>
+</ul>
+<hr />
+<h2 id="tuning-tips">Tuning Tips<a class="headerlink" href="#tuning-tips" title="Permanent link">&para;</a></h2>
+<h3 id="adjust-model-capacity">Adjust Model Capacity<a class="headerlink" href="#adjust-model-capacity" title="Permanent link">&para;</a></h3>
+<p>```python</p>
+<h1 id="larger-model-more-capacity">Larger model (more capacity)<a class="headerlink" href="#larger-model-more-capacity" title="Permanent link">&para;</a></h1>
+<p>model = LSTMAutoencoder(input_dim=2, hidden_dim=128, num_layers=3)</p>
+<h1 id="smaller-model-faster-less-capacity">Smaller model (faster, less capacity)<a class="headerlink" href="#smaller-model-faster-less-capacity" title="Permanent link">&para;</a></h1>
+<p>model = LSTMAutoencoder(input_dim=2, hidden_dim=32, num_layers=1)
+```</p>
+<h3 id="adjust-sequence-length">Adjust Sequence Length<a class="headerlink" href="#adjust-sequence-length" title="Permanent link">&para;</a></h3>
+<p>```python</p>
+<h1 id="longer-sequences-more-context">Longer sequences (more context)<a class="headerlink" href="#longer-sequences-more-context" title="Permanent link">&para;</a></h1>
+<p>X, y = create_sequences(data, sequence_length=120)  # 2 hours</p>
+<h1 id="shorter-sequences-faster-training">Shorter sequences (faster training)<a class="headerlink" href="#shorter-sequences-faster-training" title="Permanent link">&para;</a></h1>
+<p>X, y = create_sequences(data, sequence_length=30)   # 30 minutes
+```</p>
+<h3 id="adjust-threshold">Adjust Threshold<a class="headerlink" href="#adjust-threshold" title="Permanent link">&para;</a></h3>
+<p>```python</p>
+<h1 id="more-sensitive-detect-more-anomalies">More sensitive (detect more anomalies)<a class="headerlink" href="#more-sensitive-detect-more-anomalies" title="Permanent link">&para;</a></h1>
+<p>threshold = reconstruction_errors.mean() + 1.5 * reconstruction_errors.std()</p>
+<h1 id="less-sensitive-fewer-false-positives">Less sensitive (fewer false positives)<a class="headerlink" href="#less-sensitive-fewer-false-positives" title="Permanent link">&para;</a></h1>
+<p>threshold = reconstruction_errors.mean() + 3.0 * reconstruction_errors.std()
+```</p>
+<hr />
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>Explore advanced deep learning:</p>
+<ol>
+<li><strong>Ensemble Methods</strong>: <a href="../06-ensemble-anomaly-methods/">Blog 6: Ensemble Anomaly Methods</a> to combine LSTM with other models</li>
+<li><strong>Attention Mechanisms</strong>: Add attention layers for better sequence understanding</li>
+<li><strong>Transformer Models</strong>: Use transformer architecture for even better performance</li>
+</ol>
+<hr />
+<h2 id="related-resources">Related Resources<a class="headerlink" href="#related-resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Notebook</strong>: <code>notebooks/02-anomaly-detection/03-lstm-based-prediction.ipynb</code></li>
+<li><strong>ADRs</strong>:</li>
+<li><a href="docs/adrs/006-nvidia-gpu-management.md">ADR-006: NVIDIA GPU Operator</a></li>
+<li><a href="docs/adrs/003-openshift-ai-ml-platform.md">ADR-003: OpenShift AI for ML</a></li>
+<li><strong>Research</strong>:</li>
+<li><a href="https://www.bioinf.jku.at/publications/older/2604.pdf">LSTM Paper</a> (Hochreiter &amp; Schmidhuber, 1997)</li>
+<li><a href="https://arxiv.org/abs/1607.00148">Time Series Anomaly Detection with LSTM</a> (Malhotra et al., 2016)</li>
+<li><strong>PyTorch Docs</strong>: <a href="https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html">LSTM</a></li>
+</ul>
+<hr />
+<h2 id="found-an-issue">Found an Issue?<a class="headerlink" href="#found-an-issue" title="Permanent link">&para;</a></h2>
+<p>If you encounter problems while following this guide:</p>
+<ol>
+<li><strong>Open a GitHub Issue</strong>: <a href="https://github.com/KubeHeal/openshift-aiops-platform/issues/new">Create Issue</a></li>
+<li>Use label: <code>blog-feedback</code></li>
+<li>
+<p>Include: Blog name, step number, error message</p>
+</li>
+<li>
+<p><strong>Contribute a Fix</strong>: PRs welcome!</p>
+</li>
+<li>Fork the repo</li>
+<li>Fix the issue in <code>docs/blog/05-lstm-deep-learning-anomalies.md</code></li>
+<li>Submit PR referencing the issue</li>
+</ol>
+<p>Your feedback helps improve this guide for everyone!</p>
+<hr />
+<p><em>Part 5 of 15 in the OpenShift AI Ops Learning Series</em></p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 2, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 15, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

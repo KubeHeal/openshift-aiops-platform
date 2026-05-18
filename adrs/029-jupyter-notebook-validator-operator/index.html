@@ -1,0 +1,2333 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/adrs/029-jupyter-notebook-validator-operator/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>ADR-029: Jupyter Notebook Validator Operator for Notebook Validation - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-029-jupyter-notebook-validator-operator-for-notebook-validation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-029: Jupyter Notebook Validator Operator for Notebook Validation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Status
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-state-adr-021-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current State (ADR-021 Implementation)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problems-with-current-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problems with Current Approach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      New Requirements
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decision">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notebookvalidationjob-crd-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      NotebookValidationJob CRD Example
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NotebookValidationJob CRD Example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-notebook-validation-without-volumes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Notebook Validation (Without Volumes)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-notebook-validation-with-model-storage-volumes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Notebook Validation (With Model Storage Volumes)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v106-release-2026-01-28" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.0.6 Release (2026-01-28)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v1.0.6 Release (2026-01-28)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod-scheduling-support-adr-054" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pod Scheduling Support (ADR-054)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v105-enhancements-2026-01-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.0.5 Enhancements (2026-01-26)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v1.0.5 Enhancements (2026-01-26)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-argocd-integration-adr-049" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. ArgoCD Integration (ADR-049)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/adrs/029-jupyter-notebook-validator-operator.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="adr-029-jupyter-notebook-validator-operator-for-notebook-validation">ADR-029: Jupyter Notebook Validator Operator for Notebook Validation<a class="headerlink" href="#adr-029-jupyter-notebook-validator-operator-for-notebook-validation" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> IMPLEMENTED
+<strong>Date:</strong> 2025-11-18
+<strong>Updated:</strong> 2026-01-28 (Upgraded to v1.0.6 with GPU toleration support for pod scheduling)
+<strong>Decision Makers:</strong> Architecture Team, ML Engineering
+<strong>Consulted:</strong> DevOps Team, Platform Engineering
+<strong>Informed:</strong> Operations Team, Data Science Team</p>
+<h2 id="implementation-status">Implementation Status<a class="headerlink" href="#implementation-status" title="Permanent link">&para;</a></h2>
+<p><strong>Status:</strong> implemented
+<strong>Verification Date:</strong> 2026-01-26
+<strong>Implementation Score:</strong> 10.0/10
+<strong>Verified On:</strong> SNO + HA clusters
+<strong>Evidence:</strong> Operator upgraded to v1.0.5 with ArgoCD integration, model validation, exit code validation, and auto-restart InferenceServices.</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>The OpenShift AIOps Self-Healing Platform includes 30+ Jupyter notebooks across 8 directories that require automated validation and execution tracking. The notebooks implement critical ML workflows including data collection, anomaly detection, model training, and deployment to KServe.</p>
+<h3 id="current-state-adr-021-implementation">Current State (ADR-021 Implementation)<a class="headerlink" href="#current-state-adr-021-implementation" title="Permanent link">&para;</a></h3>
+<p>The current implementation uses <strong>Tekton pipelines</strong> for notebook validation:
+- Notebooks executed directly in Tekton tasks via <code>jupyter nbconvert --execute</code>
+- Validation mixed with infrastructure health checks
+- No declarative notebook job management
+- Limited resource isolation per notebook
+- Difficult to track individual notebook execution history</p>
+<h3 id="problems-with-current-approach">Problems with Current Approach<a class="headerlink" href="#problems-with-current-approach" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Tight Coupling</strong>: Notebook execution tightly coupled to Tekton pipeline infrastructure</li>
+<li><strong>Resource Management</strong>: No per-notebook resource requests/limits configuration</li>
+<li><strong>Execution Tracking</strong>: Difficult to track individual notebook runs and artifacts</li>
+<li><strong>Git Integration</strong>: Manual git clone in Tekton tasks, no credential management</li>
+<li><strong>Validation Reporting</strong>: No standardized notebook validation results format</li>
+<li><strong>Scalability</strong>: All notebooks share same pipeline execution context</li>
+<li><strong>Model Storage</strong>: No persistent storage for trained models across validation runs</li>
+</ol>
+<h3 id="new-requirements">New Requirements<a class="headerlink" href="#new-requirements" title="Permanent link">&para;</a></h3>
+<p>Based on <a href="https://raw.githubusercontent.com/tosin2013/jupyter-notebook-validator-operator/refs/heads/release-4.18/helm/jupyter-notebook-validator-operator/INSTALLATION.md">Jupyter Notebook Validator Operator</a> capabilities:</p>
+<ol>
+<li><strong>CRD-Based Validation</strong>: Declarative NotebookValidationJob resources</li>
+<li><strong>Git Integration</strong>: Native support for public and private Git repositories</li>
+<li><strong>Resource Isolation</strong>: Per-notebook resource requests and limits</li>
+<li><strong>Artifact Collection</strong>: Automatic validation pod log collection</li>
+<li><strong>Credential Management</strong>: Kubernetes secret integration for private repos</li>
+<li><strong>Webhook Support</strong>: Validation via cert-manager webhooks</li>
+<li><strong>Volume Support</strong>: PVC mounting for persistent model storage (NEW - 2025-12-01)</li>
+</ol>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<p><strong>Adopt the Jupyter Notebook Validator Operator</strong> as the primary notebook validation mechanism, superseding Tekton-based notebook execution from ADR-021.</p>
+<h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h3>
+<p><code>Notebook Validation Architecture:
+┌─────────────────────────────────────────────────────────────┐
+│              Jupyter Notebook Validator Operator            │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  NotebookValidationJob CRDs                         │    │
+│  │  (mlops.mlops.dev/v1alpha1)                         │    │
+│  └─────────────────────────────────────────────────────┘    │
+│           │                                                  │
+│           ▼                                                  │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  Validation Controller                              │    │
+│  │  - Watches NotebookValidationJob CRDs               │    │
+│  │  - Creates validation pods                          │    │
+│  │  - Collects execution logs                          │    │
+│  │  - Updates CRD status                               │    │
+│  └─────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
+                        │
+                        ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Validation Pods (per notebook)                 │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  1. Git Clone (from spec.notebook.git.url)          │    │
+│  │  2. Install Dependencies (requirements.txt)         │    │
+│  │  3. Execute Notebook (jupyter nbconvert --execute)  │    │
+│  │  4. Collect Artifacts (logs, outputs)               │    │
+│  │  5. Update CRD Status (Success/Failed)              │    │
+│  └─────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
+                        │
+                        ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Git Repository Integration                     │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  Public Repos: Direct HTTPS clone                   │    │
+│  │  Private Repos: Kubernetes secret credentials       │    │
+│  │    - username/password (PAT tokens)                 │    │
+│  │    - SSH keys                                       │    │
+│  └─────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘</code></p>
+<h3 id="notebookvalidationjob-crd-example">NotebookValidationJob CRD Example<a class="headerlink" href="#notebookvalidationjob-crd-example" title="Permanent link">&para;</a></h3>
+<h4 id="basic-notebook-validation-without-volumes">Basic Notebook Validation (Without Volumes)<a class="headerlink" href="#basic-notebook-validation-without-volumes" title="Permanent link">&para;</a></h4>
+<p>```yaml
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: anomaly-detection-isolation-forest
+  namespace: self-healing-platform
+spec:
+  notebook:
+    git:
+      url: "https://github.com/openshift-aiops/openshift-aiops-platform.git"
+      ref: "main"
+      credentialsSecret: "github-credentials"  # For private repos
+    path: "notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb"</p>
+<p>podConfig:
+    containerImage: "quay.io/jupyter/minimal-notebook:latest"
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "1000m"
+      limits:
+        memory: "4Gi"
+        cpu: "2000m"</p>
+<p>timeout: "30m"
+```</p>
+<h4 id="advanced-notebook-validation-with-model-storage-volumes">Advanced Notebook Validation (With Model Storage Volumes)<a class="headerlink" href="#advanced-notebook-validation-with-model-storage-volumes" title="Permanent link">&para;</a></h4>
+<p><strong>NEW (2025-12-01)</strong>: The Jupyter Notebook Validator Operator now supports volume mounting, enabling persistent model storage across validation runs.</p>
+<p>```yaml
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: model-training-with-storage
+  namespace: self-healing-platform
+spec:
+  notebook:
+    git:
+      url: "https://github.com/openshift-aiops/openshift-aiops-platform.git"
+      ref: "main"
+      credentialsSecret: "github-credentials"
+    path: "notebooks/03-model-training/ensemble-model-training.ipynb"</p>
+<p>podConfig:
+    containerImage: "quay.io/modh/runtime-images:jupyter-datascience-ubi9-python-3.11-2025.1"
+    resources:
+      requests:
+        memory: "4Gi"
+        cpu: "2000m"
+        nvidia.com/gpu: "1"  # GPU support for model training
+      limits:
+        memory: "8Gi"
+        cpu: "4000m"
+        nvidia.com/gpu: "1"</p>
+<pre><code># Volume mounts for persistent model storage
+volumes:
+  - name: model-storage
+    persistentVolumeClaim:
+      claimName: model-storage-pvc
+  - name: data-storage
+    persistentVolumeClaim:
+      claimName: data-storage-pvc
+
+volumeMounts:
+  - name: model-storage
+    mountPath: /opt/app-root/src/models
+  - name: data-storage
+    mountPath: /opt/app-root/src/data
+</code></pre>
+<p>timeout: "60m"
+```</p>
+<p><strong>Use Cases for Volume Support</strong>:
+1. <strong>Model Training Notebooks</strong>: Store trained models in PVCs for later deployment
+2. <strong>Data Preprocessing</strong>: Cache preprocessed datasets across validation runs
+3. <strong>Artifact Persistence</strong>: Maintain validation artifacts and logs
+4. <strong>Model Versioning</strong>: Track model versions across multiple training runs
+5. <strong>Shared Storage</strong>: Enable multiple notebooks to access common model repository</p>
+<h3 id="v106-release-2026-01-28">v1.0.6 Release (2026-01-28)<a class="headerlink" href="#v106-release-2026-01-28" title="Permanent link">&para;</a></h3>
+<p><strong>Operator Version</strong>: v1.0.6 (universal release for OpenShift 4.18/4.19/4.20)</p>
+<h4 id="pod-scheduling-support-adr-054">Pod Scheduling Support (ADR-054)<a class="headerlink" href="#pod-scheduling-support-adr-054" title="Permanent link">&para;</a></h4>
+<p>The v1.0.6 release introduces full Kubernetes-native pod scheduling capabilities, enabling GPU node scheduling for ML training workloads.</p>
+<p><strong>New Features</strong>:
+- <strong>Tolerations</strong>: Full Kubernetes-native toleration support for tainted nodes (e.g., GPU nodes)
+- <strong>NodeSelector</strong>: Label-based node selection for targeting specific node pools
+- <strong>Affinity</strong>: Advanced node/pod affinity and anti-affinity rules for sophisticated scheduling</p>
+<p><strong>Use Cases Enabled</strong>:
+- GPU node scheduling for ML training workloads (predictive-analytics model)
+- High-memory node pools for resource-intensive notebooks
+- Spot/preemptible instance cost optimization
+- Multi-tenant cluster team isolation</p>
+<p><strong>CRD Fields Added</strong>:
+- <code>spec.podConfig.tolerations</code> - Array of Kubernetes tolerations
+- <code>spec.podConfig.nodeSelector</code> - Map of node selector labels
+- <code>spec.podConfig.affinity</code> - Full affinity configuration</p>
+<p><strong>Example Configuration</strong>:
+<code>yaml
+podConfig:
+  resources:
+    requests:
+      nvidia.com/gpu: "1"
+    limits:
+      nvidia.com/gpu: "1"
+  tolerations:
+    - key: nvidia.com/gpu
+      operator: Exists
+      effect: NoSchedule
+  nodeSelector:
+    nvidia.com/gpu.present: "true"
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: nvidia.com/gpu.memory
+                operator: Gt
+                values:
+                  - "16384"</code></p>
+<p><strong>Sample Manifests</strong>:
+- GPU scheduling example: <code>k8s/operators/jupyter-notebook-validator/samples/predictive-analytics-validation-job.yaml</code>
+- See upstream repository for additional examples: high-memory nodes, spot instances, multi-tenant isolation</p>
+<p><strong>Architecture Reference</strong>: See ADR-054 (upstream) for complete architectural decision and implementation details.</p>
+<h3 id="v105-enhancements-2026-01-26">v1.0.5 Enhancements (2026-01-26)<a class="headerlink" href="#v105-enhancements-2026-01-26" title="Permanent link">&para;</a></h3>
+<p><strong>Operator Version</strong>: v1.0.5 (universal release for OpenShift 4.18/4.19/4.20)</p>
+<p>The v1.0.5 release introduces significant new features that improve notebook validation and deployment workflows:</p>
+<h4 id="1-argocd-integration-adr-049">1. ArgoCD Integration (ADR-049)<a class="headerlink" href="#1-argocd-integration-adr-049" title="Permanent link">&para;</a></h4>
+<p>All 5 ArgoCD integration features are fully implemented:</p>
+<p><strong>ArgoCD Health Assessment</strong>: Notebook validation status visible in ArgoCD UI
+- Installation: <code>kubectl apply -f k8s/operators/jupyter-notebook-validator/argocd/health-check-configmap.yaml</code>
+- Status mapping: Succeeded → Healthy, Failed → Degraded, Running → Progressing
+- Real-time validation progress visible in ArgoCD dashboard</p>
+<p><strong>Post-Success Resource Hooks</strong>: Auto-restart InferenceServices when notebooks succeed
+<code>yaml
+annotations:
+  mlops.dev/on-success-trigger: |
+    - apiVersion: serving.kserve.io/v1beta1
+      kind: InferenceService
+      name: predictive-analytics
+      namespace: self-healing-platform
+      action: restart</code></p>
+<p><strong>CRITICAL ISSUE SOLVED</strong>: This feature eliminates the manual pod deletion requirement for InferenceServices. Previously, when notebooks trained models and stored them in PVCs, the InferenceService predictor pods remained at 1/2 ready state until manually deleted. The <code>mlops.dev/on-success-trigger</code> annotation automatically triggers pod restart, bringing InferenceServices to 2/2 ready state without manual intervention.</p>
+<p><strong>Sync Wave Awareness</strong>: Coordinate notebook execution with ArgoCD deployment waves
+<code>yaml
+annotations:
+  argocd.argoproj.io/sync-wave: "3"     # Run notebook in wave 3
+  mlops.dev/block-wave: "4"              # Block wave 4 until success</code></p>
+<p>This enables precise orchestration of notebook execution in relation to other resources:
+- Wave 1: Infrastructure (PVCs, ConfigMaps)
+- Wave 2: Dependencies (databases, services)
+- Wave 3: Notebook validation (model training)
+- Wave 4: Model deployment (InferenceServices)</p>
+<p><strong>Application Status Integration</strong>: Aggregated notebook status in ArgoCD Applications
+- Auto-updates <code>mlops.dev/notebook-status</code> annotation with success/failure counts
+- Application-level health reflects notebook validation state
+- Rollback policies can trigger on notebook failures</p>
+<p><strong>Notification Events</strong>: Kubernetes Events for ArgoCD notifications
+- Integrates with ArgoCD notification controller
+- Supports Slack, email, PagerDuty, webhook notifications
+- Events created for: validation started, succeeded, failed, timeout</p>
+<p><strong>RBAC Requirements</strong>: Updated ClusterRole permissions required
+```yaml</p>
+<h1 id="required-for-auto-restart-inferenceservices">Required for auto-restart InferenceServices<a class="headerlink" href="#required-for-auto-restart-inferenceservices" title="Permanent link">&para;</a></h1>
+<ul>
+<li>
+<p>apiGroups: ["serving.kserve.io"]
+  resources: ["inferenceservices"]
+  verbs: ["get", "list", "patch"]</p>
+</li>
+<li>
+<p>apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list", "delete"]</p>
+</li>
+</ul>
+<h1 id="required-for-argocd-application-status-updates">Required for ArgoCD Application status updates<a class="headerlink" href="#required-for-argocd-application-status-updates" title="Permanent link">&para;</a></h1>
+<ul>
+<li>apiGroups: ["argoproj.io"]
+  resources: ["applications"]
+  verbs: ["get", "list", "patch"]</li>
+</ul>
+<h1 id="required-for-notification-events">Required for notification events<a class="headerlink" href="#required-for-notification-events" title="Permanent link">&para;</a></h1>
+<ul>
+<li>apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+```</li>
+</ul>
+<h4 id="2-model-aware-validation-adr-020">2. Model-Aware Validation (ADR-020)<a class="headerlink" href="#2-model-aware-validation-adr-020" title="Permanent link">&para;</a></h4>
+<p>Fully implemented multi-platform model validation:</p>
+<p><strong>Supported Platforms</strong>: KServe, OpenShift AI, vLLM, TorchServe, Triton, Ray Serve, Seldon Core, BentoML</p>
+<p><strong>Two-Phase Validation Strategy</strong>:
+- <strong>Phase 1 (Clean Environment)</strong>: Validate notebook in isolated environment before deployment
+- <strong>Phase 2 (Existing Environment)</strong>: Validate against deployed models after deployment
+- <strong>Both</strong>: Run both phases for comprehensive testing</p>
+<p><strong>Prediction Validation</strong>: Test deployed models with sample data
+<code>yaml
+modelValidation:
+  enabled: true
+  platform: kserve
+  phase: both
+  targetModels:
+    - predictive-analytics
+  predictionValidation:
+    enabled: true
+    testData: |
+      {"instances": [[1.0, 2.0, 3.0, 4.0, 5.0]]}
+    expectedOutput: |
+      {"predictions": [[0.8, 0.2]]}
+    tolerance: "0.1"
+  timeout: "5m"</code></p>
+<p><strong>Platform Auto-Detection</strong>: Automatically detects serving platform from deployed models
+- Scans namespace for InferenceServices (KServe)
+- Detects Ray Serve deployments
+- Identifies Seldon Core models
+- No manual platform configuration required</p>
+<p><strong>Benefits</strong>:
+- ✅ Catch model integration issues before deployment
+- ✅ Validate notebook works with actual serving infrastructure
+- ✅ Prevent version mismatches between training and serving
+- ✅ Ensure model API compatibility</p>
+<h4 id="3-exit-code-validation-adr-041">3. Exit Code Validation (ADR-041)<a class="headerlink" href="#3-exit-code-validation-adr-041" title="Permanent link">&para;</a></h4>
+<p>Developer safety framework to catch silent failures:</p>
+<p><strong>Validation Levels</strong>:
+- <code>learning</code>: Minimal checks, maximum flexibility (for experimentation)
+- <code>development</code>: Basic checks, allow warnings
+- <code>staging</code>: Strict checks, catch most issues
+- <code>production</code>: Full checks, zero tolerance for errors</p>
+<p><strong>Silent Failure Detection</strong>: Catches common issues
+- None returns from cells
+- NaN values in outputs
+- Missing exit codes
+- Empty results when output expected
+- Type mismatches</p>
+<p><strong>Configuration Example</strong>:
+<code>yaml
+validationConfig:
+  level: "production"
+  strictMode: true
+  failOnStderr: false  # Allow warnings but not errors
+  detectSilentFailures: true
+  checkOutputTypes: true
+  expectedOutputs:
+    - cell: 10  # Cell that trains model
+      type: "object"
+      notEmpty: true
+    - cell: 15  # Cell that evaluates model
+      type: "float"
+      range: [0.7, 1.0]  # Accuracy 70-100%</code></p>
+<p><strong>Use Cases</strong>:
+- Prevent broken notebooks from passing validation
+- Catch logical errors that don't raise exceptions
+- Enforce output type contracts
+- Validate metric ranges (accuracy, loss, etc.)</p>
+<h4 id="4-advanced-comparison-adr-030">4. Advanced Comparison (ADR-030)<a class="headerlink" href="#4-advanced-comparison-adr-030" title="Permanent link">&para;</a></h4>
+<p>Smart error messages and comparison strategies for ML workflows:</p>
+<p><strong>Comparison Strategies</strong>:
+- <code>exact</code>: Byte-for-byte comparison (for deterministic notebooks)
+- <code>normalized</code>: Floating-point tolerant comparison (for ML notebooks)</p>
+<p><strong>Floating-Point Tolerance</strong>: Handle non-deterministic ML outputs
+<code>yaml
+comparisonConfig:
+  strategy: "normalized"
+  floatingPointTolerance: "0.01"  # 1% tolerance
+  ignoreTimestamps: true
+  ignoreExecutionCount: true</code></p>
+<p><strong>Custom Timestamp Patterns</strong>: Ignore ML training logs
+<code>yaml
+comparisonConfig:
+  customTimestampPatterns:
+    - "Training time: \\d+\\.\\d+s"
+    - "Epoch \\d+/\\d+ - \\d+\\.\\d+s"
+    - "Accuracy: 0\\.\\d+"  # Tolerate accuracy variations</code></p>
+<p><strong>Benefits</strong>:
+- ✅ Handle non-deterministic model training outputs
+- ✅ Tolerate timing variations across runs
+- ✅ Focus on meaningful differences, not noise
+- ✅ Reduce false positive validation failures</p>
+<h4 id="integration-benefits">Integration Benefits<a class="headerlink" href="#integration-benefits" title="Permanent link">&para;</a></h4>
+<p>The v1.0.5 and v1.0.6 features solve critical pain points in the platform:</p>
+<p><strong>Before v1.0.5</strong>:
+- Manual pod deletion required for InferenceServices after model training
+- No visibility of notebook validation in ArgoCD UI
+- Model integration issues discovered in production
+- Silent notebook failures could pass validation
+- ML metric variations caused false positive failures
+- GPU workloads couldn't schedule on tainted GPU nodes</p>
+<p><strong>After v1.0.5 + v1.0.6</strong>:
+- ✅ Automatic InferenceService reload when notebooks succeed (no manual intervention)
+- ✅ Full GitOps compliance with ArgoCD health checks and sync waves
+- ✅ Model validation gates prevent broken deployments
+- ✅ Silent failure detection catches logical errors
+- ✅ Smart comparison strategies handle ML non-determinism
+- ✅ Comprehensive notification integration (Slack, email, PagerDuty)
+- ✅ <strong>NEW v1.0.6</strong>: GPU node scheduling with native tolerations and affinity support
+- ✅ <strong>NEW v1.0.6</strong>: Predictive-analytics model training no longer stuck in Pending state</p>
+<p><strong>Cross-Reference</strong>:
+- See ADR-043 (Deployment Stability &amp; Health Checks) for init container patterns
+- See operator ADR-020, ADR-030, ADR-041, ADR-049, ADR-054 for detailed feature specifications
+- See <code>k8s/operators/jupyter-notebook-validator/samples/</code> for example manifests
+- <strong>ADR-054 (upstream)</strong>: Pod Scheduling Support - tolerations, nodeSelector, affinity implementation</p>
+<h3 id="operator-deployment">Operator Deployment<a class="headerlink" href="#operator-deployment" title="Permanent link">&para;</a></h3>
+<p>The operator requires:</p>
+<ol>
+<li><strong>cert-manager v1.13+</strong>: For webhook certificate management</li>
+<li><strong>Helm 3.8+</strong>: Operator deployment via Helm chart</li>
+<li><strong>Kubernetes 1.31+ / OpenShift 4.18+</strong>: Platform requirements</li>
+</ol>
+<p><strong>Helm Installation</strong>:
+<code>bash
+helm install jupyter-validator \
+  https://github.com/tosin2013/jupyter-notebook-validator-operator/releases/download/release-4.18/jupyter-notebook-validator-operator-0.1.0.tgz \
+  --namespace jupyter-validator-system \
+  --create-namespace \
+  --set openshift.enabled=true \
+  --set prometheus.enabled=true</code></p>
+<h3 id="deployment-via-validated-patterns-2025-12-04-update">Deployment via Validated Patterns (2025-12-04 Update)<a class="headerlink" href="#deployment-via-validated-patterns-2025-12-04-update" title="Permanent link">&para;</a></h3>
+<p><strong>Status</strong>: Operator NOT yet in OperatorHub/marketplace (submission in progress)</p>
+<p><strong>Deployment Method</strong>: Self-contained kustomize deployment following ADR-030 Hybrid Management Pattern</p>
+<p><strong>Architecture</strong>:
+<code>k8s/operators/jupyter-notebook-validator/
+├── base/                           # Base manifests
+│   ├── crd/                        # NotebookValidationJob CRD
+│   ├── rbac/                       # ClusterRole, ClusterRoleBinding, ServiceAccount
+│   ├── manager/                    # Operator Deployment
+│   ├── certmanager/                # Certificates (optional - webhooks)
+│   └── webhook/                    # Webhook configuration (optional)
+├── argocd/                         # ArgoCD integration (NEW v1.0.5)
+│   ├── health-check-configmap.yaml # Health assessment for NotebookValidationJob
+│   └── README.md                   # ArgoCD integration guide
+├── samples/                        # Example validation jobs (NEW v1.0.5)
+│   ├── predictive-analytics-validation-job.yaml
+│   └── README.md                   # Usage examples
+└── overlays/
+    ├── dev-ocp4.18/                # OCP 4.18 (image: 1.0.6 - universal release)
+    ├── dev-ocp4.19/                # OCP 4.19 (image: 1.0.6 - universal release)
+    └── dev-ocp4.20/                # OCP 4.20 (image: 1.0.6 - universal release)</code></p>
+<p><strong>Installation</strong>:
+```bash</p>
+<h1 id="build-execution-environment-first-time">Build execution environment (first time)<a class="headerlink" href="#build-execution-environment-first-time" title="Permanent link">&para;</a></h1>
+<p>make build-ee</p>
+<h1 id="install-operator">Install operator<a class="headerlink" href="#install-operator" title="Permanent link">&para;</a></h1>
+<p>make install-jupyter-validator</p>
+<h1 id="verify-installation">Verify installation<a class="headerlink" href="#verify-installation" title="Permanent link">&para;</a></h1>
+<p>make validate-jupyter-validator</p>
+<h1 id="test-with-sample-notebook">Test with sample notebook<a class="headerlink" href="#test-with-sample-notebook" title="Permanent link">&para;</a></h1>
+<p>make test-jupyter-validator
+```</p>
+<p><strong>Uninstallation</strong>:
+<code>bash
+make uninstall-jupyter-validator</code></p>
+<p><strong>Deployment Flow</strong>:
+1. Kustomize builds overlay: <code>k8s/operators/jupyter-notebook-validator/overlays/dev-ocp4.18</code>
+2. Ansible applies manifests: <code>kubernetes.core.k8s</code> with kustomize lookup
+3. Operator deployed to: <code>jupyter-notebook-validator-operator</code> namespace
+4. CRD registered: <code>notebookvalidationjobs.mlops.mlops.dev</code>
+5. Validation jobs created in: <code>self-healing-platform</code> namespace</p>
+<p><strong>Key Features</strong>:
+- ✅ <strong>Self-contained</strong>: All manifests in project (no external dependencies)
+- ✅ <strong>Version controlled</strong>: Operator manifests tracked in git
+- ✅ <strong>ADR-030 compliant</strong>: Cluster-scoped resources via Ansible
+- ✅ <strong>Multi-version support</strong>: Overlays for OCP 4.18, 4.19, 4.20
+- ✅ <strong>Optional webhooks</strong>: Auto-enabled if cert-manager present</p>
+<p><strong>Comparison with OLM Deployment</strong> (when available):
+| Aspect | Current (Kustomize) | Future (OLM) |
+|--------|---------------------|--------------|
+| Method | Direct manifest deployment | OperatorHub subscription |
+| Namespace | <code>jupyter-notebook-validator-operator</code> | <code>openshift-operators</code> |
+| Updates | Manual (update manifests) | Automatic (OLM) |
+| Dependencies | None | OLM, CatalogSource |
+| Flexibility | Full control | Limited to operator package |</p>
+<p><strong>Ansible Role</strong>: <code>validated_patterns_jupyter_validator</code></p>
+<p><strong>Role Tasks</strong>:
+- <code>tasks/main.yml</code> - Orchestration and cert-manager detection
+- <code>tasks/deploy_operator.yml</code> - Kustomize deployment
+- <code>tasks/verify_operator.yml</code> - Health checks and validation
+- <code>tasks/cleanup_operator.yml</code> - Uninstallation and cleanup</p>
+<p><strong>Playbooks</strong>:
+- <code>ansible/playbooks/install_jupyter_validator_operator.yml</code> - Installation playbook
+- <code>ansible/playbooks/uninstall_jupyter_validator_operator.yml</code> - Cleanup playbook</p>
+<h3 id="integration-with-existing-infrastructure">Integration with Existing Infrastructure<a class="headerlink" href="#integration-with-existing-infrastructure" title="Permanent link">&para;</a></h3>
+<p><strong>Storage Integration</strong> (Updated 2025-12-01):
+- Validation pods use same storage classes as workbenches (gp3-csi)
+- <strong>NEW</strong>: PVC mounting enables persistent model storage across validation runs
+- <strong>NEW</strong>: Models can be stored in PVCs and accessed by multiple notebooks
+- <strong>NEW</strong>: Integration with ADR-024 (External Secrets for Model Storage) and ADR-025 (Object Store)
+- Notebook artifacts stored in persistent volumes
+- Integration with existing ODF/NooBaa for model artifacts
+- <strong>Workflow</strong>: Train models in notebooks → Store in PVCs → Deploy to KServe from PVCs</p>
+<p><strong>RBAC Integration</strong>:
+- NotebookValidationJob CRDs use existing service accounts
+- Validation pods inherit workbench security context
+- Integration with OpenShift RBAC policies
+- <strong>NEW</strong>: PVC access requires appropriate RBAC permissions for validation pods</p>
+<p><strong>Monitoring Integration</strong>:
+- Operator exposes Prometheus metrics
+- Validation job status tracked via CRD conditions
+- Integration with existing Grafana dashboards
+- <strong>NEW</strong>: Volume usage metrics tracked for model storage PVCs</p>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h3 id="positive-consequences">Positive Consequences<a class="headerlink" href="#positive-consequences" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ <strong>Declarative Management</strong>: NotebookValidationJob CRDs provide declarative notebook validation</li>
+<li>✅ <strong>Resource Isolation</strong>: Per-notebook resource requests/limits prevent resource contention</li>
+<li>✅ <strong>Git Integration</strong>: Native support for public and private Git repositories</li>
+<li>✅ <strong>Credential Management</strong>: Kubernetes secret integration for secure credential handling</li>
+<li>✅ <strong>Execution Tracking</strong>: CRD status provides clear notebook execution history</li>
+<li>✅ <strong>Scalability</strong>: Independent validation pods scale horizontally</li>
+<li>✅ <strong>Artifact Collection</strong>: Automatic log collection and status reporting</li>
+<li>✅ <strong>Webhook Validation</strong>: cert-manager integration for secure webhooks</li>
+<li>✅ <strong>NEW (2025-12-01) - Persistent Model Storage</strong>: PVC mounting enables models to persist across validation runs</li>
+<li>✅ <strong>NEW (2025-12-01) - Model Sharing</strong>: Multiple notebooks can access shared model repository via PVCs</li>
+<li>✅ <strong>NEW (2025-12-01) - Training-to-Deployment Pipeline</strong>: Seamless workflow from training to KServe deployment</li>
+<li>✅ <strong>NEW (2025-12-01) - GPU Support</strong>: Full GPU support for model training notebooks with persistent storage</li>
+<li>✅ <strong>NEW (2026-01-28 - v1.0.6) - GPU Node Scheduling</strong>: Native tolerations support for GPU tainted nodes</li>
+<li>✅ <strong>NEW (2026-01-28 - v1.0.6) - Advanced Scheduling</strong>: nodeSelector and affinity for sophisticated pod placement</li>
+<li>✅ <strong>NEW (2026-01-28 - v1.0.6) - Pod Scheduling Fix</strong>: Resolves "untolerated taint" errors for GPU workloads</li>
+</ul>
+<h3 id="negative-consequences">Negative Consequences<a class="headerlink" href="#negative-consequences" title="Permanent link">&para;</a></h3>
+<ul>
+<li>⚠️ <strong>New Operator Dependency</strong>: Additional operator to manage and maintain</li>
+<li>⚠️ <strong>cert-manager Requirement</strong>: Requires cert-manager v1.13+ installation</li>
+<li>⚠️ <strong>Migration Effort</strong>: Migrate 30+ notebooks from Tekton to CRDs</li>
+<li>⚠️ <strong>Learning Curve</strong>: Team needs to learn NotebookValidationJob CRD spec</li>
+<li>⚠️ <strong>Operator Maintenance</strong>: Custom operator requires version upgrades</li>
+<li>⚠️ <strong>NEW (2025-12-01) - Storage Management</strong>: Additional PVC management and capacity planning required</li>
+<li>⚠️ <strong>NEW (2025-12-01) - RBAC Complexity</strong>: Volume access requires additional RBAC configuration</li>
+</ul>
+<h3 id="migration-strategy">Migration Strategy<a class="headerlink" href="#migration-strategy" title="Permanent link">&para;</a></h3>
+<p><strong>Phase 1: Operator Deployment (Week 1)</strong>
+1. Install cert-manager (if not present)
+2. Deploy Jupyter Notebook Validator Operator via Helm
+3. Verify operator installation and CRD registration
+4. Create test NotebookValidationJob for tier1-simple notebooks</p>
+<p><strong>Phase 2: Tier Migration (Week 2-3)</strong>
+1. Migrate tier1-simple notebooks (hello-world, basic operations)
+2. Migrate tier2-intermediate notebooks (data collection, preprocessing)
+3. Migrate tier3-advanced notebooks (anomaly detection, model training)
+4. Keep Tekton infrastructure validation tasks (prerequisites, operators, storage)</p>
+<p><strong>Phase 3: Full Integration (Week 4)</strong>
+1. Update Ansible roles (create <code>validated_patterns_notebooks</code>)
+2. Update documentation (notebooks/README.md, migration guide)
+3. Remove Tekton notebook execution tasks (retain infrastructure validation)
+4. Deploy production NotebookValidationJobs for all 30 notebooks</p>
+<h2 id="implementation-tasks">Implementation Tasks<a class="headerlink" href="#implementation-tasks" title="Permanent link">&para;</a></h2>
+<ol>
+<li>✅ Create ADR-029 (this document)</li>
+<li>[ ] Update ADR-021 to mark notebook validation as superseded</li>
+<li>[ ] Create <code>validated_patterns_notebooks</code> Ansible role</li>
+<li>Tasks: Install operator, verify cert-manager, create CRDs</li>
+<li>[ ] Update <code>validated_patterns_validate</code> role</li>
+<li>Add NotebookValidationJob status checks</li>
+<li>Remove Tekton notebook execution tasks</li>
+<li>[ ] Create migration guide (docs/NOTEBOOK-VALIDATION-MIGRATION.md)</li>
+<li>[ ] Update notebooks/README.md with CRD workflow</li>
+<li>[ ] Update tekton/README.md to clarify infrastructure-only scope</li>
+<li>[ ] Create NotebookValidationJob manifests for all 30 notebooks</li>
+<li>[ ] Test operator deployment on development cluster</li>
+<li>[ ] Migrate tier1-simple notebooks first (hello-world)</li>
+<li>[ ] Document rollback procedures</li>
+</ol>
+<h2 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h2>
+<h3 id="direct-dependencies">Direct Dependencies<a class="headerlink" href="#direct-dependencies" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ADR-021</strong>: Tekton Pipeline for Post-Deployment Validation (SUPERSEDED for notebook validation)</li>
+<li>Tekton retains infrastructure validation responsibilities</li>
+<li>Notebook execution moved to operator-based approach</li>
+<li><strong>Relationship</strong>: ADR-029 supersedes notebook validation from ADR-021</li>
+<li><strong>ADR-019</strong>: Validated Patterns Framework Adoption</li>
+<li>Operator deployment via Helm and ArgoCD</li>
+<li>Integration with existing deployment workflows</li>
+<li><strong>Relationship</strong>: Operator deployed as part of Validated Patterns framework</li>
+<li><strong>ADR-026</strong>: Secrets Management Automation</li>
+<li>Integration with External Secrets Operator for Git credentials</li>
+<li><strong>Relationship</strong>: Git credentials managed via External Secrets</li>
+<li><strong>ADR-011</strong>: Self-Healing Workbench Base Image</li>
+<li>Validation pods use same container images as workbenches</li>
+<li><strong>Relationship</strong>: Shared container image strategy</li>
+</ul>
+<h3 id="storage-and-model-management-new-2025-12-01">Storage and Model Management (NEW - 2025-12-01)<a class="headerlink" href="#storage-and-model-management-new-2025-12-01" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ADR-024</strong>: External Secrets for Model Storage</li>
+<li><strong>Relationship</strong>: PVC-based model storage complements S3-based storage</li>
+<li><strong>Integration</strong>: Models can be stored in PVCs during training, then uploaded to S3 for serving</li>
+<li><strong>ADR-025</strong>: OpenShift Object Store for Model Serving</li>
+<li><strong>Relationship</strong>: PVCs provide local storage, S3 provides serving storage</li>
+<li><strong>Workflow</strong>: Train in PVC → Upload to S3 → Serve via KServe</li>
+<li><strong>ADR-035</strong>: Storage Strategy for Self-Healing Platform</li>
+<li><strong>Relationship</strong>: Uses gp3-csi storage class for model PVCs</li>
+<li><strong>Integration</strong>: Consistent storage strategy across platform</li>
+<li><strong>ADR-004</strong>: KServe for Model Serving Infrastructure</li>
+<li><strong>Relationship</strong>: Models trained in notebooks with PVCs deployed to KServe</li>
+<li><strong>Workflow</strong>: Notebook validation → Model storage → KServe deployment</li>
+</ul>
+<h3 id="validation-and-testing">Validation and Testing<a class="headerlink" href="#validation-and-testing" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>ADR-032</strong>: Infrastructure Validation Notebook for User Readiness</li>
+<li><strong>Relationship</strong>: Tier 1 validation notebook executed via this operator</li>
+<li><strong>Integration</strong>: Platform readiness validation before notebook execution</li>
+</ul>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://raw.githubusercontent.com/tosin2013/jupyter-notebook-validator-operator/refs/heads/release-4.18/helm/jupyter-notebook-validator-operator/INSTALLATION.md">Jupyter Notebook Validator Operator - Installation Guide</a></li>
+<li><a href="https://github.com/tosin2013/jupyter-notebook-validator-operator">Jupyter Notebook Validator Operator - GitHub Repository</a></li>
+<li><a href="https://docs.openshift.com/container-platform/latest/security/cert_manager_operator/index.html">OpenShift cert-manager Documentation</a></li>
+<li><a href="https://validatedpatterns.io/">Validated Patterns Framework</a></li>
+</ul>
+<h2 id="approval">Approval<a class="headerlink" href="#approval" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Architecture Team</strong>: Proposed</li>
+<li><strong>ML Engineering</strong>: Pending Review</li>
+<li><strong>DevOps Team</strong>: Pending Review</li>
+<li><strong>Date</strong>: 2025-11-18</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 6, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

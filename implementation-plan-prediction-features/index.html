@@ -1,0 +1,2288 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/implementation-plan-prediction-features/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Implementation Plan: Prediction & Capacity Planning Features - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#implementation-plan-prediction-capacity-planning-features" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Implementation Plan: Prediction & Capacity Planning Features
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#current-state-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current State Analysis
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Current State Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-we-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      What We Have
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#whats-missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      What's Missing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Plan
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-enhanced-prediction-tool-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Enhanced Prediction Tool (MCP Server)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-scaling-impact-analysis-tool-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Scaling Impact Analysis Tool (MCP Server)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-capacity-planning-tool-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Capacity Planning Tool (MCP Server)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-coordination-engine-api-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Coordination Engine API Extensions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 4: Coordination Engine API Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-apiv1predict-time-specific-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. /api/v1/predict - Time-specific prediction
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-apiv1capacitynamespace-namespace-capacity-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. /api/v1/capacity/namespace - Namespace capacity info
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-pod-specific-query-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 5: Pod-Specific Query Enhancements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5: Pod-Specific Query Enhancements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#analyze-anomalies-enhancement" class="md-nav__link">
+    <span class="md-ellipsis">
+      analyze-anomalies Enhancement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-pods-enhancement" class="md-nav__link">
+    <span class="md-ellipsis">
+      list-pods Enhancement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Priority
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Priority">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-quick-wins-1-2-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Quick Wins (1-2 days)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-moderate-complexity-3-4-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Moderate Complexity (3-4 days)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-advanced-features-5-7-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Advanced Features (5-7 days)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Tests
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/implementation-plan-prediction-features.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="implementation-plan-prediction-capacity-planning-features">Implementation Plan: Prediction &amp; Capacity Planning Features<a class="headerlink" href="#implementation-plan-prediction-capacity-planning-features" title="Permanent link">&para;</a></h1>
+<p><strong>Context</strong>: Blog Part 3 promises natural language predictions that current MCP tools don't fully support.</p>
+<p><strong>Goal</strong>: Enable Lightspeed to answer:
+- "What will CPU be at 3 PM today?"
+- "If I scale sample-flask-app to 5 replicas, what happens?"
+- "How many more pods can I run?"</p>
+<hr />
+<h2 id="current-state-analysis">Current State Analysis<a class="headerlink" href="#current-state-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="what-we-have">What We Have<a class="headerlink" href="#what-we-have" title="Permanent link">&para;</a></h3>
+<p><strong>MCP Server Tools</strong> (<code>openshift-cluster-health-mcp</code>):
+- ✅ <code>get-cluster-health</code> - Basic health checks
+- ✅ <code>list-pods</code> - Pod discovery
+- ✅ <code>analyze-anomalies</code> - Historical anomaly detection over time ranges
+  - Accepts: <code>metric</code>, <code>namespace</code>, <code>time_range</code> ("1h", "6h", "24h", "7d")
+  - Returns: Anomaly scores for past events</p>
+<p><strong>Coordination Engine</strong> (<code>openshift-coordination-engine</code>):
+- ✅ REST API integration
+- ✅ KServe model client
+- ✅ Remediation engine</p>
+<p><strong>KServe Models</strong>:
+- ✅ <code>anomaly-detector</code> - Detects anomalies in metrics
+- ✅ <code>predictive-analytics</code> - Expects <code>[hour, day_of_week, cpu_rolling_mean, memory_rolling_mean]</code></p>
+<p><strong>Prometheus Integration</strong>:
+- ✅ Coordination engine queries Prometheus for metrics
+- ✅ 5-minute caching</p>
+<h3 id="whats-missing">What's Missing<a class="headerlink" href="#whats-missing" title="Permanent link">&para;</a></h3>
+<ol>
+<li>❌ <strong>Time-specific predictions</strong> - No "predict at 3 PM" capability</li>
+<li>❌ <strong>Scaling impact analysis</strong> - No "what if I scale to N replicas" tool</li>
+<li>❌ <strong>Capacity planning</strong> - No "how many pods can I run" calculator</li>
+<li>❌ <strong>Pod-specific predictions</strong> - Can't target "sample-flask-app" specifically</li>
+</ol>
+<hr />
+<h2 id="implementation-plan">Implementation Plan<a class="headerlink" href="#implementation-plan" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-enhanced-prediction-tool-mcp-server">Phase 1: Enhanced Prediction Tool (MCP Server)<a class="headerlink" href="#phase-1-enhanced-prediction-tool-mcp-server" title="Permanent link">&para;</a></h3>
+<p><strong>New Tool</strong>: <code>predict-resource-usage</code></p>
+<p><strong>Location</strong>: <code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/predict_resource_usage.go</code></p>
+<p><strong>Functionality</strong>:
+```go
+// Input schema
+{
+  "target_time": "15:00",           // Optional: specific time (HH:MM) - defaults to current time
+  "target_date": "2026-01-12",      // Optional: specific date - defaults to today
+  "namespace": "self-healing-platform",
+  "deployment": "sample-flask-app", // Optional: specific deployment
+  "metric": "cpu_usage",            // cpu_usage, memory_usage, both
+}</p>
+<p>// Output
+{
+  "status": "success",
+  "current_metrics": {
+    "cpu_percent": 68.2,
+    "memory_percent": 74.5,
+    "timestamp": "2026-01-12T14:30:00Z"
+  },
+  "predicted_metrics": {
+    "cpu_percent": 74.5,
+    "memory_percent": 81.2,
+    "target_time": "2026-01-12T15:00:00Z",
+    "confidence": 0.92
+  },
+  "recommendation": "Memory approaching 85% threshold...",
+  "model_used": "predictive-analytics"
+}
+```</p>
+<p><strong>Implementation</strong>:
+1. Parse target time (default to current hour + 1)
+2. Extract hour and day_of_week from target_time
+3. Query Prometheus for cpu_rolling_mean and memory_rolling_mean
+4. Call coordination engine <code>/api/v1/predict</code> endpoint
+5. Format natural language response</p>
+<p><strong>Files to Create</strong>:
+<code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/predict_resource_usage.go
+/home/lab-user/openshift-cluster-health-mcp/internal/tools/predict_resource_usage_test.go</code></p>
+<hr />
+<h3 id="phase-2-scaling-impact-analysis-tool-mcp-server">Phase 2: Scaling Impact Analysis Tool (MCP Server)<a class="headerlink" href="#phase-2-scaling-impact-analysis-tool-mcp-server" title="Permanent link">&para;</a></h3>
+<p><strong>New Tool</strong>: <code>analyze-scaling-impact</code></p>
+<p><strong>Location</strong>: <code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/analyze_scaling_impact.go</code></p>
+<p><strong>Functionality</strong>:
+```go
+// Input schema
+{
+  "deployment": "sample-flask-app",
+  "namespace": "self-healing-platform",
+  "current_replicas": 2,           // Optional: auto-detected if not provided
+  "target_replicas": 5,
+  "predict_at": "17:00"            // Optional: specific time for prediction
+}</p>
+<p>// Output
+{
+  "status": "success",
+  "current_state": {
+    "replicas": 2,
+    "cpu_per_pod": 45,
+    "memory_per_pod": 82,
+    "total_cpu": 90,
+    "total_memory": 164
+  },
+  "projected_state": {
+    "replicas": 5,
+    "cpu_per_pod": 47,              // Slight increase due to overhead
+    "memory_per_pod": 84,
+    "total_cpu": 235,
+    "total_memory": 420
+  },
+  "namespace_impact": {
+    "current_usage": 74.5,
+    "projected_usage": 92.3,
+    "threshold_exceeded": false,
+    "headroom_remaining": 7.7
+  },
+  "recommendation": "WARNING: Memory usage will approach critical threshold...",
+  "alternative_scenarios": [
+    {"replicas": 4, "projected_usage": 86.7},
+    {"replicas": 3, "projected_usage": 80.1}
+  ]
+}
+```</p>
+<p><strong>Implementation</strong>:
+1. Query current deployment state via Kubernetes API
+2. Get current pod resource usage from Prometheus
+3. Calculate linear scaling impact (replicas * avg_per_pod)
+4. Query namespace resource quotas/limits
+5. Calculate projected namespace usage percentage
+6. Generate warnings if approaching thresholds
+7. Optionally call prediction model for time-specific forecast</p>
+<p><strong>Files to Create</strong>:
+<code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/analyze_scaling_impact.go
+/home/lab-user/openshift-cluster-health-mcp/internal/tools/analyze_scaling_impact_test.go</code></p>
+<hr />
+<h3 id="phase-3-capacity-planning-tool-mcp-server">Phase 3: Capacity Planning Tool (MCP Server)<a class="headerlink" href="#phase-3-capacity-planning-tool-mcp-server" title="Permanent link">&para;</a></h3>
+<p><strong>New Tool</strong>: <code>calculate-pod-capacity</code></p>
+<p><strong>Location</strong>: <code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/calculate_pod_capacity.go</code></p>
+<p><strong>Functionality</strong>:
+```go
+// Input schema
+{
+  "namespace": "self-healing-platform",
+  "pod_profile": "medium",         // small, medium, large, custom
+  "custom_resources": {            // Only if pod_profile = "custom"
+    "cpu": "200m",
+    "memory": "128Mi"
+  },
+  "safety_margin": 15              // Percentage of headroom to preserve (default: 15)
+}</p>
+<p>// Output
+{
+  "status": "success",
+  "namespace_quota": {
+    "cpu_limit": "10000m",
+    "memory_limit": "10Gi"
+  },
+  "current_usage": {
+    "cpu": "6820m",
+    "memory": "7648Mi",
+    "cpu_percent": 68.2,
+    "memory_percent": 74.5,
+    "pod_count": 8
+  },
+  "available_capacity": {
+    "cpu": "3180m",
+    "memory": "2720Mi"
+  },
+  "pod_estimates": {
+    "small": {"cpu": "100m", "memory": "64Mi", "max_pods": 12},
+    "medium": {"cpu": "200m", "memory": "128Mi", "max_pods": 6},
+    "large": {"cpu": "400m", "memory": "256Mi", "max_pods": 2}
+  },
+  "recommended_limit": {
+    "pod_profile": "medium",
+    "safe_pod_count": 5,
+    "max_pod_count": 6,
+    "limiting_factor": "memory"
+  },
+  "trending": {
+    "daily_growth": 2.0,
+    "days_until_85_percent": 5
+  },
+  "recommendation": "Can safely run 5 more medium-sized pods. Keep &lt;85% memory for stability."
+}
+```</p>
+<p><strong>Implementation</strong>:
+1. Query namespace ResourceQuota via Kubernetes API
+2. Sum current pod resource usage from Prometheus
+3. Calculate available headroom
+4. For each pod profile, calculate: <code>floor(available_resources / pod_resources)</code>
+5. Apply safety margin (default 85% max usage)
+6. Query Prometheus for usage trend (last 7 days)
+7. Calculate time-to-capacity</p>
+<p><strong>Files to Create</strong>:
+<code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/calculate_pod_capacity.go
+/home/lab-user/openshift-cluster-health-mcp/internal/tools/calculate_pod_capacity_test.go
+/home/lab-user/openshift-cluster-health-mcp/pkg/capacity/calculator.go
+/home/lab-user/openshift-cluster-health-mcp/pkg/capacity/calculator_test.go</code></p>
+<hr />
+<h3 id="phase-4-coordination-engine-api-extensions">Phase 4: Coordination Engine API Extensions<a class="headerlink" href="#phase-4-coordination-engine-api-extensions" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: <code>https://github.com/KubeHeal/openshift-coordination-engine</code></p>
+<p><strong>New Endpoints</strong>:</p>
+<h4 id="1-apiv1predict-time-specific-prediction">1. <code>/api/v1/predict</code> - Time-specific prediction<a class="headerlink" href="#1-apiv1predict-time-specific-prediction" title="Permanent link">&para;</a></h4>
+<p>```go
+// Request
+{
+  "hour": 15,                    // 0-23
+  "day_of_week": 3,              // 0=Mon, 6=Sun
+  "namespace": "self-healing-platform",
+  "model": "predictive-analytics"
+}</p>
+<p>// Response
+{
+  "predictions": {
+    "cpu_percent": 74.5,
+    "memory_percent": 81.2
+  },
+  "current_metrics": {
+    "cpu_rolling_mean": 68.2,
+    "memory_rolling_mean": 74.5
+  },
+  "confidence": 0.92,
+  "model_version": "v1"
+}
+```</p>
+<h4 id="2-apiv1capacitynamespace-namespace-capacity-info">2. <code>/api/v1/capacity/namespace</code> - Namespace capacity info<a class="headerlink" href="#2-apiv1capacitynamespace-namespace-capacity-info" title="Permanent link">&para;</a></h4>
+<p>```go
+// Request
+{
+  "namespace": "self-healing-platform"
+}</p>
+<p>// Response
+{
+  "quota": {
+    "cpu": "10000m",
+    "memory": "10Gi"
+  },
+  "current_usage": {
+    "cpu": "6820m",
+    "memory": "7648Mi"
+  },
+  "available": {
+    "cpu": "3180m",
+    "memory": "2720Mi"
+  },
+  "pod_count": 8,
+  "trend": {
+    "cpu_daily_change_percent": 1.5,
+    "memory_daily_change_percent": 2.0
+  }
+}
+```</p>
+<p><strong>Files to Modify</strong>:
+<code>pkg/api/routes.go - Add new endpoints
+pkg/handlers/prediction.go - Time-specific prediction handler
+pkg/handlers/capacity.go - Capacity analysis handler
+pkg/clients/prometheus.go - Add trend calculation methods</code></p>
+<hr />
+<h3 id="phase-5-pod-specific-query-enhancements">Phase 5: Pod-Specific Query Enhancements<a class="headerlink" href="#phase-5-pod-specific-query-enhancements" title="Permanent link">&para;</a></h3>
+<p><strong>Enhance Existing Tools</strong>:</p>
+<h4 id="analyze-anomalies-enhancement"><code>analyze-anomalies</code> Enhancement<a class="headerlink" href="#analyze-anomalies-enhancement" title="Permanent link">&para;</a></h4>
+<p>Add optional <code>deployment</code> parameter:</p>
+<p>```go
+// Enhanced input schema
+{
+  "metric": "cpu_usage",
+  "namespace": "self-healing-platform",
+  "deployment": "sample-flask-app",  // NEW: filter to specific deployment
+  "time_range": "24h"
+}</p>
+<p>// Prometheus query changes from:
+// avg(rate(container_cpu_usage_seconds_total{namespace="X"}[24h]))</p>
+<p>// To:
+// avg(rate(container_cpu_usage_seconds_total{
+//   namespace="X",
+//   pod=~"sample-flask-app-.*"
+// }[24h]))
+```</p>
+<h4 id="list-pods-enhancement"><code>list-pods</code> Enhancement<a class="headerlink" href="#list-pods-enhancement" title="Permanent link">&para;</a></h4>
+<p>Already supports label selectors, document it better for deployment filtering.</p>
+<p><strong>Files to Modify</strong>:
+<code>/home/lab-user/openshift-cluster-health-mcp/internal/tools/analyze_anomalies.go
+/home/lab-user/openshift-cluster-health-mcp/pkg/clients/kserve.go</code></p>
+<hr />
+<h2 id="implementation-priority">Implementation Priority<a class="headerlink" href="#implementation-priority" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-quick-wins-1-2-days">Phase 1: Quick Wins (1-2 days)<a class="headerlink" href="#phase-1-quick-wins-1-2-days" title="Permanent link">&para;</a></h3>
+<ol>
+<li>✅ <strong>Enhance <code>analyze-anomalies</code></strong> with deployment filtering</li>
+<li>✅ <strong>Create <code>predict-resource-usage</code></strong> tool</li>
+<li>Reuse existing Prometheus integration</li>
+<li>Call coordination engine with time parameters</li>
+</ol>
+<h3 id="phase-2-moderate-complexity-3-4-days">Phase 2: Moderate Complexity (3-4 days)<a class="headerlink" href="#phase-2-moderate-complexity-3-4-days" title="Permanent link">&para;</a></h3>
+<ol>
+<li>✅ <strong>Create <code>calculate-pod-capacity</code></strong> tool</li>
+<li>Query namespace quotas</li>
+<li>Calculate pod capacity estimates</li>
+<li>Add trending analysis</li>
+</ol>
+<h3 id="phase-3-advanced-features-5-7-days">Phase 3: Advanced Features (5-7 days)<a class="headerlink" href="#phase-3-advanced-features-5-7-days" title="Permanent link">&para;</a></h3>
+<ol>
+<li>✅ <strong>Create <code>analyze-scaling-impact</code></strong> tool</li>
+<li>Deployment state detection</li>
+<li>Impact calculation</li>
+<li>
+<p>Alternative scenario generation</p>
+</li>
+<li>
+<p>✅ <strong>Coordination Engine Extensions</strong></p>
+</li>
+<li>Add <code>/api/v1/predict</code> endpoint</li>
+<li>Add <code>/api/v1/capacity/namespace</code> endpoint</li>
+<li>Enhance Prometheus client with trending</li>
+</ol>
+<hr />
+<h2 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h2>
+<h3 id="unit-tests">Unit Tests<a class="headerlink" href="#unit-tests" title="Permanent link">&para;</a></h3>
+<p><code>go
+// Example test structure
+func TestPredictResourceUsage(t *testing.T) {
+  tests := []struct {
+    name           string
+    input          map[string]interface{}
+    mockPrometheus map[string]float64
+    mockKServe     []float64
+    want           interface{}
+    wantErr        bool
+  }{
+    {
+      name: "predict at 3 PM today",
+      input: map[string]interface{}{
+        "target_time": "15:00",
+        "namespace":   "self-healing-platform",
+        "metric":      "cpu_usage",
+      },
+      mockPrometheus: map[string]float64{
+        "cpu_rolling_mean":    68.2,
+        "memory_rolling_mean": 74.5,
+      },
+      mockKServe: []float64{0.745, 0.812},
+      want: map[string]interface{}{
+        "predicted_metrics": map[string]interface{}{
+          "cpu_percent":    74.5,
+          "memory_percent": 81.2,
+        },
+      },
+    },
+  }
+}</code></p>
+<h3 id="integration-tests">Integration Tests<a class="headerlink" href="#integration-tests" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="test-predict-resource-usage-tool">Test predict-resource-usage tool<a class="headerlink" href="#test-predict-resource-usage-tool" title="Permanent link">&para;</a></h1>
+<p>curl -X POST http://mcp-server:8080/mcp \
+  -d '{
+    "tool": "predict-resource-usage",
+    "arguments": {
+      "target_time": "15:00",
+      "namespace": "self-healing-platform"
+    }
+  }'</p>
+<h1 id="test-scaling-impact-analysis">Test scaling impact analysis<a class="headerlink" href="#test-scaling-impact-analysis" title="Permanent link">&para;</a></h1>
+<p>curl -X POST http://mcp-server:8080/mcp \
+  -d '{
+    "tool": "analyze-scaling-impact",
+    "arguments": {
+      "deployment": "sample-flask-app",
+      "target_replicas": 5
+    }
+  }'</p>
+<h1 id="test-capacity-calculation">Test capacity calculation<a class="headerlink" href="#test-capacity-calculation" title="Permanent link">&para;</a></h1>
+<p>curl -X POST http://mcp-server:8080/mcp \
+  -d '{
+    "tool": "calculate-pod-capacity",
+    "arguments": {
+      "namespace": "self-healing-platform",
+      "pod_profile": "medium"
+    }
+  }'
+```</p>
+<h3 id="end-to-end-tests-with-lightspeed">End-to-End Tests with Lightspeed<a class="headerlink" href="#end-to-end-tests-with-lightspeed" title="Permanent link">&para;</a></h3>
+<p>```
+User: "What will CPU be at 3 PM today?"
+Expected: Lightspeed calls predict-resource-usage, returns forecast</p>
+<p>User: "If I scale sample-flask-app to 5 replicas, what happens?"
+Expected: Lightspeed calls analyze-scaling-impact, returns impact analysis</p>
+<p>User: "How many more pods can I run?"
+Expected: Lightspeed calls calculate-pod-capacity, returns capacity estimate
+```</p>
+<hr />
+<h2 id="rollout-plan">Rollout Plan<a class="headerlink" href="#rollout-plan" title="Permanent link">&para;</a></h2>
+<h3 id="step-1-mcp-server-changes">Step 1: MCP Server Changes<a class="headerlink" href="#step-1-mcp-server-changes" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Create new tool files in <code>openshift-cluster-health-mcp</code></li>
+<li>Add unit tests</li>
+<li>Update tool registration in server initialization</li>
+<li>Build and test locally</li>
+<li>Create PR, merge</li>
+</ol>
+<h3 id="step-2-coordination-engine-changes">Step 2: Coordination Engine Changes<a class="headerlink" href="#step-2-coordination-engine-changes" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Clone <code>openshift-coordination-engine</code> repo</li>
+<li>Add new API endpoints</li>
+<li>Enhance Prometheus client</li>
+<li>Add unit/integration tests</li>
+<li>Build container image</li>
+<li>Push to quay.io</li>
+<li>Create PR, merge</li>
+</ol>
+<h3 id="step-3-deployment">Step 3: Deployment<a class="headerlink" href="#step-3-deployment" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Update MCP server Helm chart with new tools</li>
+<li>Update coordination engine image tag</li>
+<li>Deploy to dev cluster</li>
+<li>Test with Lightspeed</li>
+<li>Deploy to production</li>
+</ol>
+<h3 id="step-4-documentation">Step 4: Documentation<a class="headerlink" href="#step-4-documentation" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Update blog with accurate examples</li>
+<li>Document new MCP tools in README</li>
+<li>Add API documentation for coordination engine</li>
+<li>Create troubleshooting guide</li>
+</ol>
+<hr />
+<h2 id="alternative-interim-solution-low-code">Alternative: Interim Solution (Low Code)<a class="headerlink" href="#alternative-interim-solution-low-code" title="Permanent link">&para;</a></h2>
+<p>If we want the blog to work <strong>immediately</strong> without waiting for full implementation:</p>
+<h3 id="option-a-simplify-blog-part-3">Option A: Simplify Blog Part 3<a class="headerlink" href="#option-a-simplify-blog-part-3" title="Permanent link">&para;</a></h3>
+<p>Update blog to show what <strong>currently works</strong>:</p>
+<p>```markdown</p>
+<h2 id="part-3-analyzing-historical-metrics">Part 3: Analyzing Historical Metrics<a class="headerlink" href="#part-3-analyzing-historical-metrics" title="Permanent link">&para;</a></h2>
+<p><strong>You type:</strong>
+<code>Analyze CPU usage in self-healing-platform over the last 24 hours</code></p>
+<p><strong>Lightspeed responds:</strong>
+<code>ML Analysis (anomaly-detector):
+- Time range: Last 24 hours
+- Average CPU: 68.2%
+- Peak CPU: 87.3% (at 15:23 UTC)
+- Anomalies detected: 2 (scores: 0.82, 0.91)
+- Recommendation: Monitor during afternoon peak hours</code></p>
+<h3 id="option-b-rely-on-lightspeeds-intelligence">Option B: Rely on Lightspeed's Intelligence<a class="headerlink" href="#option-b-rely-on-lightspeeds-intelligence" title="Permanent link">&para;</a></h3>
+<p>Add a note that Lightspeed <strong>translates</strong> natural language to tool calls:</p>
+<p><code>markdown
+**Note**: When you ask "What will CPU be at 3 PM?", Lightspeed's AI
+understands your intent and translates it to the appropriate tool
+calls (analyze-anomalies, list-pods, etc.) to provide the best
+possible answer based on historical patterns.</code></p>
+<p>This is <strong>partially true</strong> - Lightspeed will try to answer, but won't have time-specific predictions without the tools.</p>
+<hr />
+<h2 id="recommendation">Recommendation<a class="headerlink" href="#recommendation" title="Permanent link">&para;</a></h2>
+<p><strong>Short-term</strong> (this week):
+- Update blog Part 3 to show <strong>historical analysis</strong> (what works now)
+- Add note about future prediction capabilities
+- Keep the "vision" examples in a "Coming Soon" section</p>
+<p><strong>Medium-term</strong> (2-3 weeks):
+- Implement Phase 1 (predict-resource-usage tool)
+- Implement Phase 2 (calculate-pod-capacity tool)
+- Update blog to reflect new capabilities</p>
+<p><strong>Long-term</strong> (1-2 months):
+- Implement Phase 3 (analyze-scaling-impact tool)
+- Full coordination engine integration
+- Production-ready prediction features</p>
+<hr />
+<h2 id="files-to-createmodify-summary">Files to Create/Modify Summary<a class="headerlink" href="#files-to-createmodify-summary" title="Permanent link">&para;</a></h2>
+<h3 id="mcp-server-repository-openshift-cluster-health-mcp">MCP Server Repository (<code>openshift-cluster-health-mcp</code>)<a class="headerlink" href="#mcp-server-repository-openshift-cluster-health-mcp" title="Permanent link">&para;</a></h3>
+<p><strong>New files</strong>:
+- <code>internal/tools/predict_resource_usage.go</code>
+- <code>internal/tools/predict_resource_usage_test.go</code>
+- <code>internal/tools/analyze_scaling_impact.go</code>
+- <code>internal/tools/analyze_scaling_impact_test.go</code>
+- <code>internal/tools/calculate_pod_capacity.go</code>
+- <code>internal/tools/calculate_pod_capacity_test.go</code>
+- <code>pkg/capacity/calculator.go</code>
+- <code>pkg/capacity/calculator_test.go</code></p>
+<p><strong>Modified files</strong>:
+- <code>internal/tools/analyze_anomalies.go</code> (add deployment filter)
+- <code>internal/server/server.go</code> (register new tools)
+- <code>README.md</code> (document new tools)</p>
+<h3 id="coordination-engine-repository-openshift-coordination-engine">Coordination Engine Repository (<code>openshift-coordination-engine</code>)<a class="headerlink" href="#coordination-engine-repository-openshift-coordination-engine" title="Permanent link">&para;</a></h3>
+<p><strong>New files</strong>:
+- <code>pkg/handlers/prediction.go</code>
+- <code>pkg/handlers/capacity.go</code>
+- <code>pkg/capacity/analyzer.go</code></p>
+<p><strong>Modified files</strong>:
+- <code>pkg/api/routes.go</code> (add new endpoints)
+- <code>pkg/clients/prometheus.go</code> (add trending methods)
+- <code>README.md</code> (document new APIs)</p>
+<h3 id="platform-repository-openshift-aiops-platform">Platform Repository (<code>openshift-aiops-platform</code>)<a class="headerlink" href="#platform-repository-openshift-aiops-platform" title="Permanent link">&para;</a></h3>
+<p><strong>Modified files</strong>:
+- <code>docs/blog/16-end-to-end-self-healing-with-lightspeed.md</code> (update Part 3)
+- <code>charts/hub/values.yaml</code> (new MCP server image tag)
+- <code>charts/hub/templates/coordination-engine-deployment.yaml</code> (new image tag)</p>
+<hr />
+<p><strong>Next Steps</strong>: Which approach do you prefer?
+1. Implement the full solution (2-3 weeks)
+2. Update blog to reflect current capabilities
+3. Hybrid: Implement Phase 1 quickly (predict-resource-usage) + update blog</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 2, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 12, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

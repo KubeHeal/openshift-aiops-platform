@@ -1,0 +1,1933 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/MODEL_DEPLOYMENT_CHECKLIST/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Model Deployment Checklist - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#model-deployment-checklist" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Model Deployment Checklist
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start-adding-a-new-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Start: Adding a New Model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-deployment-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detailed Deployment Steps
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Detailed Deployment Steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-train-and-save-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Train and Save Model
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/MODEL_DEPLOYMENT_CHECKLIST.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="model-deployment-checklist">Model Deployment Checklist<a class="headerlink" href="#model-deployment-checklist" title="Permanent link">&para;</a></h1>
+<p>This checklist ensures ML models are deployed correctly to the self-healing platform and prevents common configuration errors.</p>
+<h2 id="quick-start-adding-a-new-model">Quick Start: Adding a New Model<a class="headerlink" href="#quick-start-adding-a-new-model" title="Permanent link">&para;</a></h2>
+<p>To add a new model to the platform, simply add it to the <code>models:</code> array in <code>charts/hub/values.yaml</code>:</p>
+<p><code>yaml
+models:
+  - name: anomaly-detector
+    cpu: "500m"
+    memory: "1Gi"
+    cpuLimit: "2"
+    memoryLimit: "4Gi"
+    syncWave: "2"
+  - name: predictive-analytics
+    cpu: "1"
+    memory: "2Gi"
+    cpuLimit: "2"
+    memoryLimit: "4Gi"
+    syncWave: "2"
+  # Add your new model here:
+  - name: your-model-name
+    cpu: "1"
+    memory: "2Gi"
+    cpuLimit: "2"
+    memoryLimit: "4Gi"
+    syncWave: "2"</code></p>
+<p>That's it! The Helm chart will automatically:
+- ✅ Create an InferenceService with correct <code>--model_name</code> parameter
+- ✅ Configure proper resource limits
+- ✅ Set up ArgoCD sync wave ordering
+- ✅ Mount the model storage PVC</p>
+<h2 id="detailed-deployment-steps">Detailed Deployment Steps<a class="headerlink" href="#detailed-deployment-steps" title="Permanent link">&para;</a></h2>
+<h3 id="1-train-and-save-model">1. Train and Save Model<a class="headerlink" href="#1-train-and-save-model" title="Permanent link">&para;</a></h3>
+<p><strong>Notebook Requirements:</strong>
+- [ ] Model is saved to <code>/mnt/models/{model-name}/model.pkl</code>
+- [ ] Model name in directory path <strong>exactly matches</strong> the name in values.yaml
+- [ ] Model is in KServe-compatible format (pickle for sklearn)
+- [ ] Model file size is reasonable (&lt; 1GB recommended)</p>
+<p><strong>Example (in Jupyter notebook):</strong>
+```python
+import joblib
+import os</p>
+<h1 id="model-name-must-match-valuesyaml-entry">Model name MUST match values.yaml entry<a class="headerlink" href="#model-name-must-match-valuesyaml-entry" title="Permanent link">&para;</a></h1>
+<p>model_name = "your-model-name"
+model_dir = f"/mnt/models/{model_name}"</p>
+<h1 id="create-directory-if-needed">Create directory if needed<a class="headerlink" href="#create-directory-if-needed" title="Permanent link">&para;</a></h1>
+<p>os.makedirs(model_dir, exist_ok=True)</p>
+<h1 id="save-model">Save model<a class="headerlink" href="#save-model" title="Permanent link">&para;</a></h1>
+<p>joblib.dump(model, f"{model_dir}/model.pkl")</p>
+<h1 id="verify-file-exists-and-size">Verify file exists and size<a class="headerlink" href="#verify-file-exists-and-size" title="Permanent link">&para;</a></h1>
+<p>import subprocess
+result = subprocess.run(['ls', '-lh', f'{model_dir}/model.pkl'],
+                       capture_output=True, text=True)
+print(result.stdout)
+```</p>
+<h3 id="2-configure-model-in-valuesyaml">2. Configure Model in values.yaml<a class="headerlink" href="#2-configure-model-in-valuesyaml" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>charts/hub/values.yaml</code></p>
+<ul>
+<li>[ ] Add model entry to <code>models:</code> array</li>
+<li>[ ] Set appropriate CPU/memory requests based on model size</li>
+<li>[ ] Configure CPU/memory limits (usually 2x requests)</li>
+<li>[ ] Set sync wave (usually "2" for models that depend on storage)</li>
+</ul>
+<p><strong>Resource Sizing Guidelines:</strong>
+- <strong>Small models</strong> (&lt; 50MB): <code>cpu: "500m"</code>, <code>memory: "1Gi"</code>
+- <strong>Medium models</strong> (50MB-500MB): <code>cpu: "1"</code>, <code>memory: "2Gi"</code>
+- <strong>Large models</strong> (&gt; 500MB): <code>cpu: "2"</code>, <code>memory: "4Gi"</code></p>
+<h3 id="3-configure-model-validation">3. Configure Model Validation<a class="headerlink" href="#3-configure-model-validation" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>k8s/operators/jupyter-notebook-validator/notebooks/predictive-analytics-validation.yaml</code></p>
+<p>Create a NotebookValidationJob for your model:</p>
+<p><code>yaml
+apiVersion: mlops.mlops.dev/v1alpha1
+kind: NotebookValidationJob
+metadata:
+  name: your-model-name-validation
+  namespace: self-healing-platform
+spec:
+  notebookPath: notebooks/your-model-name.ipynb
+  sourceURL: https://github.com/your-org/your-repo.git
+  sourceBranch: main
+  modelValidation:
+    enabled: true
+    inferenceServiceName: your-model-name  # MUST match model name</code></p>
+<ul>
+<li>[ ] <code>notebookPath</code> points to correct notebook</li>
+<li>[ ] <code>inferenceServiceName</code> <strong>exactly matches</strong> model name in values.yaml</li>
+<li>[ ] <code>modelValidation.enabled: true</code> is set</li>
+</ul>
+<h3 id="4-commit-and-deploy">4. Commit and Deploy<a class="headerlink" href="#4-commit-and-deploy" title="Permanent link">&para;</a></h3>
+<p>```bash
+cd /home/lab-user/openshift-aiops-platform</p>
+<h1 id="review-changes">Review changes<a class="headerlink" href="#review-changes" title="Permanent link">&para;</a></h1>
+<p>git status
+git diff</p>
+<h1 id="commit-changes">Commit changes<a class="headerlink" href="#commit-changes" title="Permanent link">&para;</a></h1>
+<p>git add charts/hub/values.yaml
+git add k8s/operators/jupyter-notebook-validator/notebooks/
+git commit -m "feat: Add your-model-name model serving</p>
+<ul>
+<li>Add your-model-name to models configuration</li>
+<li>Configure resources: 1 CPU, 2Gi memory</li>
+<li>Add NotebookValidationJob for model validation"</li>
+</ul>
+<h1 id="push-to-repository">Push to repository<a class="headerlink" href="#push-to-repository" title="Permanent link">&para;</a></h1>
+<p>git push</p>
+<h1 id="sync-argocd-application">Sync ArgoCD application<a class="headerlink" href="#sync-argocd-application" title="Permanent link">&para;</a></h1>
+<p>argocd app sync self-healing-platform --prune
+```</p>
+<h3 id="5-verify-deployment">5. Verify Deployment<a class="headerlink" href="#5-verify-deployment" title="Permanent link">&para;</a></h3>
+<p><strong>Wait for pods to start:</strong>
+```bash</p>
+<h1 id="watch-pod-creation">Watch pod creation<a class="headerlink" href="#watch-pod-creation" title="Permanent link">&para;</a></h1>
+<p>oc get pods -n self-healing-platform -l serving.kserve.io/inferenceservice=your-model-name -w</p>
+<h1 id="wait-for-ready-status-timeout-after-5-minutes">Wait for Ready status (timeout after 5 minutes)<a class="headerlink" href="#wait-for-ready-status-timeout-after-5-minutes" title="Permanent link">&para;</a></h1>
+<p>oc wait --for=condition=Ready \
+  pod -l serving.kserve.io/inferenceservice=your-model-name \
+  -n self-healing-platform --timeout=300s
+```</p>
+<p><strong>Check model registration:</strong>
+```bash</p>
+<h1 id="get-predictor-pod-ip">Get predictor pod IP<a class="headerlink" href="#get-predictor-pod-ip" title="Permanent link">&para;</a></h1>
+<p>PREDICTOR_IP=$(oc get pod \
+  -l serving.kserve.io/inferenceservice=your-model-name \
+  -n self-healing-platform \
+  -o jsonpath='{.items[0].status.podIP}')</p>
+<h1 id="check-model-is-registered-with-correct-name">Check model is registered with CORRECT name<a class="headerlink" href="#check-model-is-registered-with-correct-name" title="Permanent link">&para;</a></h1>
+<p>curl http://${PREDICTOR_IP}:8080/v1/models</p>
+<h1 id="expected-output-modelsyour-model-name">Expected output: {"models":["your-model-name"]}<a class="headerlink" href="#expected-output-modelsyour-model-name" title="Permanent link">&para;</a></h1>
+<h1 id="wrong-modelsmodel-means-model_name-is-missing">❌ WRONG: {"models":["model"]} - means --model_name is missing!<a class="headerlink" href="#wrong-modelsmodel-means-model_name-is-missing" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<p><strong>Verify model metadata:</strong>
+```bash
+curl http://${PREDICTOR_IP}:8080/v1/models/your-model-name</p>
+<h1 id="expected-output">Expected output:<a class="headerlink" href="#expected-output" title="Permanent link">&para;</a></h1>
+<h1 id="_1">{<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h1 id="name-your-model-name">"name": "your-model-name",<a class="headerlink" href="#name-your-model-name" title="Permanent link">&para;</a></h1>
+<h1 id="ready-true">"ready": true,<a class="headerlink" href="#ready-true" title="Permanent link">&para;</a></h1>
+<h1 id="versions-1">"versions": ["1"]<a class="headerlink" href="#versions-1" title="Permanent link">&para;</a></h1>
+<h1 id="_2">}<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<p><strong>Test prediction endpoint:</strong>
+```bash</p>
+<h1 id="make-test-prediction-adjust-payload-for-your-model">Make test prediction (adjust payload for your model)<a class="headerlink" href="#make-test-prediction-adjust-payload-for-your-model" title="Permanent link">&para;</a></h1>
+<p>curl -X POST http://${PREDICTOR_IP}:8080/v1/models/your-model-name:predict \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "instances": [
+      [0.5, 0.6, 0.4, 100, 80]
+    ]
+  }'</p>
+<h1 id="expected-json-response-with-predictions">Expected: JSON response with predictions<a class="headerlink" href="#expected-json-response-with-predictions" title="Permanent link">&para;</a></h1>
+<h1 id="status-code-should-be-200">Status code should be 200<a class="headerlink" href="#status-code-should-be-200" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<p><strong>Check pod logs:</strong>
+```bash</p>
+<h1 id="check-for-successful-model-loading">Check for successful model loading<a class="headerlink" href="#check-for-successful-model-loading" title="Permanent link">&para;</a></h1>
+<p>oc logs -n self-healing-platform \
+  -l serving.kserve.io/inferenceservice=your-model-name \
+  --tail=50 | grep -i "model|load|error"</p>
+<h1 id="good-model-your-model-name-loaded-successfully">✅ GOOD: "Model your-model-name loaded successfully"<a class="headerlink" href="#good-model-your-model-name-loaded-successfully" title="Permanent link">&para;</a></h1>
+<h1 id="bad-failed-to-locate-model-file-for-model-model">❌ BAD: "failed to locate model file for model model"<a class="headerlink" href="#bad-failed-to-locate-model-file-for-model-model" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h3 id="6-integration-testing">6. Integration Testing<a class="headerlink" href="#6-integration-testing" title="Permanent link">&para;</a></h3>
+<p><strong>Test coordination engine integration:</strong>
+```bash</p>
+<h1 id="get-coordination-engine-pod">Get coordination engine pod<a class="headerlink" href="#get-coordination-engine-pod" title="Permanent link">&para;</a></h1>
+<p>COORD_POD=$(oc get pod \
+  -l app.kubernetes.io/component=coordination-engine \
+  -n self-healing-platform \
+  -o jsonpath='{.items[0].metadata.name}')</p>
+<h1 id="verify-coordination-engine-can-reach-model">Verify coordination engine can reach model<a class="headerlink" href="#verify-coordination-engine-can-reach-model" title="Permanent link">&para;</a></h1>
+<p>oc exec -n self-healing-platform $COORD_POD -- \
+  curl -s http://your-model-name-predictor:8080/v1/models</p>
+<h1 id="expected-modelsyour-model-name">Expected: {"models":["your-model-name"]}<a class="headerlink" href="#expected-modelsyour-model-name" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<p><strong>Test MCP server integration:</strong>
+```bash</p>
+<h1 id="check-mcp-server-can-query-model">Check MCP server can query model<a class="headerlink" href="#check-mcp-server-can-query-model" title="Permanent link">&para;</a></h1>
+<h1 id="this-should-be-tested-via-openshift-lightspeed-or-mcp-client">This should be tested via OpenShift Lightspeed or MCP client<a class="headerlink" href="#this-should-be-tested-via-openshift-lightspeed-or-mcp-client" title="Permanent link">&para;</a></h1>
+<h1 id="mcp-tools-should-return-predictions-without-errors">MCP tools should return predictions without errors<a class="headerlink" href="#mcp-tools-should-return-predictions-without-errors" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h2 id="common-mistakes-to-avoid">Common Mistakes to Avoid<a class="headerlink" href="#common-mistakes-to-avoid" title="Permanent link">&para;</a></h2>
+<h3 id="mistake-1-missing-model_name-parameter">❌ MISTAKE #1: Missing --model_name Parameter<a class="headerlink" href="#mistake-1-missing-model_name-parameter" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong> KServe registers model as <code>"model"</code> instead of actual name
+```bash
+curl http://${PREDICTOR_IP}:8080/v1/models</p>
+<h1 id="returns-modelsmodel-wrong">Returns: {"models":["model"]}  # ❌ WRONG!<a class="headerlink" href="#returns-modelsmodel-wrong" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<p><strong>Solution:</strong>
+- This is now <strong>automatically handled</strong> by the Helm template
+- The <code>--model_name={{ .name }}</code> parameter is set automatically from values.yaml
+- If you see this error, ensure your model is in the <code>models:</code> array in values.yaml</p>
+<h3 id="mistake-2-model-name-mismatch">❌ MISTAKE #2: Model Name Mismatch<a class="headerlink" href="#mistake-2-model-name-mismatch" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong> Model not found, 404 errors
+<code>Error: Model with name your-model-name does not exist</code></p>
+<p><strong>Solution:</strong> Ensure consistency across ALL locations:
+- ✅ Directory path: <code>/mnt/models/your-model-name/model.pkl</code>
+- ✅ values.yaml: <code>models[].name: "your-model-name"</code>
+- ✅ NotebookValidationJob: <code>inferenceServiceName: "your-model-name"</code></p>
+<h3 id="mistake-3-model-file-not-found">❌ MISTAKE #3: Model File Not Found<a class="headerlink" href="#mistake-3-model-file-not-found" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong> Pod logs show "failed to locate model file"
+<code>failed to locate model file for model your-model-name under dir /mnt/models/your-model-name</code></p>
+<p><strong>Solution:</strong>
+1. Verify model file exists:
+   <code>bash
+   oc exec -n self-healing-platform \
+     deployment/your-model-name-predictor -- \
+     ls -lh /mnt/models/your-model-name/model.pkl</code>
+2. Ensure notebook saved model to correct path
+3. Check PVC is mounted correctly</p>
+<h3 id="mistake-4-insufficient-resources">❌ MISTAKE #4: Insufficient Resources<a class="headerlink" href="#mistake-4-insufficient-resources" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong> Pod OOMKilled or CPU throttling
+<code>Last State: Terminated
+Reason: OOMKilled</code></p>
+<p><strong>Solution:</strong>
+- Increase memory limits in values.yaml
+- Monitor actual usage: <code>oc adm top pod -l serving.kserve.io/inferenceservice=your-model-name</code>
+- Adjust resources based on model size and request volume</p>
+<h3 id="mistake-5-not-waiting-for-model-to-load">❌ MISTAKE #5: Not Waiting for Model to Load<a class="headerlink" href="#mistake-5-not-waiting-for-model-to-load" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong> Early requests fail, later requests succeed</p>
+<p><strong>Solution:</strong>
+- KServe models can take 30-60 seconds to load on first start
+- Use the <code>oc wait --for=condition=Ready</code> command before testing
+- NotebookValidationJob should wait for InferenceService Ready status</p>
+<h3 id="mistake-6-skipping-validation">❌ MISTAKE #6: Skipping Validation<a class="headerlink" href="#mistake-6-skipping-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong> Errors discovered only when MCP server queries model</p>
+<p><strong>Solution:</strong>
+- Always create a NotebookValidationJob with <code>modelValidation.enabled: true</code>
+- Test prediction endpoints before declaring model ready
+- Add integration tests in the validation notebook</p>
+<h2 id="troubleshooting-guide">Troubleshooting Guide<a class="headerlink" href="#troubleshooting-guide" title="Permanent link">&para;</a></h2>
+<h3 id="model-not-registering">Model Not Registering<a class="headerlink" href="#model-not-registering" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="check-inferenceservice-status">Check InferenceService status<a class="headerlink" href="#check-inferenceservice-status" title="Permanent link">&para;</a></h1>
+<p>oc get inferenceservice your-model-name -n self-healing-platform</p>
+<h1 id="check-predictor-deployment">Check predictor deployment<a class="headerlink" href="#check-predictor-deployment" title="Permanent link">&para;</a></h1>
+<p>oc get deployment your-model-name-predictor -n self-healing-platform</p>
+<h1 id="check-pod-status">Check pod status<a class="headerlink" href="#check-pod-status" title="Permanent link">&para;</a></h1>
+<p>oc get pods -l serving.kserve.io/inferenceservice=your-model-name -n self-healing-platform</p>
+<h1 id="view-detailed-events">View detailed events<a class="headerlink" href="#view-detailed-events" title="Permanent link">&para;</a></h1>
+<p>oc describe inferenceservice your-model-name -n self-healing-platform
+```</p>
+<h3 id="prediction-errors">Prediction Errors<a class="headerlink" href="#prediction-errors" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="check-pod-logs-for-errors">Check pod logs for errors<a class="headerlink" href="#check-pod-logs-for-errors" title="Permanent link">&para;</a></h1>
+<p>oc logs -n self-healing-platform \
+  -l serving.kserve.io/inferenceservice=your-model-name \
+  --tail=100</p>
+<h1 id="test-with-verbose-curl">Test with verbose curl<a class="headerlink" href="#test-with-verbose-curl" title="Permanent link">&para;</a></h1>
+<p>curl -v -X POST http://${PREDICTOR_IP}:8080/v1/models/your-model-name:predict \
+  -H 'Content-Type: application/json' \
+  -d '{"instances": [[1, 2, 3]]}'</p>
+<h1 id="check-if-model-is-ready">Check if model is ready<a class="headerlink" href="#check-if-model-is-ready" title="Permanent link">&para;</a></h1>
+<p>curl http://${PREDICTOR_IP}:8080/v1/models/your-model-name
+```</p>
+<h3 id="mcp-server-cant-reach-model">MCP Server Can't Reach Model<a class="headerlink" href="#mcp-server-cant-reach-model" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="check-coordination-engine-logs">Check coordination engine logs<a class="headerlink" href="#check-coordination-engine-logs" title="Permanent link">&para;</a></h1>
+<p>oc logs -n self-healing-platform \
+  deployment/coordination-engine \
+  --tail=100 | grep -i "model|predict|error"</p>
+<h1 id="check-mcp-server-logs">Check MCP server logs<a class="headerlink" href="#check-mcp-server-logs" title="Permanent link">&para;</a></h1>
+<p>oc logs -n self-healing-platform \
+  deployment/mcp-server \
+  --tail=100 | grep -i "model|predict|error"</p>
+<h1 id="test-dns-resolution">Test DNS resolution<a class="headerlink" href="#test-dns-resolution" title="Permanent link">&para;</a></h1>
+<p>oc exec -n self-healing-platform deployment/coordination-engine -- \
+  nslookup your-model-name-predictor.self-healing-platform.svc.cluster.local
+```</p>
+<h2 id="success-criteria-checklist">Success Criteria Checklist<a class="headerlink" href="#success-criteria-checklist" title="Permanent link">&para;</a></h2>
+<p>Before marking a model deployment as complete, verify:</p>
+<ul>
+<li>[ ] ✅ KServe pod logs show model loaded with <strong>correct name</strong></li>
+<li>[ ] ✅ <code>curl /v1/models</code> returns <code>{"models":["your-model-name"]}</code></li>
+<li>[ ] ✅ <code>curl /v1/models/your-model-name</code> returns <code>"ready": true</code></li>
+<li>[ ] ✅ <code>curl /v1/models/your-model-name:predict</code> returns predictions (200 status)</li>
+<li>[ ] ✅ NotebookValidationJob status is Success</li>
+<li>[ ] ✅ MCP server tools work without "model does not exist" errors</li>
+<li>[ ] ✅ Coordination engine successfully calls prediction endpoints</li>
+<li>[ ] ✅ No errors in coordination engine logs</li>
+<li>[ ] ✅ No errors in MCP server logs</li>
+<li>[ ] ✅ Model responds to test predictions within acceptable latency</li>
+</ul>
+<h2 id="historical-context">Historical Context<a class="headerlink" href="#historical-context" title="Permanent link">&para;</a></h2>
+<h3 id="why-this-checklist-exists">Why This Checklist Exists<a class="headerlink" href="#why-this-checklist-exists" title="Permanent link">&para;</a></h3>
+<p><strong>Issue #13 - KServe Model Registration Fix (2026-01-27)</strong></p>
+<p><strong>Problem:</strong> MCP server was receiving errors when trying to use model prediction tools:
+<code>Error: Model with name model does not exist.</code></p>
+<p><strong>Root Cause:</strong> KServe's sklearnserver defaults to model name <code>"model"</code> when no <code>--model_name</code> parameter is specified. Our InferenceService configurations were missing this parameter.</p>
+<p><strong>Impact:</strong>
+- ❌ Models registered as <code>"model"</code> instead of actual names
+- ❌ API calls to <code>/v1/models/predictive-analytics:predict</code> returned 404
+- ❌ Coordination engine got 503 errors when calling models
+- ❌ MCP server tools completely non-functional</p>
+<p><strong>Solution Implemented:</strong>
+1. <strong>Immediate Fix:</strong> Added <code>--model_name</code> parameter to InferenceServices
+2. <strong>Long-term Fix:</strong> Refactored to values.yaml driven configuration
+3. <strong>Prevention:</strong> Created this checklist and templated model deployment</p>
+<p><strong>Key Lesson:</strong> Always explicitly set <code>--model_name</code> parameter in KServe InferenceServices. The default value of <code>"model"</code> is rarely what you want.</p>
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://github.com/kserve/kserve/tree/master/python/sklearnserver">KServe SKLearn Server Documentation</a></li>
+<li><a href="https://kserve.github.io/website/0.11/reference/api/">InferenceService API Reference</a></li>
+<li><a href="../k8s/operators/jupyter-notebook-validator/README.md">Jupyter Notebook Validator Operator</a></li>
+<li><a href="https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/">ArgoCD Sync Waves</a></li>
+</ul>
+<h2 id="quick-reference-add-a-model-in-3-steps">Quick Reference: Add a Model in 3 Steps<a class="headerlink" href="#quick-reference-add-a-model-in-3-steps" title="Permanent link">&para;</a></h2>
+<p>```bash</p>
+<h1 id="1-add-to-valuesyaml-models-array">1. Add to values.yaml models array<a class="headerlink" href="#1-add-to-valuesyaml-models-array" title="Permanent link">&para;</a></h1>
+<p>models:
+  - name: new-model
+    cpu: "1"
+    memory: "2Gi"</p>
+<h1 id="2-commit-and-push">2. Commit and push<a class="headerlink" href="#2-commit-and-push" title="Permanent link">&para;</a></h1>
+<p>git add charts/hub/values.yaml
+git commit -m "feat: Add new-model serving"
+git push</p>
+<h1 id="3-sync-argocd">3. Sync ArgoCD<a class="headerlink" href="#3-sync-argocd" title="Permanent link">&para;</a></h1>
+<p>argocd app sync self-healing-platform</p>
+<h1 id="thats-it">That's it! ✅<a class="headerlink" href="#thats-it" title="Permanent link">&para;</a></h1>
+<p>```</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 27, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 27, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

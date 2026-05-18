@@ -1,0 +1,2201 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/how-to/lightspeed-notebook-feedback-loop/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>How-To: Using OpenShift Lightspeed Interactions to Improve Notebooks - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-to-using-openshift-lightspeed-interactions-to-improve-notebooks" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              How-To: Using OpenShift Lightspeed Interactions to Improve Notebooks
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-feedback-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Feedback Loop
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mcp-tools-notebook-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      MCP Tools → Notebook Mapping
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MCP Tools → Notebook Mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-reference-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Reference Table
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detailed Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Detailed Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-interact-with-openshift-lightspeed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Interact with OpenShift Lightspeed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-monitor-mcp-server-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Monitor MCP Server Logs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/how-to/lightspeed-notebook-feedback-loop.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="how-to-using-openshift-lightspeed-interactions-to-improve-notebooks">How-To: Using OpenShift Lightspeed Interactions to Improve Notebooks<a class="headerlink" href="#how-to-using-openshift-lightspeed-interactions-to-improve-notebooks" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>This guide explains how to use your interactions with OpenShift Lightspeed (via the MCP server) as feedback to continuously improve your Jupyter notebooks. This creates a virtuous cycle where real-world usage directly enhances your AI/ML models and self-healing logic.</p>
+<h2 id="the-feedback-loop">The Feedback Loop<a class="headerlink" href="#the-feedback-loop" title="Permanent link">&para;</a></h2>
+<p><code>OpenShift Lightspeed Query
+         ↓
+    MCP Server Response
+         ↓
+    Identify Gaps/Issues
+         ↓
+    Update Relevant Notebooks
+         ↓
+    Retrain/Redeploy Models
+         ↓
+    Improved Lightspeed Responses
+         ↓
+    (Repeat)</code></p>
+<h2 id="mcp-tools-notebook-mapping">MCP Tools → Notebook Mapping<a class="headerlink" href="#mcp-tools-notebook-mapping" title="Permanent link">&para;</a></h2>
+<h3 id="quick-reference-table">Quick Reference Table<a class="headerlink" href="#quick-reference-table" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>MCP Tool/Resource</th>
+<th>Purpose</th>
+<th>Related Notebooks</th>
+<th>Update Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get-cluster-health</code></td>
+<td>Cluster status overview</td>
+<td><code>00-setup/00-platform-readiness-validation.ipynb</code></td>
+<td>Health checks fail</td>
+</tr>
+<tr>
+<td><code>query-incidents</code></td>
+<td>List anomalies/incidents</td>
+<td><code>02-anomaly-detection/*.ipynb</code></td>
+<td>False positives/negatives</td>
+</tr>
+<tr>
+<td><code>analyze-anomalies</code></td>
+<td>Run anomaly analysis</td>
+<td><code>02-anomaly-detection/*.ipynb</code><br><code>05-end-to-end-scenarios/*.ipynb</code></td>
+<td>Poor accuracy, new patterns</td>
+</tr>
+<tr>
+<td><code>trigger-remediation</code></td>
+<td>Execute healing actions</td>
+<td><code>03-self-healing-logic/*.ipynb</code></td>
+<td>Remediation fails</td>
+</tr>
+<tr>
+<td><code>cluster://health</code></td>
+<td>Health metrics resource</td>
+<td><code>00-setup/*.ipynb</code><br><code>07-monitoring-operations/*.ipynb</code></td>
+<td>Missing metrics</td>
+</tr>
+<tr>
+<td><code>cluster://incidents</code></td>
+<td>Incident data resource</td>
+<td><code>02-anomaly-detection/*.ipynb</code></td>
+<td>Incomplete incident data</td>
+</tr>
+<tr>
+<td><code>cluster://nodes</code></td>
+<td>Node status resource</td>
+<td><code>00-setup/*.ipynb</code></td>
+<td>Node health issues</td>
+</tr>
+<tr>
+<td><code>cluster://anomalies</code></td>
+<td>Anomaly data resource</td>
+<td><code>02-anomaly-detection/*.ipynb</code><br><code>04-model-serving/*.ipynb</code></td>
+<td>Model performance issues</td>
+</tr>
+</tbody>
+</table>
+<h2 id="detailed-workflow">Detailed Workflow<a class="headerlink" href="#detailed-workflow" title="Permanent link">&para;</a></h2>
+<h3 id="step-1-interact-with-openshift-lightspeed">Step 1: Interact with OpenShift Lightspeed<a class="headerlink" href="#step-1-interact-with-openshift-lightspeed" title="Permanent link">&para;</a></h3>
+<p><strong>Access Lightspeed</strong>:
+- OpenShift Console → Help → OpenShift Lightspeed
+- Or use CLI: <code>oc lightspeed query "your question"</code></p>
+<p><strong>Example Queries</strong>:
+<code>"What is the current cluster health?"
+"Show me anomalies from the last 24 hours"
+"Why is the predictive-analytics pod failing?"
+"Trigger remediation for high CPU usage on worker-2"
+"How are my InferenceServices performing?"</code></p>
+<h3 id="step-2-monitor-mcp-server-logs">Step 2: Monitor MCP Server Logs<a class="headerlink" href="#step-2-monitor-mcp-server-logs" title="Permanent link">&para;</a></h3>
+<p><strong>Real-time Monitoring</strong>:
+```bash</p>
+<h1 id="stream-logs">Stream logs<a class="headerlink" href="#stream-logs" title="Permanent link">&para;</a></h1>
+<p>oc logs -f deployment/cluster-health-mcp-server -n self-healing-platform</p>
+<h1 id="watch-for-tool-invocations">Watch for tool invocations<a class="headerlink" href="#watch-for-tool-invocations" title="Permanent link">&para;</a></h1>
+<p>oc logs deployment/cluster-health-mcp-server -n self-healing-platform \
+  --since=1h | grep "Tool invoked"</p>
+<h1 id="check-response-times">Check response times<a class="headerlink" href="#check-response-times" title="Permanent link">&para;</a></h1>
+<p>oc logs deployment/cluster-health-mcp-server -n self-healing-platform \
+  --since=1h | grep "Response time"
+```</p>
+<p><strong>Key Log Patterns</strong>:
+```json
+// Tool invocation
+{"level":"info","message":"Tool invoked: query-incidents","params":{"time_range":"1h"},"timestamp":"..."}</p>
+<p>// Successful response
+{"level":"info","message":"Tool response","tool":"query-incidents","duration":"234ms","success":true}</p>
+<p>// Error (needs attention!)
+{"level":"error","message":"Tool execution failed","tool":"analyze-anomalies","error":"Model inference timeout"}
+```</p>
+<h3 id="step-3-identify-issues-and-gaps">Step 3: Identify Issues and Gaps<a class="headerlink" href="#step-3-identify-issues-and-gaps" title="Permanent link">&para;</a></h3>
+<p><strong>Common Issues to Watch For</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Symptom</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Inaccurate Responses</strong></td>
+<td>Wrong cluster status, incorrect metrics</td>
+<td>Low trust, wrong decisions</td>
+</tr>
+<tr>
+<td><strong>Missing Data</strong></td>
+<td>"No data available" responses</td>
+<td>Limited usefulness</td>
+</tr>
+<tr>
+<td><strong>Slow Responses</strong></td>
+<td>&gt;5 second response times</td>
+<td>Poor user experience</td>
+</tr>
+<tr>
+<td><strong>Failed Tool Invocations</strong></td>
+<td>Errors in logs, incomplete actions</td>
+<td>Broken functionality</td>
+</tr>
+<tr>
+<td><strong>False Positives</strong></td>
+<td>Anomalies that aren't real issues</td>
+<td>Alert fatigue</td>
+</tr>
+<tr>
+<td><strong>False Negatives</strong></td>
+<td>Real issues not detected</td>
+<td>Unaddressed problems</td>
+</tr>
+<tr>
+<td><strong>Failed Remediation</strong></td>
+<td>Healing actions don't complete</td>
+<td>Persistent issues</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example: Identifying a Gap</strong>
+```
+User Query: "Are there any memory leaks in my cluster?"
+Lightspeed Response: "No anomalies detected"</p>
+<p>[Reality: predictive-analytics pod has been slowly leaking memory for 3 days]</p>
+<p>GAP IDENTIFIED:
+- Time-series anomaly detection not catching gradual memory leaks
+- Need to update LSTM model with long-term trend detection
+```</p>
+<h3 id="step-4-update-relevant-notebooks">Step 4: Update Relevant Notebooks<a class="headerlink" href="#step-4-update-relevant-notebooks" title="Permanent link">&para;</a></h3>
+<h4 id="a-anomaly-detection-improvements">A. Anomaly Detection Improvements<a class="headerlink" href="#a-anomaly-detection-improvements" title="Permanent link">&para;</a></h4>
+<p><strong>Notebook</strong>: <code>notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb</code></p>
+<p><strong>When to Update</strong>:
+- False positives (normal behavior flagged as anomaly)
+- False negatives (real issues missed)
+- New anomaly patterns discovered</p>
+<p><strong>What to Update</strong>:
+```python</p>
+<h1 id="adjust-contamination-parameter-based-on-false-positive-rate">Adjust contamination parameter based on false positive rate<a class="headerlink" href="#adjust-contamination-parameter-based-on-false-positive-rate" title="Permanent link">&para;</a></h1>
+<p>isolation_forest = IsolationForest(
+    contamination=0.02,  # Reduce if too many false positives
+    random_state=42
+)</p>
+<h1 id="add-new-features-based-on-missed-anomalies">Add new features based on missed anomalies<a class="headerlink" href="#add-new-features-based-on-missed-anomalies" title="Permanent link">&para;</a></h1>
+<p>features = [
+    'cpu_usage',
+    'memory_usage',
+    'memory_growth_rate',  # NEW: catch memory leaks
+    'network_throughput',
+    'api_latency_p95'      # NEW: detect performance degradation
+]
+```</p>
+<p><strong>Retrain</strong>:
+```bash</p>
+<h1 id="run-via-notebookvalidationjob">Run via NotebookValidationJob<a class="headerlink" href="#run-via-notebookvalidationjob" title="Permanent link">&para;</a></h1>
+<p>oc get notebookvalidationjob -n self-healing-platform \
+  -l notebook=01-isolation-forest-implementation</p>
+<h1 id="or-manually-in-workbench">Or manually in workbench<a class="headerlink" href="#or-manually-in-workbench" title="Permanent link">&para;</a></h1>
+<p>oc port-forward self-healing-workbench-0 8888:8888 -n self-healing-platform</p>
+<h1 id="execute-notebook-cells-to-retrain-with-new-features">Execute notebook cells to retrain with new features<a class="headerlink" href="#execute-notebook-cells-to-retrain-with-new-features" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<hr />
+<h4 id="b-time-series-analysis-updates">B. Time-Series Analysis Updates<a class="headerlink" href="#b-time-series-analysis-updates" title="Permanent link">&para;</a></h4>
+<p><strong>Notebook</strong>: <code>notebooks/02-anomaly-detection/02-time-series-anomaly-detection.ipynb</code></p>
+<p><strong>When to Update</strong>:
+- Gradual trends not detected (e.g., memory leaks)
+- Seasonal patterns missed
+- Model accuracy below 90%</p>
+<p><strong>What to Update</strong>:
+```python</p>
+<h1 id="add-longer-time-window-for-trend-detection">Add longer time window for trend detection<a class="headerlink" href="#add-longer-time-window-for-trend-detection" title="Permanent link">&para;</a></h1>
+<p>prophet_model = Prophet(
+    changepoint_prior_scale=0.05,
+    seasonality_prior_scale=10.0,
+    seasonality_mode='multiplicative',
+    # NEW: longer interval for detecting slow leaks
+    interval_width=0.95,
+    daily_seasonality=True,
+    weekly_seasonality=True
+)</p>
+<h1 id="add-custom-seasonality">Add custom seasonality<a class="headerlink" href="#add-custom-seasonality" title="Permanent link">&para;</a></h1>
+<p>prophet_model.add_seasonality(
+    name='business_hours',
+    period=1,
+    fourier_order=5,
+    mode='additive'
+)
+```</p>
+<hr />
+<h4 id="c-self-healing-logic-enhancements">C. Self-Healing Logic Enhancements<a class="headerlink" href="#c-self-healing-logic-enhancements" title="Permanent link">&para;</a></h4>
+<p><strong>Notebook</strong>: <code>notebooks/03-self-healing-logic/coordination-engine-integration.ipynb</code></p>
+<p><strong>When to Update</strong>:
+- Remediation actions fail
+- Wrong action chosen for incident
+- Conflicts between remediation strategies</p>
+<p><strong>What to Update</strong>:
+```python</p>
+<h1 id="update-remediation-action-priority-scoring">Update remediation action priority scoring<a class="headerlink" href="#update-remediation-action-priority-scoring" title="Permanent link">&para;</a></h1>
+<p>def calculate_action_priority(anomaly):
+    priority_score = 0</p>
+<pre><code># Severity weight
+severity_weights = {
+    'critical': 100,
+    'high': 75,
+    'medium': 50,
+    'low': 25
+}
+priority_score += severity_weights.get(anomaly['severity'], 0)
+
+# NEW: Add success rate weight based on past performance
+action_success_rate = get_historical_success_rate(anomaly['type'])
+priority_score *= action_success_rate
+
+# NEW: Add impact assessment
+if anomaly['affects_user_traffic']:
+    priority_score *= 1.5
+
+return priority_score
+</code></pre>
+<h1 id="update-coordination-engine-api-call">Update coordination engine API call<a class="headerlink" href="#update-coordination-engine-api-call" title="Permanent link">&para;</a></h1>
+<p>response = coordination_engine_client.submit_anomaly({
+    'timestamp': anomaly['timestamp'],
+    'type': anomaly['type'],
+    'severity': anomaly['severity'],
+    'recommended_action': 'scale_up',  # Updated based on failure analysis
+    'confidence_score': 0.95,
+    'priority_score': calculate_action_priority(anomaly)
+})
+```</p>
+<hr />
+<h4 id="d-model-serving-optimization">D. Model Serving Optimization<a class="headerlink" href="#d-model-serving-optimization" title="Permanent link">&para;</a></h4>
+<p><strong>Notebook</strong>: <code>notebooks/04-model-serving/kserve-model-deployment.ipynb</code></p>
+<p><strong>When to Update</strong>:
+- Inference timeouts
+- High error rates
+- Insufficient throughput</p>
+<p><strong>What to Update</strong>:
+```python</p>
+<h1 id="update-inferenceservice-configuration">Update InferenceService configuration<a class="headerlink" href="#update-inferenceservice-configuration" title="Permanent link">&para;</a></h1>
+<p>inference_service = V1beta1InferenceService(
+    api_version="serving.kserve.io/v1beta1",
+    kind="InferenceService",
+    metadata=client.V1ObjectMeta(
+        name="predictive-analytics",
+        namespace="self-healing-platform"
+    ),
+    spec=V1beta1InferenceServiceSpec(
+        predictor=V1beta1PredictorSpec(
+            sklearn=V1beta1SKLearnSpec(
+                storage_uri="pvc://model-storage-pvc/predictive-analytics",
+                # NEW: Increased resources based on observed usage
+                resources=client.V1ResourceRequirements(
+                    requests={'cpu': '500m', 'memory': '2Gi'},  # Was 1Gi
+                    limits={'cpu': '2', 'memory': '4Gi'}        # Was 2Gi
+                )
+            ),
+            # NEW: Add autoscaling based on CPU/memory
+            min_replicas=2,  # Was 1
+            max_replicas=5,  # Was 3
+            scale_target=80,  # CPU utilization target
+            scale_metric="cpu"
+        )
+    )
+)
+```</p>
+<hr />
+<h4 id="e-creating-new-notebooks-for-new-use-cases">E. Creating New Notebooks for New Use Cases<a class="headerlink" href="#e-creating-new-notebooks-for-new-use-cases" title="Permanent link">&para;</a></h4>
+<p><strong>When to Create</strong>:
+- Lightspeed query reveals gap in coverage
+- New anomaly pattern discovered
+- New remediation strategy needed</p>
+<p><strong>Example</strong>: Creating a memory leak detection notebook</p>
+<p>```bash</p>
+<h1 id="create-new-notebook">Create new notebook<a class="headerlink" href="#create-new-notebook" title="Permanent link">&para;</a></h1>
+<p>touch notebooks/05-end-to-end-scenarios/memory-leak-detection-and-remediation.ipynb
+```</p>
+<p><strong>Notebook Structure</strong>:
+```python</p>
+<h1 id="_1">============================================================<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h1 id="header-memory-leak-detection-and-remediation">HEADER: Memory Leak Detection and Remediation<a class="headerlink" href="#header-memory-leak-detection-and-remediation" title="Permanent link">&para;</a></h1>
+<h1 id="_2">============================================================<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h1>
+<h1 id="purpose-detect-gradual-memory-leaks-using-trend-analysis">Purpose: Detect gradual memory leaks using trend analysis<a class="headerlink" href="#purpose-detect-gradual-memory-leaks-using-trend-analysis" title="Permanent link">&para;</a></h1>
+<h1 id="trigger-lightspeed-query-memory-leak-returned-no-results">Trigger: Lightspeed query "memory leak" returned no results<a class="headerlink" href="#trigger-lightspeed-query-memory-leak-returned-no-results" title="Permanent link">&para;</a></h1>
+<h1 id="related-mcp-tools-analyze-anomalies-trigger-remediation">Related MCP Tools: analyze-anomalies, trigger-remediation<a class="headerlink" href="#related-mcp-tools-analyze-anomalies-trigger-remediation" title="Permanent link">&para;</a></h1>
+<h1 id="_3">============================================================<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h1>
+<h1 id="1-data-collection">1. DATA COLLECTION<a class="headerlink" href="#1-data-collection" title="Permanent link">&para;</a></h1>
+<h1 id="collect-memory-metrics-with-fine-grained-timestamps">Collect memory metrics with fine-grained timestamps<a class="headerlink" href="#collect-memory-metrics-with-fine-grained-timestamps" title="Permanent link">&para;</a></h1>
+<p>memory_metrics = query_prometheus(
+    query='container_memory_usage_bytes{pod=~".<em>predictor.</em>"}',
+    start_time='7d',
+    step='1m'
+)</p>
+<h1 id="2-trend-analysis">2. TREND ANALYSIS<a class="headerlink" href="#2-trend-analysis" title="Permanent link">&para;</a></h1>
+<h1 id="use-linear-regression-to-detect-gradual-increases">Use linear regression to detect gradual increases<a class="headerlink" href="#use-linear-regression-to-detect-gradual-increases" title="Permanent link">&para;</a></h1>
+<p>from sklearn.linear_regression import LinearRegression
+model = LinearRegression()</p>
+<h1 id="trend-detection-logic">... trend detection logic ...<a class="headerlink" href="#trend-detection-logic" title="Permanent link">&para;</a></h1>
+<h1 id="3-leak-detection">3. LEAK DETECTION<a class="headerlink" href="#3-leak-detection" title="Permanent link">&para;</a></h1>
+<h1 id="flag-as-leak-if">Flag as leak if:<a class="headerlink" href="#flag-as-leak-if" title="Permanent link">&para;</a></h1>
+<h1 id="-consistent-upward-trend-p-005">- Consistent upward trend (p &lt; 0.05)<a class="headerlink" href="#-consistent-upward-trend-p-005" title="Permanent link">&para;</a></h1>
+<h1 id="-growth-rate-5mbhour">- Growth rate &gt; 5MB/hour<a class="headerlink" href="#-growth-rate-5mbhour" title="Permanent link">&para;</a></h1>
+<h1 id="-no-corresponding-decrease-gc-not-working">- No corresponding decrease (GC not working)<a class="headerlink" href="#-no-corresponding-decrease-gc-not-working" title="Permanent link">&para;</a></h1>
+<h1 id="4-remediation">4. REMEDIATION<a class="headerlink" href="#4-remediation" title="Permanent link">&para;</a></h1>
+<h1 id="submit-to-coordination-engine-with-specific-action">Submit to coordination engine with specific action<a class="headerlink" href="#submit-to-coordination-engine-with-specific-action" title="Permanent link">&para;</a></h1>
+<p>coordination_engine_client.submit_anomaly({
+    'type': 'memory_leak',
+    'severity': 'high',
+    'recommended_action': 'rolling_restart',
+    'details': {
+        'leak_rate_mb_per_hour': 8.5,
+        'projected_oom_time': '4 hours'
+    }
+})</p>
+<h1 id="5-validation">5. VALIDATION<a class="headerlink" href="#5-validation" title="Permanent link">&para;</a></h1>
+<h1 id="track-if-remediation-resolves-leak">Track if remediation resolves leak<a class="headerlink" href="#track-if-remediation-resolves-leak" title="Permanent link">&para;</a></h1>
+<h1 id="update-model-if-needed">Update model if needed<a class="headerlink" href="#update-model-if-needed" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h3 id="step-5-deploy-and-validate-updates">Step 5: Deploy and Validate Updates<a class="headerlink" href="#step-5-deploy-and-validate-updates" title="Permanent link">&para;</a></h3>
+<p><strong>Option 1: NotebookValidationJob (Automated)</strong>
+```bash</p>
+<h1 id="check-existing-validation-jobs">Check existing validation jobs<a class="headerlink" href="#check-existing-validation-jobs" title="Permanent link">&para;</a></h1>
+<p>oc get notebookvalidationjob -n self-healing-platform</p>
+<h1 id="trigger-re-validation-argocd-will-detect-changes">Trigger re-validation (ArgoCD will detect changes)<a class="headerlink" href="#trigger-re-validation-argocd-will-detect-changes" title="Permanent link">&para;</a></h1>
+<p>git add notebooks/
+git commit -m "feat: improve memory leak detection based on Lightspeed feedback"
+git push</p>
+<h1 id="wait-for-notebookvalidationjobs-to-complete">Wait for NotebookValidationJobs to complete<a class="headerlink" href="#wait-for-notebookvalidationjobs-to-complete" title="Permanent link">&para;</a></h1>
+<p>oc get notebookvalidationjob -n self-healing-platform -w
+```</p>
+<p><strong>Option 2: Manual Execution in Workbench</strong>
+```bash</p>
+<h1 id="port-forward-to-workbench">Port-forward to workbench<a class="headerlink" href="#port-forward-to-workbench" title="Permanent link">&para;</a></h1>
+<p>oc port-forward self-healing-workbench-0 8888:8888 -n self-healing-platform</p>
+<h1 id="open-browser-httplocalhost8888">Open browser: http://localhost:8888<a class="headerlink" href="#open-browser-httplocalhost8888" title="Permanent link">&para;</a></h1>
+<h1 id="navigate-to-updated-notebook">Navigate to updated notebook<a class="headerlink" href="#navigate-to-updated-notebook" title="Permanent link">&para;</a></h1>
+<h1 id="execute-all-cells">Execute all cells<a class="headerlink" href="#execute-all-cells" title="Permanent link">&para;</a></h1>
+<h1 id="verify-models-saved-to-mntmodels">Verify models saved to /mnt/models/<a class="headerlink" href="#verify-models-saved-to-mntmodels" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<p><strong>Validation Checklist</strong>:
+- [ ] Models trained successfully without errors
+- [ ] Models saved to correct PVC path (<code>/mnt/models/{model-name}/</code>)
+- [ ] InferenceService pods restarted and ready
+- [ ] Coordination engine accepts new anomaly submissions
+- [ ] Metrics exported to Prometheus</p>
+<h3 id="step-6-re-test-with-openshift-lightspeed">Step 6: Re-test with OpenShift Lightspeed<a class="headerlink" href="#step-6-re-test-with-openshift-lightspeed" title="Permanent link">&para;</a></h3>
+<p><strong>Verification Queries</strong>:
+```
+"Are there any memory leaks now?"
+[Expected: Lightspeed now detects the gradual memory leak]</p>
+<p>"What is the confidence score for the memory leak detection?"
+[Expected: Shows improved confidence with new model]</p>
+<p>"Trigger remediation for the memory leak"
+[Expected: Successfully initiates rolling restart]
+```</p>
+<p><strong>Check MCP Server Logs</strong>:
+```bash</p>
+<h1 id="verify-improved-performance">Verify improved performance<a class="headerlink" href="#verify-improved-performance" title="Permanent link">&para;</a></h1>
+<p>oc logs deployment/cluster-health-mcp-server -n self-healing-platform \
+  --since=1h | grep "analyze-anomalies"</p>
+<h1 id="should-show">Should show:<a class="headerlink" href="#should-show" title="Permanent link">&para;</a></h1>
+<h1 id="-faster-response-times">- Faster response times<a class="headerlink" href="#-faster-response-times" title="Permanent link">&para;</a></h1>
+<h1 id="-higher-confidence-scores">- Higher confidence scores<a class="headerlink" href="#-higher-confidence-scores" title="Permanent link">&para;</a></h1>
+<h1 id="-fewer-no-data-responses">- Fewer "No data" responses<a class="headerlink" href="#-fewer-no-data-responses" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h2 id="real-world-examples">Real-World Examples<a class="headerlink" href="#real-world-examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-1-improving-false-positive-rate">Example 1: Improving False Positive Rate<a class="headerlink" href="#example-1-improving-false-positive-rate" title="Permanent link">&para;</a></h3>
+<p><strong>Initial Situation</strong>:
+```
+Lightspeed Query: "Show me anomalies from last hour"
+Response: "47 anomalies detected, 32 critical"</p>
+<p>[Reality: Only 3 were real issues - 91% false positive rate!]
+```</p>
+<p><strong>Actions Taken</strong>:
+1. Updated <code>02-anomaly-detection/01-isolation-forest-implementation.ipynb</code>
+   - Reduced contamination from 0.1 to 0.03
+   - Added feature normalization
+   - Increased min_samples_split to reduce noise</p>
+<ol>
+<li>Updated <code>03-self-healing-logic/coordination-engine-integration.ipynb</code></li>
+<li>Added confidence score threshold (&gt;0.85)</li>
+<li>Implemented anomaly correlation logic</li>
+<li>
+<p>Added historical validation</p>
+</li>
+<li>
+<p>Retrained models via NotebookValidationJob</p>
+</li>
+</ol>
+<p><strong>Result</strong>:
+```
+Lightspeed Query: "Show me anomalies from last hour"
+Response: "4 anomalies detected, 2 critical"</p>
+<p>[Reality: All 4 were real issues - 0% false positive rate!]
+```</p>
+<hr />
+<h3 id="example-2-adding-proactive-scaling">Example 2: Adding Proactive Scaling<a class="headerlink" href="#example-2-adding-proactive-scaling" title="Permanent link">&para;</a></h3>
+<p><strong>Initial Situation</strong>:
+```
+Lightspeed Query: "Why did the predictive-analytics pod crash?"
+Response: "OOMKilled due to memory limit. Occurred at 14:32 UTC."</p>
+<p>[Reactive response - pod already crashed]
+```</p>
+<p><strong>Actions Taken</strong>:
+1. Created <code>05-end-to-end-scenarios/proactive-resource-scaling.ipynb</code>
+   - Predict memory exhaustion 15 minutes in advance
+   - Train LSTM model on memory growth patterns
+   - Integrate with coordination engine for proactive scaling</p>
+<ol>
+<li>Updated <code>04-model-serving/kserve-model-deployment.ipynb</code></li>
+<li>Added HPA (Horizontal Pod Autoscaler) configuration</li>
+<li>
+<p>Increased memory limits based on observed peaks</p>
+</li>
+<li>
+<p>Updated MCP server to expose <code>predict-resource-exhaustion</code> tool</p>
+</li>
+</ol>
+<p><strong>Result</strong>:
+```
+Lightspeed Query: "Are there any resource issues?"
+Response: "Proactive scaling recommendation: predictive-analytics pod
+will reach memory limit in 12 minutes. Scaling action scheduled for 14:20 UTC."</p>
+<p>[Proactive response - prevents crash]
+```</p>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="1-version-your-notebooks">1. Version Your Notebooks<a class="headerlink" href="#1-version-your-notebooks" title="Permanent link">&para;</a></h3>
+<p><code>bash
+git add notebooks/
+git commit -m "feat: improve anomaly detection based on user query feedback"
+git tag v1.2.0-anomaly-detection
+git push --tags</code></p>
+<h3 id="2-document-changes">2. Document Changes<a class="headerlink" href="#2-document-changes" title="Permanent link">&para;</a></h3>
+<p>Add metadata to notebooks:
+```python</p>
+<h1 id="_4">============================================================<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h1>
+<h1 id="changelog">CHANGELOG<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h1 id="_5">============================================================<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h1>
+<h1 id="v120-2025-12-09">v1.2.0 (2025-12-09)<a class="headerlink" href="#v120-2025-12-09" title="Permanent link">&para;</a></h1>
+<h1 id="-reduced-false-positives-by-85">- Reduced false positives by 85%<a class="headerlink" href="#-reduced-false-positives-by-85" title="Permanent link">&para;</a></h1>
+<h1 id="-added-memory-leak-trend-detection">- Added memory leak trend detection<a class="headerlink" href="#-added-memory-leak-trend-detection" title="Permanent link">&para;</a></h1>
+<h1 id="-improved-coordination-engine-integration">- Improved coordination engine integration<a class="headerlink" href="#-improved-coordination-engine-integration" title="Permanent link">&para;</a></h1>
+<h1 id="-trigger-openshift-lightspeed-user-feedback">- Trigger: OpenShift Lightspeed user feedback<a class="headerlink" href="#-trigger-openshift-lightspeed-user-feedback" title="Permanent link">&para;</a></h1>
+<h1 id="_6">============================================================<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h3 id="3-track-metrics">3. Track Metrics<a class="headerlink" href="#3-track-metrics" title="Permanent link">&para;</a></h3>
+<p>Monitor improvement over time:
+```python</p>
+<h1 id="add-to-monitoring-notebook">Add to monitoring notebook<a class="headerlink" href="#add-to-monitoring-notebook" title="Permanent link">&para;</a></h1>
+<p>metrics = {
+    'false_positive_rate': 0.09,  # Was 0.91
+    'false_negative_rate': 0.05,  # Was 0.15
+    'avg_response_time_ms': 234,  # Was 1200
+    'user_satisfaction': 4.2,     # Was 2.8
+    'remediation_success_rate': 0.92  # Was 0.67
+}
+```</p>
+<h3 id="4-automate-the-loop">4. Automate the Loop<a class="headerlink" href="#4-automate-the-loop" title="Permanent link">&para;</a></h3>
+<p>```yaml</p>
+<h1 id="add-to-tektonpipelines">Add to tekton/pipelines/<a class="headerlink" href="#add-to-tektonpipelines" title="Permanent link">&para;</a></h1>
+<p>apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: lightspeed-feedback-pipeline
+spec:
+  tasks:
+    - name: analyze-mcp-logs
+    - name: identify-gaps
+    - name: update-notebooks
+    - name: retrain-models
+    - name: validate-improvements
+```</p>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="issue-notebook-changes-not-reflected-in-mcp-responses">Issue: Notebook changes not reflected in MCP responses<a class="headerlink" href="#issue-notebook-changes-not-reflected-in-mcp-responses" title="Permanent link">&para;</a></h3>
+<p><strong>Check</strong>:
+```bash</p>
+<h1 id="1-verify-models-saved-correctly">1. Verify models saved correctly<a class="headerlink" href="#1-verify-models-saved-correctly" title="Permanent link">&para;</a></h1>
+<p>oc exec -it self-healing-workbench-0 -- ls -la /mnt/models/predictive-analytics/</p>
+<h1 id="2-restart-inferenceservice-predictor">2. Restart InferenceService predictor<a class="headerlink" href="#2-restart-inferenceservice-predictor" title="Permanent link">&para;</a></h1>
+<p>oc delete pod -n self-healing-platform -l serving.kserve.io/inferenceservice=predictive-analytics</p>
+<h1 id="3-check-mcp-server-is-using-new-models">3. Check MCP server is using new models<a class="headerlink" href="#3-check-mcp-server-is-using-new-models" title="Permanent link">&para;</a></h1>
+<p>oc logs deployment/cluster-health-mcp-server -n self-healing-platform | grep "Model loaded"
+```</p>
+<h3 id="issue-notebookvalidationjob-fails-after-notebook-update">Issue: NotebookValidationJob fails after notebook update<a class="headerlink" href="#issue-notebookvalidationjob-fails-after-notebook-update" title="Permanent link">&para;</a></h3>
+<p><strong>Check</strong>:
+```bash</p>
+<h1 id="view-validation-job-logs">View validation job logs<a class="headerlink" href="#view-validation-job-logs" title="Permanent link">&para;</a></h1>
+<p>oc logs -n self-healing-platform -l job-name=01-isolation-forest-implementation-validation</p>
+<h1 id="common-issues">Common issues:<a class="headerlink" href="#common-issues" title="Permanent link">&para;</a></h1>
+<h1 id="-missing-dependencies-add-to-notebook-validator-image">- Missing dependencies: Add to notebook-validator image<a class="headerlink" href="#-missing-dependencies-add-to-notebook-validator-image" title="Permanent link">&para;</a></h1>
+<h1 id="-path-issues-verify-mntmodels-mount">- Path issues: Verify /mnt/models/ mount<a class="headerlink" href="#-path-issues-verify-mntmodels-mount" title="Permanent link">&para;</a></h1>
+<h1 id="-memory-limits-increase-in-values-hubyaml">- Memory limits: Increase in values-hub.yaml<a class="headerlink" href="#-memory-limits-increase-in-values-hubyaml" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../deploy-mcp-server-lightspeed/">Deploy MCP Server and Configure OpenShift Lightspeed</a></li>
+<li><a href="../../adrs/014-openshift-aiops-platform-mcp-server/">ADR-014: Cluster Health MCP Server</a></li>
+<li><a href="../../adrs/012-notebook-architecture-for-end-to-end-workflows/">ADR-012: Notebook Architecture</a></li>
+<li><a href="../../notebooks/06-mcp-lightspeed-integration/mcp-server-integration.ipynb">Notebook: MCP Server Integration</a></li>
+</ul>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Start Simple</strong>: Pick one query, identify one gap, update one notebook</li>
+<li><strong>Measure Impact</strong>: Track metrics before and after updates</li>
+<li><strong>Iterate</strong>: Repeat the cycle weekly or after major incidents</li>
+<li><strong>Share Learning</strong>: Document patterns in ADRs and notebooks</li>
+<li><strong>Automate</strong>: Build pipelines to streamline the feedback loop</li>
+</ol>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

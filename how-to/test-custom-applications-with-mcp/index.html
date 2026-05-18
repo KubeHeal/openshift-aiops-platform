@@ -1,0 +1,2053 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/how-to/test-custom-applications-with-mcp/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>How-To: Test Your Custom Application with the MCP Server - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-to-test-your-custom-application-with-the-mcp-server" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              How-To: Test Your Custom Application with the MCP Server
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pattern-1-direct-api-integration-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 1: Direct API Integration (Recommended)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/how-to/test-custom-applications-with-mcp.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="how-to-test-your-custom-application-with-the-mcp-server">How-To: Test Your Custom Application with the MCP Server<a class="headerlink" href="#how-to-test-your-custom-application-with-the-mcp-server" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>This guide explains how to integrate and test your own custom applications with the OpenShift AI Ops Platform's MCP server. Whether you're building a new self-healing workflow, custom monitoring tool, or ML pipeline, this guide will help you integrate with the platform.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<ul>
+<li>OpenShift 4.18+ cluster with MCP server deployed</li>
+<li>Basic understanding of Kubernetes/OpenShift</li>
+<li>Familiarity with Python or TypeScript (depending on your integration approach)</li>
+<li>Access to self-healing-platform namespace</li>
+</ul>
+<h2 id="integration-patterns">Integration Patterns<a class="headerlink" href="#integration-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="pattern-1-direct-api-integration-recommended">Pattern 1: Direct API Integration (Recommended)<a class="headerlink" href="#pattern-1-direct-api-integration-recommended" title="Permanent link">&para;</a></h3>
+<p>Your application can directly call the MCP server's internal services:</p>
+<p>```python
+import requests</p>
+<h1 id="health-service">Health Service<a class="headerlink" href="#health-service" title="Permanent link">&para;</a></h1>
+<p>health_response = requests.get(
+    'http://cluster-health-mcp-server.self-healing-platform.svc.cluster.local:9090/health'
+)</p>
+<h1 id="coordination-engine">Coordination Engine<a class="headerlink" href="#coordination-engine" title="Permanent link">&para;</a></h1>
+<p>anomaly_data = {
+    'timestamp': '2025-12-09T18:00:00Z',
+    'type': 'custom_anomaly',
+    'severity': 'high',
+    'details': {
+        'application': 'my-custom-app',
+        'metric': 'response_time',
+        'threshold': 500,
+        'current_value': 1200
+    },
+    'confidence_score': 0.85
+}</p>
+<p>response = requests.post(
+    'http://coordination-engine.self-healing-platform.svc.cluster.local:8080/api/v1/anomalies',
+    json=anomaly_data
+)</p>
+<p>print(f"Anomaly submitted: {response.json()['anomaly_id']}")
+```</p>
+<h3 id="pattern-2-openshift-lightspeed-integration">Pattern 2: OpenShift Lightspeed Integration<a class="headerlink" href="#pattern-2-openshift-lightspeed-integration" title="Permanent link">&para;</a></h3>
+<p>Use natural language queries through OpenShift Lightspeed:</p>
+<p>```bash</p>
+<h1 id="ask-about-your-custom-application">Ask about your custom application<a class="headerlink" href="#ask-about-your-custom-application" title="Permanent link">&para;</a></h1>
+<p>oc lightspeed query "What is the health status of my custom application?"</p>
+<h1 id="trigger-custom-remediation">Trigger custom remediation<a class="headerlink" href="#trigger-custom-remediation" title="Permanent link">&para;</a></h1>
+<p>oc lightspeed query "Trigger remediation for my-custom-app memory leak"
+```</p>
+<h3 id="pattern-3-jupyter-notebook-integration">Pattern 3: Jupyter Notebook Integration<a class="headerlink" href="#pattern-3-jupyter-notebook-integration" title="Permanent link">&para;</a></h3>
+<p>Create custom notebooks that integrate with the platform:</p>
+<p>```python</p>
+<h1 id="in-your-custom-notebook">In your custom notebook<a class="headerlink" href="#in-your-custom-notebook" title="Permanent link">&para;</a></h1>
+<p>import sys
+sys.path.append('../utils')</p>
+<p>from common_functions import setup_environment, query_prometheus
+from mcp_client import CoordinationEngineClient</p>
+<h1 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h1>
+<p>env = setup_environment()
+client = CoordinationEngineClient(base_url='http://coordination-engine:8080')</p>
+<h1 id="query-your-custom-metrics">Query your custom metrics<a class="headerlink" href="#query-your-custom-metrics" title="Permanent link">&para;</a></h1>
+<p>metrics = query_prometheus(
+    query='my_custom_app_response_time_seconds',
+    start_time='1h',
+    step='30s'
+)</p>
+<h1 id="analyze-and-submit-anomalies">Analyze and submit anomalies<a class="headerlink" href="#analyze-and-submit-anomalies" title="Permanent link">&para;</a></h1>
+<p>anomalies = detect_anomalies(metrics)  # Your custom logic
+for anomaly in anomalies:
+    client.submit_anomaly(anomaly)
+```</p>
+<h2 id="testing-workflow">Testing Workflow<a class="headerlink" href="#testing-workflow" title="Permanent link">&para;</a></h2>
+<h3 id="step-1-deploy-your-custom-application">Step 1: Deploy Your Custom Application<a class="headerlink" href="#step-1-deploy-your-custom-application" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="deploy-your-application-to-a-test-namespace">Deploy your application to a test namespace<a class="headerlink" href="#deploy-your-application-to-a-test-namespace" title="Permanent link">&para;</a></h1>
+<p>oc new-project my-custom-app-test</p>
+<h1 id="deploy-your-app-example-with-a-simple-deployment">Deploy your app (example with a simple deployment)<a class="headerlink" href="#deploy-your-app-example-with-a-simple-deployment" title="Permanent link">&para;</a></h1>
+<p>cat &lt;&lt;EOF | oc apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-custom-app
+  namespace: my-custom-app-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-custom-app
+  template:
+    metadata:
+      labels:
+        app: my-custom-app
+    spec:
+      serviceAccountName: my-custom-app-sa
+      containers:
+        - name: app
+          image: quay.io/myorg/my-custom-app:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MCP_SERVER_URL
+              value: "http://cluster-health-mcp-server.self-healing-platform.svc.cluster.local:9090"
+            - name: COORDINATION_ENGINE_URL
+              value: "http://coordination-engine.self-healing-platform.svc.cluster.local:8080"
+EOF
+```</p>
+<h3 id="step-2-configure-rbac-for-mcp-server-access">Step 2: Configure RBAC for MCP Server Access<a class="headerlink" href="#step-2-configure-rbac-for-mcp-server-access" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="create-serviceaccount">Create ServiceAccount<a class="headerlink" href="#create-serviceaccount" title="Permanent link">&para;</a></h1>
+<p>oc create serviceaccount my-custom-app-sa -n my-custom-app-test</p>
+<h1 id="grant-access-to-mcp-server-services">Grant access to MCP server services<a class="headerlink" href="#grant-access-to-mcp-server-services" title="Permanent link">&para;</a></h1>
+<p>oc create role mcp-client \
+  --verb=get,list,watch,create \
+  --resource=services,endpoints \
+  -n self-healing-platform</p>
+<p>oc create rolebinding my-custom-app-mcp-access \
+  --role=mcp-client \
+  --serviceaccount=my-custom-app-test:my-custom-app-sa \
+  -n self-healing-platform
+```</p>
+<h3 id="step-3-test-basic-connectivity">Step 3: Test Basic Connectivity<a class="headerlink" href="#step-3-test-basic-connectivity" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="test-from-your-application-pod">Test from your application pod<a class="headerlink" href="#test-from-your-application-pod" title="Permanent link">&para;</a></h1>
+<p>POD=$(oc get pods -n my-custom-app-test -l app=my-custom-app -o jsonpath='{.items[0].metadata.name}')</p>
+<h1 id="test-mcp-server-health-endpoint">Test MCP server health endpoint<a class="headerlink" href="#test-mcp-server-health-endpoint" title="Permanent link">&para;</a></h1>
+<p>oc exec -n my-custom-app-test $POD -- \
+  curl -s http://cluster-health-mcp-server.self-healing-platform.svc.cluster.local:9090/health</p>
+<h1 id="expected-output">Expected output:<a class="headerlink" href="#expected-output" title="Permanent link">&para;</a></h1>
+<h1 id="statushealthytimestamp2025-12-09t180000000z">{"status":"healthy","timestamp":"2025-12-09T18:00:00.000Z"}<a class="headerlink" href="#statushealthytimestamp2025-12-09t180000000z" title="Permanent link">&para;</a></h1>
+<h1 id="test-coordination-engine">Test coordination engine<a class="headerlink" href="#test-coordination-engine" title="Permanent link">&para;</a></h1>
+<p>oc exec -n my-custom-app-test $POD -- \
+  curl -s http://coordination-engine.self-healing-platform.svc.cluster.local:8080/health</p>
+<h1 id="expected-output_1">Expected output:<a class="headerlink" href="#expected-output_1" title="Permanent link">&para;</a></h1>
+<h1 id="statushealthyversion100timestamp2025-12-09t180000000z">{"status":"healthy","version":"1.0.0","timestamp":"2025-12-09T18:00:00.000Z"}<a class="headerlink" href="#statushealthyversion100timestamp2025-12-09t180000000z" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h3 id="step-4-submit-test-anomalies">Step 4: Submit Test Anomalies<a class="headerlink" href="#step-4-submit-test-anomalies" title="Permanent link">&para;</a></h3>
+<p><strong>Python Example</strong>:</p>
+<p>```python
+import requests
+import json
+from datetime import datetime</p>
+<h1 id="test-anomaly-submission">Test anomaly submission<a class="headerlink" href="#test-anomaly-submission" title="Permanent link">&para;</a></h1>
+<p>test_anomaly = {
+    'timestamp': datetime.utcnow().isoformat() + 'Z',
+    'type': 'test_anomaly',
+    'severity': 'low',
+    'source': 'my-custom-app',
+    'details': {
+        'application': 'my-custom-app',
+        'namespace': 'my-custom-app-test',
+        'metric': 'test_metric',
+        'value': 100,
+        'threshold': 80
+    },
+    'confidence_score': 0.90,
+    'recommended_action': 'log_only'
+}</p>
+<p>response = requests.post(
+    'http://coordination-engine.self-healing-platform.svc.cluster.local:8080/api/v1/anomalies',
+    json=test_anomaly,
+    timeout=10
+)</p>
+<p>if response.status_code == 200:
+    print(f"✅ Test anomaly submitted: {response.json()['anomaly_id']}")
+else:
+    print(f"❌ Failed to submit anomaly: {response.status_code} - {response.text}")
+```</p>
+<p><strong>Bash Example</strong>:</p>
+<p><code>bash
+curl -X POST \
+  http://coordination-engine.self-healing-platform.svc.cluster.local:8080/api/v1/anomalies \
+  -H "Content-Type: application/json" \
+  -d '{
+    "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'",
+    "type": "test_anomaly",
+    "severity": "low",
+    "source": "my-custom-app",
+    "details": {
+      "application": "my-custom-app",
+      "metric": "test_metric",
+      "value": 100
+    },
+    "confidence_score": 0.90
+  }'</code></p>
+<h3 id="step-5-verify-anomaly-processing">Step 5: Verify Anomaly Processing<a class="headerlink" href="#step-5-verify-anomaly-processing" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="check-coordination-engine-logs">Check coordination engine logs<a class="headerlink" href="#check-coordination-engine-logs" title="Permanent link">&para;</a></h1>
+<p>oc logs -n self-healing-platform deployment/coordination-engine --tail=50 | grep test_anomaly</p>
+<h1 id="expected-output_2">Expected output:<a class="headerlink" href="#expected-output_2" title="Permanent link">&para;</a></h1>
+<h1 id="levelinfomessageanomaly-receivedanomaly_idanom-12345typetest_anomaly">{"level":"info","message":"Anomaly received","anomaly_id":"anom-12345","type":"test_anomaly"}<a class="headerlink" href="#levelinfomessageanomaly-receivedanomaly_idanom-12345typetest_anomaly" title="Permanent link">&para;</a></h1>
+<h1 id="levelinfomessageanomaly-processed-successfullyanomaly_idanom-12345">{"level":"info","message":"Anomaly processed successfully","anomaly_id":"anom-12345"}<a class="headerlink" href="#levelinfomessageanomaly-processed-successfullyanomaly_idanom-12345" title="Permanent link">&para;</a></h1>
+<h1 id="query-anomaly-status-if-database-is-enabled">Query anomaly status (if database is enabled)<a class="headerlink" href="#query-anomaly-status-if-database-is-enabled" title="Permanent link">&para;</a></h1>
+<p>curl -s http://coordination-engine.self-healing-platform.svc.cluster.local:8080/api/v1/anomalies/anom-12345
+```</p>
+<h3 id="step-6-test-with-openshift-lightspeed">Step 6: Test with OpenShift Lightspeed<a class="headerlink" href="#step-6-test-with-openshift-lightspeed" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="query-your-custom-application-via-lightspeed">Query your custom application via Lightspeed<a class="headerlink" href="#query-your-custom-application-via-lightspeed" title="Permanent link">&para;</a></h1>
+<p>oc lightspeed query "What is the status of my-custom-app?"</p>
+<h1 id="expected-lightspeed-queries-mcp-server-resources-and-responds-with-your-apps-status">Expected: Lightspeed queries MCP server resources and responds with your app's status<a class="headerlink" href="#expected-lightspeed-queries-mcp-server-resources-and-responds-with-your-apps-status" title="Permanent link">&para;</a></h1>
+<h1 id="trigger-custom-remediation_1">Trigger custom remediation<a class="headerlink" href="#trigger-custom-remediation_1" title="Permanent link">&para;</a></h1>
+<p>oc lightspeed query "Trigger remediation for my-custom-app-test namespace"</p>
+<h1 id="expected-mcp-server-processes-remediation-request">Expected: MCP server processes remediation request<a class="headerlink" href="#expected-mcp-server-processes-remediation-request" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h2 id="creating-custom-notebooks-for-your-application">Creating Custom Notebooks for Your Application<a class="headerlink" href="#creating-custom-notebooks-for-your-application" title="Permanent link">&para;</a></h2>
+<h3 id="directory-structure">Directory Structure<a class="headerlink" href="#directory-structure" title="Permanent link">&para;</a></h3>
+<p><code>notebooks/
+└── 09-custom-applications/
+    ├── my-app-monitoring.ipynb
+    ├── my-app-anomaly-detection.ipynb
+    └── my-app-self-healing.ipynb</code></p>
+<h3 id="notebook-template">Notebook Template<a class="headerlink" href="#notebook-template" title="Permanent link">&para;</a></h3>
+<p>```python</p>
+<h1 id="_1">============================================================<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h1 id="header-section">HEADER SECTION<a class="headerlink" href="#header-section" title="Permanent link">&para;</a></h1>
+<h1 id="_2">============================================================<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h1>
+<h1 id="title-my-custom-app-monitoring">Title: My Custom App Monitoring<a class="headerlink" href="#title-my-custom-app-monitoring" title="Permanent link">&para;</a></h1>
+<h1 id="purpose-monitor-custom-application-metrics-and-detect-anomalies">Purpose: Monitor custom application metrics and detect anomalies<a class="headerlink" href="#purpose-monitor-custom-application-metrics-and-detect-anomalies" title="Permanent link">&para;</a></h1>
+<h1 id="prerequisites_1">Prerequisites:<a class="headerlink" href="#prerequisites_1" title="Permanent link">&para;</a></h1>
+<h1 id="-my-custom-app-deployed-in-my-custom-app-test-namespace">- my-custom-app deployed in my-custom-app-test namespace<a class="headerlink" href="#-my-custom-app-deployed-in-my-custom-app-test-namespace" title="Permanent link">&para;</a></h1>
+<h1 id="-mcp-server-and-coordination-engine-running">- MCP server and coordination engine running<a class="headerlink" href="#-mcp-server-and-coordination-engine-running" title="Permanent link">&para;</a></h1>
+<h1 id="expected-outcomes">Expected Outcomes:<a class="headerlink" href="#expected-outcomes" title="Permanent link">&para;</a></h1>
+<h1 id="-real-time-monitoring-dashboard">- Real-time monitoring dashboard<a class="headerlink" href="#-real-time-monitoring-dashboard" title="Permanent link">&para;</a></h1>
+<h1 id="-automated-anomaly-detection">- Automated anomaly detection<a class="headerlink" href="#-automated-anomaly-detection" title="Permanent link">&para;</a></h1>
+<h1 id="-self-healing-triggers">- Self-healing triggers<a class="headerlink" href="#-self-healing-triggers" title="Permanent link">&para;</a></h1>
+<h1 id="_3">============================================================<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h1>
+<h1 id="_4">============================================================<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h1>
+<h1 id="setup-section">SETUP SECTION<a class="headerlink" href="#setup-section" title="Permanent link">&para;</a></h1>
+<h1 id="_5">============================================================<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h1>
+<p>import sys
+sys.path.append('../utils')</p>
+<p>from common_functions import setup_environment, query_prometheus
+from mcp_client import CoordinationEngineClient</p>
+<h1 id="validate-environment">Validate environment<a class="headerlink" href="#validate-environment" title="Permanent link">&para;</a></h1>
+<p>env_info = setup_environment()
+client = CoordinationEngineClient(base_url='http://coordination-engine:8080')</p>
+<h1 id="_6">============================================================<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h1>
+<h1 id="data-collection">DATA COLLECTION<a class="headerlink" href="#data-collection" title="Permanent link">&para;</a></h1>
+<h1 id="_7">============================================================<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h1>
+<h1 id="query-custom-metrics">Query custom metrics<a class="headerlink" href="#query-custom-metrics" title="Permanent link">&para;</a></h1>
+<p>metrics = query_prometheus(
+    query='my_custom_app_response_time_seconds{namespace="my-custom-app-test"}',
+    start_time='1h',
+    step='30s'
+)</p>
+<h1 id="display-metrics">Display metrics<a class="headerlink" href="#display-metrics" title="Permanent link">&para;</a></h1>
+<p>import pandas as pd
+df = pd.DataFrame(metrics)
+print(f"Collected {len(df)} data points")
+df.head()</p>
+<h1 id="_8">============================================================<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h1>
+<h1 id="anomaly-detection">ANOMALY DETECTION<a class="headerlink" href="#anomaly-detection" title="Permanent link">&para;</a></h1>
+<h1 id="_9">============================================================<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h1>
+<h1 id="use-your-custom-anomaly-detection-logic">Use your custom anomaly detection logic<a class="headerlink" href="#use-your-custom-anomaly-detection-logic" title="Permanent link">&para;</a></h1>
+<p>from sklearn.ensemble import IsolationForest</p>
+<p>model = IsolationForest(contamination=0.1, random_state=42)
+anomalies = model.fit_predict(df[['response_time']])</p>
+<h1 id="submit-anomalies-to-coordination-engine">Submit anomalies to coordination engine<a class="headerlink" href="#submit-anomalies-to-coordination-engine" title="Permanent link">&para;</a></h1>
+<p>for idx, is_anomaly in enumerate(anomalies):
+    if is_anomaly == -1:  # Anomaly detected
+        client.submit_anomaly({
+            'timestamp': df.iloc[idx]['timestamp'],
+            'type': 'response_time_anomaly',
+            'severity': 'medium',
+            'details': {
+                'application': 'my-custom-app',
+                'metric': 'response_time',
+                'value': df.iloc[idx]['response_time']
+            },
+            'confidence_score': 0.85
+        })</p>
+<h1 id="_10">============================================================<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h1>
+<h1 id="validation">VALIDATION<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h1>
+<h1 id="_11">============================================================<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h1>
+<p>print(f"✅ Detected {(anomalies == -1).sum()} anomalies")
+print(f"✅ Submitted to coordination engine")
+```</p>
+<h2 id="testing-checklist">Testing Checklist<a class="headerlink" href="#testing-checklist" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[ ] <strong>Connectivity Tests</strong></li>
+<li>[ ] MCP server health endpoint accessible</li>
+<li>[ ] Coordination engine health endpoint accessible</li>
+<li>
+<p>[ ] Network policies allow traffic from your namespace</p>
+</li>
+<li>
+<p>[ ] <strong>RBAC Configuration</strong></p>
+</li>
+<li>[ ] ServiceAccount created</li>
+<li>[ ] RoleBinding configured for MCP server access</li>
+<li>
+<p>[ ] Tested with <code>oc auth can-i</code> commands</p>
+</li>
+<li>
+<p>[ ] <strong>Anomaly Submission</strong></p>
+</li>
+<li>[ ] Test anomaly successfully submitted</li>
+<li>[ ] Anomaly appears in coordination engine logs</li>
+<li>
+<p>[ ] Anomaly ID returned in response</p>
+</li>
+<li>
+<p>[ ] <strong>OpenShift Lightspeed Integration</strong></p>
+</li>
+<li>[ ] Lightspeed can query your application status</li>
+<li>[ ] Natural language queries return expected results</li>
+<li>
+<p>[ ] MCP tools work with your custom data</p>
+</li>
+<li>
+<p>[ ] <strong>Notebook Integration</strong></p>
+</li>
+<li>[ ] Custom notebooks can import platform utilities</li>
+<li>[ ] Notebooks can submit anomalies via MCP client</li>
+<li>[ ] Data collection from Prometheus works</li>
+<li>
+<p>[ ] Models can be deployed via KServe (if applicable)</p>
+</li>
+<li>
+<p>[ ] <strong>Performance Tests</strong></p>
+</li>
+<li>[ ] Response times &lt; 500ms for API calls</li>
+<li>[ ] No timeout errors under load</li>
+<li>[ ] MCP server logs show successful processing</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="issue-cannot-connect-to-mcp-server">Issue: Cannot Connect to MCP Server<a class="headerlink" href="#issue-cannot-connect-to-mcp-server" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>:
+<code>curl: (7) Failed to connect to cluster-health-mcp-server port 9090: Connection refused</code></p>
+<p><strong>Solutions</strong>:
+```bash</p>
+<h1 id="1-verify-mcp-server-is-running">1. Verify MCP server is running<a class="headerlink" href="#1-verify-mcp-server-is-running" title="Permanent link">&para;</a></h1>
+<p>oc get pods -n self-healing-platform -l app=cluster-health-mcp-server</p>
+<h1 id="2-check-service-endpoints">2. Check service endpoints<a class="headerlink" href="#2-check-service-endpoints" title="Permanent link">&para;</a></h1>
+<p>oc get endpoints -n self-healing-platform cluster-health-mcp-server</p>
+<h1 id="3-test-from-a-pod-in-self-healing-platform-namespace-known-working">3. Test from a pod in self-healing-platform namespace (known working)<a class="headerlink" href="#3-test-from-a-pod-in-self-healing-platform-namespace-known-working" title="Permanent link">&para;</a></h1>
+<p>oc run test-curl --image=curlimages/curl:latest --rm -i --restart=Never \
+  -n self-healing-platform -- \
+  curl http://cluster-health-mcp-server:9090/health</p>
+<h1 id="4-check-network-policies">4. Check network policies<a class="headerlink" href="#4-check-network-policies" title="Permanent link">&para;</a></h1>
+<p>oc get networkpolicies -n self-healing-platform
+oc get networkpolicies -n my-custom-app-test
+```</p>
+<h3 id="issue-anomaly-submission-fails">Issue: Anomaly Submission Fails<a class="headerlink" href="#issue-anomaly-submission-fails" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>:
+<code>{"error": "Invalid anomaly format", "status": 400}</code></p>
+<p><strong>Solutions</strong>:
+```python</p>
+<h1 id="ensure-required-fields-are-present">Ensure required fields are present<a class="headerlink" href="#ensure-required-fields-are-present" title="Permanent link">&para;</a></h1>
+<p>required_fields = ['timestamp', 'type', 'severity', 'source', 'details', 'confidence_score']</p>
+<h1 id="validate-timestamp-format-iso-8601">Validate timestamp format (ISO 8601)<a class="headerlink" href="#validate-timestamp-format-iso-8601" title="Permanent link">&para;</a></h1>
+<p>from datetime import datetime
+timestamp = datetime.utcnow().isoformat() + 'Z'  # Must end with 'Z'</p>
+<h1 id="validate-severity-values">Validate severity values<a class="headerlink" href="#validate-severity-values" title="Permanent link">&para;</a></h1>
+<p>valid_severities = ['low', 'medium', 'high', 'critical']</p>
+<h1 id="validate-confidence_score-range">Validate confidence_score range<a class="headerlink" href="#validate-confidence_score-range" title="Permanent link">&para;</a></h1>
+<p>confidence_score = 0.85  # Must be between 0.0 and 1.0
+```</p>
+<h3 id="issue-rbac-permission-denied">Issue: RBAC Permission Denied<a class="headerlink" href="#issue-rbac-permission-denied" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>:
+<code>Error from server (Forbidden): services "cluster-health-mcp-server" is forbidden</code></p>
+<p><strong>Solutions</strong>:
+```bash</p>
+<h1 id="check-current-permissions">Check current permissions<a class="headerlink" href="#check-current-permissions" title="Permanent link">&para;</a></h1>
+<p>oc auth can-i get services \
+  --as=system:serviceaccount:my-custom-app-test:my-custom-app-sa \
+  -n self-healing-platform</p>
+<h1 id="create-necessary-rolebinding">Create necessary RoleBinding<a class="headerlink" href="#create-necessary-rolebinding" title="Permanent link">&para;</a></h1>
+<p>oc create rolebinding my-custom-app-mcp-access \
+  --role=mcp-client \
+  --serviceaccount=my-custom-app-test:my-custom-app-sa \
+  -n self-healing-platform</p>
+<h1 id="verify-permissions-granted">Verify permissions granted<a class="headerlink" href="#verify-permissions-granted" title="Permanent link">&para;</a></h1>
+<p>oc describe rolebinding my-custom-app-mcp-access -n self-healing-platform
+```</p>
+<h2 id="example-complete-custom-application-integration">Example: Complete Custom Application Integration<a class="headerlink" href="#example-complete-custom-application-integration" title="Permanent link">&para;</a></h2>
+<p>See our reference implementation:
+- <strong>Repository</strong>: <a href="../../examples/custom-app-integration/">custom-app-integration-example</a>
+- <strong>Notebook</strong>: <a href="../../notebooks/09-custom-applications/">notebooks/09-custom-applications/example-integration.ipynb</a></p>
+<h2 id="advanced-topics">Advanced Topics<a class="headerlink" href="#advanced-topics" title="Permanent link">&para;</a></h2>
+<h3 id="using-mcp-server-with-database-stateful-mode">Using MCP Server with Database (Stateful Mode)<a class="headerlink" href="#using-mcp-server-with-database-stateful-mode" title="Permanent link">&para;</a></h3>
+<p>If you deployed the MCP server with PostgreSQL:</p>
+<p>```python</p>
+<h1 id="query-incident-history">Query incident history<a class="headerlink" href="#query-incident-history" title="Permanent link">&para;</a></h1>
+<p>response = requests.get(
+    'http://coordination-engine:8080/api/v1/incidents',
+    params={'severity': 'high', 'time_range': '24h'}
+)</p>
+<p>incidents = response.json()
+print(f"Found {len(incidents)} high-severity incidents")
+```</p>
+<h3 id="custom-prometheus-metrics">Custom Prometheus Metrics<a class="headerlink" href="#custom-prometheus-metrics" title="Permanent link">&para;</a></h3>
+<p>Export custom metrics for monitoring:</p>
+<p>```python
+from prometheus_client import Counter, Gauge, push_to_gateway</p>
+<h1 id="define-custom-metrics">Define custom metrics<a class="headerlink" href="#define-custom-metrics" title="Permanent link">&para;</a></h1>
+<p>custom_anomalies = Counter(
+    'my_app_anomalies_total',
+    'Total anomalies detected by my application'
+)</p>
+<p>custom_response_time = Gauge(
+    'my_app_response_time_seconds',
+    'Response time of my application'
+)</p>
+<h1 id="update-metrics">Update metrics<a class="headerlink" href="#update-metrics" title="Permanent link">&para;</a></h1>
+<p>custom_anomalies.inc()
+custom_response_time.set(0.45)</p>
+<h1 id="push-to-prometheus-pushgateway">Push to Prometheus Pushgateway<a class="headerlink" href="#push-to-prometheus-pushgateway" title="Permanent link">&para;</a></h1>
+<p>push_to_gateway(
+    'pushgateway.self-healing-platform.svc.cluster.local:9091',
+    job='my-custom-app',
+    registry=registry
+)
+```</p>
+<h3 id="extending-mcp-server-tools">Extending MCP Server Tools<a class="headerlink" href="#extending-mcp-server-tools" title="Permanent link">&para;</a></h3>
+<p>To add custom tools to the MCP server (requires TypeScript development):</p>
+<ol>
+<li>Add tool definition in <code>src/mcp-server/src/index.ts</code></li>
+<li>Implement tool handler</li>
+<li>Rebuild and redeploy MCP server</li>
+</ol>
+<p>See <a href="../../docs/adrs/014-openshift-aiops-platform-mcp-server.md">ADR-014: MCP Server Architecture</a> for details.</p>
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><a href="../lightspeed-notebook-feedback-loop/">Lightspeed-Notebook Feedback Loop</a></strong> - Using interactions to improve notebooks</li>
+<li><strong><a href="../deploy-mcp-server-lightspeed/">Deploy MCP Server Guide</a></strong> - Deployment and configuration</li>
+<li><strong><a href="../../docs/adrs/014-openshift-aiops-platform-mcp-server.md">ADR-014: MCP Server Architecture</a></strong> - Technical architecture</li>
+<li><strong><a href="../../notebooks/README.md">Notebook Development Guide</a></strong> - Creating custom notebooks</li>
+<li><strong><a href="../../docs/adrs/002-hybrid-self-healing-approach.md">Coordination Engine API</a></strong> - API reference</li>
+</ul>
+<h2 id="questions-or-issues">Questions or Issues?<a class="headerlink" href="#questions-or-issues" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>GitHub Issues</strong>: https://github.com/openshift-aiops/openshift-aiops-platform/issues</li>
+<li><strong>Documentation</strong>: https://github.com/openshift-aiops/openshift-aiops-platform/tree/main/docs</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

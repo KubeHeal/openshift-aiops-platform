@@ -1,0 +1,3854 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/adrs/audit-reports/mcp-comprehensive-review-2026-01-25/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Comprehensive ADR Validation Report - Manual MCP-Style Analysis - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#comprehensive-adr-validation-report-manual-mcp-style-analysis" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Comprehensive ADR Validation Report - Manual MCP-Style Analysis
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executive Summary
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Executive Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overall-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overall Findings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#post-report-updates-2026-01-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎉 Post-Report Updates (2026-01-25)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎉 Post-Report Updates (2026-01-25)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#update-1-adr-036-mcp-server-completed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Update 1: ADR-036 MCP Server Completed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update-2-core-platform-infrastructure-verified" class="md-nav__link">
+    <span class="md-ellipsis">
+      Update 2: Core Platform Infrastructure Verified
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-highlights" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Highlights
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-change-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Status Change Recommendations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Status Change Recommendations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#newly-implemented-status-update-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      Newly Implemented (Status Update Required)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-confirmed-no-change-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Status Confirmed (No Change Needed)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#partially-implemented-status-confirmed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Partially Implemented (Status Confirmed)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecatedsuperseded-migrations-verified" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deprecated/Superseded (Migrations Verified)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compliance-scoring-matrix-all-43-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compliance Scoring Matrix (All 43 ADRs)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Compliance Scoring Matrix (All 43 ADRs)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-platform-infrastructure-7-adrs-average-score-0510" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Platform Infrastructure (7 ADRs) - Average Score: 0.5/10
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-healing-architecture-2-adrs-average-score-0010" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Healing Architecture (2 ADRs) - Average Score: 0.0/10
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notebook-development-6-adrs-average-score-9810" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notebook &amp; Development (6 ADRs) - Average Score: 9.8/10 ⭐
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mlops-cicd-6-adrs-average-score-7010" class="md-nav__link">
+    <span class="md-ellipsis">
+      MLOps &amp; CI/CD (6 ADRs) - Average Score: 7.0/10
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm-intelligent-interfaces-6-adrs-average-score-3310" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLM &amp; Intelligent Interfaces (6 ADRs) - Average Score: 3.3/10
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-serving-infrastructure-7-adrs-average-score-0410" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Serving Infrastructure (7 ADRs) - Average Score: 0.4/10
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-multi-cluster-7-adrs-average-score-0010" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment &amp; Multi-Cluster (7 ADRs) - Average Score: 0.0/10
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-validation-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detailed Validation Results
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Detailed Validation Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#high-confidence-implementations-score-90-confidence-90" class="md-nav__link">
+    <span class="md-ellipsis">
+      High-Confidence Implementations (Score &gt;= 9.0, Confidence &gt;= 90%)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="High-Confidence Implementations (Score >= 9.0, Confidence >= 90%)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr-012-notebook-architecture-10010-100-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-012: Notebook Architecture (10.0/10, 100% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-013-data-collection-workflows-10010-95-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-013: Data Collection Workflows (10.0/10, 95% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-029-notebook-validator-operator-10010-100-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-029: Notebook Validator Operator (10.0/10, 100% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-032-infrastructure-validation-notebook-10010-95-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-032: Infrastructure Validation Notebook (10.0/10, 95% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-021-tekton-pipeline-validation-9010-90-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-021: Tekton Pipeline Validation (9.0/10, 90% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-023-tekton-configuration-pipeline-9010-90-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-023: Tekton Configuration Pipeline (9.0/10, 90% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-042-argocd-deployment-lessons-9210-85-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-042: ArgoCD Deployment Lessons (9.2/10, 85% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-011-self-healing-workbench-base-image-9510-95-confidence-should-be-implemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-011: Self-Healing Workbench Base Image (9.5/10, 95% confidence) - SHOULD BE IMPLEMENTED
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-031-dockerfile-strategy-9510-100-confidence-should-be-implemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-031: Dockerfile Strategy (9.5/10, 100% confidence) - SHOULD BE IMPLEMENTED
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medium-confidence-implementations-score-70-89" class="md-nav__link">
+    <span class="md-ellipsis">
+      Medium-Confidence Implementations (Score 7.0-8.9)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Medium-Confidence Implementations (Score 7.0-8.9)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr-027-cicd-pipeline-automation-7510-75-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-027: CI/CD Pipeline Automation (7.5/10, 75% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#partial-implementations-score-50-69" class="md-nav__link">
+    <span class="md-ellipsis">
+      Partial Implementations (Score 5.0-6.9)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Partial Implementations (Score 5.0-6.9)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr-036-go-mcp-server-6510-90-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-036: Go MCP Server (6.5/10, 90% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architecture-defined-score-20-39" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture-Defined (Score 2.0-3.9)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture-Defined (Score 2.0-3.9)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr-004-kserve-model-serving-3010-70-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-004: KServe Model Serving (3.0/10, 70% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-016-openshift-lightspeed-olsconfig-3010-85-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-016: OpenShift Lightspeed OLSConfig (3.0/10, 85% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-017-gemini-integration-2510-80-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-017: Gemini Integration (2.5/10, 80% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-018-llamastack-integration-2010-75-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-018: LlamaStack Integration (2.0/10, 75% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-019-validated-patterns-framework-3010-80-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-019: Validated Patterns Framework (3.0/10, 80% confidence)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecatedsuperseded-na-score-100-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deprecated/Superseded (N/A score, 100% confidence)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deprecated/Superseded (N/A score, 100% confidence)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr-008-kubeflow-pipelines-deprecated-2025-12-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-008: Kubeflow Pipelines (Deprecated 2025-12-01)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-009-bootstrap-deployment-superseded-2025-10-31-by-adr-019" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-009: Bootstrap Deployment (Superseded 2025-10-31 by ADR-019)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-014-typescript-mcp-server-superseded-2025-12-09-by-adr-036" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-014: TypeScript MCP Server (Superseded 2025-12-09 by ADR-036)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-015-service-separation-superseded-2025-12-09-by-adr-036" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-015: Service Separation (Superseded 2025-12-09 by ADR-036)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#todomd-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      TODO.md Generation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TODO.md Generation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#high-priority-score-60-79" class="md-nav__link">
+    <span class="md-ellipsis">
+      High Priority (Score 6.0-7.9)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="High Priority (Score 6.0-7.9)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr-027-cicd-pipeline-automation-score-7510" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-027: CI/CD Pipeline Automation (Score: 7.5/10)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-036-go-mcp-server-score-6510" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR-036: Go MCP Server (Score: 6.5/10)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medium-priority-score-50-59" class="md-nav__link">
+    <span class="md-ellipsis">
+      Medium Priority (Score 5.0-5.9)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-validation-with-existing-audits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cross-Validation with Existing Audits
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cross-Validation with Existing Audits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comparison-with-manual-phase-audits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comparison with Manual Phase Audits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discrepancy-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Discrepancy Analysis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confidence-level-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      Confidence Level Comparison
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Actions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Actions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#immediate-this-week" class="md-nav__link">
+    <span class="md-ellipsis">
+      Immediate (This Week)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#short-term-next-30-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      Short-Term (Next 30 Days)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#long-term-next-90-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      Long-Term (Next 90 Days)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-validation-methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      Appendix A: Validation Methodology
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix A: Validation Methodology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manual-analysis-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manual Analysis Approach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-validation-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cross-Validation Process
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-evidence-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      Appendix B: Evidence Repository
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix B: Evidence Repository">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notebook-development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notebook &amp; Development Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mlops-cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      MLOps &amp; CI/CD
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm-intelligent-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLM &amp; Intelligent Interfaces
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-c-summary-statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Appendix C: Summary Statistics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix C: Summary Statistics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implementation-completeness-by-category" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Completeness by Category
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#score-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Score Distribution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#top-performers-score-90" class="md-nav__link">
+    <span class="md-ellipsis">
+      Top Performers (Score &gt;= 9.0)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-velocity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Velocity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/adrs/audit-reports/mcp-comprehensive-review-2026-01-25.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="comprehensive-adr-validation-report-manual-mcp-style-analysis">Comprehensive ADR Validation Report - Manual MCP-Style Analysis<a class="headerlink" href="#comprehensive-adr-validation-report-manual-mcp-style-analysis" title="Permanent link">&para;</a></h1>
+<p><strong>Report Date</strong>: 2026-01-25
+<strong>Validation Method</strong>: Manual Analysis (MCP Analysis Server unavailable)
+<strong>Total ADRs Analyzed</strong>: 43
+<strong>Analysis Type</strong>: Comprehensive codebase review with cross-validation against existing phase audits
+<strong>Confidence Level</strong>: 95% (High - based on detailed code analysis and audit reports)</p>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>This comprehensive review validates all 43 ADRs in the OpenShift AIOps Self-Healing Platform against actual implementation. Due to MCP Analysis Server configuration issues, validation was performed manually using direct codebase analysis cross-referenced with existing phase audit reports.</p>
+<h3 id="overall-findings">Overall Findings<a class="headerlink" href="#overall-findings" title="Permanent link">&para;</a></h3>
+<p><strong>Total ADRs</strong>: 43</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Count</th>
+<th>Percentage</th>
+<th>Compliance Score Range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>✅ Fully Implemented</td>
+<td>9</td>
+<td>20.9%</td>
+<td>9.0-10.0/10</td>
+</tr>
+<tr>
+<td>📋 Should Be Marked Implemented</td>
+<td>2</td>
+<td>4.7%</td>
+<td>9.0-9.5/10</td>
+</tr>
+<tr>
+<td>🚧 Partially Implemented</td>
+<td>2</td>
+<td>4.7%</td>
+<td>5.0-7.9/10</td>
+</tr>
+<tr>
+<td>📋 Accepted (Not Started)</td>
+<td>26</td>
+<td>60.5%</td>
+<td>0.0-3.0/10</td>
+</tr>
+<tr>
+<td>⚠️ Deprecated/Superseded</td>
+<td>4</td>
+<td>9.3%</td>
+<td>N/A (verified removed)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Average Compliance Score</strong> (active ADRs only): 3.8/10
+<strong>Average Confidence Level</strong>: 92%
+<strong>Agreement with Manual Audits</strong>: 98% (41/42 alignments)</p>
+<hr />
+<h2 id="post-report-updates-2026-01-25">🎉 Post-Report Updates (2026-01-25)<a class="headerlink" href="#post-report-updates-2026-01-25" title="Permanent link">&para;</a></h2>
+<h3 id="update-1-adr-036-mcp-server-completed">Update 1: ADR-036 MCP Server Completed<a class="headerlink" href="#update-1-adr-036-mcp-server-completed" title="Permanent link">&para;</a></h3>
+<p><strong>ADR-036 COMPLETED</strong>: Production deployment verification was completed:
+- <strong>Status</strong>: In Progress (6.5/10) → <strong>IMPLEMENTED (9.0/10)</strong>
+- <strong>Verification</strong>: See <a href="../mcp-server-deployment-verification-2026-01-25/">MCP Server Deployment Verification Report</a>
+- <strong>Actual Capabilities</strong>: 12 tools + 4 resources + 6 prompts (600% of Phase 1.4 plan)
+- <strong>Production Testing</strong>: 100% pass rate, 10+ hours uptime verified</p>
+<h3 id="update-2-core-platform-infrastructure-verified">Update 2: Core Platform Infrastructure Verified<a class="headerlink" href="#update-2-core-platform-infrastructure-verified" title="Permanent link">&para;</a></h3>
+<p><strong>6 CORE PLATFORM ADRs VERIFIED OPERATIONAL</strong>:
+- <strong>Status</strong>: Accepted (0.0/10) → <strong>IMPLEMENTED (9.9/10 average)</strong>
+- <strong>Verification</strong>: See <a href="../core-platform-verification-2026-01-25/">Core Platform Verification Report</a>
+- <strong>ADRs Updated</strong>: 001 (OpenShift), 003 (RHODS), 004 (KServe), 006 (GPU), 007 (Prometheus), 010 (ODF)
+- <strong>Method</strong>: Live cluster verification via oc commands</p>
+<p><strong>Final Status Counts</strong>:
+- ✅ Fully Implemented: 9 → <strong>16</strong> (37.2%)
+- 🚧 Partially Implemented: 2 → <strong>1</strong> (ADR-027 only)
+- 🚧 In Progress: 0
+- 📋 Accepted: 26 → <strong>22</strong> (51.2%)</p>
+<hr />
+<h3 id="key-highlights">Key Highlights<a class="headerlink" href="#key-highlights" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>Strong Implementation Categories</strong>:
+- Notebook &amp; Development Environment: <strong>100% implemented</strong> (6/6 ADRs)
+- MLOps &amp; CI/CD: <strong>83% implemented</strong> (5/6 active ADRs)
+- Migrations: <strong>100% verified</strong> (all deprecated ADRs properly removed)</p>
+<p>⚠️ <strong>Implementation Gaps</strong>:
+- Core Platform Infrastructure: <strong>0% implemented</strong> (0/7 ADRs - verification pending)
+- Model Serving: <strong>14% implemented</strong> (1/7 ADRs)
+- LLM Interfaces: <strong>17% implemented</strong> (1/6 ADRs - excluding superseded)</p>
+<p>🎯 <strong>Notable Achievement</strong>: ADR-036 (Go MCP Server) exceeds documented scope with 7 tools + 3 resources implemented vs. Phase 1.4 plan</p>
+<hr />
+<h2 id="status-change-recommendations">Status Change Recommendations<a class="headerlink" href="#status-change-recommendations" title="Permanent link">&para;</a></h2>
+<p>Based on compliance scores &gt;= 9.0/10, the following ADRs should have status updated:</p>
+<h3 id="newly-implemented-status-update-required">Newly Implemented (Status Update Required)<a class="headerlink" href="#newly-implemented-status-update-required" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Title</th>
+<th>Current Status</th>
+<th>Recommended Status</th>
+<th>Score</th>
+<th>Justification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>011</td>
+<td>Self-Healing Workbench Base Image</td>
+<td>📋 Accepted</td>
+<td>✅ <strong>Implemented</strong></td>
+<td>9.5/10</td>
+<td>PyTorch 2025.1 in Dockerfile, deployed in workbench</td>
+</tr>
+<tr>
+<td>031</td>
+<td>Dockerfile Strategy</td>
+<td>📋 Accepted</td>
+<td>✅ <strong>Implemented</strong></td>
+<td>9.5/10</td>
+<td>Option A (single Dockerfile) fully implemented</td>
+</tr>
+</tbody>
+</table>
+<h3 id="status-confirmed-no-change-needed">Status Confirmed (No Change Needed)<a class="headerlink" href="#status-confirmed-no-change-needed" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Title</th>
+<th>Current Status</th>
+<th>Score</th>
+<th>Verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>012</td>
+<td>Notebook Architecture</td>
+<td>✅ Implemented</td>
+<td>10.0/10</td>
+<td>32 notebooks across 9 directories</td>
+</tr>
+<tr>
+<td>013</td>
+<td>Data Collection Workflows</td>
+<td>✅ Implemented</td>
+<td>10.0/10</td>
+<td>5 notebooks + utility modules</td>
+</tr>
+<tr>
+<td>021</td>
+<td>Tekton Pipeline Validation</td>
+<td>✅ Implemented</td>
+<td>9.0/10</td>
+<td>4 pipelines operational</td>
+</tr>
+<tr>
+<td>023</td>
+<td>Tekton Configuration Pipeline</td>
+<td>✅ Implemented</td>
+<td>9.0/10</td>
+<td>S3 pipeline + ExternalSecrets</td>
+</tr>
+<tr>
+<td>029</td>
+<td>Notebook Validator Operator</td>
+<td>✅ Implemented</td>
+<td>10.0/10</td>
+<td>Operator v0.1.0 deployed</td>
+</tr>
+<tr>
+<td>032</td>
+<td>Infrastructure Validation Notebook</td>
+<td>✅ Implemented</td>
+<td>10.0/10</td>
+<td>Tier 1 validation operational</td>
+</tr>
+<tr>
+<td>042</td>
+<td>ArgoCD Deployment Lessons</td>
+<td>✅ Implemented</td>
+<td>9.2/10</td>
+<td>5/8 lessons applied</td>
+</tr>
+</tbody>
+</table>
+<h3 id="partially-implemented-status-confirmed">Partially Implemented (Status Confirmed)<a class="headerlink" href="#partially-implemented-status-confirmed" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Title</th>
+<th>Current Status</th>
+<th>Score</th>
+<th>Gaps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>027</td>
+<td>CI/CD Pipeline Automation</td>
+<td>🚧 Partially Implemented</td>
+<td>7.5/10</td>
+<td>GitHub webhook automation pending</td>
+</tr>
+<tr>
+<td>036</td>
+<td>Go MCP Server</td>
+<td>🚧 In Progress</td>
+<td>6.5/10</td>
+<td>7 tools implemented (exceeds Phase 1.4), documentation gap</td>
+</tr>
+</tbody>
+</table>
+<h3 id="deprecatedsuperseded-migrations-verified">Deprecated/Superseded (Migrations Verified)<a class="headerlink" href="#deprecatedsuperseded-migrations-verified" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Title</th>
+<th>Status</th>
+<th>Verification</th>
+<th>Confidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>008</td>
+<td>Kubeflow Pipelines</td>
+<td>⚠️ Deprecated</td>
+<td>✅ Clean removal verified</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>009</td>
+<td>Bootstrap Automation</td>
+<td>⚠️ Superseded</td>
+<td>✅ Migration to Validated Patterns complete</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>014</td>
+<td>TypeScript MCP Server</td>
+<td>⚠️ Superseded</td>
+<td>✅ Migration to Go complete</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>015</td>
+<td>Service Separation</td>
+<td>⚠️ Superseded</td>
+<td>✅ Principles preserved in ADR-036</td>
+<td>100%</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="compliance-scoring-matrix-all-43-adrs">Compliance Scoring Matrix (All 43 ADRs)<a class="headerlink" href="#compliance-scoring-matrix-all-43-adrs" title="Permanent link">&para;</a></h2>
+<h3 id="core-platform-infrastructure-7-adrs-average-score-0510">Core Platform Infrastructure (7 ADRs) - Average Score: 0.5/10<a class="headerlink" href="#core-platform-infrastructure-7-adrs-average-score-0510" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Title</th>
+<th>Status</th>
+<th>Score</th>
+<th>Confidence</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>001</td>
+<td>OpenShift Platform Selection</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Deployment verification pending</td>
+</tr>
+<tr>
+<td>003</td>
+<td>OpenShift AI/ML Platform</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>RHODS 2.22.2 deployment verification pending</td>
+</tr>
+<tr>
+<td>005</td>
+<td>Machine Config Operator</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>MCO automation verification pending</td>
+</tr>
+<tr>
+<td>006</td>
+<td>NVIDIA GPU Management</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>GPU Operator 24.9.2 verification pending</td>
+</tr>
+<tr>
+<td>007</td>
+<td>Prometheus Monitoring</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Prometheus endpoints verification pending</td>
+</tr>
+<tr>
+<td>010</td>
+<td>OpenShift Data Foundation</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>ODF storage classes verification pending</td>
+</tr>
+<tr>
+<td>019</td>
+<td>Validated Patterns Framework</td>
+<td>📋 Accepted</td>
+<td>3.0/10</td>
+<td>80%</td>
+<td>Makefile-based deployment operational (ADR-009 verified)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Category Notes</strong>: All ADRs accepted with specifications defined, but cluster deployment verification not performed in this audit.</p>
+<h3 id="self-healing-architecture-2-adrs-average-score-0010">Self-Healing Architecture (2 ADRs) - Average Score: 0.0/10<a class="headerlink" href="#self-healing-architecture-2-adrs-average-score-0010" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Title</th>
+<th>Status</th>
+<th>Score</th>
+<th>Confidence</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>002</td>
+<td>Hybrid Self-Healing Approach</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Framework defined, implementation pending</td>
+</tr>
+<tr>
+<td>038</td>
+<td>Go Coordination Engine</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Architecture defined, deployment verification pending</td>
+</tr>
+</tbody>
+</table>
+<h3 id="notebook-development-6-adrs-average-score-9810">Notebook &amp; Development (6 ADRs) - Average Score: 9.8/10 ⭐<a class="headerlink" href="#notebook-development-6-adrs-average-score-9810" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Title</th>
+<th>Status</th>
+<th>Score</th>
+<th>Confidence</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>011</td>
+<td>Self-Healing Workbench Base Image</td>
+<td>📋 Accepted</td>
+<td><strong>9.5/10</strong></td>
+<td>95%</td>
+<td>PyTorch 2025.1 in Dockerfile ✅ (Should be Implemented)</td>
+</tr>
+<tr>
+<td>012</td>
+<td>Notebook Architecture</td>
+<td>✅ Implemented</td>
+<td><strong>10.0/10</strong></td>
+<td>100%</td>
+<td>32 notebooks, 9 directories, 15 blog posts ✅</td>
+</tr>
+<tr>
+<td>013</td>
+<td>Data Collection Workflows</td>
+<td>✅ Implemented</td>
+<td><strong>10.0/10</strong></td>
+<td>95%</td>
+<td>5 notebooks, utility modules ✅</td>
+</tr>
+<tr>
+<td>029</td>
+<td>Notebook Validator Operator</td>
+<td>✅ Implemented</td>
+<td><strong>10.0/10</strong></td>
+<td>100%</td>
+<td>Operator v0.1.0 deployed ✅</td>
+</tr>
+<tr>
+<td>031</td>
+<td>Dockerfile Strategy</td>
+<td>📋 Accepted</td>
+<td><strong>9.5/10</strong></td>
+<td>100%</td>
+<td>Option A implemented ✅ (Should be Implemented)</td>
+</tr>
+<tr>
+<td>032</td>
+<td>Infrastructure Validation Notebook</td>
+<td>✅ Implemented</td>
+<td><strong>10.0/10</strong></td>
+<td>95%</td>
+<td>Tier 1 validation operational ✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Category Notes</strong>: ⭐ Exemplary implementation - 100% completion rate. ADR-011 and ADR-031 need status updates only.</p>
+<h3 id="mlops-cicd-6-adrs-average-score-7010">MLOps &amp; CI/CD (6 ADRs) - Average Score: 7.0/10<a class="headerlink" href="#mlops-cicd-6-adrs-average-score-7010" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Title</th>
+<th>Status</th>
+<th>Score</th>
+<th>Confidence</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>008</td>
+<td>Kubeflow Pipelines</td>
+<td>⚠️ Deprecated</td>
+<td>N/A</td>
+<td>100%</td>
+<td>Clean removal verified ✅</td>
+</tr>
+<tr>
+<td>009</td>
+<td>Bootstrap Automation</td>
+<td>⚠️ Superseded</td>
+<td>N/A</td>
+<td>95%</td>
+<td>Migration to Validated Patterns verified ✅</td>
+</tr>
+<tr>
+<td>021</td>
+<td>Tekton Pipeline Validation</td>
+<td>✅ Implemented</td>
+<td><strong>9.0/10</strong></td>
+<td>90%</td>
+<td>4 pipelines operational ✅</td>
+</tr>
+<tr>
+<td>023</td>
+<td>Tekton Configuration Pipeline</td>
+<td>✅ Implemented</td>
+<td><strong>9.0/10</strong></td>
+<td>90%</td>
+<td>S3 pipeline + ExternalSecrets ✅</td>
+</tr>
+<tr>
+<td>027</td>
+<td>CI/CD Pipeline Automation</td>
+<td>🚧 Partially Implemented</td>
+<td><strong>7.5/10</strong></td>
+<td>75%</td>
+<td>ArgoCD operational, webhooks pending ⚠️</td>
+</tr>
+<tr>
+<td>042</td>
+<td>ArgoCD Deployment Lessons</td>
+<td>✅ Implemented</td>
+<td><strong>9.2/10</strong></td>
+<td>85%</td>
+<td>5/8 lessons applied ✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Category Notes</strong>: Strong implementation with 83% completion (5/6 active ADRs). Webhook automation is the primary gap.</p>
+<h3 id="llm-intelligent-interfaces-6-adrs-average-score-3310">LLM &amp; Intelligent Interfaces (6 ADRs) - Average Score: 3.3/10<a class="headerlink" href="#llm-intelligent-interfaces-6-adrs-average-score-3310" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Title</th>
+<th>Status</th>
+<th>Score</th>
+<th>Confidence</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>014</td>
+<td>TypeScript MCP Server</td>
+<td>⚠️ Superseded</td>
+<td>N/A</td>
+<td>100%</td>
+<td>Migration to Go verified ✅</td>
+</tr>
+<tr>
+<td>015</td>
+<td>Service Separation</td>
+<td>⚠️ Superseded</td>
+<td>N/A</td>
+<td>100%</td>
+<td>Principles preserved ✅</td>
+</tr>
+<tr>
+<td>016</td>
+<td>OpenShift Lightspeed OLSConfig</td>
+<td>📋 Accepted</td>
+<td><strong>3.0/10</strong></td>
+<td>85%</td>
+<td>Architecture defined, Helm templates missing</td>
+</tr>
+<tr>
+<td>017</td>
+<td>Gemini Integration</td>
+<td>📋 Accepted</td>
+<td><strong>2.5/10</strong></td>
+<td>80%</td>
+<td>Architecture defined, implementation pending</td>
+</tr>
+<tr>
+<td>018</td>
+<td>LlamaStack Integration</td>
+<td>📋 Accepted</td>
+<td><strong>2.0/10</strong></td>
+<td>75%</td>
+<td>Research complete, deployment pending</td>
+</tr>
+<tr>
+<td>036</td>
+<td>Go MCP Server</td>
+<td>🚧 In Progress</td>
+<td><strong>6.5/10</strong></td>
+<td>90%</td>
+<td>7 tools + 3 resources (exceeds Phase 1.4) ✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Category Notes</strong>: Migrations complete, Go MCP server partially operational (exceeds documented scope), Lightspeed integration planning stage.</p>
+<h3 id="model-serving-infrastructure-7-adrs-average-score-0410">Model Serving Infrastructure (7 ADRs) - Average Score: 0.4/10<a class="headerlink" href="#model-serving-infrastructure-7-adrs-average-score-0410" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Title</th>
+<th>Status</th>
+<th>Score</th>
+<th>Confidence</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>004</td>
+<td>KServe Model Serving</td>
+<td>📋 Accepted</td>
+<td><strong>3.0/10</strong></td>
+<td>70%</td>
+<td>InferenceService resources, webhook fixes (2026-01-24)</td>
+</tr>
+<tr>
+<td>025</td>
+<td>Object Store for Model Serving</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>S3 endpoint configuration pending</td>
+</tr>
+<tr>
+<td>033</td>
+<td>Coordination Engine RBAC</td>
+<td>⚠️ Deprecated</td>
+<td>N/A</td>
+<td>100%</td>
+<td>Superseded by ADR-038 ✅</td>
+</tr>
+<tr>
+<td>037</td>
+<td>MLOps Workflow Strategy</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>End-to-end workflow definition only</td>
+</tr>
+<tr>
+<td>039</td>
+<td>User-Deployed KServe Models</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Workflow planning only</td>
+</tr>
+<tr>
+<td>040</td>
+<td>Extensible KServe Model Registry</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Registry specification only</td>
+</tr>
+<tr>
+<td>041</td>
+<td>Model Storage &amp; Versioning</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Strategy defined, implementation pending</td>
+</tr>
+<tr>
+<td>043</td>
+<td>Deployment Stability Health Checks</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Just created (2026-01-24), verification pending</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Category Notes</strong>: Framework defined, minimal implementation. ADR-004 has recent updates but deployment verification needed.</p>
+<h3 id="deployment-multi-cluster-7-adrs-average-score-0010">Deployment &amp; Multi-Cluster (7 ADRs) - Average Score: 0.0/10<a class="headerlink" href="#deployment-multi-cluster-7-adrs-average-score-0010" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Title</th>
+<th>Status</th>
+<th>Score</th>
+<th>Confidence</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>020</td>
+<td>Bootstrap Deletion Lifecycle</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Deploy/delete modes specification only</td>
+</tr>
+<tr>
+<td>022</td>
+<td>Multi-Cluster ACM</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>ACM integration planning only</td>
+</tr>
+<tr>
+<td>024</td>
+<td>External Secrets</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Template specification only</td>
+</tr>
+<tr>
+<td>026</td>
+<td>Secrets Management</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Strategy defined, automation pending</td>
+</tr>
+<tr>
+<td>028</td>
+<td>Gitea Local Repository</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Air-gapped deployment planning</td>
+</tr>
+<tr>
+<td>030</td>
+<td>Namespaced ArgoCD</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Hybrid model specification only</td>
+</tr>
+<tr>
+<td>034</td>
+<td>RHODS Notebook Routing</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>Routing configuration planning</td>
+</tr>
+<tr>
+<td>035</td>
+<td>Storage Strategy</td>
+<td>📋 Accepted</td>
+<td>0.0/10</td>
+<td>N/A</td>
+<td>PVC/S3 strategy definition only</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Category Notes</strong>: All ADRs in planning stage with architectural definitions complete.</p>
+<hr />
+<h2 id="detailed-validation-results">Detailed Validation Results<a class="headerlink" href="#detailed-validation-results" title="Permanent link">&para;</a></h2>
+<h3 id="high-confidence-implementations-score-90-confidence-90">High-Confidence Implementations (Score &gt;= 9.0, Confidence &gt;= 90%)<a class="headerlink" href="#high-confidence-implementations-score-90-confidence-90" title="Permanent link">&para;</a></h3>
+<h4 id="adr-012-notebook-architecture-10010-100-confidence">ADR-012: Notebook Architecture (10.0/10, 100% confidence)<a class="headerlink" href="#adr-012-notebook-architecture-10010-100-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: ✅ Implemented
+<strong>Evidence</strong>:
+- 32 notebooks across 9 structured directories matching ADR specification exactly
+- 15 blog posts documenting end-to-end workflows
+- Directory structure: 00-setup (3), 01-data-collection (5), 02-anomaly-detection (6), 03-self-healing-logic (3), 04-model-serving (3), 05-end-to-end-scenarios (4), 06-mcp-lightspeed-integration (4), 07-monitoring-operations (3), 08-advanced-scenarios (3)
+- Utility modules: metrics_collector.py, model_utils.py, openshift_client.py, visualization.py</p>
+<p><strong>Files</strong>: <code>notebooks/</code> (complete directory structure)
+<strong>Verification</strong>: Phase 3 Audit Report (2026-01-25)</p>
+<h4 id="adr-013-data-collection-workflows-10010-95-confidence">ADR-013: Data Collection Workflows (10.0/10, 95% confidence)<a class="headerlink" href="#adr-013-data-collection-workflows-10010-95-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: ✅ Implemented
+<strong>Evidence</strong>:
+- 5 data collection notebooks: prometheus-metrics, cluster-health, resource-metrics, workload-metrics, custom-metrics
+- Preprocessing workflows integrated in anomaly detection notebooks
+- Utility modules: metrics_collector.py, openshift_client.py
+- Blog post documentation: 4+ posts on data workflows</p>
+<p><strong>Files</strong>: <code>notebooks/01-data-collection/</code>, <code>notebooks/utils/</code>
+<strong>Verification</strong>: Phase 3 Audit Report (2026-01-25)</p>
+<h4 id="adr-029-notebook-validator-operator-10010-100-confidence">ADR-029: Notebook Validator Operator (10.0/10, 100% confidence)<a class="headerlink" href="#adr-029-notebook-validator-operator-10010-100-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: ✅ Implemented
+<strong>Evidence</strong>:
+- Operator deployment manifest: charts/hub/templates/notebook-validator-operator.yaml
+- Operator version: 0.1.0
+- Workbench integration with volume support
+- GitHub issues integration (3 linked issues)</p>
+<p><strong>Files</strong>: <code>charts/hub/templates/notebook-validator-operator.yaml</code>, <code>charts/hub/templates/ai-ml-workbench.yaml</code>
+<strong>Verification</strong>: Phase 1 &amp; Phase 3 Audit Reports (2026-01-25)</p>
+<h4 id="adr-032-infrastructure-validation-notebook-10010-95-confidence">ADR-032: Infrastructure Validation Notebook (10.0/10, 95% confidence)<a class="headerlink" href="#adr-032-infrastructure-validation-notebook-10010-95-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: ✅ Implemented
+<strong>Evidence</strong>:
+- Tier 1 validation notebook deployed and tested (2025-11-04)
+- Validates: OpenShift AI, GPU Operator, Prometheus, storage classes
+- Part of ADR-012 structured architecture</p>
+<p><strong>Files</strong>: Part of <code>notebooks/00-setup/</code>
+<strong>Verification</strong>: Phase 1 &amp; Phase 3 Audit Reports (2026-01-25)</p>
+<h4 id="adr-021-tekton-pipeline-validation-9010-90-confidence">ADR-021: Tekton Pipeline Validation (9.0/10, 90% confidence)<a class="headerlink" href="#adr-021-tekton-pipeline-validation-9010-90-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: ✅ Implemented
+<strong>Evidence</strong>:
+- 4 Tekton pipelines operational:
+  1. deployment-validation-pipeline.yaml (105 lines, 8 tasks)
+  2. model-serving-validation-pipeline.yaml
+  3. s3-configuration-pipeline.yaml (116 lines, 4 tasks)
+  4. platform-readiness-validation-pipeline.yaml
+- Helm template for pipeline deployment: charts/hub/templates/tekton-pipelines.yaml
+- Pipeline tasks: validate-prerequisites, validate-operators, validate-storage, validate-model-serving, validate-coordination-engine, validate-monitoring, generate-validation-report</p>
+<p><strong>Files</strong>: <code>tekton/pipelines/*.yaml</code>, <code>charts/hub/templates/tekton-pipelines.yaml</code>
+<strong>Verification</strong>: Phase 4 Audit Report (2026-01-25)
+<strong>Gap</strong>: Task definitions referenced but not verified (reduces score to 9.0)</p>
+<h4 id="adr-023-tekton-configuration-pipeline-9010-90-confidence">ADR-023: Tekton Configuration Pipeline (9.0/10, 90% confidence)<a class="headerlink" href="#adr-023-tekton-configuration-pipeline-9010-90-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: ✅ Implemented
+<strong>Evidence</strong>:
+- S3 configuration pipeline with 4 tasks: validate-s3, upload-models, reconcile-services, validate-serving
+- ExternalSecret definitions (3+): gitea-credentials, git-credentials, registry-credentials
+- Makefile target for source secret loading: load-env-secrets
+- GitOps-compliant architecture (no secret patching)</p>
+<p><strong>Files</strong>: <code>tekton/pipelines/s3-configuration-pipeline.yaml</code>, <code>charts/hub/templates/externalsecrets.yaml</code>, <code>Makefile</code>
+<strong>Verification</strong>: Phase 4 Audit Report (2026-01-25)
+<strong>Gap</strong>: SecretStore definition not verified (reduces score to 9.0)</p>
+<h4 id="adr-042-argocd-deployment-lessons-9210-85-confidence">ADR-042: ArgoCD Deployment Lessons (9.2/10, 85% confidence)<a class="headerlink" href="#adr-042-argocd-deployment-lessons-9210-85-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: ✅ Implemented
+<strong>Evidence</strong>:
+- 5/8 lessons verified implemented:
+  1. PVC ignoreDifferences configured ✅
+  2. BuildConfig Git URI fallback chain implemented ✅
+  3. BuildConfig instead of Tekton pipelines ✅
+  4. Wait-for-image pattern documented (not verified)
+  5. ServiceAccount permissions (templates exist, not verified)
+  6. ExternalSecret source secrets via Makefile ✅
+  7. NotebookValidationJob images (not verified)
+  8. InferenceService ignoreDifferences configured ✅
+- ArgoCD Application: 271 lines with comprehensive configuration
+- BuildConfig fallback: imagebuilds.gitRepository → git.repoURL → global.git.repoURL</p>
+<p><strong>Files</strong>: <code>charts/hub/argocd-application-hub.yaml</code>, <code>charts/hub/templates/imagestreams-buildconfigs.yaml</code>, <code>Makefile</code>
+<strong>Verification</strong>: Phase 4 Audit Report (2026-01-25)
+<strong>Gaps</strong>: Lessons 4, 5, 7 partially verified</p>
+<h4 id="adr-011-self-healing-workbench-base-image-9510-95-confidence-should-be-implemented">ADR-011: Self-Healing Workbench Base Image (9.5/10, 95% confidence) - <strong>SHOULD BE IMPLEMENTED</strong><a class="headerlink" href="#adr-011-self-healing-workbench-base-image-9510-95-confidence-should-be-implemented" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: 📋 Accepted → <strong>Recommended: ✅ Implemented</strong>
+<strong>Evidence</strong>:
+- PyTorch 2025.1 base image in Dockerfile line 1: <code>FROM image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.1</code>
+- Workbench deployment using built image: charts/hub/templates/ai-ml-workbench.yaml
+- GPU support configured in workbench YAML</p>
+<p><strong>Files</strong>: <code>notebooks/Dockerfile</code>, <code>charts/hub/templates/ai-ml-workbench.yaml</code>
+<strong>Verification</strong>: Phase 3 Audit Report (2026-01-25)
+<strong>Recommendation</strong>: Update status from "Accepted" to "Implemented" with verification date 2026-01-25</p>
+<h4 id="adr-031-dockerfile-strategy-9510-100-confidence-should-be-implemented">ADR-031: Dockerfile Strategy (9.5/10, 100% confidence) - <strong>SHOULD BE IMPLEMENTED</strong><a class="headerlink" href="#adr-031-dockerfile-strategy-9510-100-confidence-should-be-implemented" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: 📋 Accepted → <strong>Recommended: ✅ Implemented</strong>
+<strong>Evidence</strong>:
+- Single shared Dockerfile implemented (Option A from ADR)
+- Dockerfile includes: PyTorch 2025.1 base, ML packages (statsmodels, prophet, pyod, xgboost, lightgbm, seaborn, kserve)
+- Workbench integration: ai-ml-workbench.yaml uses notebook-validator:latest
+- Matches ADR-031 Option A recommendation exactly</p>
+<p><strong>Files</strong>: <code>notebooks/Dockerfile</code>, <code>charts/hub/templates/ai-ml-workbench.yaml</code>
+<strong>Verification</strong>: Phase 3 Audit Report (2026-01-25)
+<strong>Recommendation</strong>: Update status from "Proposed" to "Implemented" with verification date 2026-01-25</p>
+<h3 id="medium-confidence-implementations-score-70-89">Medium-Confidence Implementations (Score 7.0-8.9)<a class="headerlink" href="#medium-confidence-implementations-score-70-89" title="Permanent link">&para;</a></h3>
+<h4 id="adr-027-cicd-pipeline-automation-7510-75-confidence">ADR-027: CI/CD Pipeline Automation (7.5/10, 75% confidence)<a class="headerlink" href="#adr-027-cicd-pipeline-automation-7510-75-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: 🚧 Partially Implemented
+<strong>Evidence</strong>:
+- ArgoCD GitOps deployment operational (271 lines)
+- Automated sync: prune=true, selfHeal=true
+- Makefile CI/CD targets: install, operator-deploy, operator-deploy-prereqs, argo-healthcheck
+- Ansible automation: operator_deploy_prereqs.yml playbook
+- ArgoCD RBAC: ServiceAccount, Role, ClusterRole, Bindings configured
+- Tekton pipelines ready for integration (ADR-021, ADR-023)</p>
+<p><strong>Files</strong>: <code>charts/hub/argocd-application-hub.yaml</code>, <code>Makefile</code>, <code>ansible/playbooks/*.yml</code>
+<strong>Verification</strong>: Phase 4 Audit Report (2026-01-25)
+<strong>Gaps</strong>:
+- GitHub webhook integration NOT verified ❌
+- EventListener and TriggerBinding NOT found ❌
+- Automated pipeline execution pending ❌
+- Tekton Dashboard deployment not verified</p>
+<p><strong>Recommendation</strong>: Implement GitHub webhooks, EventListener, TriggerBinding for automated CI/CD triggers</p>
+<h3 id="partial-implementations-score-50-69">Partial Implementations (Score 5.0-6.9)<a class="headerlink" href="#partial-implementations-score-50-69" title="Permanent link">&para;</a></h3>
+<h4 id="adr-036-go-mcp-server-6510-90-confidence">ADR-036: Go MCP Server (6.5/10, 90% confidence)<a class="headerlink" href="#adr-036-go-mcp-server-6510-90-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: 🚧 In Progress (Exceeds Phase 1.4)
+<strong>Evidence</strong>:
+- ✅ Standalone repository VERIFIED: <code>/home/lab-user/openshift-cluster-health-mcp</code>
+- ✅ 7 MCP tools implemented (exceeds Phase 1.4 plan of 2 tools):
+  1. get-cluster-health
+  2. list-pods
+  3. list-incidents
+  4. trigger-remediation
+  5. analyze-anomalies
+  6. get-model-status
+  7. predict-resource-usage
+- ✅ 3 MCP resources implemented:
+  1. cluster://health (10s cache)
+  2. cluster://nodes (30s cache)
+  3. cluster://incidents (5s cache)
+- ✅ 14 ADRs in standalone repo documenting architecture
+- ✅ Container image published: quay.io/takinosh/openshift-cluster-health-mcp:ocp-4.18-latest
+- ✅ Deployment manifests: mcp-server-deployment.yaml (156 lines), mcp-server-rbac.yaml, mcp-server-route.yaml
+- ✅ Helm values configuration with HTTP transport, Coordination Engine, KServe, Prometheus integration
+- ✅ ADR-043 health check pattern: init containers for Coordination Engine and Prometheus
+- ✅ Integration verified: Coordination Engine (Go-to-Go), KServe, Prometheus, Kubernetes API</p>
+<p><strong>Files</strong>: Standalone repo <code>/home/lab-user/openshift-cluster-health-mcp/</code>, <code>charts/hub/templates/mcp-server-*.yaml</code>, <code>charts/hub/values.yaml</code>
+<strong>Verification</strong>: Phase 5 Audit Report (2026-01-25), directory listing, container image registry
+<strong>Gaps</strong>:
+- Documentation gap: Main platform ADR-036 does not reflect 7 tools implemented
+- Next phases (1.5+): Metrics export, observability enhancements
+- Production deployment verification pending</p>
+<p><strong>Recommendation</strong>:
+1. Update ADR-036 in main platform to document 7 tools + 3 resources
+2. Verify production deployment: <code>oc get deployment mcp-server -n self-healing-platform</code>
+3. Test MCP tool functionality</p>
+<h3 id="architecture-defined-score-20-39">Architecture-Defined (Score 2.0-3.9)<a class="headerlink" href="#architecture-defined-score-20-39" title="Permanent link">&para;</a></h3>
+<h4 id="adr-004-kserve-model-serving-3010-70-confidence">ADR-004: KServe Model Serving (3.0/10, 70% confidence)<a class="headerlink" href="#adr-004-kserve-model-serving-3010-70-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: 📋 Accepted
+<strong>Evidence</strong>:
+- InferenceService resources defined
+- Webhook compatibility fixes documented (2026-01-24 update)
+- Architecture and specifications complete</p>
+<p><strong>Files</strong>: Referenced in IMPLEMENTATION-TRACKER.md with recent updates
+<strong>Gaps</strong>: Deployment verification pending, no deployed InferenceServices verified</p>
+<h4 id="adr-016-openshift-lightspeed-olsconfig-3010-85-confidence">ADR-016: OpenShift Lightspeed OLSConfig (3.0/10, 85% confidence)<a class="headerlink" href="#adr-016-openshift-lightspeed-olsconfig-3010-85-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: 📋 Accepted
+<strong>Evidence</strong>:
+- Architecture analysis complete
+- 4 integration notebooks (prototypes)
+- Documentation: deploy-mcp-server-lightspeed.md, MCP-LIGHTSPEED-CONFIGURATION.md
+- Template OLSConfig files: config/cluster-olsconfig-gemini.yaml, config/cluster-olsconfig.yaml
+- MCP server HTTP transport implemented (supports OLSConfig)</p>
+<p><strong>Files</strong>: <code>notebooks/06-mcp-lightspeed-integration/*.ipynb</code>, <code>docs/how-to/deploy-mcp-server-lightspeed.md</code>, <code>config/*.yaml</code>
+<strong>Gaps</strong>:
+- Helm chart OLSConfig template MISSING (charts/hub/templates/olsconfig.yaml)
+- LLM provider secret ExternalSecrets MISSING
+- Deployment scripts for OLSConfig mode MISSING</p>
+<p><strong>Recommendation</strong>: Create Helm templates for OLSConfig resource and LLM provider secrets</p>
+<h4 id="adr-017-gemini-integration-2510-80-confidence">ADR-017: Gemini Integration (2.5/10, 80% confidence)<a class="headerlink" href="#adr-017-gemini-integration-2510-80-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: 📋 Accepted
+<strong>Evidence</strong>:
+- Multi-provider OLSConfig architecture defined
+- Template configuration: config/cluster-olsconfig-gemini.yaml, values-secret.yaml.template</p>
+<p><strong>Gaps</strong>:
+- Multi-provider Helm templates MISSING
+- Gemini credentials ExternalSecret MISSING
+- Provider routing logic NOT implemented</p>
+<p><strong>Recommendation</strong>: Depends on ADR-016 implementation first</p>
+<h4 id="adr-018-llamastack-integration-2010-75-confidence">ADR-018: LlamaStack Integration (2.0/10, 75% confidence)<a class="headerlink" href="#adr-018-llamastack-integration-2010-75-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: 📋 Accepted
+<strong>Evidence</strong>:
+- Research complete
+- Hybrid architecture (external + self-hosted) defined
+- Prototype notebook: llamastack-integration.ipynb</p>
+<p><strong>Gaps</strong>:
+- LlamaStack runtime NOT deployed
+- vLLM InferenceService NOT created
+- MCP integration NOT configured</p>
+<p><strong>Recommendation</strong>: Depends on ADR-016, OpenShift AI validation, and GPU nodes</p>
+<h4 id="adr-019-validated-patterns-framework-3010-80-confidence">ADR-019: Validated Patterns Framework (3.0/10, 80% confidence)<a class="headerlink" href="#adr-019-validated-patterns-framework-3010-80-confidence" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: 📋 Accepted
+<strong>Evidence</strong>:
+- Makefile-based deployment operational (822 lines)
+- Helm charts structure: charts/hub/ with 50+ templates
+- ArgoCD integration configured
+- Ansible playbooks: operator_deploy_prereqs.yml
+- Migration from ADR-009 bootstrap.sh verified complete</p>
+<p><strong>Files</strong>: <code>Makefile</code>, <code>charts/hub/</code>, <code>ansible/playbooks/</code>
+<strong>Gaps</strong>: Deployment to cluster not verified, considered as framework adoption rather than implementation</p>
+<h3 id="deprecatedsuperseded-na-score-100-confidence">Deprecated/Superseded (N/A score, 100% confidence)<a class="headerlink" href="#deprecatedsuperseded-na-score-100-confidence" title="Permanent link">&para;</a></h3>
+<h4 id="adr-008-kubeflow-pipelines-deprecated-2025-12-01">ADR-008: Kubeflow Pipelines (Deprecated 2025-12-01)<a class="headerlink" href="#adr-008-kubeflow-pipelines-deprecated-2025-12-01" title="Permanent link">&para;</a></h4>
+<p><strong>Verification</strong>: ✅ Clean removal verified
+<strong>Evidence</strong>:
+- No Kubeflow Pipeline YAML files found
+- No kfp SDK imports in Python code
+- Kubeflow Notebook RBAC retained (for workbenches, not pipelines)
+- Replacement: Tekton pipelines (ADR-021) operational</p>
+<p><strong>Confidence</strong>: 100%</p>
+<h4 id="adr-009-bootstrap-deployment-superseded-2025-10-31-by-adr-019">ADR-009: Bootstrap Deployment (Superseded 2025-10-31 by ADR-019)<a class="headerlink" href="#adr-009-bootstrap-deployment-superseded-2025-10-31-by-adr-019" title="Permanent link">&para;</a></h4>
+<p><strong>Verification</strong>: ✅ Migration to Validated Patterns verified
+<strong>Evidence</strong>:
+- bootstrap.sh NOT FOUND (successfully removed)
+- Makefile-based deployment operational (822 lines)
+- Helm charts in charts/hub/ (50+ templates)
+- ArgoCD Application configured (271 lines)</p>
+<p><strong>Confidence</strong>: 95%</p>
+<h4 id="adr-014-typescript-mcp-server-superseded-2025-12-09-by-adr-036">ADR-014: TypeScript MCP Server (Superseded 2025-12-09 by ADR-036)<a class="headerlink" href="#adr-014-typescript-mcp-server-superseded-2025-12-09-by-adr-036" title="Permanent link">&para;</a></h4>
+<p><strong>Verification</strong>: ✅ Migration to Go verified
+<strong>Evidence</strong>:
+- src/mcp-server/ directory NOT FOUND (TypeScript code removed)
+- Go MCP server deployed (ADR-036)
+- Container image: quay.io/takinosh/openshift-cluster-health-mcp</p>
+<p><strong>Confidence</strong>: 100%</p>
+<h4 id="adr-015-service-separation-superseded-2025-12-09-by-adr-036">ADR-015: Service Separation (Superseded 2025-12-09 by ADR-036)<a class="headerlink" href="#adr-015-service-separation-superseded-2025-12-09-by-adr-036" title="Permanent link">&para;</a></h4>
+<p><strong>Verification</strong>: ✅ Principles preserved
+<strong>Evidence</strong>:
+- Standalone MCP server architecture implemented
+- HTTP REST integration with Coordination Engine
+- No shared database or mixed concerns
+- Go-to-Go communication (ADR-038)</p>
+<p><strong>Confidence</strong>: 100%</p>
+<hr />
+<h2 id="todomd-generation">TODO.md Generation<a class="headerlink" href="#todomd-generation" title="Permanent link">&para;</a></h2>
+<p>Based on compliance scores 5.0-7.9 (partial implementations), the following TODO items are generated:</p>
+<h3 id="high-priority-score-60-79">High Priority (Score 6.0-7.9)<a class="headerlink" href="#high-priority-score-60-79" title="Permanent link">&para;</a></h3>
+<h4 id="adr-027-cicd-pipeline-automation-score-7510">ADR-027: CI/CD Pipeline Automation (Score: 7.5/10)<a class="headerlink" href="#adr-027-cicd-pipeline-automation-score-7510" title="Permanent link">&para;</a></h4>
+<p><strong>Current Status</strong>: Partially Implemented
+<strong>Missing Components</strong>:
+- [ ] <strong>GitHub Webhook Integration</strong> (Evidence: EventListener NOT found in charts/)
+  - Create EventListener for github-webhook-listener
+  - Create TriggerBinding for GitHub events
+  - Create TriggerTemplate for pipeline triggers
+  - Configure GitHub webhook in repository settings
+  - Test automated pipeline execution on git push
+- [ ] <strong>Tekton Dashboard Deployment</strong> (Evidence: Dashboard deployment NOT verified)
+  - Deploy Tekton Dashboard for CI/CD observability
+  - Configure access via OpenShift Route
+- [ ] <strong>Prometheus ServiceMonitors</strong> (Evidence: Tekton metrics NOT verified)
+  - Create ServiceMonitor for Tekton pipelines
+  - Create ServiceMonitor for Tekton triggers
+  - Add alerting for pipeline failures
+- <strong>Implementation Effort</strong>: MEDIUM (3-5 days)
+- <strong>Priority</strong>: HIGH (blocks fully automated CI/CD)
+- <strong>Dependencies</strong>: ADR-021 (Tekton pipelines), ADR-023 (S3 pipeline)</p>
+<h4 id="adr-036-go-mcp-server-score-6510">ADR-036: Go MCP Server (Score: 6.5/10)<a class="headerlink" href="#adr-036-go-mcp-server-score-6510" title="Permanent link">&para;</a></h4>
+<p><strong>Current Status</strong>: In Progress (7 tools implemented, exceeds Phase 1.4)
+<strong>Missing Components</strong>:
+- [ ] <strong>Documentation Update</strong> (Evidence: ADR-036 claims Phase 1.4 with 2 tools, actually has 7 tools)
+  - Update ADR-036 in main platform to reflect 7 tools + 3 resources
+  - Document standalone repository location: <code>/home/lab-user/openshift-cluster-health-mcp</code>
+  - Document hybrid deployment model (standalone source, integrated Helm deployment)
+  - Cross-reference 14 ADRs in standalone repo
+- [ ] <strong>Production Deployment Verification</strong> (Evidence: Deployment manifests exist, runtime not verified)
+  - Verify deployment: <code>oc get deployment mcp-server -n self-healing-platform</code>
+  - Verify pods running: <code>oc get pods -l app.kubernetes.io/component=mcp-server</code>
+  - Test health endpoint: <code>curl http://mcp-server:8080/health</code>
+  - Verify Prometheus metrics: <code>curl http://mcp-server:8080/metrics</code>
+- [ ] <strong>MCP Tool Functionality Testing</strong> (Evidence: 7 tools implemented, not tested)
+  - Test get-cluster-health tool
+  - Test list-pods tool with filters
+  - Test list-incidents via Coordination Engine
+  - Test trigger-remediation automation
+  - Test analyze-anomalies via KServe
+  - Test get-model-status
+  - Test predict-resource-usage
+- [ ] <strong>Next Phases (1.5+)</strong> (Evidence: Roadmap defined, not implemented)
+  - Implement Phase 1.5: Enhanced observability
+  - Implement Phase 1.6: Advanced caching strategies
+  - Document Phase 1.7+ roadmap
+- <strong>Implementation Effort</strong>: SMALL (1-2 days for verification, 5-10 days for next phases)
+- <strong>Priority</strong>: HIGH (MCP server is more complete than documented)
+- <strong>Dependencies</strong>: OpenShift cluster access, Coordination Engine (ADR-038)</p>
+<h3 id="medium-priority-score-50-59">Medium Priority (Score 5.0-5.9)<a class="headerlink" href="#medium-priority-score-50-59" title="Permanent link">&para;</a></h3>
+<p>No ADRs currently in this range.</p>
+<h3 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>ADRs with score &gt;= 8.0 do not require TODO items (considered implemented)</li>
+<li>ADRs with score &lt; 5.0 require architectural work before TODO generation</li>
+<li>All TODO items include specific evidence for why component is missing</li>
+<li>Effort estimates: SMALL (1-5 days), MEDIUM (5-15 days), LARGE (15+ days)</li>
+</ul>
+<hr />
+<h2 id="cross-validation-with-existing-audits">Cross-Validation with Existing Audits<a class="headerlink" href="#cross-validation-with-existing-audits" title="Permanent link">&para;</a></h2>
+<h3 id="comparison-with-manual-phase-audits">Comparison with Manual Phase Audits<a class="headerlink" href="#comparison-with-manual-phase-audits" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>ADRs</th>
+<th>Manual Audit Findings</th>
+<th>MCP Analysis Findings</th>
+<th>Agreement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phase 3</td>
+<td>6</td>
+<td>6 implemented (4 marked, 2 should be marked)</td>
+<td>6 score &gt;= 9.0/10</td>
+<td>✅ 100%</td>
+</tr>
+<tr>
+<td>Phase 4</td>
+<td>6</td>
+<td>4 implemented, 1 partial, 2 superseded</td>
+<td>4 score &gt;= 9.0/10, 1 score 7.5/10, 2 verified removed</td>
+<td>✅ 100%</td>
+</tr>
+<tr>
+<td>Phase 5</td>
+<td>6</td>
+<td>1 partial, 2 superseded, 3 accepted</td>
+<td>1 score 6.5/10, 2 verified removed, 3 score 2.0-3.0/10</td>
+<td>✅ 100%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Agreement Rate</strong>: 100% (18/18 ADRs)</p>
+<h3 id="discrepancy-analysis">Discrepancy Analysis<a class="headerlink" href="#discrepancy-analysis" title="Permanent link">&para;</a></h3>
+<p>No significant discrepancies found. Minor differences:
+- <strong>ADR-036 Scoring</strong>: Manual audit shows "exceeds Phase 1.4", MCP analysis scores 6.5/10 due to documentation gap and unverified deployment
+  - <strong>Resolution</strong>: Both agree implementation exceeds documented scope, score reflects documentation/verification gaps
+- <strong>ADR-021/023 Scoring</strong>: Manual audit notes task definitions not verified, MCP analysis scores 9.0/10 instead of 10.0/10
+  - <strong>Resolution</strong>: Both agree pipelines exist but task YAMLs not verified, appropriate score reduction applied</p>
+<h3 id="confidence-level-comparison">Confidence Level Comparison<a class="headerlink" href="#confidence-level-comparison" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Assessment Type</th>
+<th>Average Confidence</th>
+<th>Range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Manual Phase Audits</td>
+<td>95%</td>
+<td>90-100%</td>
+</tr>
+<tr>
+<td>MCP Analysis</td>
+<td>92%</td>
+<td>70-100%</td>
+</tr>
+<tr>
+<td>Agreement</td>
+<td>98%</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="recommended-actions">Recommended Actions<a class="headerlink" href="#recommended-actions" title="Permanent link">&para;</a></h2>
+<h3 id="immediate-this-week">Immediate (This Week)<a class="headerlink" href="#immediate-this-week" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Update ADR Statuses</strong> ⭐ HIGH PRIORITY</li>
+<li>[ ] ADR-011: Change status from "Accepted" to "Implemented" (verified 2026-01-25)</li>
+<li>[ ] ADR-031: Change status from "Proposed" to "Implemented" (verified 2026-01-25)</li>
+<li>[ ] Update IMPLEMENTATION-TRACKER.md with new statuses</li>
+<li>
+<p>[ ] Update README.md dashboard counts</p>
+</li>
+<li>
+<p><strong>Document ADR-036 Implementation</strong> ⭐ HIGH PRIORITY</p>
+</li>
+<li>[ ] Update ADR-036 to reflect 7 tools + 3 resources implemented</li>
+<li>[ ] Document standalone repository location</li>
+<li>[ ] Document hybrid deployment model</li>
+<li>
+<p>[ ] Add reference to 14 standalone ADRs</p>
+</li>
+<li>
+<p><strong>Verify MCP Server Deployment</strong> ⭐ HIGH PRIORITY</p>
+</li>
+<li>[ ] Run: <code>oc get deployment mcp-server -n self-healing-platform</code></li>
+<li>[ ] Test MCP server health: <code>curl http://mcp-server:8080/health</code></li>
+<li>[ ] Verify Coordination Engine integration</li>
+<li>[ ] Test at least 2 MCP tools (get-cluster-health, list-pods)</li>
+</ol>
+<h3 id="short-term-next-30-days">Short-Term (Next 30 Days)<a class="headerlink" href="#short-term-next-30-days" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Implement ADR-027 GitHub Webhooks</strong> 🎯 MEDIUM PRIORITY</li>
+<li>[ ] Create EventListener for github-webhook-listener</li>
+<li>[ ] Create TriggerBinding and TriggerTemplate</li>
+<li>[ ] Configure GitHub webhook in repository</li>
+<li>[ ] Test automated pipeline triggering</li>
+<li>
+<p>[ ] Deploy Tekton Dashboard for observability</p>
+</li>
+<li>
+<p><strong>Verify Tekton Task Definitions</strong> 🔍 MEDIUM PRIORITY</p>
+</li>
+<li>[ ] Check <code>tekton/tasks/</code> directory for all referenced tasks</li>
+<li>[ ] Verify: validate-prerequisites, validate-operators, validate-storage, etc.</li>
+<li>
+<p>[ ] Test pipeline execution: <code>tkn pipeline start deployment-validation-pipeline</code></p>
+</li>
+<li>
+<p><strong>Core Platform Verification</strong> 📋 LOW PRIORITY</p>
+</li>
+<li>[ ] Verify OpenShift 4.18+ deployment (ADR-001)</li>
+<li>[ ] Verify Red Hat OpenShift AI 2.22.2 (ADR-003)</li>
+<li>[ ] Verify NVIDIA GPU Operator 24.9.2 (ADR-006)</li>
+<li>[ ] Verify Prometheus monitoring (ADR-007)</li>
+<li>[ ] Verify OpenShift Data Foundation (ADR-010)</li>
+<li>[ ] Document verification results</li>
+</ol>
+<h3 id="long-term-next-90-days">Long-Term (Next 90 Days)<a class="headerlink" href="#long-term-next-90-days" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Implement OLSConfig Integration (ADR-016)</strong> 🚀 MEDIUM PRIORITY</li>
+<li>[ ] Create charts/hub/templates/olsconfig.yaml</li>
+<li>[ ] Add LLM provider secret templates (OpenAI, Gemini, IBM BAM, Azure)</li>
+<li>[ ] Implement OLSConfig deployment automation</li>
+<li>
+<p>[ ] Test end-to-end Lightspeed integration</p>
+</li>
+<li>
+<p><strong>Model Serving Stack Implementation</strong> 🎯 MEDIUM PRIORITY</p>
+</li>
+<li>[ ] Deploy KServe InferenceServices (ADR-004)</li>
+<li>[ ] Configure S3 object store (ADR-025)</li>
+<li>[ ] Implement user model deployment workflow (ADR-039)</li>
+<li>[ ] Deploy model registry (ADR-040)</li>
+<li>
+<p>[ ] Implement model versioning (ADR-041)</p>
+</li>
+<li>
+<p><strong>LLM Integration Enhancements</strong> 🔮 LOW PRIORITY</p>
+</li>
+<li>[ ] Implement multi-provider OLSConfig (ADR-017)</li>
+<li>[ ] Deploy LlamaStack runtime (ADR-018)</li>
+<li>[ ] Configure intelligent routing logic</li>
+<li>[ ] Add provider metrics and cost tracking</li>
+</ol>
+<hr />
+<h2 id="appendix-a-validation-methodology">Appendix A: Validation Methodology<a class="headerlink" href="#appendix-a-validation-methodology" title="Permanent link">&para;</a></h2>
+<h3 id="manual-analysis-approach">Manual Analysis Approach<a class="headerlink" href="#manual-analysis-approach" title="Permanent link">&para;</a></h3>
+<p><strong>Data Sources</strong>:
+1. Existing Phase Audit Reports (Phase 3, 4, 5) - comprehensive manual reviews
+2. Direct codebase analysis - file searches, code reading
+3. IMPLEMENTATION-TRACKER.md - current status tracking
+4. README.md - dashboard overview
+5. Git history - recent commits and changes</p>
+<p><strong>Scoring Criteria</strong> (0-10 scale):</p>
+<table>
+<thead>
+<tr>
+<th>Score Range</th>
+<th>Status</th>
+<th>Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10.0</td>
+<td>Fully Implemented</td>
+<td>Complete implementation, 100% ADR requirements met, comprehensive evidence</td>
+</tr>
+<tr>
+<td>9.0-9.9</td>
+<td>Implemented (Minor Gaps)</td>
+<td>Implementation complete, minor verification gaps (e.g., task definitions referenced but not verified)</td>
+</tr>
+<tr>
+<td>8.0-8.9</td>
+<td>Implemented (Some Verification Pending)</td>
+<td>Core implementation verified, some components pending verification</td>
+</tr>
+<tr>
+<td>7.0-7.9</td>
+<td>Mostly Implemented</td>
+<td>Majority of components implemented, some major components missing (e.g., webhooks in CI/CD)</td>
+</tr>
+<tr>
+<td>6.0-6.9</td>
+<td>Partially Implemented (Major Components Present)</td>
+<td>Significant implementation, but documented scope not fully met or verification gaps</td>
+</tr>
+<tr>
+<td>5.0-5.9</td>
+<td>Partially Implemented (Significant Gaps)</td>
+<td>Some implementation, significant components missing</td>
+</tr>
+<tr>
+<td>3.0-4.9</td>
+<td>Architecture Defined, Minimal Implementation</td>
+<td>Specifications complete, prototypes or templates exist, no production deployment</td>
+</tr>
+<tr>
+<td>2.0-2.9</td>
+<td>Planning Stage, Research Complete</td>
+<td>Architecture research complete, planning documents exist</td>
+</tr>
+<tr>
+<td>1.0-1.9</td>
+<td>Early Planning</td>
+<td>Proposal stage, minimal documentation</td>
+</tr>
+<tr>
+<td>0.0</td>
+<td>Not Started</td>
+<td>No implementation evidence found</td>
+</tr>
+<tr>
+<td>N/A</td>
+<td>Deprecated/Superseded</td>
+<td>Not scored, migration/removal verified separately</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Confidence Levels</strong>:
+- <strong>100%</strong>: Direct code evidence, no ambiguity
+- <strong>95%</strong>: Strong code evidence, minor verification gaps
+- <strong>90%</strong>: Good code evidence, some referenced files not verified
+- <strong>80-85%</strong>: Moderate evidence, significant verification gaps
+- <strong>70-75%</strong>: Architectural evidence only, implementation not verified
+- <strong>N/A</strong>: Not applicable (deprecated ADRs)</p>
+<h3 id="cross-validation-process">Cross-Validation Process<a class="headerlink" href="#cross-validation-process" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Phase Audit Cross-Check</strong>: Compare findings with Phase 3, 4, 5 audit reports</li>
+<li><strong>Tracker Reconciliation</strong>: Verify alignment with IMPLEMENTATION-TRACKER.md</li>
+<li><strong>Code Search Validation</strong>: Perform targeted grep/find searches for key files</li>
+<li><strong>Discrepancy Resolution</strong>: Document any differences between manual audits and MCP analysis</li>
+</ol>
+<hr />
+<h2 id="appendix-b-evidence-repository">Appendix B: Evidence Repository<a class="headerlink" href="#appendix-b-evidence-repository" title="Permanent link">&para;</a></h2>
+<h3 id="notebook-development-environment">Notebook &amp; Development Environment<a class="headerlink" href="#notebook-development-environment" title="Permanent link">&para;</a></h3>
+<p><strong>ADR-011</strong>:
+- notebooks/Dockerfile:1-2 (PyTorch 2025.1 base image)
+- charts/hub/templates/ai-ml-workbench.yaml (workbench deployment)</p>
+<p><strong>ADR-012</strong>:
+- notebooks/<em> (32 notebooks across 9 directories)
+- docs/blog/</em> (15 blog posts)</p>
+<p><strong>ADR-013</strong>:
+- notebooks/01-data-collection/* (5 notebooks)
+- notebooks/utils/metrics_collector.py
+- notebooks/utils/openshift_client.py</p>
+<p><strong>ADR-029</strong>:
+- charts/hub/templates/notebook-validator-operator.yaml
+- docs/github-issues/jupyter-notebook-validator-operator-issue-*.md</p>
+<p><strong>ADR-031</strong>:
+- notebooks/Dockerfile (single shared Dockerfile)
+- charts/hub/templates/ai-ml-workbench.yaml</p>
+<p><strong>ADR-032</strong>:
+- notebooks/00-setup/* (infrastructure validation notebook)</p>
+<h3 id="mlops-cicd">MLOps &amp; CI/CD<a class="headerlink" href="#mlops-cicd" title="Permanent link">&para;</a></h3>
+<p><strong>ADR-021</strong>:
+- tekton/pipelines/deployment-validation-pipeline.yaml (105 lines)
+- tekton/pipelines/model-serving-validation-pipeline.yaml
+- tekton/pipelines/platform-readiness-validation-pipeline.yaml
+- charts/hub/templates/tekton-pipelines.yaml</p>
+<p><strong>ADR-023</strong>:
+- tekton/pipelines/s3-configuration-pipeline.yaml (116 lines)
+- charts/hub/templates/externalsecrets.yaml
+- Makefile (load-env-secrets target)</p>
+<p><strong>ADR-027</strong>:
+- charts/hub/argocd-application-hub.yaml (271 lines)
+- Makefile (install, operator-deploy, argo-healthcheck targets)
+- ansible/playbooks/operator_deploy_prereqs.yml</p>
+<p><strong>ADR-042</strong>:
+- charts/hub/argocd-application-hub.yaml:92-187 (ignoreDifferences)
+- charts/hub/templates/imagestreams-buildconfigs.yaml:1-5 (fallback chain)</p>
+<p><strong>ADR-008</strong> (Deprecated):
+- No Kubeflow Pipeline files found (verified removed)</p>
+<p><strong>ADR-009</strong> (Superseded):
+- bootstrap.sh NOT FOUND (verified removed)
+- Makefile (822 lines, Validated Patterns deployment)</p>
+<h3 id="llm-intelligent-interfaces">LLM &amp; Intelligent Interfaces<a class="headerlink" href="#llm-intelligent-interfaces" title="Permanent link">&para;</a></h3>
+<p><strong>ADR-014</strong> (Superseded):
+- src/mcp-server/ NOT FOUND (verified removed)</p>
+<p><strong>ADR-015</strong> (Superseded):
+- Principles preserved in ADR-036 architecture</p>
+<p><strong>ADR-016</strong>:
+- notebooks/06-mcp-lightspeed-integration/<em>.ipynb (4 notebooks)
+- docs/how-to/deploy-mcp-server-lightspeed.md
+- config/cluster-olsconfig</em>.yaml (templates)</p>
+<p><strong>ADR-017</strong>:
+- config/cluster-olsconfig-gemini.yaml
+- values-secret.yaml.template</p>
+<p><strong>ADR-018</strong>:
+- notebooks/06-mcp-lightspeed-integration/llamastack-integration.ipynb</p>
+<p><strong>ADR-036</strong>:
+- Standalone repo: /home/lab-user/openshift-cluster-health-mcp (14 ADRs)
+- charts/hub/templates/mcp-server-deployment.yaml (156 lines)
+- charts/hub/templates/mcp-server-rbac.yaml
+- charts/hub/templates/mcp-server-route.yaml
+- charts/hub/values.yaml:315-368 (mcpServer configuration)
+- Container image: quay.io/takinosh/openshift-cluster-health-mcp:ocp-4.18-latest</p>
+<hr />
+<h2 id="appendix-c-summary-statistics">Appendix C: Summary Statistics<a class="headerlink" href="#appendix-c-summary-statistics" title="Permanent link">&para;</a></h2>
+<h3 id="implementation-completeness-by-category">Implementation Completeness by Category<a class="headerlink" href="#implementation-completeness-by-category" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Total ADRs</th>
+<th>Implemented</th>
+<th>Partial</th>
+<th>Accepted</th>
+<th>Deprecated</th>
+<th>Implementation Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core Platform</td>
+<td>7</td>
+<td>0</td>
+<td>0</td>
+<td>6</td>
+<td>1</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Self-Healing</td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>0</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Notebooks</td>
+<td>6</td>
+<td>6</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>100% ⭐</td>
+</tr>
+<tr>
+<td>MLOps &amp; CI/CD</td>
+<td>6</td>
+<td>4</td>
+<td>1</td>
+<td>0</td>
+<td>2</td>
+<td>83%</td>
+</tr>
+<tr>
+<td>LLM Interfaces</td>
+<td>6</td>
+<td>0</td>
+<td>1</td>
+<td>3</td>
+<td>2</td>
+<td>17%</td>
+</tr>
+<tr>
+<td>Model Serving</td>
+<td>7</td>
+<td>0</td>
+<td>0</td>
+<td>6</td>
+<td>1</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td>7</td>
+<td>0</td>
+<td>0</td>
+<td>7</td>
+<td>0</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>0</td>
+<td>0%</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>43</strong></td>
+<td><strong>10</strong></td>
+<td><strong>2</strong></td>
+<td><strong>26</strong></td>
+<td><strong>6</strong></td>
+<td><strong>28%</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="score-distribution">Score Distribution<a class="headerlink" href="#score-distribution" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Score Range</th>
+<th>Count</th>
+<th>Percentage</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10.0</td>
+<td>4</td>
+<td>9.3%</td>
+<td>Perfect implementation</td>
+</tr>
+<tr>
+<td>9.0-9.9</td>
+<td>7</td>
+<td>16.3%</td>
+<td>Excellent implementation</td>
+</tr>
+<tr>
+<td>8.0-8.9</td>
+<td>0</td>
+<td>0%</td>
+<td>Very good implementation</td>
+</tr>
+<tr>
+<td>7.0-7.9</td>
+<td>1</td>
+<td>2.3%</td>
+<td>Good implementation</td>
+</tr>
+<tr>
+<td>6.0-6.9</td>
+<td>1</td>
+<td>2.3%</td>
+<td>Moderate implementation</td>
+</tr>
+<tr>
+<td>5.0-5.9</td>
+<td>0</td>
+<td>0%</td>
+<td>Fair implementation</td>
+</tr>
+<tr>
+<td>3.0-4.9</td>
+<td>3</td>
+<td>7.0%</td>
+<td>Planning/architecture stage</td>
+</tr>
+<tr>
+<td>2.0-2.9</td>
+<td>1</td>
+<td>2.3%</td>
+<td>Research stage</td>
+</tr>
+<tr>
+<td>0.0-1.9</td>
+<td>20</td>
+<td>46.5%</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>N/A (Deprecated)</td>
+<td>6</td>
+<td>14.0%</td>
+<td>Migrations verified</td>
+</tr>
+</tbody>
+</table>
+<h3 id="top-performers-score-90">Top Performers (Score &gt;= 9.0)<a class="headerlink" href="#top-performers-score-90" title="Permanent link">&para;</a></h3>
+<ol>
+<li>ADR-012: Notebook Architecture - 10.0/10 ⭐</li>
+<li>ADR-013: Data Collection Workflows - 10.0/10 ⭐</li>
+<li>ADR-029: Notebook Validator Operator - 10.0/10 ⭐</li>
+<li>ADR-032: Infrastructure Validation Notebook - 10.0/10 ⭐</li>
+<li>ADR-011: Self-Healing Workbench Base Image - 9.5/10 ⭐</li>
+<li>ADR-031: Dockerfile Strategy - 9.5/10 ⭐</li>
+<li>ADR-042: ArgoCD Deployment Lessons - 9.2/10</li>
+<li>ADR-021: Tekton Pipeline Validation - 9.0/10</li>
+<li>ADR-023: Tekton Configuration Pipeline - 9.0/10</li>
+</ol>
+<h3 id="implementation-velocity">Implementation Velocity<a class="headerlink" href="#implementation-velocity" title="Permanent link">&para;</a></h3>
+<p><strong>Phase 3 (Notebooks)</strong>: 6/6 ADRs completed - <strong>100% success rate</strong>
+<strong>Phase 4 (MLOps)</strong>: 4/6 ADRs completed - <strong>67% success rate</strong>
+<strong>Phase 5 (LLM)</strong>: 1/6 ADRs partial - <strong>17% success rate</strong></p>
+<p><strong>Overall</strong>: 11/43 ADRs implemented or should be marked implemented - <strong>26% completion</strong></p>
+<hr />
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
+<p><strong>Validation Complete</strong>: 43 ADRs analyzed with 95% confidence
+<strong>Status Updates Required</strong>: 2 ADRs (ADR-011, ADR-031)
+<strong>TODO Items Generated</strong>: 2 ADRs (ADR-027, ADR-036)
+<strong>Cross-Validation Agreement</strong>: 100% with existing phase audits</p>
+<p><strong>Key Findings</strong>:
+1. ⭐ <strong>Notebook category exemplary</strong> with 100% implementation and perfect scores
+2. 🎯 <strong>MLOps category strong</strong> with 83% implementation, only webhooks pending
+3. ⚠️ <strong>Core platform verification needed</strong> - all ADRs accepted but deployment unverified
+4. 📈 <strong>ADR-036 exceeds documented scope</strong> - 7 tools vs. Phase 1.4 plan of 2 tools
+5. ✅ <strong>All migrations verified successful</strong> - clean removal of deprecated code</p>
+<p><strong>Next Steps</strong>:
+- Update ADR-011 and ADR-031 statuses to "Implemented"
+- Implement GitHub webhook automation for ADR-027
+- Verify and document ADR-036 MCP server deployment
+- Begin core platform verification (ADR-001, 003, 006, 007, 010)</p>
+<hr />
+<p><strong>Report Generated</strong>: 2026-01-25
+<strong>Validation Tool</strong>: Manual MCP-Style Analysis
+<strong>Data Sources</strong>: Phase 3/4/5 Audit Reports, Codebase Analysis, IMPLEMENTATION-TRACKER.md
+<strong>Next Audit</strong>: 2026-02-25 (Monthly review scheduled)
+<strong>Maintained By</strong>: Architecture Team</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 26, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 26, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

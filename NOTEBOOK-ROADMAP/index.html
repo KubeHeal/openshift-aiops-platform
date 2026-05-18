@@ -1,0 +1,2551 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/NOTEBOOK-ROADMAP/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Notebook Development Roadmap - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#notebook-development-roadmap" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Notebook Development Roadmap
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Current Status
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Current Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#completed-23-notebooks-77" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Completed (23 notebooks - 77%)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-7-monitoring-operations-3-notebooks-100-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Phase 7: Monitoring &amp; Operations (3 notebooks - 100%) ⭐ NEW
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-8-advanced-scenarios-4-notebooks-100-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Phase 8: Advanced Scenarios (4 notebooks - 100%) ⭐ NEW
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-progress-0-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⏳ In Progress (0 notebooks)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planned-0-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      📋 Planned (0 notebooks)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Phase Breakdown
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Phase Breakdown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-data-collection-5-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Data Collection (5 notebooks)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-anomaly-detection-4-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Anomaly Detection (4 notebooks)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-self-healing-logic-4-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Self-Healing Logic (4 notebooks)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-model-serving-3-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Model Serving (3 notebooks)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-end-to-end-scenarios-4-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 5: End-to-End Scenarios (4 notebooks)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-mcp-lightspeed-integration-3-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 6: MCP &amp; Lightspeed Integration (3 notebooks)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-7-monitoring-operations-3-notebooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 7: Monitoring &amp; Operations (3 notebooks)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utility-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛠️ Utility Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛠️ Utility Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#existing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Existing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Needed
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      📈 Development Timeline
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📈 Development Timeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#week-1-immediate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Week 1 (Immediate)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#week-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Week 2
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#week-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Week 3
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#week-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Week 4
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#learning-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎓 Learning Paths
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎓 Learning Paths">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#beginner-2-3-hours" class="md-nav__link">
+    <span class="md-ellipsis">
+      Beginner (2-3 hours)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intermediate-4-6-hours" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intermediate (4-6 hours)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-full-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced (Full Platform)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notebook-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      📝 Notebook Template
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/NOTEBOOK-ROADMAP.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="notebook-development-roadmap">Notebook Development Roadmap<a class="headerlink" href="#notebook-development-roadmap" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: All Phases Complete (Phase 1-8) ✅
+<strong>Last Updated</strong>: 2026-05-15</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>This document outlines the comprehensive notebook development roadmap for the Self-Healing Platform. Notebooks are organized into 7 phases covering data collection, model development, deployment, and advanced integrations.</p>
+<h2 id="current-status">📊 Current Status<a class="headerlink" href="#current-status" title="Permanent link">&para;</a></h2>
+<h3 id="completed-23-notebooks-77">✅ Completed (23 notebooks - 77%)<a class="headerlink" href="#completed-23-notebooks-77" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>01-data-collection/prometheus-metrics-collection.ipynb</code></li>
+<li><code>01-data-collection/openshift-events-analysis.ipynb</code></li>
+<li><code>01-data-collection/log-parsing-analysis.ipynb</code></li>
+<li><code>01-data-collection/feature-store-demo.ipynb</code></li>
+<li><code>01-data-collection/synthetic-anomaly-generation.ipynb</code> ⭐ NEW</li>
+<li><code>02-anomaly-detection/01-isolation-forest-implementation.ipynb</code></li>
+<li><code>02-anomaly-detection/02-time-series-anomaly-detection.ipynb</code> ⭐ NEW</li>
+<li><code>02-anomaly-detection/03-lstm-based-prediction.ipynb</code> ⭐ NEW</li>
+<li><code>02-anomaly-detection/04-ensemble-anomaly-methods.ipynb</code> ⭐ NEW</li>
+<li><code>03-self-healing-logic/coordination-engine-integration.ipynb</code></li>
+<li><code>03-self-healing-logic/rule-based-remediation.ipynb</code> ⭐ NEW</li>
+<li><code>03-self-healing-logic/ai-driven-decision-making.ipynb</code> ⭐ NEW</li>
+<li><code>03-self-healing-logic/hybrid-healing-workflows.ipynb</code> ⭐ NEW</li>
+<li><code>04-model-serving/kserve-model-deployment.ipynb</code> ⭐ NEW</li>
+<li><code>04-model-serving/model-versioning-mlops.ipynb</code> ⭐ NEW</li>
+<li><code>04-model-serving/inference-pipeline-setup.ipynb</code> ⭐ NEW</li>
+<li><code>05-end-to-end-scenarios/pod-crash-loop-healing.ipynb</code> ⭐ NEW</li>
+<li><code>05-end-to-end-scenarios/resource-exhaustion-detection.ipynb</code> ⭐ NEW</li>
+<li><code>05-end-to-end-scenarios/network-anomaly-response.ipynb</code> ⭐ NEW</li>
+<li><code>05-end-to-end-scenarios/complete-platform-demo.ipynb</code> ⭐ NEW</li>
+<li><code>06-mcp-lightspeed-integration/mcp-server-integration.ipynb</code> ⭐ NEW</li>
+<li><code>06-mcp-lightspeed-integration/openshift-lightspeed-integration.ipynb</code> ⭐ NEW</li>
+<li><code>06-mcp-lightspeed-integration/llamastack-integration.ipynb</code> ⭐ NEW</li>
+</ul>
+<h3 id="phase-7-monitoring-operations-3-notebooks-100-new">✅ Phase 7: Monitoring &amp; Operations (3 notebooks - 100%) ⭐ NEW<a class="headerlink" href="#phase-7-monitoring-operations-3-notebooks-100-new" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>07-monitoring-operations/prometheus-metrics-monitoring.ipynb</code> ⭐ NEW</li>
+<li><code>07-monitoring-operations/model-performance-monitoring.ipynb</code> ⭐ NEW</li>
+<li><code>07-monitoring-operations/healing-success-tracking.ipynb</code> ⭐ NEW</li>
+</ul>
+<h3 id="phase-8-advanced-scenarios-4-notebooks-100-new">✅ Phase 8: Advanced Scenarios (4 notebooks - 100%) ⭐ NEW<a class="headerlink" href="#phase-8-advanced-scenarios-4-notebooks-100-new" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>08-advanced-scenarios/multi-cluster-healing-coordination.ipynb</code> ⭐ NEW</li>
+<li><code>08-advanced-scenarios/predictive-scaling-capacity-planning.ipynb</code> ⭐ NEW</li>
+<li><code>08-advanced-scenarios/security-incident-response-automation.ipynb</code> ⭐ NEW</li>
+<li><code>08-advanced-scenarios/cost-optimization-resource-efficiency.ipynb</code> ⭐ NEW</li>
+</ul>
+<h3 id="in-progress-0-notebooks">⏳ In Progress (0 notebooks)<a class="headerlink" href="#in-progress-0-notebooks" title="Permanent link">&para;</a></h3>
+<h3 id="planned-0-notebooks">📋 Planned (0 notebooks)<a class="headerlink" href="#planned-0-notebooks" title="Permanent link">&para;</a></h3>
+<h2 id="phase-breakdown">🎯 Phase Breakdown<a class="headerlink" href="#phase-breakdown" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-data-collection-5-notebooks">Phase 1: Data Collection (5 notebooks)<a class="headerlink" href="#phase-1-data-collection-5-notebooks" title="Permanent link">&para;</a></h3>
+<p><strong>Status</strong>: 5/5 Complete (100%) ✅
+<strong>Goal</strong>: Collect and prepare data from OpenShift cluster for model training
+<strong>Success Criteria</strong>:
+- ✅ Collect metrics from Prometheus
+- ✅ Parse OpenShift events
+- ✅ Extract logs from containers
+- ✅ Create feature store with versioning
+- ✅ Generate synthetic anomalies for testing</p>
+<table>
+<thead>
+<tr>
+<th>Notebook</th>
+<th>Status</th>
+<th>Priority</th>
+<th>Est. Time</th>
+<th>Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>prometheus-metrics-collection</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>None</td>
+</tr>
+<tr>
+<td>openshift-events-analysis</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>None</td>
+</tr>
+<tr>
+<td>log-parsing-analysis</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>None</td>
+</tr>
+<tr>
+<td>feature-store-demo</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>All above</td>
+</tr>
+<tr>
+<td>synthetic-anomaly-generation</td>
+<td>✅</td>
+<td>Medium</td>
+<td>2h</td>
+<td>feature-store-demo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Phase 1 Details</strong>:
+- <strong>prometheus-metrics-collection</strong>: Query Prometheus API, collect node/pod metrics, normalize time series
+- <strong>openshift-events-analysis</strong>: Use Kubernetes API to fetch events, parse event types, extract patterns
+- <strong>log-parsing-analysis</strong>: Stream logs from pods, parse structured/unstructured logs, extract error patterns
+- <strong>feature-store-demo</strong>: Combine all data sources, create Parquet files, implement versioning
+- <strong>synthetic-anomaly-generation</strong>: Generate realistic anomalies, create labeled datasets, enable testing</p>
+<h3 id="phase-2-anomaly-detection-4-notebooks">Phase 2: Anomaly Detection (4 notebooks)<a class="headerlink" href="#phase-2-anomaly-detection-4-notebooks" title="Permanent link">&para;</a></h3>
+<p><strong>Status</strong>: 4/4 Complete (100%) ✅
+<strong>Goal</strong>: Develop and compare multiple anomaly detection models
+<strong>Success Criteria</strong>:
+- ✅ Isolation Forest with &gt;85% precision
+- ✅ Time series forecasting with &lt;10% MAPE
+- ✅ LSTM autoencoder with reconstruction error threshold
+- ✅ Ensemble voting with &gt;90% accuracy</p>
+<table>
+<thead>
+<tr>
+<th>Notebook</th>
+<th>Status</th>
+<th>Priority</th>
+<th>Est. Time</th>
+<th>Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01-isolation-forest-implementation</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>Phase 1 complete</td>
+</tr>
+<tr>
+<td>02-time-series-anomaly-detection</td>
+<td>✅</td>
+<td>High</td>
+<td>3h</td>
+<td>Phase 1 complete</td>
+</tr>
+<tr>
+<td>03-lstm-based-prediction</td>
+<td>✅</td>
+<td>High</td>
+<td>4h</td>
+<td>Phase 1 complete</td>
+</tr>
+<tr>
+<td>04-ensemble-anomaly-methods</td>
+<td>✅</td>
+<td>Medium</td>
+<td>3h</td>
+<td>All above</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Phase 2 Details</strong>:
+- <strong>01-isolation-forest-implementation</strong>: Train Isolation Forest, evaluate on synthetic anomalies, save model
+- <strong>02-time-series-anomaly-detection</strong>: Implement ARIMA/Prophet, detect deviations from forecast, handle seasonality
+- <strong>03-lstm-based-prediction</strong>: Build LSTM autoencoder, train on GPU, use reconstruction error for detection
+- <strong>04-ensemble-anomaly-methods</strong>: Combine all methods, implement voting, optimize thresholds</p>
+<h3 id="phase-3-self-healing-logic-4-notebooks">Phase 3: Self-Healing Logic (4 notebooks)<a class="headerlink" href="#phase-3-self-healing-logic-4-notebooks" title="Permanent link">&para;</a></h3>
+<p><strong>Status</strong>: 4/4 Complete (100%) ✅
+<strong>Goal</strong>: Implement incident detection and remediation workflows
+<strong>Success Criteria</strong>:
+- ✅ Submit incidents to coordination engine
+- ✅ Execute rule-based remediation with 100% success rate
+- ✅ AI-driven decisions with &gt;80% accuracy
+- ✅ Hybrid approach with optimal success rate</p>
+<table>
+<thead>
+<tr>
+<th>Notebook</th>
+<th>Status</th>
+<th>Priority</th>
+<th>Est. Time</th>
+<th>Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>coordination-engine-integration</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>Phase 2 complete</td>
+</tr>
+<tr>
+<td>rule-based-remediation</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>Phase 2 complete</td>
+</tr>
+<tr>
+<td>ai-driven-decision-making</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>Phase 2 complete</td>
+</tr>
+<tr>
+<td>hybrid-healing-workflows</td>
+<td>✅</td>
+<td>Medium</td>
+<td>-</td>
+<td>All above</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Phase 3 Details</strong>:
+- <strong>coordination-engine-integration</strong>: Connect to engine, submit anomalies, query health, trigger remediation
+- <strong>rule-based-remediation</strong>: Map anomalies to actions, execute kubectl commands, validate results
+- <strong>ai-driven-decision-making</strong>: Use ML models for action selection, confidence scoring, uncertainty handling
+- <strong>hybrid-healing-workflows</strong>: Route decisions intelligently, combine rule and AI approaches, optimize success</p>
+<h3 id="phase-4-model-serving-3-notebooks">Phase 4: Model Serving (3 notebooks)<a class="headerlink" href="#phase-4-model-serving-3-notebooks" title="Permanent link">&para;</a></h3>
+<p><strong>Status</strong>: 3/3 Complete (100%) ✅
+<strong>Goal</strong>: Deploy models for production inference
+<strong>Success Criteria</strong>:
+- ✅ KServe InferenceService with &lt;200ms latency
+- ✅ Model versioning with canary deployments
+- ✅ Real-time inference pipeline with batching</p>
+<table>
+<thead>
+<tr>
+<th>Notebook</th>
+<th>Status</th>
+<th>Priority</th>
+<th>Est. Time</th>
+<th>Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kserve-model-deployment</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>Phase 2 complete</td>
+</tr>
+<tr>
+<td>model-versioning-mlops</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>kserve-model-deployment</td>
+</tr>
+<tr>
+<td>inference-pipeline-setup</td>
+<td>✅</td>
+<td>Medium</td>
+<td>-</td>
+<td>model-versioning-mlops</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Phase 4 Details</strong>:
+- <strong>kserve-model-deployment</strong>: Package models, create InferenceService, test endpoints, monitor performance
+- <strong>model-versioning-mlops</strong>: Implement versioning, automate retraining, track lineage, canary deployments
+- <strong>inference-pipeline-setup</strong>: Build streaming pipeline, implement batching, optimize latency, handle failures</p>
+<h3 id="phase-5-end-to-end-scenarios-4-notebooks">Phase 5: End-to-End Scenarios (4 notebooks)<a class="headerlink" href="#phase-5-end-to-end-scenarios-4-notebooks" title="Permanent link">&para;</a></h3>
+<p><strong>Status</strong>: 4/4 Complete (100%) ✅
+<strong>Goal</strong>: Demonstrate complete self-healing workflows
+<strong>Success Criteria</strong>:
+- ✅ Detect and heal pod crash loops automatically
+- ✅ Predict and prevent resource exhaustion
+- ✅ Detect and respond to network anomalies
+- ✅ Full platform demonstration with all components</p>
+<table>
+<thead>
+<tr>
+<th>Notebook</th>
+<th>Status</th>
+<th>Priority</th>
+<th>Est. Time</th>
+<th>Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pod-crash-loop-healing</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>Phase 3 complete</td>
+</tr>
+<tr>
+<td>resource-exhaustion-detection</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>Phase 3 complete</td>
+</tr>
+<tr>
+<td>network-anomaly-response</td>
+<td>✅</td>
+<td>Medium</td>
+<td>-</td>
+<td>Phase 3 complete</td>
+</tr>
+<tr>
+<td>complete-platform-demo</td>
+<td>✅</td>
+<td>Medium</td>
+<td>-</td>
+<td>All above</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Phase 5 Details</strong>:
+- <strong>pod-crash-loop-healing</strong>: Detect crash loops, analyze logs, execute healing (restart, scale, update)
+- <strong>resource-exhaustion-detection</strong>: Monitor resource usage, predict exhaustion, trigger scaling/optimization
+- <strong>network-anomaly-response</strong>: Detect network issues, analyze connectivity, execute network healing
+- <strong>complete-platform-demo</strong>: Run full workflow, demonstrate all components, show success metrics</p>
+<h3 id="phase-6-mcp-lightspeed-integration-3-notebooks">Phase 6: MCP &amp; Lightspeed Integration (3 notebooks)<a class="headerlink" href="#phase-6-mcp-lightspeed-integration-3-notebooks" title="Permanent link">&para;</a></h3>
+<p><strong>Status</strong>: 3/3 Complete (100%) ✅
+<strong>Goal</strong>: Integrate with OpenShift Lightspeed for AI-powered operations
+<strong>Success Criteria</strong>:
+- ✅ MCP server exposes cluster health resources
+- ✅ Lightspeed can query cluster status via MCP
+- ✅ LlamaStack provides AI-powered analysis</p>
+<table>
+<thead>
+<tr>
+<th>Notebook</th>
+<th>Status</th>
+<th>Priority</th>
+<th>Est. Time</th>
+<th>Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mcp-server-integration</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>Phase 3 complete</td>
+</tr>
+<tr>
+<td>openshift-lightspeed-integration</td>
+<td>✅</td>
+<td>High</td>
+<td>-</td>
+<td>mcp-server-integration</td>
+</tr>
+<tr>
+<td>llamastack-integration</td>
+<td>✅</td>
+<td>Medium</td>
+<td>-</td>
+<td>mcp-server-integration</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Phase 6 Details</strong>:
+- <strong>mcp-server-integration</strong>: Connect to MCP server, query resources, trigger tools, handle responses
+- <strong>openshift-lightspeed-integration</strong>: Configure OLSConfig, test Lightspeed queries, validate responses
+- <strong>llamastack-integration</strong>: Deploy LlamaStack, use Llama models for analysis, implement AI-powered remediation</p>
+<h3 id="phase-7-monitoring-operations-3-notebooks">Phase 7: Monitoring &amp; Operations (3 notebooks)<a class="headerlink" href="#phase-7-monitoring-operations-3-notebooks" title="Permanent link">&para;</a></h3>
+<p><strong>Status</strong>: 0/3 Complete (0%)
+<strong>Goal</strong>: Monitor platform health and model performance
+<strong>Success Criteria</strong>:
+- ⏳ Custom Prometheus metrics for all components
+- ⏳ Model performance tracking with drift detection
+- ⏳ Healing success rate tracking and reporting</p>
+<table>
+<thead>
+<tr>
+<th>Notebook</th>
+<th>Status</th>
+<th>Priority</th>
+<th>Est. Time</th>
+<th>Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>prometheus-metrics-monitoring</td>
+<td>⏳</td>
+<td>High</td>
+<td>2h</td>
+<td>Phase 4 complete</td>
+</tr>
+<tr>
+<td>model-performance-monitoring</td>
+<td>⏳</td>
+<td>High</td>
+<td>2h</td>
+<td>Phase 4 complete</td>
+</tr>
+<tr>
+<td>healing-success-tracking</td>
+<td>⏳</td>
+<td>Medium</td>
+<td>2h</td>
+<td>Phase 5 complete</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Phase 7 Details</strong>:
+- <strong>prometheus-metrics-monitoring</strong>: Add custom metrics, create dashboards, set up alerts
+- <strong>model-performance-monitoring</strong>: Track accuracy, detect drift, trigger retraining
+- <strong>healing-success-tracking</strong>: Track success rates, analyze failures, generate reports</p>
+<h2 id="utility-functions">🛠️ Utility Functions<a class="headerlink" href="#utility-functions" title="Permanent link">&para;</a></h2>
+<h3 id="existing">Existing<a class="headerlink" href="#existing" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ <code>utils/common_functions.py</code></li>
+<li>✅ <code>utils/mcp_client.py</code></li>
+</ul>
+<h3 id="needed">Needed<a class="headerlink" href="#needed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>⏳ <code>utils/prometheus_client.py</code> - Prometheus query helpers</li>
+<li>⏳ <code>utils/openshift_utils.py</code> - OpenShift API utilities</li>
+<li>⏳ <code>utils/visualization_helpers.py</code> - Plotting helpers</li>
+</ul>
+<h2 id="development-timeline">📈 Development Timeline<a class="headerlink" href="#development-timeline" title="Permanent link">&para;</a></h2>
+<h3 id="week-1-immediate">Week 1 (Immediate)<a class="headerlink" href="#week-1-immediate" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Phase 1: Complete synthetic-anomaly-generation</li>
+<li>[ ] Phase 2: Complete 02-time-series-anomaly-detection</li>
+<li>[ ] Phase 3: Complete rule-based-remediation</li>
+</ul>
+<h3 id="week-2">Week 2<a class="headerlink" href="#week-2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Phase 2: Complete 03-lstm-based-prediction</li>
+<li>[ ] Phase 3: Complete ai-driven-decision-making</li>
+<li>[ ] Phase 4: Complete kserve-model-deployment</li>
+</ul>
+<h3 id="week-3">Week 3<a class="headerlink" href="#week-3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Phase 4: Complete model-versioning-mlops</li>
+<li>[ ] Phase 5: Complete pod-crash-loop-healing</li>
+<li>[ ] Phase 5: Complete resource-exhaustion-detection</li>
+</ul>
+<h3 id="week-4">Week 4<a class="headerlink" href="#week-4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Phase 5: Complete remaining scenarios</li>
+<li>[ ] Phase 6: Complete MCP integration notebooks</li>
+<li>[ ] Phase 7: Complete monitoring notebooks</li>
+</ul>
+<h2 id="learning-paths">🎓 Learning Paths<a class="headerlink" href="#learning-paths" title="Permanent link">&para;</a></h2>
+<h3 id="beginner-2-3-hours">Beginner (2-3 hours)<a class="headerlink" href="#beginner-2-3-hours" title="Permanent link">&para;</a></h3>
+<ol>
+<li>prometheus-metrics-collection</li>
+<li>01-isolation-forest-implementation</li>
+<li>coordination-engine-integration</li>
+</ol>
+<h3 id="intermediate-4-6-hours">Intermediate (4-6 hours)<a class="headerlink" href="#intermediate-4-6-hours" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Complete Beginner path</li>
+<li>openshift-events-analysis</li>
+<li>log-parsing-analysis</li>
+<li>feature-store-demo</li>
+</ol>
+<h3 id="advanced-full-platform">Advanced (Full Platform)<a class="headerlink" href="#advanced-full-platform" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Complete Intermediate path</li>
+<li>All Phase 4 notebooks</li>
+<li>All Phase 5 notebooks</li>
+<li>Phase 6 &amp; 7 notebooks</li>
+</ol>
+<h2 id="notebook-template">📝 Notebook Template<a class="headerlink" href="#notebook-template" title="Permanent link">&para;</a></h2>
+<p>Each notebook should follow this structure:</p>
+<p>```markdown</p>
+<h1 id="notebook-title">[Notebook Title]<a class="headerlink" href="#notebook-title" title="Permanent link">&para;</a></h1>
+<h2 id="overview_1">Overview<a class="headerlink" href="#overview_1" title="Permanent link">&para;</a></h2>
+<p>Brief description of what the notebook covers</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Required components</li>
+<li>Required knowledge</li>
+<li>Required access</li>
+</ul>
+<h2 id="learning-objectives">Learning Objectives<a class="headerlink" href="#learning-objectives" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Objective 1</li>
+<li>Objective 2</li>
+<li>Objective 3</li>
+</ul>
+<h2 id="key-concepts">Key Concepts<a class="headerlink" href="#key-concepts" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Concept 1</li>
+<li>Concept 2</li>
+</ul>
+<h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
+<p>[Code and explanations]</p>
+<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
+<p>[Testing and verification]</p>
+<h2 id="integration">Integration<a class="headerlink" href="#integration" title="Permanent link">&para;</a></h2>
+<p>[How it connects to other components]</p>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>[What to do after completing this notebook]</p>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>ADR references</li>
+<li>Documentation links
+```</li>
+</ul>
+<h2 id="implementation-guide">� Implementation Guide<a class="headerlink" href="#implementation-guide" title="Permanent link">&para;</a></h2>
+<h3 id="before-starting-a-notebook">Before Starting a Notebook<a class="headerlink" href="#before-starting-a-notebook" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Verify Prerequisites</strong>:
+   ```bash
+   # Check workbench is running
+   oc get pods -n self-healing-platform self-healing-workbench-dev-0</li>
+</ol>
+<p># Check coordination engine is running
+   oc get pods -n self-healing-platform | grep coordination</p>
+<p># Verify storage is mounted
+   ls -la /opt/app-root/src/data
+   ls -la /opt/app-root/src/models
+   ```</p>
+<ol>
+<li>
+<p><strong>Set Up Environment</strong>:
+   <code>python
+   import sys
+   sys.path.append('../utils')
+   from common_functions import setup_environment
+   env_info = setup_environment()
+   print(f"Environment ready: {env_info}")</code></p>
+</li>
+<li>
+<p><strong>Test Connectivity</strong>:
+   ```python
+   # Test Prometheus
+   from utils.prometheus_client import PrometheusClient
+   prom = PrometheusClient()
+   metrics = prom.query_metrics()</p>
+</li>
+</ol>
+<p># Test Coordination Engine
+   import requests
+   response = requests.get('http://coordination-engine:8080/health')
+   print(f"Coordination engine: {response.status_code}")
+   ```</p>
+<h3 id="during-development">During Development<a class="headerlink" href="#during-development" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Save Intermediate Results</strong>:
+   ```python
+   import pickle
+   import os</li>
+</ol>
+<p># Save to persistent storage
+   output_dir = '/opt/app-root/src/data/processed'
+   os.makedirs(output_dir, exist_ok=True)</p>
+<p>with open(f'{output_dir}/results.pkl', 'wb') as f:
+       pickle.dump(results, f)
+   ```</p>
+<ol>
+<li><strong>Add Logging</strong>:
+   ```python
+   import logging</li>
+</ol>
+<p>logging.basicConfig(level=logging.INFO)
+   logger = logging.getLogger(<strong>name</strong>)</p>
+<p>logger.info(f"Processing {len(data)} records")
+   logger.warning(f"Found {anomalies} anomalies")
+   ```</p>
+<ol>
+<li><strong>Handle Errors Gracefully</strong>:
+   <code>python
+   try:
+       result = process_data(data)
+   except Exception as e:
+       logger.error(f"Error processing data: {e}")
+       raise</code></li>
+</ol>
+<h3 id="after-completion">After Completion<a class="headerlink" href="#after-completion" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Validate Results</strong>:
+   ```python
+   # Check output files exist
+   assert os.path.exists(output_file), "Output file not created"</li>
+</ol>
+<p># Verify data quality
+   assert len(results) &gt; 0, "No results generated"
+   assert all(isinstance(r, dict) for r in results), "Invalid result format"
+   ```</p>
+<ol>
+<li><strong>Document Findings</strong>:</li>
+<li>Add markdown cells explaining results</li>
+<li>Include visualizations</li>
+<li>
+<p>Document any issues encountered</p>
+</li>
+<li>
+<p><strong>Update Roadmap</strong>:</p>
+</li>
+<li>Mark notebook as complete</li>
+<li>Update status in this document</li>
+<li>Add any learnings or blockers</li>
+</ol>
+<h2 id="getting-started">�🚀 Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Access Workbench</strong>: https://self-healing-workbench-dev-self-healing-platform.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/</li>
+<li><strong>Clone Repository</strong>: <code>git clone https://gitea-with-admin-gitea.apps.cluster-dzqpc.dzqpc.sandbox29.opentlc.com/user1/openshift-aiops-platform.git</code></li>
+<li><strong>Start with Phase 1</strong>: Open <code>notebooks/01-data-collection/prometheus-metrics-collection.ipynb</code></li>
+<li><strong>Follow Learning Path</strong>: Progress through phases based on your level</li>
+</ol>
+<h2 id="success-metrics">📊 Success Metrics<a class="headerlink" href="#success-metrics" title="Permanent link">&para;</a></h2>
+<ul>
+<li>✅ All 30 notebooks completed</li>
+<li>✅ All utility functions implemented</li>
+<li>✅ 100% test coverage for notebooks</li>
+<li>✅ Comprehensive documentation</li>
+<li>✅ Community contributions</li>
+</ul>
+<h2 id="known-blockers-issues">🚧 Known Blockers &amp; Issues<a class="headerlink" href="#known-blockers-issues" title="Permanent link">&para;</a></h2>
+<h3 id="current-blockers">Current Blockers<a class="headerlink" href="#current-blockers" title="Permanent link">&para;</a></h3>
+<ul>
+<li>None identified yet</li>
+</ul>
+<h3 id="potential-issues-to-watch">Potential Issues to Watch<a class="headerlink" href="#potential-issues-to-watch" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>GPU Memory</strong>: LSTM notebooks may require GPU memory optimization</li>
+<li><strong>Prometheus Retention</strong>: Ensure sufficient metrics history for time series analysis</li>
+<li><strong>KServe Availability</strong>: Verify KServe is installed on cluster before Phase 4</li>
+<li><strong>LlamaStack</strong>: Requires OpenShift AI operator (Phase 6 dependency)</li>
+</ol>
+<h3 id="resolved-issues">Resolved Issues<a class="headerlink" href="#resolved-issues" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Workbench GPU access verified</li>
+<li>✅ Storage mounts working correctly</li>
+<li>✅ Coordination engine health check fixed</li>
+</ul>
+<h2 id="dependency-graph">📊 Dependency Graph<a class="headerlink" href="#dependency-graph" title="Permanent link">&para;</a></h2>
+<p><code>Phase 1 (Data Collection)
+    ↓
+Phase 2 (Anomaly Detection)
+    ↓
+Phase 3 (Self-Healing Logic)
+    ├→ Phase 4 (Model Serving)
+    │   ↓
+    │ Phase 5 (End-to-End Scenarios)
+    │
+    └→ Phase 6 (MCP &amp; Lightspeed)
+        ↓
+    Phase 7 (Monitoring &amp; Operations)</code></p>
+<h2 id="contributing">🤝 Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
+<p>To add a new notebook:
+1. Follow the notebook template
+2. Test in clean environment
+3. Update this roadmap with status
+4. Update <code>notebooks/README.md</code>
+5. Add any learnings or blockers
+6. Submit PR with documentation</p>
+<h3 id="contribution-checklist">Contribution Checklist<a class="headerlink" href="#contribution-checklist" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Notebook follows template structure</li>
+<li>[ ] All prerequisites documented</li>
+<li>[ ] Code is well-commented</li>
+<li>[ ] Results are validated</li>
+<li>[ ] Integration points documented</li>
+<li>[ ] Roadmap updated</li>
+<li>[ ] README updated</li>
+<li>[ ] PR includes description</li>
+</ul>
+<h2 id="support-questions">📞 Support &amp; Questions<a class="headerlink" href="#support-questions" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Documentation</strong>: See <code>notebooks/README.md</code></li>
+<li><strong>ADRs</strong>: Review <code>docs/adrs/</code> for architectural decisions</li>
+<li><strong>Issues</strong>: Document in this roadmap under "Known Blockers"</li>
+<li><strong>Questions</strong>: Check existing notebooks for examples</li>
+</ul>
+<hr />
+<p><strong>Total Notebooks</strong>: 30
+<strong>Completed</strong>: 30 (100%) ⭐ COMPLETE!
+<strong>In Progress</strong>: 0 (0%)
+<strong>Planned</strong>: 0 (0%)
+<strong>Est. Total Time</strong>: 70 hours</p>
+<p><strong>Progress Summary</strong>:
+- Phase 1: 5/5 (100%) ✅
+- Phase 2: 4/4 (100%) ✅
+- Phase 3: 4/4 (100%) ✅
+- Phase 4: 3/3 (100%) ✅
+- Phase 5: 4/4 (100%) ✅
+- Phase 6: 3/3 (100%) ✅
+- Phase 7: 3/3 (100%) ✅
+- Phase 8: 4/4 (100%) ✅ NEW</p>
+<p><strong>Last Updated</strong>: 2026-05-15
+<strong>Next Review</strong>: 2026-06-15
+<strong>Status</strong>: Complete (2025-11-14)
+<strong>All Notebooks</strong>: 30/30 (100%) ✅</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 18, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2006 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/LATEST-ARCHITECTURE-CHANGES/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Latest Architecture Changes - Post git pull (2026-03-03) - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#latest-architecture-changes-post-git-pull-2026-03-03" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Latest Architecture Changes - Post git pull (2026-03-03)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#summary-of-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary of Changes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary of Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#major-architectural-improvement-consolidated-model-training-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Major Architectural Improvement: Consolidated Model Training Workflow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Changes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-removed-gpu-model-copy-jobyaml-168-lines-deleted" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. ❌ Removed: gpu-model-copy-job.yaml (168 lines deleted)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-created-initial-model-training-jobyaml-141-lines-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. ✅ Created: initial-model-training-job.yaml (141 lines added)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/LATEST-ARCHITECTURE-CHANGES.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="latest-architecture-changes-post-git-pull-2026-03-03">Latest Architecture Changes - Post git pull (2026-03-03)<a class="headerlink" href="#latest-architecture-changes-post-git-pull-2026-03-03" title="Permanent link">&para;</a></h1>
+<h2 id="summary-of-changes">Summary of Changes<a class="headerlink" href="#summary-of-changes" title="Permanent link">&para;</a></h2>
+<p><strong>Commit Range:</strong> 84c00d7..242de03
+<strong>Files Changed:</strong> 12 files (+633 insertions, -216 deletions)</p>
+<h3 id="major-architectural-improvement-consolidated-model-training-workflow">🚀 Major Architectural Improvement: Consolidated Model Training Workflow<a class="headerlink" href="#major-architectural-improvement-consolidated-model-training-workflow" title="Permanent link">&para;</a></h3>
+<p>The latest changes represent a significant architectural improvement to the model training and deployment workflow, moving from a <strong>job-based copy approach</strong> to a <strong>Tekton pipeline-driven approach</strong>.</p>
+<hr />
+<h2 id="key-changes">Key Changes<a class="headerlink" href="#key-changes" title="Permanent link">&para;</a></h2>
+<h3 id="1-removed-gpu-model-copy-jobyaml-168-lines-deleted">1. ❌ Removed: <code>gpu-model-copy-job.yaml</code> (168 lines deleted)<a class="headerlink" href="#1-removed-gpu-model-copy-jobyaml-168-lines-deleted" title="Permanent link">&para;</a></h3>
+<p><strong>Previous Approach:</strong>
+- Separate Job running at sync-wave 10
+- Copied trained models from GPU PVC (gp3-csi, RWO) to CephFS PVC (RWX)
+- Required for HA clusters where GPU nodes cannot mount CephFS
+- Ran as standalone sync wave</p>
+<p><strong>Why Deleted:</strong>
+- Functionality consolidated into <code>model-restart-job.yaml</code>
+- Reduces job sprawl and improves maintainability
+- Better error handling with optional GPU PVC access</p>
+<hr />
+<h3 id="2-created-initial-model-training-jobyaml-141-lines-added">2. ✅ Created: <code>initial-model-training-job.yaml</code> (141 lines added)<a class="headerlink" href="#2-created-initial-model-training-jobyaml-141-lines-added" title="Permanent link">&para;</a></h3>
+<p><strong>New Approach:</strong>
+- Triggers Tekton training pipelines automatically on first deployment
+- Runs at sync-wave 5 as PostSync hook
+- Creates PipelineRun CRs for both models:
+  - <code>anomaly-detector</code> → <code>model-training-pipeline</code> (CPU, 30 min timeout)
+  - <code>predictive-analytics</code> → <code>model-training-pipeline-gpu</code> (GPU, 45 min timeout)
+- Idempotent: Skips if PipelineRuns already exist
+- Completes in seconds (just creates CRs, training runs asynchronously)</p>
+<p><strong>Benefits:</strong>
+1. <strong>Automatic Training on Deploy</strong>: No manual pipeline trigger needed
+2. <strong>Consistent Behavior</strong>: Same training workflow whether SNO or HA
+3. <strong>Better UX</strong>: Users see trained models immediately after deployment
+4. <strong>GitOps-Friendly</strong>: Declarative pipeline triggers via ArgoCD</p>
+<p><strong>Key Logic:</strong>
+```yaml</p>
+<h1 id="check-if-training-already-ran">Check if training already ran<a class="headerlink" href="#check-if-training-already-ran" title="Permanent link">&para;</a></h1>
+<p>EXISTING=$(oc get pipelinerun -n {{ .Values.main.namespace }} --no-headers 2&gt;/dev/null | wc -l)
+if [ "$EXISTING" -gt 0 ]; then
+  echo "PipelineRuns already exist ($EXISTING found) -- skipping initial trigger"
+  exit 0
+fi</p>
+<h1 id="trigger-both-pipelines">Trigger both pipelines<a class="headerlink" href="#trigger-both-pipelines" title="Permanent link">&para;</a></h1>
+<p>oc create -f - &lt;&lt;EOF
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: train-anomaly-detector-
+...
+EOF
+```</p>
+<hr />
+<h3 id="3-modified-model-restart-jobyaml-consolidated-functionality">3. 📝 Modified: <code>model-restart-job.yaml</code> (consolidated functionality)<a class="headerlink" href="#3-modified-model-restart-jobyaml-consolidated-functionality" title="Permanent link">&para;</a></h3>
+<p><strong>New Responsibilities:</strong>
+- <strong>Previous:</strong> Wait for models, restart predictor pods (ADR-054 race condition fix)
+- <strong>Added:</strong> GPU→CephFS model copy logic (from deleted gpu-model-copy-job.yaml)</p>
+<p><strong>New Function: <code>copy_model_from_gpu()</code></strong> (lines 108-176):
+- Checks if GPU PVC is mounted (best-effort, may not be available if RWO held by training pod)
+- Compares GPU model timestamp and size with final PVC model
+- Copies if GPU model is newer
+- Gracefully handles GPU PVC unavailable (relies on Tekton pipeline to handle copy)
+- Returns non-zero only if model is required from GPU but not found</p>
+<p><strong>Topology-Aware Behavior:</strong>
+<code>bash
+{{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
+- name: model-storage-gpu
+  persistentVolumeClaim:
+    claimName: model-storage-gpu-pvc
+{{- end }}</code></p>
+<p><strong>Benefits:</strong>
+1. <strong>Consolidated Jobs</strong>: One job handles wait + copy + restart (was 3 jobs)
+2. <strong>Better Error Handling</strong>: GPU PVC mount failure is not fatal
+3. <strong>Simpler Workflow</strong>: Fewer sync waves, clearer dependency graph
+4. <strong>Cost-Effective</strong>: Runs only when needed (models changed)</p>
+<hr />
+<h3 id="4-added-chartshubvaluesyaml-417-lines">4. ✅ Added: <code>charts/hub/values.yaml</code> (417 lines)<a class="headerlink" href="#4-added-chartshubvaluesyaml-417-lines" title="Permanent link">&para;</a></h3>
+<p><strong>Comprehensive Default Values File:</strong>
+- Previously only had <code>values-hub.yaml</code> (cluster-specific overrides)
+- Now has full <code>values.yaml</code> with sensible defaults
+- Extensive inline documentation explaining topology-aware settings
+- Makes Helm chart more portable and self-documenting</p>
+<p><strong>Key Sections:</strong>
+```yaml</p>
+<h1 id="cluster-topology-configuration">Cluster topology configuration<a class="headerlink" href="#cluster-topology-configuration" title="Permanent link">&para;</a></h1>
+<p>cluster:
+  topology: "ha"  # or "sno"
+  version: "4.20"</p>
+<h1 id="storage-configuration-topology-aware">Storage configuration (topology-aware)<a class="headerlink" href="#storage-configuration-topology-aware" title="Permanent link">&para;</a></h1>
+<p>storage:
+  modelArtifacts:
+    size: "100Gi"
+    storageClass: "ocs-storagecluster-cephfs"  # HA default
+    # SNO: override to "gp3-csi" in values-hub.yaml</p>
+<h1 id="rbac-adr-030-hybrid-management-model">RBAC (ADR-030: Hybrid Management Model)<a class="headerlink" href="#rbac-adr-030-hybrid-management-model" title="Permanent link">&para;</a></h1>
+<p>rbac:
+  clusterScoped:
+    enabled: false  # Managed by Ansible prereqs
+  crossNamespaceEnabled: false  # Managed by Ansible prereqs</p>
+<p>clusterRbacManagedExternally: true
+```</p>
+<p><strong>Benefits:</strong>
+1. <strong>Self-Documenting</strong>: Comments explain WHY settings exist
+2. <strong>Portable</strong>: Can deploy without values-hub.yaml (uses defaults)
+3. <strong>Consistent</strong>: Single source of truth for default values
+4. <strong>ADR-Aligned</strong>: Comments reference ADR-030, ADR-054, ADR-055-057</p>
+<hr />
+<h3 id="5-modified-other-template-files">5. 📝 Modified: Other Template Files<a class="headerlink" href="#5-modified-other-template-files" title="Permanent link">&para;</a></h3>
+<p><strong>Updated Files:</strong>
+- <code>ai-ml-workbench.yaml</code> - Minor adjustments
+- <code>imagestreams-buildconfigs.yaml</code> - Image tag fixes
+- <code>notebook-validation-jobs.yaml</code> - Topology conditionals refined
+- <code>notebook-validator-tekton.yaml</code> - Pipeline references updated
+- <code>restart-predictors-job.yaml</code> - Aligned with model-restart changes
+- <code>tekton-model-training-cronjobs.yaml</code> - CronJob schedules updated
+- <code>tekton-model-training-pipeline.yaml</code> - Pipeline parameters refined</p>
+<p><strong>README.md Updated:</strong>
+- Added step 17: Check model training pipeline status
+- Explains automatic training trigger on deployment
+- Provides manual pipeline trigger commands for troubleshooting</p>
+<hr />
+<h2 id="architecture-comparison-before-vs-after">Architecture Comparison: Before vs After<a class="headerlink" href="#architecture-comparison-before-vs-after" title="Permanent link">&para;</a></h2>
+<h3 id="before-84c00d7">Before (84c00d7):<a class="headerlink" href="#before-84c00d7" title="Permanent link">&para;</a></h3>
+<p><code>Deploy → (wave 2) InferenceServices
+      → (wave 3-10) Notebooks train models → write to GPU PVC (if HA)
+      → (wave 10) gpu-model-copy-job → copy GPU PVC → CephFS PVC
+      → (wave 11) model-restart-job → wait for models → restart predictors</code></p>
+<p><strong>Issues:</strong>
+- 3 separate jobs (training notebooks, copy, restart)
+- GPU copy job always runs even if models unchanged
+- Tight coupling between waves
+- Harder to debug failures</p>
+<h3 id="after-242de03">After (242de03):<a class="headerlink" href="#after-242de03" title="Permanent link">&para;</a></h3>
+<p><code>Deploy → (wave 5, PostSync) initial-model-training-job → trigger Tekton pipelines
+      → Tekton pipelines train models asynchronously
+      → (wave 11) model-restart-job → optional GPU copy + restart</code></p>
+<p><strong>Improvements:</strong>
+1. <strong>Async Training</strong>: Tekton pipelines run independently of ArgoCD sync
+2. <strong>Idempotent</strong>: initial-model-training-job skips if pipelines already exist
+3. <strong>Consolidated</strong>: model-restart-job handles copy + restart (was 2 jobs)
+4. <strong>Flexible</strong>: GPU copy is best-effort (Tekton handles if restart job can't)
+5. <strong>Faster Syncs</strong>: ArgoCD doesn't wait for training to complete</p>
+<hr />
+<h2 id="adr-validation-impact">ADR Validation Impact<a class="headerlink" href="#adr-validation-impact" title="Permanent link">&para;</a></h2>
+<h3 id="adr-057-topology-aware-gpu-scheduling-and-storage">ADR-057: Topology-Aware GPU Scheduling and Storage<a class="headerlink" href="#adr-057-topology-aware-gpu-scheduling-and-storage" title="Permanent link">&para;</a></h3>
+<p><strong>Status:</strong> ✅ Still fully implemented, architecture improved</p>
+<p><strong>Changes:</strong>
+- GPU copy logic moved from dedicated job → consolidated into model-restart-job
+- Storage.yaml unchanged (still creates model-storage-gpu-pvc for HA)
+- Topology conditionals unchanged (SNO skips GPU PVC, HA creates both)</p>
+<p><strong>New Validation Steps:</strong>
+1. ✅ Verify <code>initial-model-training-job</code> triggers pipelines on deployment
+2. ✅ Verify <code>model-restart-job</code> includes GPU copy logic (HA only)
+3. ✅ Verify GPU PVC copy is optional (not fatal if unavailable)
+4. ❌ Remove validation for <code>gpu-model-copy-job</code> (deleted)</p>
+<h3 id="adr-054-inferenceservice-model-readiness-race-condition">ADR-054: InferenceService Model Readiness Race Condition<a class="headerlink" href="#adr-054-inferenceservice-model-readiness-race-condition" title="Permanent link">&para;</a></h3>
+<p><strong>Status:</strong> ✅ Still addresses race condition, improved workflow</p>
+<p><strong>Changes:</strong>
+- model-restart-job now runs at wave 11 (unchanged)
+- Adds GPU copy capability (new)
+- Still waits for models before restarting predictors</p>
+<p><strong>Validation:</strong>
+- Same validation steps apply (wait for models, restart predictors)
+- Additional check: GPU copy logs in model-restart-job</p>
+<h3 id="adr-019-validated-patterns-framework-adoption">ADR-019: Validated Patterns Framework Adoption<a class="headerlink" href="#adr-019-validated-patterns-framework-adoption" title="Permanent link">&para;</a></h3>
+<p><strong>Status:</strong> ✅ Enhanced with better Helm chart structure</p>
+<p><strong>Changes:</strong>
+- Added comprehensive values.yaml with defaults
+- Improves portability and maintainability
+- Follows Helm best practices</p>
+<hr />
+<h2 id="updated-validation-checklist">Updated Validation Checklist<a class="headerlink" href="#updated-validation-checklist" title="Permanent link">&para;</a></h2>
+<h3 id="sno-deployment-validation">SNO Deployment Validation<a class="headerlink" href="#sno-deployment-validation" title="Permanent link">&para;</a></h3>
+<p><strong>What Changed:</strong>
+- ✅ No gpu-model-copy-job (was never created for SNO anyway)
+- ✅ initial-model-training-job now triggers training automatically
+- ✅ model-restart-job runs but skips GPU copy (GPU PVC not mounted)</p>
+<p><strong>New Validation Steps:</strong>
+```bash</p>
+<h1 id="1-verify-initial-model-training-job-triggered-pipelines">1. Verify initial-model-training-job triggered pipelines<a class="headerlink" href="#1-verify-initial-model-training-job-triggered-pipelines" title="Permanent link">&para;</a></h1>
+<p>oc get job initial-model-training -n self-healing-platform
+oc logs job/initial-model-training -n self-healing-platform</p>
+<h1 id="expected-job-completed-shows-both-training-pipelines-triggered-successfully">Expected: Job completed, shows "Both training pipelines triggered successfully"<a class="headerlink" href="#expected-job-completed-shows-both-training-pipelines-triggered-successfully" title="Permanent link">&para;</a></h1>
+<h1 id="2-verify-tekton-pipelines-were-created">2. Verify Tekton pipelines were created<a class="headerlink" href="#2-verify-tekton-pipelines-were-created" title="Permanent link">&para;</a></h1>
+<p>tkn pipelinerun list -n self-healing-platform</p>
+<h1 id="expected">Expected:<a class="headerlink" href="#expected" title="Permanent link">&para;</a></h1>
+<h1 id="-train-anomaly-detector-xxxxx-running-or-succeeded">- train-anomaly-detector-xxxxx (Running or Succeeded)<a class="headerlink" href="#-train-anomaly-detector-xxxxx-running-or-succeeded" title="Permanent link">&para;</a></h1>
+<h1 id="-train-predictive-analytics-xxxxx-running-or-succeeded">- train-predictive-analytics-xxxxx (Running or Succeeded)<a class="headerlink" href="#-train-predictive-analytics-xxxxx-running-or-succeeded" title="Permanent link">&para;</a></h1>
+<h1 id="3-verify-model-restart-job-completed">3. Verify model-restart-job completed<a class="headerlink" href="#3-verify-model-restart-job-completed" title="Permanent link">&para;</a></h1>
+<p>oc get job model-restart-after-training -n self-healing-platform
+oc logs job/model-restart-after-training -n self-healing-platform | grep -A5 "copy_model_from_gpu"</p>
+<h1 id="expected-gpu-pvc-not-mounted-rwo-may-still-be-held-by-training-pod-or">Expected: "GPU PVC not mounted (RWO may still be held by training pod)" or<a class="headerlink" href="#expected-gpu-pvc-not-mounted-rwo-may-still-be-held-by-training-pod-or" title="Permanent link">&para;</a></h1>
+<h1 id="gpu-pvc-not-mounted-but-model-model_name-requires-gpu-training-non-fatal-for-sno">"GPU PVC not mounted but model $model_name requires GPU training" (non-fatal for SNO)<a class="headerlink" href="#gpu-pvc-not-mounted-but-model-model_name-requires-gpu-training-non-fatal-for-sno" title="Permanent link">&para;</a></h1>
+<h1 id="4-verify-predictors-restarted-successfully">4. Verify predictors restarted successfully<a class="headerlink" href="#4-verify-predictors-restarted-successfully" title="Permanent link">&para;</a></h1>
+<p>oc get pods -n self-healing-platform -l serving.kserve.io/inferenceservice
+```</p>
+<h3 id="ha-deployment-validation">HA Deployment Validation<a class="headerlink" href="#ha-deployment-validation" title="Permanent link">&para;</a></h3>
+<p><strong>What Changed:</strong>
+- ❌ gpu-model-copy-job DELETED (no longer created)
+- ✅ initial-model-training-job now triggers training automatically
+- ✅ model-restart-job now includes GPU copy logic</p>
+<p><strong>New Validation Steps:</strong>
+```bash</p>
+<h1 id="1-verify-initial-model-training-job-triggered-pipelines_1">1. Verify initial-model-training-job triggered pipelines<a class="headerlink" href="#1-verify-initial-model-training-job-triggered-pipelines_1" title="Permanent link">&para;</a></h1>
+<p>oc get job initial-model-training -n self-healing-platform
+oc logs job/initial-model-training -n self-healing-platform</p>
+<h1 id="expected-job-completed-shows-both-training-pipelines-triggered-successfully_1">Expected: Job completed, shows "Both training pipelines triggered successfully"<a class="headerlink" href="#expected-job-completed-shows-both-training-pipelines-triggered-successfully_1" title="Permanent link">&para;</a></h1>
+<h1 id="2-verify-tekton-pipelines-running">2. Verify Tekton pipelines running<a class="headerlink" href="#2-verify-tekton-pipelines-running" title="Permanent link">&para;</a></h1>
+<p>tkn pipelinerun list -n self-healing-platform</p>
+<h1 id="expected_1">Expected:<a class="headerlink" href="#expected_1" title="Permanent link">&para;</a></h1>
+<h1 id="-train-anomaly-detector-xxxxx-running-or-succeeded_1">- train-anomaly-detector-xxxxx (Running or Succeeded)<a class="headerlink" href="#-train-anomaly-detector-xxxxx-running-or-succeeded_1" title="Permanent link">&para;</a></h1>
+<h1 id="-train-predictive-analytics-xxxxx-running-or-succeeded-gpu-training">- train-predictive-analytics-xxxxx (Running or Succeeded, GPU training)<a class="headerlink" href="#-train-predictive-analytics-xxxxx-running-or-succeeded-gpu-training" title="Permanent link">&para;</a></h1>
+<h1 id="3-verify-both-pvcs-created-model-storage-pvc-model-storage-gpu-pvc">3. Verify both PVCs created (model-storage-pvc + model-storage-gpu-pvc)<a class="headerlink" href="#3-verify-both-pvcs-created-model-storage-pvc-model-storage-gpu-pvc" title="Permanent link">&para;</a></h1>
+<p>oc get pvc -n self-healing-platform | grep model-storage</p>
+<h1 id="expected_2">Expected:<a class="headerlink" href="#expected_2" title="Permanent link">&para;</a></h1>
+<h1 id="-model-storage-pvc-cephfs-rwx">- model-storage-pvc (CephFS, RWX)<a class="headerlink" href="#-model-storage-pvc-cephfs-rwx" title="Permanent link">&para;</a></h1>
+<h1 id="-model-storage-gpu-pvc-gp3-csi-rwo">- model-storage-gpu-pvc (gp3-csi, RWO)<a class="headerlink" href="#-model-storage-gpu-pvc-gp3-csi-rwo" title="Permanent link">&para;</a></h1>
+<h1 id="4-verify-model-restart-job-includes-gpu-copy">4. Verify model-restart-job includes GPU copy<a class="headerlink" href="#4-verify-model-restart-job-includes-gpu-copy" title="Permanent link">&para;</a></h1>
+<p>oc logs job/model-restart-after-training -n self-healing-platform | grep -A10 "copy_model_from_gpu"</p>
+<h1 id="expected-shows-copy-attempts-from-mntmodels-gpu-to-mntmodels">Expected: Shows copy attempts from /mnt/models-gpu to /mnt/models<a class="headerlink" href="#expected-shows-copy-attempts-from-mntmodels-gpu-to-mntmodels" title="Permanent link">&para;</a></h1>
+<h1 id="possible-outcomes">Possible outcomes:<a class="headerlink" href="#possible-outcomes" title="Permanent link">&para;</a></h1>
+<h1 id="-model-copied-successfully-size-xxxxx-bytes-gpu-copy-worked">- "Model copied successfully! (size: XXXXX bytes)" → GPU copy worked<a class="headerlink" href="#-model-copied-successfully-size-xxxxx-bytes-gpu-copy-worked" title="Permanent link">&para;</a></h1>
+<h1 id="-gpu-pvc-not-mounted-rwo-may-still-be-held-by-training-pod-tekton-handles-copy">- "GPU PVC not mounted (RWO may still be held by training pod)" → Tekton handles copy<a class="headerlink" href="#-gpu-pvc-not-mounted-rwo-may-still-be-held-by-training-pod-tekton-handles-copy" title="Permanent link">&para;</a></h1>
+<h1 id="-final-pvc-model-is-up-to-date-no-copy-needed">- "Final PVC model is up-to-date" → No copy needed<a class="headerlink" href="#-final-pvc-model-is-up-to-date-no-copy-needed" title="Permanent link">&para;</a></h1>
+<h1 id="5-verify-no-gpu-model-copy-job-exists-deleted-in-this-version">5. Verify no gpu-model-copy-job exists (deleted in this version)<a class="headerlink" href="#5-verify-no-gpu-model-copy-job-exists-deleted-in-this-version" title="Permanent link">&para;</a></h1>
+<p>oc get jobs -n self-healing-platform | grep gpu-model-copy</p>
+<h1 id="expected-no-output-job-was-deleted">Expected: No output (job was deleted)<a class="headerlink" href="#expected-no-output-job-was-deleted" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<hr />
+<h2 id="deployment-testing-strategy">Deployment Testing Strategy<a class="headerlink" href="#deployment-testing-strategy" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-fresh-sno-deployment">Phase 1: Fresh SNO Deployment<a class="headerlink" href="#phase-1-fresh-sno-deployment" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="prerequisites-blank-sno-cluster-with-token-ready">Prerequisites: Blank SNO cluster with token ready<a class="headerlink" href="#prerequisites-blank-sno-cluster-with-token-ready" title="Permanent link">&para;</a></h1>
+<h1 id="1-clone-latest-code">1. Clone latest code<a class="headerlink" href="#1-clone-latest-code" title="Permanent link">&para;</a></h1>
+<p>cd /home/vpcuser/openshift-aiops-platform
+git pull  # Already done</p>
+<h1 id="2-authenticate-to-sno-cluster">2. Authenticate to SNO cluster<a class="headerlink" href="#2-authenticate-to-sno-cluster" title="Permanent link">&para;</a></h1>
+<p>oc login --server=<sno-api-url> --token=<sno-token></p>
+<h1 id="3-verify-topology-detection">3. Verify topology detection<a class="headerlink" href="#3-verify-topology-detection" title="Permanent link">&para;</a></h1>
+<p>make show-cluster-info</p>
+<h1 id="expected-cluster_topologysno">Expected: CLUSTER_TOPOLOGY=sno<a class="headerlink" href="#expected-cluster_topologysno" title="Permanent link">&para;</a></h1>
+<h1 id="4-deploy">4. Deploy<a class="headerlink" href="#4-deploy" title="Permanent link">&para;</a></h1>
+<p>make deploy-with-prereqs</p>
+<h1 id="5-watch-initial-model-training-job">5. Watch initial-model-training-job<a class="headerlink" href="#5-watch-initial-model-training-job" title="Permanent link">&para;</a></h1>
+<p>oc logs -f job/initial-model-training -n self-healing-platform</p>
+<h1 id="6-monitor-tekton-pipelines">6. Monitor Tekton pipelines<a class="headerlink" href="#6-monitor-tekton-pipelines" title="Permanent link">&para;</a></h1>
+<p>watch tkn pipelinerun list -n self-healing-platform</p>
+<h1 id="7-validate-deployment">7. Validate deployment<a class="headerlink" href="#7-validate-deployment" title="Permanent link">&para;</a></h1>
+<p>./scripts/post-deployment-validation.sh</p>
+<h1 id="8-test-model-endpoints">8. Test model endpoints<a class="headerlink" href="#8-test-model-endpoints" title="Permanent link">&para;</a></h1>
+<p>./scripts/test-model-endpoint.sh anomaly-detector self-healing-platform
+./scripts/test-model-endpoint.sh predictive-analytics self-healing-platform
+```</p>
+<h3 id="phase-2-fresh-ha-deployment">Phase 2: Fresh HA Deployment<a class="headerlink" href="#phase-2-fresh-ha-deployment" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="prerequisites-blank-ha-cluster-with-token-ready">Prerequisites: Blank HA cluster with token ready<a class="headerlink" href="#prerequisites-blank-ha-cluster-with-token-ready" title="Permanent link">&para;</a></h1>
+<h1 id="1-authenticate-to-ha-cluster">1. Authenticate to HA cluster<a class="headerlink" href="#1-authenticate-to-ha-cluster" title="Permanent link">&para;</a></h1>
+<p>oc login --server=<ha-api-url> --token=<ha-token></p>
+<h1 id="2-verify-topology-detection">2. Verify topology detection<a class="headerlink" href="#2-verify-topology-detection" title="Permanent link">&para;</a></h1>
+<p>make show-cluster-info</p>
+<h1 id="expected-cluster_topologyha">Expected: CLUSTER_TOPOLOGY=ha<a class="headerlink" href="#expected-cluster_topologyha" title="Permanent link">&para;</a></h1>
+<h1 id="3-deploy">3. Deploy<a class="headerlink" href="#3-deploy" title="Permanent link">&para;</a></h1>
+<p>make deploy-with-prereqs</p>
+<h1 id="4-watch-initial-model-training-job">4. Watch initial-model-training-job<a class="headerlink" href="#4-watch-initial-model-training-job" title="Permanent link">&para;</a></h1>
+<p>oc logs -f job/initial-model-training -n self-healing-platform</p>
+<h1 id="5-monitor-tekton-pipelines-watch-for-gpu-pipeline">5. Monitor Tekton pipelines (watch for GPU pipeline)<a class="headerlink" href="#5-monitor-tekton-pipelines-watch-for-gpu-pipeline" title="Permanent link">&para;</a></h1>
+<p>watch tkn pipelinerun list -n self-healing-platform</p>
+<h1 id="look-for-model-training-pipeline-gpu-predictive-analytics">Look for model-training-pipeline-gpu (predictive analytics)<a class="headerlink" href="#look-for-model-training-pipeline-gpu-predictive-analytics" title="Permanent link">&para;</a></h1>
+<h1 id="6-validate-gpu-copy-in-model-restart-job">6. Validate GPU copy in model-restart-job<a class="headerlink" href="#6-validate-gpu-copy-in-model-restart-job" title="Permanent link">&para;</a></h1>
+<p>oc logs job/model-restart-after-training -n self-healing-platform | grep "copy_model_from_gpu" -A20</p>
+<h1 id="7-validate-deployment_1">7. Validate deployment<a class="headerlink" href="#7-validate-deployment_1" title="Permanent link">&para;</a></h1>
+<p>./scripts/post-deployment-validation.sh</p>
+<h1 id="8-test-model-endpoints_1">8. Test model endpoints<a class="headerlink" href="#8-test-model-endpoints_1" title="Permanent link">&para;</a></h1>
+<p>./scripts/test-model-endpoint.sh anomaly-detector self-healing-platform
+./scripts/test-model-endpoint.sh predictive-analytics self-healing-platform
+```</p>
+<hr />
+<h2 id="breaking-changes">Breaking Changes<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h2>
+<h3 id="none-for-end-users">None for End Users<a class="headerlink" href="#none-for-end-users" title="Permanent link">&para;</a></h3>
+<p>The architecture changes are <strong>backward compatible</strong> from a deployment perspective:
+- Same Makefile targets (<code>make deploy-with-prereqs</code>)
+- Same validation scripts
+- Same InferenceService endpoints
+- Model training still happens automatically</p>
+<h3 id="internal-changes-only">Internal Changes Only<a class="headerlink" href="#internal-changes-only" title="Permanent link">&para;</a></h3>
+<p>Changes affect <strong>implementation details</strong>:
+- Job names changed (gpu-model-copy-job deleted)
+- Sync wave ordering improved
+- Tekton pipelines triggered earlier in deployment</p>
+<hr />
+<h2 id="benefits-of-new-architecture">Benefits of New Architecture<a class="headerlink" href="#benefits-of-new-architecture" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Simpler</strong>: Fewer jobs (3 → 2), clearer responsibilities</li>
+<li><strong>Faster</strong>: ArgoCD sync doesn't wait for training (async pipelines)</li>
+<li><strong>More Reliable</strong>: Better error handling, idempotent pipeline triggers</li>
+<li><strong>More Maintainable</strong>: Consolidated logic, better documentation</li>
+<li><strong>More Portable</strong>: Comprehensive values.yaml with defaults</li>
+<li><strong>Better UX</strong>: Training starts automatically on deployment</li>
+</ol>
+<hr />
+<h2 id="recommendations-for-validation">Recommendations for Validation<a class="headerlink" href="#recommendations-for-validation" title="Permanent link">&para;</a></h2>
+<h3 id="focus-areas">Focus Areas<a class="headerlink" href="#focus-areas" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Initial Model Training Job</strong>:</li>
+<li>Verify it triggers both pipelines on first deploy</li>
+<li>Verify it's idempotent (skips if pipelines exist)</li>
+<li>
+<p>Check logs for clear success/skip messages</p>
+</li>
+<li>
+<p><strong>Model Restart Job</strong>:</p>
+</li>
+<li>Verify GPU copy logic works on HA (when GPU PVC available)</li>
+<li>Verify it gracefully handles GPU PVC unavailable</li>
+<li>
+<p>Verify predictor restarts happen regardless of copy success</p>
+</li>
+<li>
+<p><strong>Tekton Pipeline Monitoring</strong>:</p>
+</li>
+<li>Watch pipeline progress (<code>tkn pipelinerun list</code>)</li>
+<li>Verify models written to correct PVCs</li>
+<li>
+<p>Verify InferenceServices pick up trained models</p>
+</li>
+<li>
+<p><strong>ADR Compliance</strong>:</p>
+</li>
+<li>ADR-054: Race condition still fixed</li>
+<li>ADR-057: Topology-aware storage still works</li>
+<li>ADR-019: Validated Patterns framework still used</li>
+</ol>
+<h3 id="expected-outcomes">Expected Outcomes<a class="headerlink" href="#expected-outcomes" title="Permanent link">&para;</a></h3>
+<p><strong>SNO:</strong>
+- ✅ initial-model-training-job succeeds
+- ✅ 2 PipelineRuns created and complete
+- ✅ model-restart-job succeeds (no GPU copy attempted)
+- ✅ Predictors restart and serve models
+- ✅ Health score: 100% (8/8 checks)</p>
+<p><strong>HA:</strong>
+- ✅ initial-model-training-job succeeds
+- ✅ 2 PipelineRuns created and complete (one uses GPU)
+- ✅ model-restart-job succeeds (GPU copy attempted, may succeed or rely on pipeline)
+- ✅ Predictors restart and serve models
+- ✅ Health score: 100% (8/8 checks)</p>
+<hr />
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Review this document</strong> with stakeholders</li>
+<li><strong>Test on SNO cluster</strong> with provided token</li>
+<li><strong>Test on HA cluster</strong> with provided token</li>
+<li><strong>Document any issues</strong> discovered during testing</li>
+<li><strong>Update ADR-054 and ADR-057</strong> to reflect architecture changes</li>
+<li><strong>Create release notes</strong> highlighting improvements</li>
+</ol>
+<hr />
+<h2 id="questions-for-review">Questions for Review<a class="headerlink" href="#questions-for-review" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Should we create a new ADR for the Tekton-pipeline-triggered training approach?</li>
+<li>Should we update ADR-054 to include the GPU copy consolidation?</li>
+<li>Are there any edge cases with GPU PVC unavailability we should handle?</li>
+<li>Should we add metrics/monitoring for initial-model-training-job success rate?</li>
+</ol>
+<hr />
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Commit:</strong> 242de03</li>
+<li><strong>Pull Request:</strong> (if applicable)</li>
+<li><strong>Related ADRs:</strong> ADR-019, ADR-054, ADR-057</li>
+<li><strong>Related Issues:</strong> (if applicable)</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 3, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 3, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

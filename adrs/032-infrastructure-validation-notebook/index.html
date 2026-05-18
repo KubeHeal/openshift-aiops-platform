@@ -1,0 +1,2274 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/adrs/032-infrastructure-validation-notebook/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>ADR-032: Infrastructure Validation Notebook for User Readiness - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adr-032-infrastructure-validation-notebook-for-user-readiness" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ADR-032: Infrastructure Validation Notebook for User Readiness
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Status
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context-and-problem-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context and Problem Statement
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context and Problem Statement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Gap
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-drivers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision Drivers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#considered-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Considered Options
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Considered Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-create-comprehensive-validation-notebook-selected" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 1: Create Comprehensive Validation Notebook (SELECTED)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-shell-script-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 2: Shell Script Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-ansible-playbook-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 3: Ansible Playbook Validation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-outcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decision Outcome
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decision Outcome">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implementation-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Plan
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-create-validation-notebook-week-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Create Validation Notebook (Week 1)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-tekton-integration-week-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Tekton Integration (Week 1)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-documentation-testing-week-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Documentation &amp; Testing (Week 1)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Checklist
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validation Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Basic Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platform-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Platform Infrastructure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openshift-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ OpenShift Components
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-connectivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Network Connectivity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-report-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Report Format
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/adrs/032-infrastructure-validation-notebook.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="adr-032-infrastructure-validation-notebook-for-user-readiness">ADR-032: Infrastructure Validation Notebook for User Readiness<a class="headerlink" href="#adr-032-infrastructure-validation-notebook-for-user-readiness" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: Implemented
+<strong>Date</strong>: 2025-11-04
+<strong>Renumbered From</strong>: Originally ADR-029 (renumbered 2025-11-19 to resolve duplicate)
+<strong>Implementation</strong>: Tier 1 validation notebook (<code>00-platform-readiness-validation.ipynb</code>)
+<strong>Deciders</strong>: Platform Team
+<strong>Technical Story</strong>: Comprehensive validation of platform infrastructure before users execute notebooks</p>
+<h2 id="implementation-status">Implementation Status<a class="headerlink" href="#implementation-status" title="Permanent link">&para;</a></h2>
+<p><strong>Status:</strong> implemented
+<strong>Verification Date:</strong> 2025-11-04
+<strong>Implementation Score:</strong> 10.0/10
+<strong>Verified On:</strong> Development cluster
+<strong>Evidence:</strong> Infrastructure validation notebook deployed and tested. Platform readiness validation operational.</p>
+<h2 id="context-and-problem-statement">Context and Problem Statement<a class="headerlink" href="#context-and-problem-statement" title="Permanent link">&para;</a></h2>
+<p>Users need to verify that all platform components (coordination engine, model serving, S3 storage, Prometheus, MCP server, etc.) are operational and accessible before executing the 30 notebooks in the Self-Healing Platform. Currently, <code>00-setup/environment-setup.ipynb</code> only validates basic workbench setup (Python, PyTorch, GPU) but doesn't verify platform infrastructure readiness.</p>
+<h3 id="current-gap">Current Gap<a class="headerlink" href="#current-gap" title="Permanent link">&para;</a></h3>
+<ul>
+<li>❌ No validation of coordination engine URL and health</li>
+<li>❌ No verification of model serving endpoints (KServe)</li>
+<li>❌ No check for S3/object storage accessibility</li>
+<li>❌ No validation of Prometheus metrics API</li>
+<li>❌ No MCP server connectivity test</li>
+<li>❌ No ArgoCD application health check</li>
+<li>❌ No Tekton pipeline availability verification</li>
+<li>❌ No external secrets verification</li>
+</ul>
+<p><strong>Problem</strong>: Users may start notebook execution without realizing critical platform components are missing or misconfigured, leading to failures mid-workflow.</p>
+<h2 id="decision-drivers">Decision Drivers<a class="headerlink" href="#decision-drivers" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>User Experience</strong>: Users should know immediately if infrastructure is ready</li>
+<li><strong>Fail Fast</strong>: Detect misconfigurations before time-consuming notebook execution</li>
+<li><strong>Dual Execution</strong>: Must run both in Jupyter (manual) and Tekton (automated CI/CD)</li>
+<li><strong>Comprehensive Coverage</strong>: Validate all dependencies required by the 30 notebooks</li>
+<li><strong>Clear Reporting</strong>: Provide actionable error messages for failed checks</li>
+<li><strong>Automation</strong>: Enable CI/CD validation via Tekton pipelines</li>
+</ol>
+<h2 id="considered-options">Considered Options<a class="headerlink" href="#considered-options" title="Permanent link">&para;</a></h2>
+<h3 id="option-1-create-comprehensive-validation-notebook-selected">Option 1: Create Comprehensive Validation Notebook (SELECTED)<a class="headerlink" href="#option-1-create-comprehensive-validation-notebook-selected" title="Permanent link">&para;</a></h3>
+<p><strong>Approach</strong>: Create <code>notebooks/00-setup/00-platform-readiness-validation.ipynb</code> that checks all infrastructure components</p>
+<p><strong>Checks to Implement</strong>:
+1. <strong>Basic Environment</strong> (from existing notebook)
+   - Python version (3.11+)
+   - PyTorch installation (2025.1)
+   - GPU availability
+   - Persistent storage (data, models volumes)</p>
+<ol>
+<li><strong>Platform Infrastructure</strong></li>
+<li>Coordination Engine: Health endpoint, API accessibility</li>
+<li>Model Serving: KServe InferenceServices, serving runtimes</li>
+<li>Object Storage: S3 bucket accessibility, credentials validation</li>
+<li>Monitoring: Prometheus query API, Grafana dashboards</li>
+<li>
+<p>MCP Server: Cluster Health MCP connectivity, tool availability</p>
+</li>
+<li>
+<p><strong>OpenShift Components</strong></p>
+</li>
+<li>ArgoCD Applications: Status and sync state</li>
+<li>Tekton Pipelines: Pipeline availability, trigger configuration</li>
+<li>External Secrets: SecretStore, ExternalSecrets status</li>
+<li>
+<p>Routes: Public endpoints accessibility</p>
+</li>
+<li>
+<p><strong>Network Connectivity</strong></p>
+</li>
+<li>In-cluster service resolution</li>
+<li>External API endpoints</li>
+<li>Route accessibility (if needed)</li>
+</ol>
+<p><strong>Outputs</strong>:
+- ✅ Comprehensive validation report (JSON + Markdown)
+- ✅ Pass/fail status for each component
+- ✅ Actionable error messages with remediation steps
+- ✅ Summary dashboard (visual indicators)</p>
+<h3 id="option-2-shell-script-validation">Option 2: Shell Script Validation<a class="headerlink" href="#option-2-shell-script-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Approach</strong>: Create bash script with <code>curl</code> and <code>oc</code> commands</p>
+<p><strong>Rejected Because</strong>:
+- ❌ Not executable within Jupyter notebooks
+- ❌ Requires users to switch to terminal
+- ❌ Harder to integrate with Tekton (needs custom task)
+- ❌ No visual reporting in notebooks</p>
+<h3 id="option-3-ansible-playbook-validation">Option 3: Ansible Playbook Validation<a class="headerlink" href="#option-3-ansible-playbook-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Approach</strong>: Use Ansible playbook with validation tasks</p>
+<p><strong>Rejected Because</strong>:
+- ❌ Not runnable within Jupyter notebooks
+- ❌ Requires Ansible installation in workbench
+- ❌ Overly complex for user-facing validation
+- ✅ (Keep for infrastructure deployment validation - already exists)</p>
+<h2 id="decision-outcome">Decision Outcome<a class="headerlink" href="#decision-outcome" title="Permanent link">&para;</a></h2>
+<p><strong>Chosen Option</strong>: Option 1 - Comprehensive Validation Notebook</p>
+<h3 id="implementation-plan">Implementation Plan<a class="headerlink" href="#implementation-plan" title="Permanent link">&para;</a></h3>
+<h4 id="phase-1-create-validation-notebook-week-1">Phase 1: Create Validation Notebook (Week 1)<a class="headerlink" href="#phase-1-create-validation-notebook-week-1" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Create <code>notebooks/00-setup/00-platform-readiness-validation.ipynb</code></li>
+<li>Implement validation functions in <code>notebooks/utils/validation_helpers.py</code></li>
+<li>Add visual reporting with status indicators</li>
+<li>Generate JSON validation report for automation</li>
+</ol>
+<h4 id="phase-2-tekton-integration-week-1">Phase 2: Tekton Integration (Week 1)<a class="headerlink" href="#phase-2-tekton-integration-week-1" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Create Tekton task: <code>platform-readiness-validation-task.yaml</code></li>
+<li>Install <code>papermill</code> for programmatic notebook execution</li>
+<li>Create pipeline: <code>platform-readiness-validation-pipeline.yaml</code></li>
+<li>Add webhook trigger for automated validation</li>
+</ol>
+<h4 id="phase-3-documentation-testing-week-1">Phase 3: Documentation &amp; Testing (Week 1)<a class="headerlink" href="#phase-3-documentation-testing-week-1" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Update <code>notebooks/README.md</code> with validation workflow</li>
+<li>Create troubleshooting guide for common failures</li>
+<li>Test in RHODS workbench environment</li>
+<li>Test via Tekton pipeline execution</li>
+</ol>
+<h3 id="validation-checklist">Validation Checklist<a class="headerlink" href="#validation-checklist" title="Permanent link">&para;</a></h3>
+<p>The notebook will validate the following components:</p>
+<h4 id="basic-environment">✅ Basic Environment<a class="headerlink" href="#basic-environment" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Python 3.11+</li>
+<li>[ ] PyTorch 2025.1</li>
+<li>[ ] GPU available (warning if not, not blocking)</li>
+<li>[ ] Data volume mounted: <code>/opt/app-root/src/data</code> (20Gi)</li>
+<li>[ ] Models volume mounted: <code>/opt/app-root/src/models</code> (50Gi)</li>
+<li>[ ] Config directory writable: <code>/opt/app-root/src/.config</code></li>
+</ul>
+<h4 id="platform-infrastructure">✅ Platform Infrastructure<a class="headerlink" href="#platform-infrastructure" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Coordination Engine</li>
+<li>URL: <code>http://coordination-engine.self-healing-platform.svc.cluster.local:8080</code></li>
+<li>Health endpoint: <code>/health</code> returns 200</li>
+<li>Metrics endpoint: <code>/metrics</code> accessible</li>
+<li>[ ] Model Serving (KServe)</li>
+<li>InferenceService <code>anomaly-detector</code> ready</li>
+<li>InferenceService <code>predictive-analytics</code> ready</li>
+<li>Serving runtimes deployed (sklearn, tensorflow)</li>
+<li>[ ] Object Storage (S3/ODF)</li>
+<li>S3 endpoint accessible</li>
+<li>Credentials available (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)</li>
+<li>Bucket <code>model-storage</code> exists</li>
+<li>Upload/download test successful</li>
+<li>[ ] Monitoring Stack</li>
+<li>Prometheus query API: <code>https://prometheus-k8s.openshift-monitoring.svc.cluster.local:9091/api/v1/query</code></li>
+<li>Grafana dashboards deployed</li>
+<li>ServiceMonitor for coordination engine exists</li>
+<li>[ ] MCP Server</li>
+<li>URL: <code>http://cluster-health-mcp-server.self-healing-platform.svc.cluster.local:3000</code></li>
+<li>Health endpoint accessible</li>
+<li>Tool availability: <code>cluster_diagnostics</code>, <code>anomaly_detection</code>, <code>deployment_readiness</code></li>
+</ul>
+<h4 id="openshift-components">✅ OpenShift Components<a class="headerlink" href="#openshift-components" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] ArgoCD Applications</li>
+<li>Application <code>self-healing-platform</code> synced and healthy</li>
+<li>No sync errors</li>
+<li>[ ] Tekton Pipelines</li>
+<li>Pipeline <code>deployment-validation-pipeline</code> exists</li>
+<li>Pipeline <code>model-serving-validation-pipeline</code> exists</li>
+<li>EventListener <code>github-webhook-listener</code> running</li>
+<li>[ ] External Secrets</li>
+<li>SecretStore <code>kubernetes-secret-store</code> ready</li>
+<li>ExternalSecret <code>gitea-credentials</code> synced</li>
+<li>ExternalSecret <code>registry-credentials</code> synced</li>
+<li>ExternalSecret <code>database-credentials</code> synced</li>
+<li>[ ] Routes (if needed for external access)</li>
+<li>Coordination engine route (if exists)</li>
+<li>MCP server route (if exists)</li>
+</ul>
+<h4 id="network-connectivity">✅ Network Connectivity<a class="headerlink" href="#network-connectivity" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] In-cluster DNS resolution</li>
+<li>[ ] Service mesh connectivity (if enabled)</li>
+<li>[ ] Pod-to-pod communication</li>
+</ul>
+<h3 id="validation-report-format">Validation Report Format<a class="headerlink" href="#validation-report-format" title="Permanent link">&para;</a></h3>
+<p><strong>JSON Output</strong> (<code>/opt/app-root/src/.config/validation-report.json</code>):
+<code>json
+{
+  "validation_date": "2025-11-04T10:30:00Z",
+  "validation_status": "PASSED",
+  "summary": {
+    "total_checks": 35,
+    "passed": 33,
+    "failed": 0,
+    "warnings": 2
+  },
+  "checks": [
+    {
+      "category": "Platform Infrastructure",
+      "component": "Coordination Engine",
+      "check": "Health Endpoint",
+      "status": "PASSED",
+      "url": "http://coordination-engine.self-healing-platform.svc.cluster.local:8080/health",
+      "response_time_ms": 45,
+      "details": "HTTP 200 OK"
+    },
+    {
+      "category": "Platform Infrastructure",
+      "component": "GPU",
+      "check": "GPU Availability",
+      "status": "WARNING",
+      "details": "GPU not available, will use CPU (acceptable for most notebooks)"
+    }
+  ]
+}</code></p>
+<p><strong>Markdown Output</strong> (displayed in notebook):
+```markdown</p>
+<h1 id="platform-readiness-validation-report">🚀 Platform Readiness Validation Report<a class="headerlink" href="#platform-readiness-validation-report" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: ✅ PASSED
+<strong>Date</strong>: 2025-11-04 10:30:00 UTC
+<strong>Checks</strong>: 33/35 PASSED, 0 FAILED, 2 WARNINGS</p>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Passed</th>
+<th>Failed</th>
+<th>Warnings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Basic Environment</td>
+<td>5/6</td>
+<td>0</td>
+<td>1 (GPU)</td>
+</tr>
+<tr>
+<td>Platform Infrastructure</td>
+<td>12/12</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>OpenShift Components</td>
+<td>10/10</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Network Connectivity</td>
+<td>6/7</td>
+<td>0</td>
+<td>1 (External Route)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="component-status">Component Status<a class="headerlink" href="#component-status" title="Permanent link">&para;</a></h2>
+<h3 id="basic-environment_1">✅ Basic Environment<a class="headerlink" href="#basic-environment_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Python 3.11.5</li>
+<li>✅ PyTorch 2025.1</li>
+<li>⚠️  GPU: Not available (acceptable)</li>
+<li>✅ Data Volume: 20Gi mounted</li>
+<li>✅ Models Volume: 50Gi mounted</li>
+<li>✅ Config Directory: writable</li>
+</ul>
+<h3 id="platform-infrastructure_1">✅ Platform Infrastructure<a class="headerlink" href="#platform-infrastructure_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Coordination Engine: http://coordination-engine... (45ms)</li>
+<li>✅ Model Serving: anomaly-detector (READY), predictive-analytics (READY)</li>
+<li>✅ Object Storage: s3://model-storage (accessible, 10MB test OK)</li>
+<li>✅ Monitoring: Prometheus query API (responsive)</li>
+<li>✅ MCP Server: http://cluster-health-mcp-server... (3 tools available)</li>
+</ul>
+<p>... (detailed component checks)</p>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>✅ Platform is ready for notebook execution!</p>
+<ol>
+<li>Start with Phase 01: Data Collection</li>
+<li>Follow notebook execution order (01 → 08)</li>
+<li>Refer to notebooks/README.md for complete guide
+```</li>
+</ol>
+<h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">&para;</a></h2>
+<h3 id="tekton-integration">Tekton Integration<a class="headerlink" href="#tekton-integration" title="Permanent link">&para;</a></h3>
+<p><strong>Tekton Task</strong>: <code>tekton/tasks/platform-readiness-validation-task.yaml</code></p>
+<p>```yaml
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: platform-readiness-validation
+spec:
+  description: Validate platform infrastructure readiness by executing validation notebook
+  params:
+    - name: notebook-path
+      description: Path to validation notebook
+      default: "notebooks/00-setup/00-platform-readiness-validation.ipynb"
+    - name: output-path
+      description: Path to save validation report
+      default: "/workspace/validation-report.json"
+  steps:
+    - name: install-papermill
+      image: quay.io/modh/runtime-images:jupyter-datascience-ubi9-python-3.11-2025.1
+      script: |
+        #!/bin/bash
+        pip install papermill nbconvert</p>
+<pre><code>- name: execute-notebook
+  image: quay.io/modh/runtime-images:jupyter-datascience-ubi9-python-3.11-2025.1
+  script: |
+    #!/bin/bash
+    set -e
+
+    papermill \
+      $(params.notebook-path) \
+      /tmp/validation-output.ipynb \
+      --log-output \
+      --log-level INFO
+
+    # Convert to HTML for artifact storage
+    jupyter nbconvert \
+      --to html \
+      /tmp/validation-output.ipynb \
+      --output /workspace/validation-report.html
+
+    # Extract JSON report
+    cat /opt/app-root/src/.config/validation-report.json &gt; $(params.output-path)
+
+- name: check-validation-status
+  image: registry.access.redhat.com/ubi9/ubi-minimal
+  script: |
+    #!/bin/bash
+    STATUS=$(jq -r '.validation_status' $(params.output-path))
+
+    if [ "$STATUS" != "PASSED" ]; then
+      echo "❌ Platform validation FAILED"
+      jq '.checks[] | select(.status == "FAILED")' $(params.output-path)
+      exit 1
+    fi
+
+    echo "✅ Platform validation PASSED"
+</code></pre>
+<p>results:
+    - name: validation-status
+      description: Overall validation status (PASSED/FAILED)
+    - name: checks-passed
+      description: Number of checks passed
+    - name: checks-failed
+      description: Number of checks failed
+```</p>
+<p><strong>Tekton Pipeline</strong>: <code>tekton/pipelines/platform-readiness-validation-pipeline.yaml</code></p>
+<p><code>yaml
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: platform-readiness-validation-pipeline
+spec:
+  description: Validate platform readiness before user notebook execution
+  tasks:
+    - name: platform-readiness-validation
+      taskRef:
+        name: platform-readiness-validation
+      params:
+        - name: notebook-path
+          value: "notebooks/00-setup/00-platform-readiness-validation.ipynb"</code></p>
+<h3 id="validation-helpers-module">Validation Helpers Module<a class="headerlink" href="#validation-helpers-module" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>notebooks/utils/validation_helpers.py</code></p>
+<p>```python
+"""
+Platform validation helpers for Self-Healing Platform
+Provides comprehensive infrastructure validation functions
+"""</p>
+<p>import requests
+import os
+import json
+from typing import Dict, Any, List, Tuple
+from datetime import datetime</p>
+<p>def validate_coordination_engine() -&gt; Dict[str, Any]:
+    """Validate coordination engine health and accessibility"""
+    url = "http://coordination-engine.self-healing-platform.svc.cluster.local:8080/health"
+    try:
+        response = requests.get(url, timeout=5)
+        return {
+            "status": "PASSED" if response.status_code == 200 else "FAILED",
+            "url": url,
+            "response_time_ms": int(response.elapsed.total_seconds() * 1000),
+            "details": f"HTTP {response.status_code}"
+        }
+    except Exception as e:
+        return {
+            "status": "FAILED",
+            "url": url,
+            "details": str(e)
+        }</p>
+<p>def validate_model_serving() -&gt; Dict[str, Any]:
+    """Validate KServe InferenceServices"""
+    # Implementation using OpenShift API
+    pass</p>
+<p>def validate_object_storage() -&gt; Dict[str, Any]:
+    """Validate S3/ODF accessibility"""
+    # Implementation with boto3
+    pass</p>
+<p>def validate_mcp_server() -&gt; Dict[str, Any]:
+    """Validate MCP server connectivity"""
+    # Implementation using MCP client
+    pass</p>
+<h1 id="additional-validation-functions">... (additional validation functions)<a class="headerlink" href="#additional-validation-functions" title="Permanent link">&para;</a></h1>
+<p>def generate_validation_report(checks: List[Dict[str, Any]]) -&gt; Dict[str, Any]:
+    """Generate comprehensive validation report"""
+    passed = sum(1 for c in checks if c['status'] == 'PASSED')
+    failed = sum(1 for c in checks if c['status'] == 'FAILED')
+    warnings = sum(1 for c in checks if c['status'] == 'WARNING')</p>
+<pre><code>return {
+    "validation_date": datetime.utcnow().isoformat() + "Z",
+    "validation_status": "PASSED" if failed == 0 else "FAILED",
+    "summary": {
+        "total_checks": len(checks),
+        "passed": passed,
+        "failed": failed,
+        "warnings": warnings
+    },
+    "checks": checks
+}
+</code></pre>
+<p>```</p>
+<h2 id="positive-consequences">Positive Consequences<a class="headerlink" href="#positive-consequences" title="Permanent link">&para;</a></h2>
+<ul>
+<li>✅ <strong>Early Detection</strong>: Catch infrastructure issues before notebook execution</li>
+<li>✅ <strong>Clear Feedback</strong>: Users know exactly what's missing or misconfigured</li>
+<li>✅ <strong>Automation-Ready</strong>: Tekton integration enables CI/CD validation</li>
+<li>✅ <strong>Self-Service</strong>: Users can validate independently without admin help</li>
+<li>✅ <strong>Comprehensive</strong>: Covers all 35+ infrastructure dependencies</li>
+<li>✅ <strong>Actionable</strong>: Provides remediation steps for failures</li>
+<li>✅ <strong>Reusable</strong>: Can be run multiple times without side effects</li>
+<li>✅ <strong>Visual</strong>: Clear status indicators and summary dashboard</li>
+<li>✅ <strong>Persistent</strong>: JSON report stored for debugging and auditing</li>
+</ul>
+<h2 id="negative-consequences">Negative Consequences<a class="headerlink" href="#negative-consequences" title="Permanent link">&para;</a></h2>
+<ul>
+<li>⚠️  <strong>Maintenance Overhead</strong>: Must update validation checks when new components added</li>
+<li>⚠️  <strong>False Positives</strong>: Network blips may cause transient failures</li>
+<li>⚠️  <strong>Execution Time</strong>: 35+ checks may take 2-3 minutes to complete</li>
+<li>⚠️  <strong>Credentials Required</strong>: Validation needs access to cluster APIs (RBAC)</li>
+<li>⚠️  <strong>Version Drift</strong>: Validation logic may lag behind infrastructure changes</li>
+</ul>
+<h3 id="mitigation-strategies">Mitigation Strategies<a class="headerlink" href="#mitigation-strategies" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Maintenance</strong>: Include validation updates in ADRs for new components</li>
+<li><strong>Reliability</strong>: Implement retries (3 attempts) for network-dependent checks</li>
+<li><strong>Performance</strong>: Run checks in parallel where possible</li>
+<li><strong>Security</strong>: Use ServiceAccount with minimal RBAC permissions</li>
+<li><strong>Documentation</strong>: Keep validation checklist in sync with IMPLEMENTATION-PLAN.md</li>
+</ol>
+<h2 id="links">Links<a class="headerlink" href="#links" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Related ADRs</strong>:</li>
+<li>ADR-012: Notebook Architecture for End-to-End Workflows</li>
+<li>ADR-013: Data Collection and Preprocessing Workflows</li>
+<li>ADR-021: Tekton Pipeline for Post-Deployment Validation</li>
+<li>
+<p>ADR-027: CI/CD Pipeline Automation with Tekton and ArgoCD</p>
+</li>
+<li>
+<p><strong>Implementation</strong>:</p>
+</li>
+<li>Notebook: <code>notebooks/00-setup/00-platform-readiness-validation.ipynb</code></li>
+<li>Validation Helpers: <code>notebooks/utils/validation_helpers.py</code></li>
+<li>Tekton Task: <code>tekton/tasks/platform-readiness-validation-task.yaml</code></li>
+<li>
+<p>Tekton Pipeline: <code>tekton/pipelines/platform-readiness-validation-pipeline.yaml</code></p>
+</li>
+<li>
+<p><strong>Documentation</strong>:</p>
+</li>
+<li>Notebooks README: <code>notebooks/README.md</code></li>
+<li>Implementation Plan: <code>docs/IMPLEMENTATION-PLAN.md</code></li>
+<li>Troubleshooting Guide: <code>docs/TROUBLESHOOTING.md</code> (to be created)</li>
+</ul>
+<h2 id="acceptance-criteria">Acceptance Criteria<a class="headerlink" href="#acceptance-criteria" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[ ] Validation notebook created with 35+ infrastructure checks</li>
+<li>[ ] All validation functions implemented in <code>validation_helpers.py</code></li>
+<li>[ ] JSON report generation working</li>
+<li>[ ] Markdown report rendered in notebook</li>
+<li>[ ] Tekton task executes notebook via papermill</li>
+<li>[ ] Tekton pipeline integrates validation task</li>
+<li>[ ] Webhook trigger configured (optional)</li>
+<li>[ ] Documentation updated (notebooks/README.md)</li>
+<li>[ ] Tested in RHODS workbench</li>
+<li>[ ] Tested via Tekton pipeline</li>
+<li>[ ] All validation checks passing on target cluster</li>
+</ul>
+<h2 id="success-metrics">Success Metrics<a class="headerlink" href="#success-metrics" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Coverage</strong>: 35+ infrastructure components validated</li>
+<li><strong>Accuracy</strong>: &lt;5% false positive rate</li>
+<li><strong>Performance</strong>: Validation completes in &lt;3 minutes</li>
+<li><strong>Reliability</strong>: 99% success rate for valid infrastructure</li>
+<li><strong>Adoption</strong>: 100% of users run validation before notebooks</li>
+<li><strong>Automation</strong>: Validation runs automatically on every deployment</li>
+</ul>
+<hr />
+<p><strong>Status</strong>: Proposed
+<strong>Next Steps</strong>: Review and approval, then implementation Phase 1</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 6, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1964 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/BOOTSTRAP_TESTING_GUIDE/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Bootstrap Testing Guide - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bootstrap-testing-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Bootstrap Testing Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#testing-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Testing Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-deployment-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Pre-Deployment Testing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 Pre-Deployment Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-container-image-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Container Image Testing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/BOOTSTRAP_TESTING_GUIDE.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="bootstrap-testing-guide">Bootstrap Testing Guide<a class="headerlink" href="#bootstrap-testing-guide" title="Permanent link">&para;</a></h1>
+<p>This guide provides comprehensive testing procedures for the Self-Healing Platform Bootstrap system, ensuring reliable deployment automation.</p>
+<h2 id="testing-overview">🎯 <strong>Testing Overview</strong><a class="headerlink" href="#testing-overview" title="Permanent link">&para;</a></h2>
+<p>The bootstrap system requires testing at multiple levels:
+1. <strong>Unit Testing</strong>: Individual script functions and Kustomize configurations
+2. <strong>Integration Testing</strong>: End-to-end deployment workflows
+3. <strong>Environment Testing</strong>: Development and production environment validation
+4. <strong>Failure Testing</strong>: Error handling and recovery scenarios
+5. <strong>Performance Testing</strong>: Deployment timing and resource usage</p>
+<h2 id="pre-deployment-testing">🧪 <strong>Pre-Deployment Testing</strong><a class="headerlink" href="#pre-deployment-testing" title="Permanent link">&para;</a></h2>
+<h3 id="1-container-image-testing"><strong>1. Container Image Testing</strong><a class="headerlink" href="#1-container-image-testing" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="test-image-build-process">Test image build process<a class="headerlink" href="#test-image-build-process" title="Permanent link">&para;</a></h1>
+<p>./build-images.sh</p>
+<h1 id="verify-images-are-created">Verify images are created<a class="headerlink" href="#verify-images-are-created" title="Permanent link">&para;</a></h1>
+<p>podman images | grep -E "(coordination-engine|anomaly-detector)"</p>
+<h1 id="test-coordination-engine-locally">Test coordination engine locally<a class="headerlink" href="#test-coordination-engine-locally" title="Permanent link">&para;</a></h1>
+<p>podman run --rm -p 8080:8080 -p 8090:8090 coordination-engine:latest &amp;
+sleep 10</p>
+<h1 id="test-health-endpoint">Test health endpoint<a class="headerlink" href="#test-health-endpoint" title="Permanent link">&para;</a></h1>
+<p>curl -f http://localhost:8080/health
+echo "Health check: $?"</p>
+<h1 id="test-metrics-endpoint">Test metrics endpoint<a class="headerlink" href="#test-metrics-endpoint" title="Permanent link">&para;</a></h1>
+<p>curl -f http://localhost:8090/metrics
+echo "Metrics check: $?"</p>
+<h1 id="cleanup">Cleanup<a class="headerlink" href="#cleanup" title="Permanent link">&para;</a></h1>
+<p>pkill -f coordination-engine
+```</p>
+<h3 id="2-kustomize-configuration-testing"><strong>2. Kustomize Configuration Testing</strong><a class="headerlink" href="#2-kustomize-configuration-testing" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="validate-base-configuration">Validate base configuration<a class="headerlink" href="#validate-base-configuration" title="Permanent link">&para;</a></h1>
+<p>kustomize build k8s/base/
+echo "Base build status: $?"</p>
+<h1 id="validate-development-overlay">Validate development overlay<a class="headerlink" href="#validate-development-overlay" title="Permanent link">&para;</a></h1>
+<p>kustomize build k8s/overlays/development/
+echo "Development build status: $?"</p>
+<h1 id="validate-production-overlay">Validate production overlay<a class="headerlink" href="#validate-production-overlay" title="Permanent link">&para;</a></h1>
+<p>kustomize build k8s/overlays/production/
+echo "Production build status: $?"</p>
+<h1 id="test-dry-run-deployment">Test dry-run deployment<a class="headerlink" href="#test-dry-run-deployment" title="Permanent link">&para;</a></h1>
+<p>kustomize build k8s/overlays/development/ | oc apply --dry-run=client -f -
+echo "Dry-run status: $?"</p>
+<h1 id="validate-yaml-syntax">Validate YAML syntax<a class="headerlink" href="#validate-yaml-syntax" title="Permanent link">&para;</a></h1>
+<p>find k8s/ -name "*.yaml" -exec yamllint {} \;
+```</p>
+<h3 id="3-script-validation-testing"><strong>3. Script Validation Testing</strong><a class="headerlink" href="#3-script-validation-testing" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="test-bootstrap-script-help">Test bootstrap script help<a class="headerlink" href="#test-bootstrap-script-help" title="Permanent link">&para;</a></h1>
+<p>./bootstrap.sh --help
+echo "Help display status: $?"</p>
+<h1 id="test-invalid-environment-parameter">Test invalid environment parameter<a class="headerlink" href="#test-invalid-environment-parameter" title="Permanent link">&para;</a></h1>
+<p>./bootstrap.sh --environment invalid 2&gt;&amp;1 | grep -q "Unknown option"
+echo "Error handling status: $?"</p>
+<h1 id="test-prerequisite-checking-without-deployment">Test prerequisite checking (without deployment)<a class="headerlink" href="#test-prerequisite-checking-without-deployment" title="Permanent link">&para;</a></h1>
+<h1 id="modify-bootstrapsh-temporarily-to-exit-after-prerequisites">Modify bootstrap.sh temporarily to exit after prerequisites<a class="headerlink" href="#modify-bootstrapsh-temporarily-to-exit-after-prerequisites" title="Permanent link">&para;</a></h1>
+<p>sed -i.bak 's/phase1_kustomize_deployment/echo "Prerequisites passed"; exit 0/' bootstrap.sh
+./bootstrap.sh --environment development
+PREREQ_STATUS=$?
+mv bootstrap.sh.bak bootstrap.sh
+echo "Prerequisites status: $PREREQ_STATUS"
+```</p>
+<h2 id="deployment-testing">🚀 <strong>Deployment Testing</strong><a class="headerlink" href="#deployment-testing" title="Permanent link">&para;</a></h2>
+<h3 id="1-development-environment-testing"><strong>1. Development Environment Testing</strong><a class="headerlink" href="#1-development-environment-testing" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="full-development-deployment-test">Full development deployment test<a class="headerlink" href="#full-development-deployment-test" title="Permanent link">&para;</a></h1>
+<p>echo "=== Development Deployment Test ==="
+./bootstrap.sh --environment development 2&gt;&amp;1 | tee deployment-dev.log</p>
+<h1 id="check-deployment-status">Check deployment status<a class="headerlink" href="#check-deployment-status" title="Permanent link">&para;</a></h1>
+<p>DEPLOYMENT_STATUS=$?
+echo "Deployment exit code: $DEPLOYMENT_STATUS"</p>
+<h1 id="verify-namespace-creation">Verify namespace creation<a class="headerlink" href="#verify-namespace-creation" title="Permanent link">&para;</a></h1>
+<p>oc get namespace self-healing-platform-dev
+echo "Namespace status: $?"</p>
+<h1 id="check-all-pods-are-running">Check all pods are running<a class="headerlink" href="#check-all-pods-are-running" title="Permanent link">&para;</a></h1>
+<p>oc get pods -n self-healing-platform-dev
+PODS_READY=$(oc get pods -n self-healing-platform-dev --no-headers | grep -c "Running")
+TOTAL_PODS=$(oc get pods -n self-healing-platform-dev --no-headers | wc -l)
+echo "Pods ready: $PODS_READY/$TOTAL_PODS"</p>
+<h1 id="test-service-accessibility">Test service accessibility<a class="headerlink" href="#test-service-accessibility" title="Permanent link">&para;</a></h1>
+<p>oc port-forward -n self-healing-platform-dev svc/coordination-engine 8080:8080 &amp;
+PF_PID=$!
+sleep 5
+curl -f http://localhost:8080/health
+HEALTH_STATUS=$?
+kill $PF_PID
+echo "Service health status: $HEALTH_STATUS"
+```</p>
+<h3 id="2-validation-testing"><strong>2. Validation Testing</strong><a class="headerlink" href="#2-validation-testing" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="run-comprehensive-validation">Run comprehensive validation<a class="headerlink" href="#run-comprehensive-validation" title="Permanent link">&para;</a></h1>
+<p>echo "=== Validation Testing ==="
+./validate_bootstrap.sh 2&gt;&amp;1 | tee validation.log</p>
+<p>VALIDATION_STATUS=$?
+echo "Validation exit code: $VALIDATION_STATUS"</p>
+<h1 id="count-passedfailed-checks">Count passed/failed checks<a class="headerlink" href="#count-passedfailed-checks" title="Permanent link">&para;</a></h1>
+<p>PASSED_CHECKS=$(grep -c "✅" validation.log)
+FAILED_CHECKS=$(grep -c "❌" validation.log)
+WARNING_CHECKS=$(grep -c "⚠️" validation.log)</p>
+<p>echo "Validation Results:"
+echo "  Passed: $PASSED_CHECKS"
+echo "  Failed: $FAILED_CHECKS"
+echo "  Warnings: $WARNING_CHECKS"</p>
+<h1 id="check-critical-validations">Check critical validations<a class="headerlink" href="#check-critical-validations" title="Permanent link">&para;</a></h1>
+<p>CRITICAL_FAILURES=$(grep -A5 -B5 "❌.*critical" validation.log | wc -l)
+echo "Critical failures: $CRITICAL_FAILURES"
+```</p>
+<h3 id="3-component-functionality-testing"><strong>3. Component Functionality Testing</strong><a class="headerlink" href="#3-component-functionality-testing" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="test-jupyter-notebook-accessibility">Test Jupyter notebook accessibility<a class="headerlink" href="#test-jupyter-notebook-accessibility" title="Permanent link">&para;</a></h1>
+<p>echo "=== Component Testing ==="</p>
+<h1 id="check-if-notebook-is-ready">Check if notebook is ready<a class="headerlink" href="#check-if-notebook-is-ready" title="Permanent link">&para;</a></h1>
+<p>NOTEBOOK_STATUS=$(oc get notebook self-healing-workbench -n self-healing-platform-dev -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2&gt;/dev/null)
+echo "Notebook ready status: $NOTEBOOK_STATUS"</p>
+<h1 id="test-model-serving-endpoints-if-deployed">Test model serving endpoints (if deployed)<a class="headerlink" href="#test-model-serving-endpoints-if-deployed" title="Permanent link">&para;</a></h1>
+<p>ANOMALY_DETECTOR=$(oc get inferenceservice anomaly-detector -n self-healing-platform-dev -o jsonpath='{.status.url}' 2&gt;/dev/null)
+if [ -n "$ANOMALY_DETECTOR" ]; then
+    echo "Anomaly detector URL: $ANOMALY_DETECTOR"
+    # Test with sample data (if accessible)
+    # curl -X POST "$ANOMALY_DETECTOR/v1/models/anomaly-detector:predict" -d '{"instances": [[1,2,3,4,5]]}'
+fi</p>
+<h1 id="test-prometheus-integration">Test Prometheus integration<a class="headerlink" href="#test-prometheus-integration" title="Permanent link">&para;</a></h1>
+<p>PROMETHEUS_TARGETS=$(oc get servicemonitor self-healing-platform-monitor -n self-healing-platform-dev -o jsonpath='{.spec.selector.matchLabels}' 2&gt;/dev/null)
+echo "Prometheus targets configured: $?"</p>
+<h1 id="test-storage-accessibility">Test storage accessibility<a class="headerlink" href="#test-storage-accessibility" title="Permanent link">&para;</a></h1>
+<p>PVC_STATUS=$(oc get pvc -n self-healing-platform-dev --no-headers | grep -c "Bound")
+TOTAL_PVCS=$(oc get pvc -n self-healing-platform-dev --no-headers | wc -l)
+echo "PVCs bound: $PVC_STATUS/$TOTAL_PVCS"
+```</p>
+<h2 id="failure-scenario-testing">🔄 <strong>Failure Scenario Testing</strong><a class="headerlink" href="#failure-scenario-testing" title="Permanent link">&para;</a></h2>
+<h3 id="1-prerequisite-failure-testing"><strong>1. Prerequisite Failure Testing</strong><a class="headerlink" href="#1-prerequisite-failure-testing" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="test-cluster-access-failure">Test cluster access failure<a class="headerlink" href="#test-cluster-access-failure" title="Permanent link">&para;</a></h1>
+<p>echo "=== Prerequisite Failure Testing ==="</p>
+<h1 id="temporarily-break-cluster-access">Temporarily break cluster access<a class="headerlink" href="#temporarily-break-cluster-access" title="Permanent link">&para;</a></h1>
+<p>export KUBECONFIG="/tmp/invalid-kubeconfig"
+./bootstrap.sh --environment development 2&gt;&amp;1 | grep -q "Not logged into OpenShift"
+CLUSTER_FAIL_TEST=$?
+unset KUBECONFIG
+echo "Cluster access failure test: $CLUSTER_FAIL_TEST"</p>
+<h1 id="test-missing-operator-scenario">Test missing operator scenario<a class="headerlink" href="#test-missing-operator-scenario" title="Permanent link">&para;</a></h1>
+<h1 id="this-would-require-temporarily-removing-an-operator-which-is-destructive">(This would require temporarily removing an operator, which is destructive)<a class="headerlink" href="#this-would-require-temporarily-removing-an-operator-which-is-destructive" title="Permanent link">&para;</a></h1>
+<p>echo "Operator failure test: SKIPPED (destructive)"
+```</p>
+<h3 id="2-deployment-failure-testing"><strong>2. Deployment Failure Testing</strong><a class="headerlink" href="#2-deployment-failure-testing" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="test-invalid-kustomize-configuration">Test invalid Kustomize configuration<a class="headerlink" href="#test-invalid-kustomize-configuration" title="Permanent link">&para;</a></h1>
+<p>echo "=== Deployment Failure Testing ==="</p>
+<h1 id="create-invalid-configuration">Create invalid configuration<a class="headerlink" href="#create-invalid-configuration" title="Permanent link">&para;</a></h1>
+<p>cp k8s/base/kustomization.yaml k8s/base/kustomization.yaml.bak
+echo "invalid: yaml: content" &gt;&gt; k8s/base/kustomization.yaml</p>
+<h1 id="test-deployment-with-invalid-config">Test deployment with invalid config<a class="headerlink" href="#test-deployment-with-invalid-config" title="Permanent link">&para;</a></h1>
+<p>./bootstrap.sh --environment development 2&gt;&amp;1 | grep -q "Failed to build Kustomize"
+INVALID_CONFIG_TEST=$?</p>
+<h1 id="restore-configuration">Restore configuration<a class="headerlink" href="#restore-configuration" title="Permanent link">&para;</a></h1>
+<p>mv k8s/base/kustomization.yaml.bak k8s/base/kustomization.yaml
+echo "Invalid configuration test: $INVALID_CONFIG_TEST"</p>
+<h1 id="test-resource-quota-exceeded-if-applicable">Test resource quota exceeded (if applicable)<a class="headerlink" href="#test-resource-quota-exceeded-if-applicable" title="Permanent link">&para;</a></h1>
+<h1 id="this-would-require-setting-up-resource-quotas">This would require setting up resource quotas<a class="headerlink" href="#this-would-require-setting-up-resource-quotas" title="Permanent link">&para;</a></h1>
+<p>echo "Resource quota test: SKIPPED (requires quota setup)"
+```</p>
+<h3 id="3-recovery-testing"><strong>3. Recovery Testing</strong><a class="headerlink" href="#3-recovery-testing" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="test-deployment-cleanup-and-retry">Test deployment cleanup and retry<a class="headerlink" href="#test-deployment-cleanup-and-retry" title="Permanent link">&para;</a></h1>
+<p>echo "=== Recovery Testing ==="</p>
+<h1 id="deploy-once">Deploy once<a class="headerlink" href="#deploy-once" title="Permanent link">&para;</a></h1>
+<p>./bootstrap.sh --environment development &gt; /dev/null 2&gt;&amp;1</p>
+<h1 id="delete-some-resources-to-simulate-partial-failure">Delete some resources to simulate partial failure<a class="headerlink" href="#delete-some-resources-to-simulate-partial-failure" title="Permanent link">&para;</a></h1>
+<p>oc delete deployment coordination-engine -n self-healing-platform-dev --ignore-not-found</p>
+<h1 id="retry-deployment">Retry deployment<a class="headerlink" href="#retry-deployment" title="Permanent link">&para;</a></h1>
+<p>./bootstrap.sh --environment development 2&gt;&amp;1 | tee recovery.log
+RECOVERY_STATUS=$?</p>
+<h1 id="check-if-missing-resources-were-recreated">Check if missing resources were recreated<a class="headerlink" href="#check-if-missing-resources-were-recreated" title="Permanent link">&para;</a></h1>
+<p>oc get deployment coordination-engine -n self-healing-platform-dev
+RECOVERY_SUCCESS=$?</p>
+<p>echo "Recovery test status: $RECOVERY_STATUS"
+echo "Resource recreation: $RECOVERY_SUCCESS"
+```</p>
+<h2 id="performance-testing">📊 <strong>Performance Testing</strong><a class="headerlink" href="#performance-testing" title="Permanent link">&para;</a></h2>
+<h3 id="1-deployment-timing"><strong>1. Deployment Timing</strong><a class="headerlink" href="#1-deployment-timing" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="measure-deployment-time">Measure deployment time<a class="headerlink" href="#measure-deployment-time" title="Permanent link">&para;</a></h1>
+<p>echo "=== Performance Testing ==="</p>
+<h1 id="clean-environment">Clean environment<a class="headerlink" href="#clean-environment" title="Permanent link">&para;</a></h1>
+<p>oc delete namespace self-healing-platform-dev --ignore-not-found
+oc wait --for=delete namespace/self-healing-platform-dev --timeout=300s</p>
+<h1 id="time-the-deployment">Time the deployment<a class="headerlink" href="#time-the-deployment" title="Permanent link">&para;</a></h1>
+<p>START_TIME=$(date +%s)
+./bootstrap.sh --environment development &gt; /dev/null 2&gt;&amp;1
+DEPLOYMENT_STATUS=$?
+END_TIME=$(date +%s)</p>
+<p>DEPLOYMENT_TIME=$((END_TIME - START_TIME))
+echo "Deployment time: ${DEPLOYMENT_TIME}s"
+echo "Deployment status: $DEPLOYMENT_STATUS"</p>
+<h1 id="time-validation">Time validation<a class="headerlink" href="#time-validation" title="Permanent link">&para;</a></h1>
+<p>START_TIME=$(date +%s)
+./validate_bootstrap.sh &gt; /dev/null 2&gt;&amp;1
+VALIDATION_STATUS=$?
+END_TIME=$(date +%s)</p>
+<p>VALIDATION_TIME=$((END_TIME - START_TIME))
+echo "Validation time: ${VALIDATION_TIME}s"
+echo "Validation status: $VALIDATION_STATUS"
+```</p>
+<h3 id="2-resource-usage-testing"><strong>2. Resource Usage Testing</strong><a class="headerlink" href="#2-resource-usage-testing" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="monitor-resource-usage-during-deployment">Monitor resource usage during deployment<a class="headerlink" href="#monitor-resource-usage-during-deployment" title="Permanent link">&para;</a></h1>
+<p>echo "=== Resource Usage Testing ==="</p>
+<h1 id="get-baseline-resource-usage">Get baseline resource usage<a class="headerlink" href="#get-baseline-resource-usage" title="Permanent link">&para;</a></h1>
+<p>BASELINE_CPU=$(oc adm top nodes --no-headers | awk '{sum+=$3} END {print sum}')
+BASELINE_MEMORY=$(oc adm top nodes --no-headers | awk '{sum+=$5} END {print sum}')</p>
+<p>echo "Baseline CPU: ${BASELINE_CPU}m"
+echo "Baseline Memory: ${BASELINE_MEMORY}Mi"</p>
+<h1 id="deploy-and-monitor">Deploy and monitor<a class="headerlink" href="#deploy-and-monitor" title="Permanent link">&para;</a></h1>
+<p>./bootstrap.sh --environment development &amp;
+DEPLOY_PID=$!</p>
+<h1 id="monitor-during-deployment">Monitor during deployment<a class="headerlink" href="#monitor-during-deployment" title="Permanent link">&para;</a></h1>
+<p>for i in {1..10}; do
+    sleep 30
+    if ! kill -0 $DEPLOY_PID 2&gt;/dev/null; then
+        break
+    fi</p>
+<pre><code>CURRENT_CPU=$(oc adm top nodes --no-headers | awk '{sum+=$3} END {print sum}')
+CURRENT_MEMORY=$(oc adm top nodes --no-headers | awk '{sum+=$5} END {print sum}')
+
+echo "Time ${i}0s - CPU: ${CURRENT_CPU}m, Memory: ${CURRENT_MEMORY}Mi"
+</code></pre>
+<p>done</p>
+<p>wait $DEPLOY_PID
+FINAL_STATUS=$?</p>
+<h1 id="get-final-resource-usage">Get final resource usage<a class="headerlink" href="#get-final-resource-usage" title="Permanent link">&para;</a></h1>
+<p>FINAL_CPU=$(oc adm top nodes --no-headers | awk '{sum+=$3} END {print sum}')
+FINAL_MEMORY=$(oc adm top nodes --no-headers | awk '{sum+=$5} END {print sum}')</p>
+<p>echo "Final CPU: ${FINAL_CPU}m"
+echo "Final Memory: ${FINAL_MEMORY}Mi"
+echo "Deployment status: $FINAL_STATUS"
+```</p>
+<h2 id="cleanup-testing">🧹 <strong>Cleanup Testing</strong><a class="headerlink" href="#cleanup-testing" title="Permanent link">&para;</a></h2>
+<h3 id="1-complete-environment-cleanup"><strong>1. Complete Environment Cleanup</strong><a class="headerlink" href="#1-complete-environment-cleanup" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="test-cleanup-procedures">Test cleanup procedures<a class="headerlink" href="#test-cleanup-procedures" title="Permanent link">&para;</a></h1>
+<p>echo "=== Cleanup Testing ==="</p>
+<h1 id="record-initial-state">Record initial state<a class="headerlink" href="#record-initial-state" title="Permanent link">&para;</a></h1>
+<p>INITIAL_NAMESPACES=$(oc get namespaces --no-headers | wc -l)
+INITIAL_PVCS=$(oc get pvc --all-namespaces --no-headers | wc -l)</p>
+<h1 id="deploy-environment">Deploy environment<a class="headerlink" href="#deploy-environment" title="Permanent link">&para;</a></h1>
+<p>./bootstrap.sh --environment development &gt; /dev/null 2&gt;&amp;1</p>
+<h1 id="record-deployed-state">Record deployed state<a class="headerlink" href="#record-deployed-state" title="Permanent link">&para;</a></h1>
+<p>DEPLOYED_NAMESPACES=$(oc get namespaces --no-headers | wc -l)
+DEPLOYED_PVCS=$(oc get pvc --all-namespaces --no-headers | wc -l)</p>
+<h1 id="cleanup_1">Cleanup<a class="headerlink" href="#cleanup_1" title="Permanent link">&para;</a></h1>
+<p>oc delete namespace self-healing-platform-dev
+oc wait --for=delete namespace/self-healing-platform-dev --timeout=300s</p>
+<h1 id="verify-cleanup">Verify cleanup<a class="headerlink" href="#verify-cleanup" title="Permanent link">&para;</a></h1>
+<p>FINAL_NAMESPACES=$(oc get namespaces --no-headers | wc -l)
+FINAL_PVCS=$(oc get pvc --all-namespaces --no-headers | wc -l)</p>
+<p>echo "Namespace count - Initial: $INITIAL_NAMESPACES, Deployed: $DEPLOYED_NAMESPACES, Final: $FINAL_NAMESPACES"
+echo "PVC count - Initial: $INITIAL_PVCS, Deployed: $DEPLOYED_PVCS, Final: $FINAL_PVCS"</p>
+<h1 id="check-for-resource-leaks">Check for resource leaks<a class="headerlink" href="#check-for-resource-leaks" title="Permanent link">&para;</a></h1>
+<p>if [ "$FINAL_NAMESPACES" -eq "$INITIAL_NAMESPACES" ] &amp;&amp; [ "$FINAL_PVCS" -eq "$INITIAL_PVCS" ]; then
+    echo "Cleanup test: PASSED"
+else
+    echo "Cleanup test: FAILED (resource leak detected)"
+fi
+```</p>
+<h2 id="test-automation-script">📋 <strong>Test Automation Script</strong><a class="headerlink" href="#test-automation-script" title="Permanent link">&para;</a></h2>
+<p>```bash</p>
+<h1 id="binbash">!/bin/bash<a class="headerlink" href="#binbash" title="Permanent link">&para;</a></h1>
+<h1 id="automated-bootstrap-testsh-comprehensive-bootstrap-testing">automated-bootstrap-test.sh - Comprehensive bootstrap testing<a class="headerlink" href="#automated-bootstrap-testsh-comprehensive-bootstrap-testing" title="Permanent link">&para;</a></h1>
+<p>set -e</p>
+<p>RESULTS_DIR="test-results-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$RESULTS_DIR"</p>
+<p>echo "Starting comprehensive bootstrap testing..."
+echo "Results will be saved to: $RESULTS_DIR"</p>
+<h1 id="run-all-test-categories">Run all test categories<a class="headerlink" href="#run-all-test-categories" title="Permanent link">&para;</a></h1>
+<p>{
+    echo "=== PRE-DEPLOYMENT TESTS ==="
+    # Container image tests
+    # Kustomize configuration tests
+    # Script validation tests</p>
+<pre><code>echo "=== DEPLOYMENT TESTS ==="
+# Development environment tests
+# Validation tests
+# Component functionality tests
+
+echo "=== FAILURE SCENARIO TESTS ==="
+# Prerequisite failure tests
+# Deployment failure tests
+# Recovery tests
+
+echo "=== PERFORMANCE TESTS ==="
+# Deployment timing tests
+# Resource usage tests
+
+echo "=== CLEANUP TESTS ==="
+# Complete environment cleanup tests
+</code></pre>
+<p>} 2&gt;&amp;1 | tee "$RESULTS_DIR/test-execution.log"</p>
+<h1 id="generate-test-report">Generate test report<a class="headerlink" href="#generate-test-report" title="Permanent link">&para;</a></h1>
+<p>cat &gt; "$RESULTS_DIR/test-report.md" &lt;&lt; EOF</p>
+<h1 id="bootstrap-testing-report">Bootstrap Testing Report<a class="headerlink" href="#bootstrap-testing-report" title="Permanent link">&para;</a></h1>
+<p><strong>Date</strong>: $(date)
+<strong>Environment</strong>: $(oc cluster-info | head -1)
+<strong>OpenShift Version</strong>: $(oc version -o json | jq -r '.openshiftVersion')</p>
+<h2 id="test-results-summary">Test Results Summary<a class="headerlink" href="#test-results-summary" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Pre-deployment Tests</strong>: [PASS/FAIL]</li>
+<li><strong>Deployment Tests</strong>: [PASS/FAIL]</li>
+<li><strong>Failure Scenario Tests</strong>: [PASS/FAIL]</li>
+<li><strong>Performance Tests</strong>: [PASS/FAIL]</li>
+<li><strong>Cleanup Tests</strong>: [PASS/FAIL]</li>
+</ul>
+<h2 id="detailed-results">Detailed Results<a class="headerlink" href="#detailed-results" title="Permanent link">&para;</a></h2>
+<p>See test-execution.log for detailed output.</p>
+<h2 id="recommendations">Recommendations<a class="headerlink" href="#recommendations" title="Permanent link">&para;</a></h2>
+<p>[Add any recommendations based on test results]
+EOF</p>
+<p>echo "Testing completed. Results available in: $RESULTS_DIR"
+```</p>
+<h2 id="success-criteria">🎯 <strong>Success Criteria</strong><a class="headerlink" href="#success-criteria" title="Permanent link">&para;</a></h2>
+<h3 id="deployment-success-metrics"><strong>Deployment Success Metrics</strong><a class="headerlink" href="#deployment-success-metrics" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ All container images build successfully</li>
+<li>✅ Kustomize configurations validate without errors</li>
+<li>✅ Bootstrap deployment completes in &lt;10 minutes</li>
+<li>✅ All validation checks pass (&gt;95% success rate)</li>
+<li>✅ All critical components are healthy</li>
+<li>✅ No resource leaks after cleanup</li>
+</ul>
+<h3 id="performance-benchmarks"><strong>Performance Benchmarks</strong><a class="headerlink" href="#performance-benchmarks" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Development Deployment</strong>: &lt;5 minutes</li>
+<li><strong>Production Deployment</strong>: &lt;15 minutes</li>
+<li><strong>Validation Execution</strong>: &lt;2 minutes</li>
+<li><strong>Resource Overhead</strong>: &lt;10% cluster capacity</li>
+<li><strong>Recovery Time</strong>: &lt;3 minutes</li>
+</ul>
+<h3 id="reliability-targets"><strong>Reliability Targets</strong><a class="headerlink" href="#reliability-targets" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Deployment Success Rate</strong>: &gt;95%</li>
+<li><strong>Validation Accuracy</strong>: &gt;98%</li>
+<li><strong>Error Recovery</strong>: 100% for transient failures</li>
+<li><strong>Documentation Coverage</strong>: 100% of failure scenarios</li>
+</ul>
+<h2 id="references">📚 <strong>References</strong><a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../adrs/009-bootstrap-deployment-automation/">ADR-009: Bootstrap Deployment Automation</a></li>
+<li><a href="PRE_BOOTSTRAP_CHECKLIST.md">Pre-Bootstrap Checklist</a></li>
+<li><a href="DEVELOPMENT_WORKFLOW.md">Development Workflow</a></li>
+<li><a href="../diagrams/bootstrap-architecture/">Bootstrap Architecture Diagrams</a></li>
+</ul>
+<hr />
+<p><strong>Note</strong>: Run these tests in a dedicated test cluster to avoid impacting production environments. Always backup important data before running destructive tests.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 10, 2025</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

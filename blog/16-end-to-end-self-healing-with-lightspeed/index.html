@@ -1,0 +1,2296 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/blog/16-end-to-end-self-healing-with-lightspeed/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Chatting with Your Cluster: Self-Healing OpenShift with Lightspeed - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#chatting-with-your-cluster-self-healing-openshift-with-lightspeed" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chatting with Your Cluster: Self-Healing OpenShift with Lightspeed
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-the-ml-models-important" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding the ML Models (Important!)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding the ML Models (Important!)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-cluster-specific-training-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Cluster-Specific Training Matters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-notebooks-that-train-these-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Notebooks That Train These Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#training-schedule" class="md-nav__link">
+    <span class="md-ellipsis">
+      Training Schedule
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/blog/16-end-to-end-self-healing-with-lightspeed.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="chatting-with-your-cluster-self-healing-openshift-with-lightspeed">Chatting with Your Cluster: Self-Healing OpenShift with Lightspeed<a class="headerlink" href="#chatting-with-your-cluster-self-healing-openshift-with-lightspeed" title="Permanent link">&para;</a></h1>
+<p><em>An interactive guide to using OpenShift Lightspeed for AI-powered cluster management, anomaly detection, and automated remediation</em></p>
+<hr />
+<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
+<p>Imagine talking to your Kubernetes cluster like you would talk to a colleague:
+- "Are there any failing pods?"
+- "What will my memory usage be at 3 PM?"
+- "Fix the broken pods automatically"</p>
+<p>This is now possible with OpenShift Lightspeed connected to our self-healing platform. In this guide, we'll explore how to interact with an already-deployed platform using just natural language.</p>
+<p><strong>What's already deployed:</strong>
+- ✅ OpenShift Lightspeed (AI assistant)
+- ✅ MCP Server (Go service - connects Lightspeed to cluster tools)
+- ✅ Coordination Engine (Go service - orchestrates remediation)
+- ✅ KServe ML Models (anomaly detection + capacity forecasting)</p>
+<blockquote>
+<p><strong>💡 Architecture Note</strong>: The MCP Server and Coordination Engine are <strong>Go services</strong> for production performance and Kubernetes integration. The notebooks you'll see are <strong>Python</strong> (for ML/data science), and they call these Go services via REST APIs. You don't need to write Go code to use the platform!</p>
+</blockquote>
+<p>Let's start chatting with our cluster!</p>
+<hr />
+<h2 id="understanding-the-ml-models-important">Understanding the ML Models (Important!)<a class="headerlink" href="#understanding-the-ml-models-important" title="Permanent link">&para;</a></h2>
+<p>Before diving into the demo, it's important to understand that <strong>the ML models powering these predictions are trained specifically for YOUR cluster</strong>. Each OpenShift cluster has unique workload patterns, resource usage characteristics, and behavioral signatures.</p>
+<h3 id="why-cluster-specific-training-matters">Why Cluster-Specific Training Matters<a class="headerlink" href="#why-cluster-specific-training-matters" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Your 3 PM is different from our 3 PM</strong>: A retail cluster might spike at lunch, while a financial services cluster peaks at market open</li>
+<li><strong>Workload fingerprints are unique</strong>: Your applications' memory patterns, CPU bursts, and scaling behaviors are learned from YOUR data</li>
+<li><strong>Anomaly baselines are contextual</strong>: What's "normal" for your cluster (e.g., 30% CPU) might be "abnormal" for another</li>
+</ul>
+<h3 id="the-notebooks-that-train-these-models">The Notebooks That Train These Models<a class="headerlink" href="#the-notebooks-that-train-these-models" title="Permanent link">&para;</a></h3>
+<p>The self-healing platform includes Jupyter notebooks that collect metrics from your cluster and train models on that data:</p>
+<table>
+<thead>
+<tr>
+<th>Notebook</th>
+<th>Purpose</th>
+<th>Model Produced</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>01-isolation-forest-implementation.ipynb</code></td>
+<td>Trains anomaly detection using Isolation Forest algorithm</td>
+<td><code>anomaly-detector</code></td>
+</tr>
+<tr>
+<td><code>08-predictive-scaling-capacity-planning.ipynb</code></td>
+<td>Trains resource usage forecasting using time series analysis</td>
+<td><code>predictive-analytics</code></td>
+</tr>
+<tr>
+<td><code>03-lstm-based-prediction.ipynb</code></td>
+<td>Advanced time series with LSTM neural networks</td>
+<td><code>lstm-predictor</code></td>
+</tr>
+<tr>
+<td><code>04-ensemble-anomaly-methods.ipynb</code></td>
+<td>Combines multiple detection methods</td>
+<td><code>ensemble-predictor</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="training-schedule">Training Schedule<a class="headerlink" href="#training-schedule" title="Permanent link">&para;</a></h3>
+<p>Models are automatically retrained via <code>NotebookValidationJob</code> resources:</p>
+<p>```yaml</p>
+<h1 id="models-are-retrained-daily-to-capture-evolving-patterns">Models are retrained daily to capture evolving patterns<a class="headerlink" href="#models-are-retrained-daily-to-capture-evolving-patterns" title="Permanent link">&para;</a></h1>
+<p>schedule: "0 0 * * *"  # Daily at midnight
+```</p>
+<h3 id="first-time-setup">First-Time Setup<a class="headerlink" href="#first-time-setup" title="Permanent link">&para;</a></h3>
+<p>When you first deploy the platform, the notebooks run automatically to:
+1. <strong>Collect baseline metrics</strong> from Prometheus (24-48 hours of data)
+2. <strong>Train initial models</strong> on your cluster's patterns
+3. <strong>Deploy to KServe</strong> for real-time inference</p>
+<blockquote>
+<p><strong>💡 Pro Tip</strong>: If predictions seem off after deployment, give the models 24-48 hours to learn your cluster's patterns. The more historical data they have, the more accurate the predictions become.</p>
+</blockquote>
+<h3 id="manual-retraining">Manual Retraining<a class="headerlink" href="#manual-retraining" title="Permanent link">&para;</a></h3>
+<p>If your workloads change significantly (new applications, major scaling), you can manually retrigger training:</p>
+<p>```bash</p>
+<h1 id="delete-and-recreate-the-notebookvalidationjob-to-retrain">Delete and recreate the NotebookValidationJob to retrain<a class="headerlink" href="#delete-and-recreate-the-notebookvalidationjob-to-retrain" title="Permanent link">&para;</a></h1>
+<p>oc delete notebookvalidationjob predictive-scaling-validation -n self-healing-platform
+oc apply -f charts/hub/templates/notebook-validation-jobs.yaml
+```</p>
+<p>Now let's see these trained models in action!</p>
+<hr />
+<h2 id="part-1-your-first-conversation-health-check">Part 1: Your First Conversation - Health Check<a class="headerlink" href="#part-1-your-first-conversation-health-check" title="Permanent link">&para;</a></h2>
+<h3 id="open-openshift-lightspeed">Open OpenShift Lightspeed<a class="headerlink" href="#open-openshift-lightspeed" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Navigate to your OpenShift web console</li>
+<li>Click the <strong>Lightspeed icon</strong> in the top-right corner</li>
+<li>The chat interface opens</li>
+</ol>
+<h3 id="ask-about-cluster-health">Ask About Cluster Health<a class="headerlink" href="#ask-about-cluster-health" title="Permanent link">&para;</a></h3>
+<p><strong>You type:</strong>
+<code>What's the health of the self-healing-platform namespace?</code></p>
+<p><strong>Lightspeed responds:</strong>
+```
+✅ Cluster Health Summary for self-healing-platform:</p>
+<p>Healthy Components (4):
+- coordination-engine: Running
+- mcp-server: Running
+- anomaly-detector-predictor: 2/2 Running
+- predictive-analytics-predictor: 2/2 Running</p>
+<p>ML Models Status:
+- anomaly-detector: READY ✅
+- predictive-analytics: READY ✅</p>
+<p>Recent Activity:
+- 0 incidents in the last hour
+- All systems operational</p>
+<p>Everything looks healthy!
+```</p>
+<p>🎯 <strong>What just happened?</strong> Lightspeed used the <code>get-cluster-health</code> MCP tool to query your cluster, check pod status, and verify ML models are ready.</p>
+<hr />
+<h2 id="part-2-deploy-a-sample-application">Part 2: Deploy a Sample Application<a class="headerlink" href="#part-2-deploy-a-sample-application" title="Permanent link">&para;</a></h2>
+<p>Let's deploy a simple Flask app that we'll use throughout the rest of this guide. Run this command in your terminal:</p>
+<blockquote>
+<p><strong>Note:</strong> We use the Red Hat UBI Python image (<code>registry.access.redhat.com/ubi9/python-311</code>) because it's designed for OpenShift's security model, which runs containers as a random non-root UID.</p>
+</blockquote>
+<p><code>bash
+oc apply -f - &lt;&lt;EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-flask-app
+  namespace: self-healing-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sample-flask
+  template:
+    metadata:
+      labels:
+        app: sample-flask
+    spec:
+      containers:
+      - name: web
+        image: registry.access.redhat.com/ubi9/python-311:latest
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          pip install flask &amp;&amp; python -c '
+          from flask import Flask
+          app = Flask(__name__)
+          @app.route("/")
+          def hello():
+              return "Hello from OpenShift!"
+          app.run(host="0.0.0.0", port=8080)
+          '
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+EOF</code></p>
+<p>Wait about 30 seconds for the pods to start, then let's use Lightspeed to verify the deployment.</p>
+<h3 id="check-the-pods-with-lightspeed">Check the Pods with Lightspeed<a class="headerlink" href="#check-the-pods-with-lightspeed" title="Permanent link">&para;</a></h3>
+<p><strong>You type:</strong>
+<code>Show me the sample-flask-app pods in the self-healing-platform namespace</code></p>
+<p><strong>Lightspeed responds:</strong>
+```
+Found 2 pods for sample-flask-app:</p>
+<ol>
+<li>
+<p>sample-flask-app-xxx
+   Status: Running ✅
+   CPU: 45m / 200m (22%)
+   Memory: 82Mi / 128Mi (64%)
+   Restarts: 0</p>
+</li>
+<li>
+<p>sample-flask-app-yyy
+   Status: Running ✅
+   CPU: 47m / 200m (23%)
+   Memory: 79Mi / 128Mi (62%)
+   Restarts: 0</p>
+</li>
+</ol>
+<p>Both pods are healthy!
+```</p>
+<hr />
+<h2 id="part-3-predicting-future-resource-usage">Part 3: Predicting Future Resource Usage<a class="headerlink" href="#part-3-predicting-future-resource-usage" title="Permanent link">&para;</a></h2>
+<p>This is where the ML models shine! Let's ask about future resource usage.</p>
+<h3 id="scenario-1-predict-afternoon-usage">Scenario 1: Predict Afternoon Usage<a class="headerlink" href="#scenario-1-predict-afternoon-usage" title="Permanent link">&para;</a></h3>
+<p><strong>You type:</strong>
+<code>What will the CPU and memory usage be at 3 PM today?</code></p>
+<p><strong>Lightspeed responds:</strong>
+```
+Confirmed prediction for 15:00 today (cluster-wide)</p>
+<p>CPU: 58.0%
+Memory: 58.6%
+Model confidence: 85%</p>
+<p>Current baseline (estimate):
+- CPU: ~3.5%
+- Memory: ~27.1%</p>
+<p>Key notes:
+- Big CPU jump predicted — verify this isn't a metrics-collection gap before reacting
+- Important metrics to check in Prometheus:
+  - CPU: container_cpu_usage_seconds_total, pod:container_cpu_usage:sum (5m)
+  - Memory: container_memory_working_set_bytes, container_memory_rss</p>
+<p>Quick commands:
+  kubectl top nodes
+  kubectl top pods -A</p>
+<p>If the higher load is real and sustained: consider HPA or manual scaling,
+add node capacity, or tune pod requests/limits to avoid throttling/OOMs.</p>
+<p>Next steps — pick one:
+1. I can run an anomaly scan for CPU/memory (namespace, deployment, or pod)
+2. I can calculate how many more pods you can safely schedule</p>
+<p>Which would you like?
+```</p>
+<blockquote>
+<p><strong>📊 Note</strong>: Your predictions will differ based on your cluster's learned patterns! The model trains on YOUR Prometheus metrics, so a cluster with heavy afternoon batch jobs will show different predictions than one with steady traffic.</p>
+</blockquote>
+<p>🎯 <strong>What happened?</strong> Lightspeed:
+1. Called the MCP <code>predict-resource-usage</code> tool
+2. The Coordination Engine queried Prometheus for current 24h rolling mean metrics
+3. Extracted hour (15) and day of week from "3 PM today"
+4. Called the <code>predictive-analytics</code> KServe model with features: <code>[hour, day_of_week, cpu_baseline, memory_baseline]</code>
+5. Model returned predictions scaled to your cluster's typical usage patterns
+6. Formatted a human-friendly response with actionable recommendations</p>
+<h3 id="scenario-2-scaling-impact-prediction">Scenario 2: Scaling Impact Prediction<a class="headerlink" href="#scenario-2-scaling-impact-prediction" title="Permanent link">&para;</a></h3>
+<p><strong>You type:</strong>
+<code>If I scale sample-flask-app to 5 replicas, what will happen to memory usage?</code></p>
+<p><strong>Lightspeed responds:</strong>
+```
+Scaling Impact Analysis:</p>
+<p>Current State:
+- Replicas: 2
+- Memory per pod: ~80Mi
+- Total memory: ~160Mi</p>
+<p>Projected State (5 replicas):
+- Replicas: 5 (+3)
+- Memory per pod: ~82Mi
+- Total memory: ~410Mi
+- Namespace memory: 92.3% ⚠️</p>
+<p>⚠️ WARNING: Memory usage will approach critical threshold (95%)</p>
+<p>💡 Recommendations:
+1. Scale to 4 replicas instead (predicted: 86.7%)
+2. Increase namespace memory limits by 20%
+3. Monitor for 30 minutes after scaling</p>
+<p>Would you like me to proceed with scaling?
+```</p>
+<h3 id="scenario-3-capacity-planning">Scenario 3: Capacity Planning<a class="headerlink" href="#scenario-3-capacity-planning" title="Permanent link">&para;</a></h3>
+<p><strong>You type:</strong>
+<code>How many more pods can I run before hitting resource limits?</code></p>
+<p><strong>Lightspeed responds:</strong>
+```
+Capacity Analysis:</p>
+<p>Current Usage:
+- CPU: 68.2% of quota
+- Memory: 74.5% of quota
+- Running pods: 8</p>
+<p>Available Capacity:
+- CPU headroom: 31.8%
+- Memory headroom: 25.5%</p>
+<p>Pod Estimates (based on current profiles):
+- Small pods (64Mi/100m): ~12 more
+- Medium pods (128Mi/200m): ~6 more
+- Large pods (256Mi/400m): ~2 more</p>
+<p>🎯 Recommendation: Keep &lt;85% memory for stability
+Current safe limit: 5 more medium-sized pods</p>
+<p>Trending: Memory increasing ~2%/day, reaching 85% in ~5 days
+```</p>
+<hr />
+<h2 id="part-4-breaking-things-on-purpose">Part 4: Breaking Things (On Purpose!)<a class="headerlink" href="#part-4-breaking-things-on-purpose" title="Permanent link">&para;</a></h2>
+<p>Let's deploy a broken app to see self-healing in action.</p>
+<h3 id="deploy-a-memory-starved-application">Deploy a Memory-Starved Application<a class="headerlink" href="#deploy-a-memory-starved-application" title="Permanent link">&para;</a></h3>
+<p>This app has a memory leak - each request allocates 10MB. With only 96Mi limit, it will OOMKill after a few requests.</p>
+<p><strong>Run this in your terminal:</strong>
+<code>bash
+oc apply -f - &lt;&lt;EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broken-app
+  namespace: self-healing-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: broken
+  template:
+    metadata:
+      labels:
+        app: broken
+    spec:
+      containers:
+      - name: web
+        image: registry.access.redhat.com/ubi9/python-311:latest
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          pip install flask &amp;&amp; python -c '
+          from flask import Flask
+          app = Flask(__name__)
+          data = []
+          @app.route("/")
+          def hello():
+              data.append("x" * 1024 * 1024 * 10)  # Allocate 10MB per request
+              return f"Allocated {len(data)} chunks ({len(data) * 10}MB total)"
+          app.run(host="0.0.0.0", port=8080)
+          '
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            memory: "96Mi"    # Low - will OOMKill after ~3-4 requests
+            cpu: "100m"
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+EOF</code></p>
+<h3 id="trigger-the-memory-leak">Trigger the Memory Leak<a class="headerlink" href="#trigger-the-memory-leak" title="Permanent link">&para;</a></h3>
+<p>The app won't crash on its own - we need to trigger the memory leak by sending requests. Each request allocates 10MB of memory.</p>
+<p><strong>Run this to trigger OOMKill:</strong>
+```bash</p>
+<h1 id="wait-for-pods-to-start">Wait for pods to start<a class="headerlink" href="#wait-for-pods-to-start" title="Permanent link">&para;</a></h1>
+<p>sleep 30</p>
+<h1 id="hit-the-endpoint-repeatedly-to-trigger-memory-leak">Hit the endpoint repeatedly to trigger memory leak<a class="headerlink" href="#hit-the-endpoint-repeatedly-to-trigger-memory-leak" title="Permanent link">&para;</a></h1>
+<p>for i in {1..100}; do
+  echo "Request $i:"
+  oc exec -n self-healing-platform deployment/broken-app -- curl -s http://localhost:8080/ 2&gt;/dev/null || echo "Pod crashed!"
+  sleep 1
+done
+```</p>
+<p>You should see output like:
+<code>Request 1: Allocated 1 chunks (10MB total)
+Request 2: Allocated 2 chunks (20MB total)
+...
+Request 7: Allocated 7 chunks (70MB total)
+Request 8: Pod crashed!
+Request 9: Allocated 1 chunks (10MB total)  ← Pod restarted!</code></p>
+<h3 id="watch-it-fail">Watch It Fail<a class="headerlink" href="#watch-it-fail" title="Permanent link">&para;</a></h3>
+<p>Now ask Lightspeed about the failing pods:</p>
+<p><strong>You type:</strong>
+<code>Are there any failing pods? in the self-healing-platform namespace</code></p>
+<p><strong>Lightspeed responds:</strong>
+```
+⚠️ Found 2 pods with issues:</p>
+<ol>
+<li>
+<p>broken-app-xxx
+   Status: OOMKilled ❌
+   Restarts: 2
+   Reason: Container exceeded memory limit (96Mi)
+   Pattern: Crash loop - restarts when memory leak triggered</p>
+</li>
+<li>
+<p>broken-app-yyy
+   Status: OOMKilled ❌
+   Restarts: 1
+   Reason: Container exceeded memory limit (96Mi)
+   Pattern: Memory leak causes OOMKill under load</p>
+</li>
+</ol>
+<p>Both pods are experiencing Out Of Memory errors. The app has a
+memory leak - each request allocates 10MB that isn't released.
+The 96Mi limit is exceeded after ~7 requests.</p>
+<p>Would you like me to analyze these for anomalies?
+```</p>
+<hr />
+<h2 id="part-5-ai-powered-anomaly-detection">Part 5: AI-Powered Anomaly Detection<a class="headerlink" href="#part-5-ai-powered-anomaly-detection" title="Permanent link">&para;</a></h2>
+<p><strong>You type:</strong>
+<code>Yes, analyze the broken-app pods for anomalies</code></p>
+<p><strong>Lightspeed responds:</strong>
+```
+ML Analysis Complete (anomaly-detector model):</p>
+<p>🔴 ANOMALY DETECTED
+Confidence: 95%</p>
+<p>Root Cause:
+- Type: Memory Leak
+- Component: Application code
+- Memory limit: 96Mi
+- Pattern: Linear growth ~10MB/request until OOMKill
+- Evidence: Memory never released between requests</p>
+<p>Historical Context:
+- 3 similar memory leak patterns in past 7 days
+- Temporary fixes: increase limits 2-3x
+- Permanent fixes: code review for unbounded arrays/caches</p>
+<p>Impact:
+- Service availability: 0% (both replicas failing)
+- User impact: Complete outage
+- Blast radius: Isolated to broken-app</p>
+<p>💡 Recommended Fix:
+IMMEDIATE (automated):
+1. Increase memory limit to 256Mi (buys time)
+2. Set memory request to 128Mi</p>
+<p>PERMANENT (requires developer):
+3. Review code: data array grows unbounded
+4. Implement cleanup or bounded cache</p>
+<p>Would you like me to apply the immediate fix?
+```</p>
+<p>🎯 <strong>What happened?</strong> The anomaly-detector ML model analyzed the pod metrics and crash patterns, compared them to historical data, and identified this as a known resource exhaustion pattern.</p>
+<hr />
+<h2 id="part-6-self-healing-in-action">Part 6: Self-Healing in Action<a class="headerlink" href="#part-6-self-healing-in-action" title="Permanent link">&para;</a></h2>
+<p><strong>You type:</strong>
+<code>Yes, fix it automatically</code></p>
+<p><strong>Lightspeed responds:</strong>
+```
+Remediation Plan:</p>
+<p>Target: deployment/broken-app
+Action: Update Resource Limits</p>
+<p>Changes:
+  Memory: 96Mi  → 256Mi (temporary fix)
+  CPU:    100m  → 200m</p>
+<p>Note: This increases limits to prevent crashes, but the
+root cause (memory leak in code) should still be fixed.</p>
+<p>Applying via Coordination Engine...</p>
+<p>✅ Remediation Applied!
+- ID: rem-20260112-001
+- Status: SUCCESS
+- Pods restarting with new limits...</p>
+<p>Expected completion: ~45 seconds
+```</p>
+<h3 id="verify-the-fix">Verify the Fix<a class="headerlink" href="#verify-the-fix" title="Permanent link">&para;</a></h3>
+<p>After 45 seconds:</p>
+<p><strong>You type:</strong>
+<code>Are the broken-app pods healthy now?</code></p>
+<p><strong>Lightspeed responds:</strong>
+```
+✅ Remediation Successful!</p>
+<ol>
+<li>
+<p>broken-app-xxx
+   Status: Running ✅
+   CPU: 52m / 200m (26%)
+   Memory: 87Mi / 256Mi (34%)
+   Restarts: 0 (since fix)
+   Uptime: 1m</p>
+</li>
+<li>
+<p>broken-app-yyy
+   Status: Running ✅
+   CPU: 49m / 200m (24%)
+   Memory: 84Mi / 256Mi (33%)
+   Restarts: 0 (since fix)
+   Uptime: 1m</p>
+</li>
+</ol>
+<p>Memory Analysis:
+- Current: 85Mi average
+- Peak: 95Mi (161Mi headroom with new limit)
+- Stability: No restarts since remediation</p>
+<p>⚠️ Note: The memory leak still exists - increased limits
+buy time but code should be reviewed to fix the leak.
+```</p>
+<hr />
+<h2 id="part-7-understanding-historical-patterns">Part 7: Understanding Historical Patterns<a class="headerlink" href="#part-7-understanding-historical-patterns" title="Permanent link">&para;</a></h2>
+<p><strong>You type:</strong>
+<code>Show me recent incidents and how they were resolved</code></p>
+<p><strong>Lightspeed responds:</strong>
+```
+Incident History (Last 24 Hours):</p>
+<p>Total: 1 incident
+Average resolution: 45 seconds</p>
+<p>📋 Incident Details:</p>
+<p>inc-20260112-001
+- Time: 15:44:38 UTC
+- Type: OOMKilled (Memory Leak)
+- Pods: broken-app-xxx, broken-app-yyy
+- Root cause: Application memory leak (~10MB/request)
+- Trigger: Memory exceeded 96Mi limit after ~7 requests</p>
+<p>Remediation:
+- Action: Updated deployment resources (temporary fix)
+- Applied: YES ✅
+- Resolution time: 45s
+- Changes: Memory 96Mi→256Mi, CPU 100m→200m
+- Outcome: 100% success (pods stable)
+- Follow-up: Code review recommended for memory leak</p>
+<p>Pattern Recognition:
+ML detected this as "memory leak" pattern, not just
+"insufficient resources". Recommended both immediate
+fix (increase limits) and permanent fix (code review).
+```</p>
+<hr />
+<h2 id="part-8-more-conversations-to-try">Part 8: More Conversations to Try<a class="headerlink" href="#part-8-more-conversations-to-try" title="Permanent link">&para;</a></h2>
+<h3 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h3>
+<p><strong>Investigate slow performance:</strong>
+```
+You: The sample-flask-app feels slow</p>
+<p>Lightspeed:
+Investigating...</p>
+<p>Pod Analysis:
+- sample-flask-app-xxx: CPU 185m/200m (92%) ⚠️
+- sample-flask-app-yyy: CPU 178m/200m (89%) ⚠️</p>
+<p>Root Cause: CPU saturation (throttling)
+Recommendation: Scale to 3 replicas or increase CPU limits</p>
+<p>Should I scale now?
+```</p>
+<p><strong>Proactive monitoring:</strong>
+```
+You: Will any pods have issues in the next hour?</p>
+<p>Lightspeed:
+🔮 Predictions for next 60 minutes:</p>
+<p>Low Risk: 5 pods stable</p>
+<p>⚠️ Medium Risk:
+- sample-flask-app-xxx: CPU will reach 99% in ~45 min
+- sample-flask-app-yyy: CPU will reach 97% in ~50 min</p>
+<p>Recommendation: Scale to 3 replicas NOW to prevent issues</p>
+<p>Should I apply preemptively?
+```</p>
+<h3 id="capacity-questions">Capacity Questions<a class="headerlink" href="#capacity-questions" title="Permanent link">&para;</a></h3>
+<p>```
+You: What will memory usage be tomorrow at 9 AM?</p>
+<p>Lightspeed:
+Predicted memory at 09:00 tomorrow (Thursday):
+- 71.3% (current trend: -3.2% from today)
+- Lower usage expected (morning hours)
+- Confidence: 88%
+```</p>
+<p>```
+You: Can I run 10 more medium-sized pods?</p>
+<p>Lightspeed:
+Capacity check for 10 medium pods (128Mi/200m):</p>
+<p>Required resources:
+- Memory: 1280Mi
+- CPU: 2000m</p>
+<p>Current availability:
+- Memory: Only ~600Mi available
+- CPU: ~800m available</p>
+<p>❌ Cannot accommodate 10 pods
+✅ Can safely run 4 pods
+⚠️ 5-6 pods possible but approaching limits
+```</p>
+<h3 id="model-health">Model Health<a class="headerlink" href="#model-health" title="Permanent link">&para;</a></h3>
+<p>```
+You: Are the ML models working properly?</p>
+<p>Lightspeed:
+ML Model Status:</p>
+<ol>
+<li>
+<p>anomaly-detector
+   Status: READY ✅
+   Endpoint: http://anomaly-detector-predictor:8080
+   Recent predictions: 47 (last hour)
+   Average latency: 23ms
+   Success rate: 100%</p>
+</li>
+<li>
+<p>predictive-analytics
+   Status: READY ✅
+   Endpoint: http://predictive-analytics-predictor:8080
+   Recent predictions: 32 (last hour)
+   Average latency: 18ms
+   Success rate: 100%</p>
+</li>
+</ol>
+<p>All models healthy and performing well!
+```</p>
+<hr />
+<h2 id="part-9-behind-the-scenes-how-it-works">Part 9: Behind the Scenes - How It Works<a class="headerlink" href="#part-9-behind-the-scenes-how-it-works" title="Permanent link">&para;</a></h2>
+<h3 id="the-7-mcp-tools-lightspeed-uses">The 7 MCP Tools Lightspeed Uses<a class="headerlink" href="#the-7-mcp-tools-lightspeed-uses" title="Permanent link">&para;</a></h3>
+<p>Every conversation uses one or more of these tools:</p>
+<p><strong>1. <code>get-cluster-health</code></strong>
+<code>You say: "Is the cluster healthy?"
+Tool does: Checks namespace status, pods, ML models
+Returns: Health summary with metrics</code></p>
+<p><strong>2. <code>list-pods</code></strong>
+<code>You say: "Show me failing pods"
+Tool does: Queries Kubernetes, filters by status
+Returns: Pod list with details</code></p>
+<p><strong>3. <code>analyze-anomalies</code></strong>
+<code>You say: "Analyze for anomalies"
+Tool does: Calls KServe ML models with metrics
+Returns: Anomaly detection results + recommendations</code></p>
+<p><strong>4. <code>trigger-remediation</code></strong>
+<code>You say: "Fix this automatically"
+Tool does: Coordination Engine applies fixes
+Returns: Remediation status and ID</code></p>
+<p><strong>5. <code>list-incidents</code></strong>
+<code>You say: "Show recent incidents"
+Tool does: Queries incident database
+Returns: Historical incident data</code></p>
+<p><strong>6. <code>get-model-status</code></strong>
+<code>You say: "Check ML model health"
+Tool does: Verifies KServe InferenceServices
+Returns: Model status and endpoints</code></p>
+<p><strong>7. <code>list-models</code></strong>
+<code>You say: "What models are available?"
+Tool does: Lists ML model catalog
+Returns: Model names and capabilities</code></p>
+<h3 id="example-flow-prediction-request">Example Flow: Prediction Request<a class="headerlink" href="#example-flow-prediction-request" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>sequenceDiagram
+    You-&gt;&gt;Lightspeed: "Predict CPU at 3 PM"
+    Lightspeed-&gt;&gt;MCP Server: analyze-anomalies()
+    MCP Server-&gt;&gt;Coordination Engine: /api/v1/detect
+    Coordination Engine-&gt;&gt;Prometheus: Query metrics
+    Prometheus--&gt;&gt;Coordination Engine: 68.2% CPU, 74.5% Mem
+    Coordination Engine-&gt;&gt;KServe: predict([15,3,68.2,74.5])
+    KServe--&gt;&gt;Coordination Engine: [0.745, 0.812]
+    Coordination Engine--&gt;&gt;MCP Server: Formatted prediction
+    MCP Server--&gt;&gt;Lightspeed: JSON response
+    Lightspeed--&gt;&gt;You: "CPU: 74.5%, Memory: 81.2%"</code></pre>
+<hr />
+<h2 id="part-10-quick-reference">Part 10: Quick Reference<a class="headerlink" href="#part-10-quick-reference" title="Permanent link">&para;</a></h2>
+<h3 id="health-status">Health &amp; Status<a class="headerlink" href="#health-status" title="Permanent link">&para;</a></h3>
+<p><code>"What's the cluster health?"
+"Are there any failing pods?"
+"Show me pods in self-healing-platform"
+"What's using the most memory?"</code></p>
+<h3 id="predictions">Predictions<a class="headerlink" href="#predictions" title="Permanent link">&para;</a></h3>
+<p><code>"What will CPU be at 3 PM?"
+"Predict memory usage tomorrow at 9 AM"
+"What happens if I scale to 5 replicas?"
+"How many more pods can I run?"
+"Will I have capacity issues this weekend?"</code></p>
+<h3 id="troubleshooting_1">Troubleshooting<a class="headerlink" href="#troubleshooting_1" title="Permanent link">&para;</a></h3>
+<p><code>"Why is pod X failing?"
+"Analyze deployment Y for anomalies"
+"What caused the OOMKilled errors?"
+"Show me pods with high restarts"
+"Will any pods fail in the next hour?"</code></p>
+<h3 id="actions">Actions<a class="headerlink" href="#actions" title="Permanent link">&para;</a></h3>
+<p><code>"Fix the failing pods"
+"Scale deployment X to 5 replicas"
+"Increase memory for pod Y"</code></p>
+<h3 id="ml-models">ML Models<a class="headerlink" href="#ml-models" title="Permanent link">&para;</a></h3>
+<p><code>"Are ML models healthy?"
+"What models are available?"
+"Check anomaly detector status"</code></p>
+<h3 id="history">History<a class="headerlink" href="#history" title="Permanent link">&para;</a></h3>
+<p><code>"Show recent incidents"
+"What's the average resolution time?"
+"How many incidents happened today?"</code></p>
+<hr />
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
+<p>You've now explored:
+- ✅ Chatting with your cluster using natural language
+- ✅ Deploying sample workloads
+- ✅ Using ML models to predict resource usage
+- ✅ Detecting anomalies automatically
+- ✅ Triggering self-healing remediation
+- ✅ Understanding historical patterns</p>
+<h3 id="the-power-of-natural-language-operations">The Power of Natural Language Operations<a class="headerlink" href="#the-power-of-natural-language-operations" title="Permanent link">&para;</a></h3>
+<p><strong>Traditional way:</strong>
+```bash
+kubectl get pods -n self-healing-platform | grep -v Running
+kubectl describe pod broken-app-xxx
+kubectl logs broken-app-xxx
+kubectl edit deployment broken-app</p>
+<h1 id="manually-update-limits">... manually update limits ...<a class="headerlink" href="#manually-update-limits" title="Permanent link">&para;</a></h1>
+<p>kubectl rollout status deployment/broken-app
+```</p>
+<p><strong>With Lightspeed:</strong>
+<code>"Fix the broken pods"</code></p>
+<h3 id="key-metrics">Key Metrics<a class="headerlink" href="#key-metrics" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Detection to fix: ~45 seconds</li>
+<li>Prediction accuracy: 92%+</li>
+<li>ML inference time: &lt;100ms</li>
+<li>Zero manual intervention needed</li>
+</ul>
+<hr />
+<h2 id="resources">Resources<a class="headerlink" href="#resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>GitHub</strong>: <a href="https://github.com/KubeHeal/openshift-aiops-platform">openshift-aiops-platform</a></li>
+<li><strong>MCP Server</strong>: <a href="https://github.com/KubeHeal/openshift-cluster-health-mcp">openshift-cluster-health-mcp</a></li>
+<li><strong>Model Context Protocol</strong>: <a href="https://modelcontextprotocol.io/">modelcontextprotocol.io</a></li>
+<li><strong>OpenShift Lightspeed</strong>: <a href="https://docs.openshift.com/container-platform/latest/lightspeed/">docs.openshift.com/lightspeed</a></li>
+</ul>
+<hr />
+<p><strong>Happy chatting with your cluster! 🚀</strong></p>
+<p><em>Published: January 12, 2026</em></p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 2, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 12, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

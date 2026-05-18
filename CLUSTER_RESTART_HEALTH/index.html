@@ -1,0 +1,2296 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/CLUSTER_RESTART_HEALTH/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Cluster Restart Health Diagnostic and Recovery - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cluster-restart-health-diagnostic-and-recovery" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Cluster Restart Health Diagnostic and Recovery
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../README.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/tutorials/index.md" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/how-to/index.md" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/reference/index.md" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/explanation/index.md" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/adrs/README.md" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../docs/blog/index.md" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPLOYMENT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/PREREQUISITES.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/getting-started.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/tutorials/workbench-development.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-on-sno.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/access-workbench.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/how-to/deploy-mcp-server.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/reference/api.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/explanation/architecture-overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/README.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/adrs/IMPLEMENTATION-TRACKER.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/TROUBLESHOOTING-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/guides/CICD-INTEGRATION-GUIDE.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/blog/index.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#problem-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problem Statement
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#root-cause" class="md-nav__link">
+    <span class="md-ellipsis">
+      Root Cause
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solution-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solution Architecture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Solution Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-diagnostics-implemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Diagnostics (Implemented)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-targeted-fixes-implemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Targeted Fixes (Implemented)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-1-diagnostic-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Diagnostic Script
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 1: Diagnostic Script">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#location" class="md-nav__link">
+    <span class="md-ellipsis">
+      Location
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capabilities
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-before-cluster-restart" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Before Cluster Restart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-after-cluster-restart-run-immediately" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. After Cluster Restart (Run Immediately)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-generate-diagnostic-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Generate Diagnostic Report
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Workflow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/CLUSTER_RESTART_HEALTH.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="cluster-restart-health-diagnostic-and-recovery">Cluster Restart Health Diagnostic and Recovery<a class="headerlink" href="#cluster-restart-health-diagnostic-and-recovery" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>This document describes the cluster restart health diagnostic and recovery implementation for the OpenShift AI Ops Self-Healing Platform. The solution addresses post-restart health issues including pod failures, service unavailability, and model serving problems.</p>
+<h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link">&para;</a></h2>
+<p>After cluster restart, the platform experiences:
+- <strong>Pod CrashLoopBackOff</strong>: coordination-engine, mcp-server failing to start
+- <strong>Init Job Failures</strong>: init-models-job exceeding backoff limit
+- <strong>Storage Mount Issues</strong>: PVCs taking 2-5 minutes to bind, causing mount failures
+- <strong>Cross-Namespace Dependency Failures</strong>: Pods starting before Prometheus/ArgoCD are ready</p>
+<h2 id="root-cause">Root Cause<a class="headerlink" href="#root-cause" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Cross-Namespace Dependency Race Conditions</strong>: Platform pods start before critical dependencies in other namespaces are ready</li>
+<li>Prometheus (openshift-monitoring)</li>
+<li>ArgoCD (openshift-gitops)</li>
+<li>
+<p>ODF/NooBaa storage (openshift-storage)</p>
+</li>
+<li>
+<p><strong>Storage Mount Timing Issues</strong>: CephFS RWX PVCs take 2-5 minutes to become available after restart</p>
+</li>
+<li>init-models-job attempts to mount immediately with only 3 retries</li>
+<li>
+<p>Insufficient backoff limit for storage readiness delays</p>
+</li>
+<li>
+<p><strong>Insufficient Startup Resilience</strong>: No startup probes, short failure windows, no dependency verification</p>
+</li>
+</ol>
+<h2 id="solution-architecture">Solution Architecture<a class="headerlink" href="#solution-architecture" title="Permanent link">&para;</a></h2>
+<p>The solution implements a two-phase approach:</p>
+<h3 id="phase-1-diagnostics-implemented">Phase 1: Diagnostics (Implemented)<a class="headerlink" href="#phase-1-diagnostics-implemented" title="Permanent link">&para;</a></h3>
+<p>Comprehensive diagnostic script to capture cluster restart behavior and identify exact failure points.</p>
+<h3 id="phase-2-targeted-fixes-implemented">Phase 2: Targeted Fixes (Implemented)<a class="headerlink" href="#phase-2-targeted-fixes-implemented" title="Permanent link">&para;</a></h3>
+<p>Production-ready fixes based on identified failure patterns:
+- Init containers to wait for cross-namespace dependencies
+- Startup probes with 5-minute windows
+- Enhanced retry logic for storage-dependent jobs
+- Storage verification before mounting</p>
+<hr />
+<h2 id="phase-1-diagnostic-script">Phase 1: Diagnostic Script<a class="headerlink" href="#phase-1-diagnostic-script" title="Permanent link">&para;</a></h2>
+<h3 id="location">Location<a class="headerlink" href="#location" title="Permanent link">&para;</a></h3>
+<p><code>/home/lab-user/openshift-aiops-platform/scripts/diagnose-cluster-restart.sh</code></p>
+<h3 id="capabilities">Capabilities<a class="headerlink" href="#capabilities" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Pre-Restart Snapshot</strong>: Captures baseline state before restart</li>
+<li><strong>Post-Restart Monitoring</strong>: Tracks component startup sequence and timing</li>
+<li><strong>Dependency Timing Analysis</strong>: Measures when cross-namespace services become ready</li>
+<li><strong>Failure Pattern Detection</strong>: Identifies which components fail and why</li>
+<li><strong>Storage Readiness Tracking</strong>: Monitors PVC binding and CSI driver availability</li>
+<li><strong>Detailed Reporting</strong>: Generates actionable report with root cause analysis</li>
+</ul>
+<h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
+<h4 id="1-before-cluster-restart">1. Before Cluster Restart<a class="headerlink" href="#1-before-cluster-restart" title="Permanent link">&para;</a></h4>
+<p><code>bash
+cd /home/lab-user/openshift-aiops-platform
+./scripts/diagnose-cluster-restart.sh --phase pre-restart</code></p>
+<p><strong>Output</strong>: Creates baseline snapshot in <code>/tmp/cluster-restart-diagnostics/pre-restart-&lt;timestamp&gt;/</code></p>
+<h4 id="2-after-cluster-restart-run-immediately">2. After Cluster Restart (Run Immediately)<a class="headerlink" href="#2-after-cluster-restart-run-immediately" title="Permanent link">&para;</a></h4>
+<p><code>bash
+./scripts/diagnose-cluster-restart.sh --phase post-restart --monitor-duration 600</code></p>
+<p><strong>Options</strong>:
+- <code>--monitor-duration SECONDS</code>: Duration to monitor (default: 600 = 10 minutes)
+- <code>--namespace NAMESPACE</code>: Platform namespace (default: self-healing-platform)</p>
+<p><strong>Output</strong>: Creates monitoring data in <code>/tmp/cluster-restart-diagnostics/post-restart-&lt;timestamp&gt;/</code></p>
+<p><strong>What it monitors</strong> (every 10 seconds):
+- Cross-namespace dependency readiness (Prometheus, ArgoCD, ODF)
+- CSI drivers and storage class availability
+- PVC binding status and timing
+- Platform pod startup sequence
+- Init job completion status
+- InferenceService health</p>
+<p><strong>Captures detailed snapshots</strong> (every 60 seconds):
+- Pod status and events
+- Logs of failed/restarting pods
+- PVC binding state
+- Service endpoint availability</p>
+<h4 id="3-generate-diagnostic-report">3. Generate Diagnostic Report<a class="headerlink" href="#3-generate-diagnostic-report" title="Permanent link">&para;</a></h4>
+<p><code>bash
+./scripts/diagnose-cluster-restart.sh --phase report</code></p>
+<p><strong>Output</strong>: Comprehensive markdown report at <code>/tmp/cluster-restart-diagnostics/diagnostic-report-&lt;timestamp&gt;.md</code></p>
+<p><strong>Report Includes</strong>:
+- <strong>Executive Summary</strong>: High-level findings
+- <strong>Startup Timeline Analysis</strong>: When each component became ready
+- <strong>Failure Analysis</strong>: Pod failures, CrashLoopBackOff, Init errors
+- <strong>Root Cause Analysis</strong>: Identified issues with evidence
+- <strong>Recommended Actions</strong>: Prioritized fix recommendations
+- <strong>Critical Events</strong>: Warning/Error events from the cluster
+- <strong>Detailed Pod Status</strong>: Final state of all pods</p>
+<h3 id="example-workflow">Example Workflow<a class="headerlink" href="#example-workflow" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="step-1-capture-pre-restart-state">Step 1: Capture pre-restart state<a class="headerlink" href="#step-1-capture-pre-restart-state" title="Permanent link">&para;</a></h1>
+<p>./scripts/diagnose-cluster-restart.sh --phase pre-restart</p>
+<h1 id="step-2-perform-cluster-restart">Step 2: Perform cluster restart<a class="headerlink" href="#step-2-perform-cluster-restart" title="Permanent link">&para;</a></h1>
+<h1 id="follow-your-organizations-cluster-restart-procedure">(Follow your organization's cluster restart procedure)<a class="headerlink" href="#follow-your-organizations-cluster-restart-procedure" title="Permanent link">&para;</a></h1>
+<h1 id="step-3-monitor-post-restart-startup-run-immediately-after-restart">Step 3: Monitor post-restart startup (run immediately after restart)<a class="headerlink" href="#step-3-monitor-post-restart-startup-run-immediately-after-restart" title="Permanent link">&para;</a></h1>
+<p>./scripts/diagnose-cluster-restart.sh --phase post-restart --monitor-duration 600</p>
+<h1 id="step-4-generate-analysis-report">Step 4: Generate analysis report<a class="headerlink" href="#step-4-generate-analysis-report" title="Permanent link">&para;</a></h1>
+<p>./scripts/diagnose-cluster-restart.sh --phase report</p>
+<h1 id="step-5-review-the-report">Step 5: Review the report<a class="headerlink" href="#step-5-review-the-report" title="Permanent link">&para;</a></h1>
+<p>cat /tmp/cluster-restart-diagnostics/diagnostic-report-*.md
+```</p>
+<h3 id="interpreting-results">Interpreting Results<a class="headerlink" href="#interpreting-results" title="Permanent link">&para;</a></h3>
+<p><strong>Startup Timeline Analysis</strong>:
+<code>| Component | Time to Ready |
+|-----------|---------------|
+| Prometheus | 45s |
+| ArgoCD | 60s |
+| model-storage-pvc | 180s |
+| coordination-engine | NOT_READY |  ← Problem detected!
+| mcp-server | NOT_READY |  ← Problem detected!</code></p>
+<p><strong>Indicates</strong>: coordination-engine and mcp-server failed because they started before dependencies were ready.</p>
+<p><strong>Failure Analysis</strong>:
+<code>- CrashLoopBackOff pods: 2
+- Init container failures: 1</code></p>
+<p><strong>Root Cause Examples</strong>:
+- "⚠️ Cross-Namespace Dependency Race Condition Detected"
+- "⚠️ Storage Mount Timing Issue Detected"
+- "⚠️ Init Models Job Failure Detected"</p>
+<hr />
+<h2 id="phase-2-targeted-fixes">Phase 2: Targeted Fixes<a class="headerlink" href="#phase-2-targeted-fixes" title="Permanent link">&para;</a></h2>
+<p>Based on diagnostic findings, the following production-ready fixes have been implemented:</p>
+<h3 id="fix-1-coordination-engine-resilience">Fix 1: Coordination Engine Resilience<a class="headerlink" href="#fix-1-coordination-engine-resilience" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>charts/hub/templates/coordination-engine-deployment.yaml</code></p>
+<p><strong>Changes</strong>:
+1. <strong>Init Containers</strong> (lines 30-68):
+   - <code>wait-for-prometheus</code>: Waits for Prometheus API to be responsive
+   - <code>wait-for-argocd</code>: Waits for ArgoCD health endpoint</p>
+<ol>
+<li><strong>Startup Probe</strong> (lines 134-141):</li>
+<li>5-minute startup window (failureThreshold: 30, periodSeconds: 10)</li>
+<li>Allows dependencies to initialize before declaring pod failure</li>
+</ol>
+<p><strong>Behavior After Restart</strong>:
+- Pod waits in <code>Init:0/2</code> state until Prometheus is ready
+- Pod waits in <code>Init:1/2</code> state until ArgoCD is ready
+- Pod transitions to <code>Running</code> only after all dependencies are ready
+- Startup probe allows up to 5 minutes for full initialization
+- Existing liveness/readiness probes unchanged</p>
+<h3 id="fix-2-mcp-server-resilience">Fix 2: MCP Server Resilience<a class="headerlink" href="#fix-2-mcp-server-resilience" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>charts/hub/templates/mcp-server-deployment.yaml</code></p>
+<p><strong>Changes</strong>:
+1. <strong>Init Containers</strong> (lines 30-68):
+   - <code>wait-for-coordination-engine</code>: Waits for Coordination Engine health endpoint
+   - <code>wait-for-prometheus</code>: Waits for Prometheus API</p>
+<ol>
+<li><strong>Startup Probe</strong> (lines 131-138):</li>
+<li>5-minute startup window (failureThreshold: 30, periodSeconds: 10)</li>
+</ol>
+<p><strong>Behavior After Restart</strong>:
+- Starts only after Coordination Engine is healthy
+- Ensures Prometheus is available before connecting
+- Proper startup ordering prevents cascading failures</p>
+<h3 id="fix-3-init-models-job-resilience">Fix 3: Init Models Job Resilience<a class="headerlink" href="#fix-3-init-models-job-resilience" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>charts/hub/templates/init-models-job.yaml</code></p>
+<p><strong>Changes</strong>:
+1. <strong>Init Container</strong> (lines 15-44):
+   - <code>wait-for-pvc</code>: Verifies model-storage-pvc is bound and mounted
+   - 5-minute wait window with 10-second intervals
+   - Graceful failure if PVC doesn't become available</p>
+<ol>
+<li><strong>Enhanced Retry Logic</strong> (lines 46-104):</li>
+<li>Function <code>create_dir_with_retry()</code> with exponential backoff</li>
+<li>5 retries per directory creation operation</li>
+<li>Backoff: 1s → 2s → 4s → 8s → 16s</li>
+<li>
+<p>Clear success/failure indicators (✓/✗)</p>
+</li>
+<li>
+<p><strong>Increased Resilience</strong> (lines 113-114):</p>
+</li>
+<li><code>backoffLimit: 10</code> (increased from 3)</li>
+<li><code>activeDeadlineSeconds: 900</code> (15-minute maximum)</li>
+</ol>
+<p><strong>Behavior After Restart</strong>:
+- Init container verifies PVC is mounted before starting
+- Main container retries directory creation with exponential backoff
+- Job won't exceed backoff limit due to storage timing issues
+- Clear logging shows exactly which operations succeed/fail</p>
+<h3 id="fix-4-aiml-workbench-resilience">Fix 4: AI/ML Workbench Resilience<a class="headerlink" href="#fix-4-aiml-workbench-resilience" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>charts/hub/templates/ai-ml-workbench.yaml</code></p>
+<p><strong>Changes</strong>:
+1. <strong>Enhanced Init Container</strong> (lines 40-97):
+   - Added storage verification: waits for <code>/mnt/models/.initialized</code> file
+   - 5-minute wait window with warning if storage not ready
+   - Continues anyway with degraded functionality
+   - Enhanced logging (✓ for success, ⚠ for warnings)</p>
+<ol>
+<li><strong>Added model-storage Volume Mount</strong> (lines 89-90):</li>
+<li>
+<p>Init container can verify storage readiness</p>
+</li>
+<li>
+<p><strong>Startup Probe</strong> (lines 180-189):</p>
+</li>
+<li>5-minute startup window (failureThreshold: 30, periodSeconds: 10)</li>
+<li>Jupyter API health check</li>
+</ol>
+<p><strong>Behavior After Restart</strong>:
+- Init container verifies model storage is initialized
+- If storage not ready after 5 minutes, starts anyway with warning
+- Users can access workbench even if models aren't available yet
+- Startup probe allows time for Jupyter to fully initialize</p>
+<h3 id="fix-5-model-serving-inferenceservices">Fix 5: Model Serving (InferenceServices)<a class="headerlink" href="#fix-5-model-serving-inferenceservices" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>charts/hub/templates/model-serving.yaml</code></p>
+<p><strong>Status</strong>: No changes required</p>
+<p><strong>Rationale</strong>:
+- Already uses ArgoCD sync-wave "2" (deploys after init-models-job at wave "-5")
+- Uses <code>SkipDryRunOnMissingResource=true</code> for resilient deployment
+- InferenceService CRD doesn't support direct init container modification
+- Enhanced init-models-job provides necessary storage guarantees</p>
+<p><strong>Behavior After Restart</strong>:
+- KServe controller creates InferenceService pods after job completes
+- PVC-based storage (<code>pvc://model-storage-pvc/</code>) mounts after initialization
+- If models missing, InferenceService shows degraded but doesn't crash</p>
+<hr />
+<h2 id="testing-the-fixes">Testing the Fixes<a class="headerlink" href="#testing-the-fixes" title="Permanent link">&para;</a></h2>
+<h3 id="pre-deployment-testing">Pre-Deployment Testing<a class="headerlink" href="#pre-deployment-testing" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>Validate Helm Chart Syntax</strong>:
+   <code>bash
+   cd /home/lab-user/openshift-aiops-platform
+   helm lint charts/hub/</code></p>
+</li>
+<li>
+<p><strong>Dry Run Deployment</strong>:
+   <code>bash
+   helm template self-healing-platform charts/hub/ \
+     --namespace self-healing-platform \
+     --values charts/hub/values.yaml</code></p>
+</li>
+<li>
+<p><strong>Review Generated Manifests</strong>:
+   <code>bash
+   helm template self-healing-platform charts/hub/ | grep -A 20 "initContainers:"
+   helm template self-healing-platform charts/hub/ | grep -A 10 "startupProbe:"</code></p>
+</li>
+</ol>
+<h3 id="deployment-and-validation">Deployment and Validation<a class="headerlink" href="#deployment-and-validation" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Deploy Updated Charts</strong>:
+   ```bash
+   # Apply via Helm
+   helm upgrade self-healing-platform charts/hub/ \
+     --namespace self-healing-platform \
+     --install \
+     --create-namespace</li>
+</ol>
+<p># OR apply via ArgoCD (if using GitOps)
+   git add charts/hub/templates/
+   git commit -m "fix: add cluster restart resilience (init containers, startup probes)"
+   git push
+   # ArgoCD will sync automatically or manually sync via UI
+   ```</p>
+<ol>
+<li>
+<p><strong>Verify Deployments Rolled Out</strong>:
+   <code>bash
+   oc rollout status deployment/coordination-engine -n self-healing-platform
+   oc rollout status deployment/mcp-server -n self-healing-platform</code></p>
+</li>
+<li>
+<p><strong>Check Init Containers</strong>:
+   ```bash
+   # Should show Init:0/2 or Init:1/2 states during dependency wait
+   oc get pods -n self-healing-platform -w</p>
+</li>
+</ol>
+<p># View init container logs
+   oc logs -f deployment/coordination-engine -c wait-for-prometheus -n self-healing-platform
+   oc logs -f deployment/coordination-engine -c wait-for-argocd -n self-healing-platform
+   ```</p>
+<ol>
+<li><strong>Verify Startup Probes</strong>:
+   <code>bash
+   # Describe pod to see probe configuration
+   oc describe pod -l app.kubernetes.io/component=coordination-engine -n self-healing-platform | grep -A 10 "Startup:"</code></li>
+</ol>
+<h3 id="cluster-restart-test">Cluster Restart Test<a class="headerlink" href="#cluster-restart-test" title="Permanent link">&para;</a></h3>
+<p><strong>CRITICAL: Only perform cluster restart if authorized and in a non-production environment!</strong></p>
+<ol>
+<li>
+<p><strong>Before Restart - Capture Baseline</strong>:
+   <code>bash
+   ./scripts/diagnose-cluster-restart.sh --phase pre-restart</code></p>
+</li>
+<li>
+<p><strong>Perform Cluster Restart</strong>:
+   ```bash
+   # For OpenShift on bare metal/VM
+   # Restart each node (control plane first, then workers)</p>
+</li>
+</ol>
+<p># For managed OpenShift (ROSA, ARO, etc.)
+   # Follow cloud provider's cluster restart procedure
+   ```</p>
+<ol>
+<li>
+<p><strong>After Restart - Monitor Immediately</strong>:
+   <code>bash
+   # As soon as cluster API is responsive
+   ./scripts/diagnose-cluster-restart.sh --phase post-restart --monitor-duration 600</code></p>
+</li>
+<li>
+<p><strong>Validate Expected Behavior</strong>:
+   ```bash
+   # All pods should reach Running/Ready within 10 minutes
+   oc get pods -n self-healing-platform</p>
+</li>
+</ol>
+<p># Expected status progression:
+   # 1. coordination-engine: Init:0/2 → Init:1/2 → Running (1/1)
+   # 2. mcp-server: Init:0/2 → Init:1/2 → Running (1/1)
+   # 3. init-models-job: Init:0/1 → Running → Completed
+   # 4. InferenceServices: Pending → Running
+   # 5. Workbench: Init:0/1 → Running (2/2)</p>
+<p># No CrashLoopBackOff or Init:Error states!
+   ```</p>
+<ol>
+<li><strong>Verify Service Health</strong>:
+   ```bash
+   # Coordination Engine health
+   oc exec -n self-healing-platform deployment/coordination-engine -- curl -s http://localhost:8080/health</li>
+</ol>
+<p># MCP Server health
+   oc exec -n self-healing-platform deployment/mcp-server -- curl -s http://localhost:8080/health</p>
+<p># InferenceService status
+   oc get inferenceservices -n self-healing-platform</p>
+<p># Workbench accessibility (via browser)
+   # Access RHODS dashboard and verify Jupyter is accessible
+   ```</p>
+<ol>
+<li><strong>Generate Diagnostic Report</strong>:
+   <code>bash
+   ./scripts/diagnose-cluster-restart.sh --phase report
+   cat /tmp/cluster-restart-diagnostics/diagnostic-report-*.md</code></li>
+</ol>
+<h3 id="success-criteria">Success Criteria<a class="headerlink" href="#success-criteria" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>All pods reach Ready state within 10 minutes of cluster restart</strong>
+✅ <strong>No CrashLoopBackOff or Init:Error states</strong>
+✅ <strong>Coordination Engine /health endpoint returns 200 OK</strong>
+✅ <strong>MCP Server /health endpoint returns 200 OK</strong>
+✅ <strong>InferenceServices show READY status</strong>
+✅ <strong>Model serving endpoints respond to prediction requests</strong>
+✅ <strong>Jupyter Workbench accessible via RHODS dashboard</strong>
+✅ <strong>Workbench can read/write to /mnt/models</strong></p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="issue-init-containers-stuck-waiting">Issue: Init Containers Stuck Waiting<a class="headerlink" href="#issue-init-containers-stuck-waiting" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom</strong>: Pod stuck in <code>Init:0/2</code> or <code>Init:1/2</code> for extended period</p>
+<p><strong>Diagnosis</strong>:
+```bash</p>
+<h1 id="check-init-container-logs">Check init container logs<a class="headerlink" href="#check-init-container-logs" title="Permanent link">&para;</a></h1>
+<p>oc logs <pod-name> -c wait-for-prometheus -n self-healing-platform
+oc logs <pod-name> -c wait-for-argocd -n self-healing-platform</p>
+<h1 id="check-if-dependencies-are-actually-ready">Check if dependencies are actually ready<a class="headerlink" href="#check-if-dependencies-are-actually-ready" title="Permanent link">&para;</a></h1>
+<p>oc get pods -n openshift-monitoring -l app.kubernetes.io/name=prometheus
+oc get pods -n openshift-gitops
+```</p>
+<p><strong>Resolution</strong>:
+- If Prometheus/ArgoCD pods are not running, investigate those namespaces first
+- Init containers will automatically proceed once dependencies are healthy
+- If stuck for &gt;10 minutes, check network policies or service availability</p>
+<h3 id="issue-init-models-job-still-failing">Issue: Init Models Job Still Failing<a class="headerlink" href="#issue-init-models-job-still-failing" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom</strong>: Job shows <code>BackoffLimitExceeded</code> even with fixes</p>
+<p><strong>Diagnosis</strong>:
+```bash</p>
+<h1 id="check-job-status">Check job status<a class="headerlink" href="#check-job-status" title="Permanent link">&para;</a></h1>
+<p>oc get job init-models-job -n self-healing-platform</p>
+<h1 id="check-pod-logs">Check pod logs<a class="headerlink" href="#check-pod-logs" title="Permanent link">&para;</a></h1>
+<p>oc logs job/init-models-job -n self-healing-platform</p>
+<h1 id="check-pvc-status">Check PVC status<a class="headerlink" href="#check-pvc-status" title="Permanent link">&para;</a></h1>
+<p>oc get pvc model-storage-pvc -n self-healing-platform
+oc describe pvc model-storage-pvc -n self-healing-platform
+```</p>
+<p><strong>Resolution</strong>:
+- Verify PVC is in <code>Bound</code> state
+- Check if storage class and CSI drivers are available
+- Review pod logs for specific directory creation failures
+- Verify ODF/NooBaa pods are running in <code>openshift-storage</code> namespace</p>
+<h3 id="issue-workbench-cant-access-models">Issue: Workbench Can't Access Models<a class="headerlink" href="#issue-workbench-cant-access-models" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom</strong>: Jupyter starts but <code>/mnt/models</code> is empty or read-only</p>
+<p><strong>Diagnosis</strong>:
+```bash</p>
+<h1 id="check-workbench-pod-logs">Check workbench pod logs<a class="headerlink" href="#check-workbench-pod-logs" title="Permanent link">&para;</a></h1>
+<p>oc logs -l app=self-healing-workbench -n self-healing-platform -c setup-jupyter-dirs</p>
+<h1 id="exec-into-workbench-and-check">Exec into workbench and check<a class="headerlink" href="#exec-into-workbench-and-check" title="Permanent link">&para;</a></h1>
+<p>oc exec -it -n self-healing-platform deployment/self-healing-workbench -- ls -la /mnt/models/</p>
+<h1 id="check-pvc-mount">Check PVC mount<a class="headerlink" href="#check-pvc-mount" title="Permanent link">&para;</a></h1>
+<p>oc describe pod -l app=self-healing-workbench -n self-healing-platform | grep -A 5 "Mounts:"
+```</p>
+<p><strong>Resolution</strong>:
+- Verify init-models-job completed successfully
+- Check if <code>.initialized</code> file exists: <code>oc exec ... -- ls /mnt/models/.initialized</code>
+- Verify PVC permissions allow writes
+- Restart workbench pod if necessary: <code>oc delete pod -l app=self-healing-workbench</code></p>
+<h3 id="issue-startup-probes-timing-out">Issue: Startup Probes Timing Out<a class="headerlink" href="#issue-startup-probes-timing-out" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom</strong>: Pod restarts repeatedly with startup probe failures</p>
+<p><strong>Diagnosis</strong>:
+```bash</p>
+<h1 id="check-pod-events">Check pod events<a class="headerlink" href="#check-pod-events" title="Permanent link">&para;</a></h1>
+<p>oc describe pod <pod-name> -n self-healing-platform | grep -A 10 "Events:"</p>
+<h1 id="check-if-health-endpoint-is-responsive">Check if health endpoint is responsive<a class="headerlink" href="#check-if-health-endpoint-is-responsive" title="Permanent link">&para;</a></h1>
+<p>oc exec <pod-name> -- curl -v http://localhost:8080/health
+```</p>
+<p><strong>Resolution</strong>:
+- Verify application actually starts (check logs for startup errors)
+- Increase startup probe failureThreshold if needed (current: 30)
+- Check if liveness probe is interfering (unlikely with current config)</p>
+<hr />
+<h2 id="rollback-plan">Rollback Plan<a class="headerlink" href="#rollback-plan" title="Permanent link">&para;</a></h2>
+<p>If the fixes cause unexpected issues:</p>
+<h3 id="1-quick-rollback-via-git">1. Quick Rollback via Git<a class="headerlink" href="#1-quick-rollback-via-git" title="Permanent link">&para;</a></h3>
+<p>```bash
+cd /home/lab-user/openshift-aiops-platform</p>
+<h1 id="view-changes">View changes<a class="headerlink" href="#view-changes" title="Permanent link">&para;</a></h1>
+<p>git diff charts/hub/templates/</p>
+<h1 id="revert-specific-file">Revert specific file<a class="headerlink" href="#revert-specific-file" title="Permanent link">&para;</a></h1>
+<p>git checkout HEAD -- charts/hub/templates/coordination-engine-deployment.yaml
+git checkout HEAD -- charts/hub/templates/mcp-server-deployment.yaml
+git checkout HEAD -- charts/hub/templates/init-models-job.yaml
+git checkout HEAD -- charts/hub/templates/ai-ml-workbench.yaml</p>
+<h1 id="revert-all-changes">Revert all changes<a class="headerlink" href="#revert-all-changes" title="Permanent link">&para;</a></h1>
+<p>git checkout HEAD -- charts/hub/templates/
+```</p>
+<h3 id="2-redeploy-previous-configuration">2. Redeploy Previous Configuration<a class="headerlink" href="#2-redeploy-previous-configuration" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="via-helm">Via Helm<a class="headerlink" href="#via-helm" title="Permanent link">&para;</a></h1>
+<p>helm upgrade self-healing-platform charts/hub/ \
+  --namespace self-healing-platform \
+  --reuse-values</p>
+<h1 id="via-argocd">Via ArgoCD<a class="headerlink" href="#via-argocd" title="Permanent link">&para;</a></h1>
+<p>git push</p>
+<h1 id="argocd-will-sync-reverted-changes">ArgoCD will sync reverted changes<a class="headerlink" href="#argocd-will-sync-reverted-changes" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h3 id="3-verify-rollback">3. Verify Rollback<a class="headerlink" href="#3-verify-rollback" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="ensure-pods-are-running">Ensure pods are running<a class="headerlink" href="#ensure-pods-are-running" title="Permanent link">&para;</a></h1>
+<p>oc get pods -n self-healing-platform</p>
+<h1 id="verify-no-init-containers-present">Verify no init containers present<a class="headerlink" href="#verify-no-init-containers-present" title="Permanent link">&para;</a></h1>
+<p>oc get pods -n self-healing-platform -o yaml | grep -c "initContainers:"</p>
+<h1 id="should-return-0-or-original-count">Should return 0 (or original count)<a class="headerlink" href="#should-return-0-or-original-count" title="Permanent link">&para;</a></h1>
+<p>```</p>
+<h3 id="4-if-cluster-becomes-unresponsive">4. If Cluster Becomes Unresponsive<a class="headerlink" href="#4-if-cluster-becomes-unresponsive" title="Permanent link">&para;</a></h3>
+<p>```bash</p>
+<h1 id="use-existing-cleanup-playbook">Use existing cleanup playbook<a class="headerlink" href="#use-existing-cleanup-playbook" title="Permanent link">&para;</a></h1>
+<p>cd /home/lab-user/openshift-aiops-platform
+ansible-playbook ansible/playbooks/cleanup_environment.yml</p>
+<h1 id="redeploy-from-scratch">Redeploy from scratch<a class="headerlink" href="#redeploy-from-scratch" title="Permanent link">&para;</a></h1>
+<p>./scripts/deploy-with-prereqs.sh
+```</p>
+<hr />
+<h2 id="files-modified">Files Modified<a class="headerlink" href="#files-modified" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts/diagnose-cluster-restart.sh</code></td>
+<td>Diagnostic script</td>
+<td><strong>NEW</strong> - Comprehensive restart monitoring</td>
+</tr>
+<tr>
+<td><code>charts/hub/templates/coordination-engine-deployment.yaml</code></td>
+<td>Coordination Engine</td>
+<td>Init containers (Prometheus, ArgoCD), startup probe</td>
+</tr>
+<tr>
+<td><code>charts/hub/templates/mcp-server-deployment.yaml</code></td>
+<td>MCP Server</td>
+<td>Init containers (Coord Engine, Prometheus), startup probe</td>
+</tr>
+<tr>
+<td><code>charts/hub/templates/init-models-job.yaml</code></td>
+<td>Model Storage Init</td>
+<td>Init container (PVC wait), retry logic, increased backoffLimit</td>
+</tr>
+<tr>
+<td><code>charts/hub/templates/ai-ml-workbench.yaml</code></td>
+<td>Jupyter Workbench</td>
+<td>Storage verification, startup probe</td>
+</tr>
+<tr>
+<td><code>charts/hub/templates/model-serving.yaml</code></td>
+<td>InferenceServices</td>
+<td><strong>NO CHANGES</strong> - Already resilient</td>
+</tr>
+<tr>
+<td><code>docs/CLUSTER_RESTART_HEALTH.md</code></td>
+<td>Documentation</td>
+<td><strong>NEW</strong> - This file</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<h3 id="immediate-actions">Immediate Actions<a class="headerlink" href="#immediate-actions" title="Permanent link">&para;</a></h3>
+<ol>
+<li>✅ Review this documentation</li>
+<li>✅ Run diagnostic script before next cluster restart</li>
+<li>✅ Deploy fixes to development/staging environment</li>
+<li>✅ Test cluster restart in non-production environment</li>
+<li>✅ Validate all success criteria met</li>
+</ol>
+<h3 id="post-validation">Post-Validation<a class="headerlink" href="#post-validation" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Deploy to production during maintenance window</li>
+<li>Monitor first production cluster restart closely</li>
+<li>Run diagnostic script to capture actual behavior</li>
+<li>Fine-tune probe timings if needed based on real data</li>
+</ol>
+<h3 id="optional-enhancements-phase-3">Optional Enhancements (Phase 3)<a class="headerlink" href="#optional-enhancements-phase-3" title="Permanent link">&para;</a></h3>
+<p>If manual monitoring is insufficient or cluster restarts are frequent:</p>
+<ol>
+<li><strong>Automated Recovery Pipeline</strong>:</li>
+<li>Create Tekton pipeline: <code>tekton/pipelines/post-restart-recovery-pipeline.yaml</code></li>
+<li>Tasks: verify dependencies, restart failed jobs, reconcile InferenceServices</li>
+<li>
+<p>EventListener trigger for automated execution</p>
+</li>
+<li>
+<p><strong>Prometheus Alerting</strong>:</p>
+</li>
+<li>Alert on prolonged Init state</li>
+<li>Alert on startup probe failures</li>
+<li>
+<p>Alert on PVC binding delays</p>
+</li>
+<li>
+<p><strong>Dashboard Integration</strong>:</p>
+</li>
+<li>Grafana dashboard showing startup timeline</li>
+<li>Component dependency graph</li>
+<li>Historical restart performance</li>
+</ol>
+<hr />
+<h2 id="architecture-decision-records">Architecture Decision Records<a class="headerlink" href="#architecture-decision-records" title="Permanent link">&para;</a></h2>
+<p>The following ADRs document the architectural decisions made in this implementation:</p>
+<ul>
+<li><strong>ADR-XXX</strong>: Use Init Containers for Cross-Namespace Dependency Management</li>
+<li><strong>ADR-XXX</strong>: Implement Startup Probes with 5-Minute Windows</li>
+<li><strong>ADR-XXX</strong>: Exponential Backoff for Storage-Dependent Operations</li>
+<li><strong>ADR-XXX</strong>: Diagnostic-First Approach to Cluster Health Issues</li>
+</ul>
+<p><em>(Create these ADRs following your organization's ADR template)</em></p>
+<hr />
+<h2 id="support-and-feedback">Support and Feedback<a class="headerlink" href="#support-and-feedback" title="Permanent link">&para;</a></h2>
+<p>For questions or issues related to cluster restart health:</p>
+<ol>
+<li><strong>Review diagnostic report</strong> first: <code>/tmp/cluster-restart-diagnostics/diagnostic-report-*.md</code></li>
+<li><strong>Check troubleshooting section</strong> in this document</li>
+<li><strong>Examine pod logs</strong>: <code>oc logs &lt;pod&gt; -c &lt;container&gt; -n self-healing-platform</code></li>
+<li><strong>Review events</strong>: <code>oc get events -n self-healing-platform --sort-by='.lastTimestamp'</code></li>
+</ol>
+<hr />
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/workloads/pods/init-containers/">Kubernetes Init Containers</a></li>
+<li><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-startup-probes">Kubernetes Startup Probes</a></li>
+<li><a href="https://docs.openshift.com/container-platform/4.18/storage/index.html">OpenShift Storage Documentation</a></li>
+<li><a href="https://kserve.github.io/website/latest/reference/api/">KServe InferenceService API</a></li>
+<li><a href="https://helm.sh/docs/chart_best_practices/">Helm Chart Best Practices</a></li>
+</ul>
+<hr />
+<p><strong>Document Version</strong>: 1.0
+<strong>Last Updated</strong>: 2026-01-22
+<strong>Author</strong>: Claude Code (OpenShift AI Ops Platform Team)</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 22, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 22, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>
