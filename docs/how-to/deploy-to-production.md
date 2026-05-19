@@ -6,9 +6,9 @@ This guide provides production-specific deployment procedures for the OpenShift 
 
 Before deploying to production, ensure you've:
 
-✅ **Tested on non-production environments** (development, staging)  
-✅ **Reviewed all ADRs** in [docs/adrs/](../adrs/README.md)  
-✅ **Completed deployment readiness checklist** (see below)  
+✅ **Tested on non-production environments** (development, staging)
+✅ **Reviewed all ADRs** in [docs/adrs/](../adrs/README.md)
+✅ **Completed deployment readiness checklist** (see below)
 ✅ **Obtained necessary approvals** from security, operations, and stakeholders
 
 ## Production Readiness Checklist

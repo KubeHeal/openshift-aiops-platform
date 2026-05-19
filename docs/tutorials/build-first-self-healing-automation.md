@@ -11,11 +11,11 @@ description: A hands-on tutorial to create an end-to-end self-healing workflow t
 
 By the end of this tutorial, you will have created a complete self-healing automation that:
 
-✅ **Detects** high memory usage anomalies using ML  
-✅ **Alerts** the coordination engine when anomalies occur  
-✅ **Diagnoses** the root cause (memory leak, traffic spike, resource limits)  
-✅ **Remediates** automatically (restart pod, scale up, adjust limits)  
-✅ **Monitors** remediation effectiveness and learns from outcomes  
+✅ **Detects** high memory usage anomalies using ML
+✅ **Alerts** the coordination engine when anomalies occur
+✅ **Diagnoses** the root cause (memory leak, traffic spike, resource limits)
+✅ **Remediates** automatically (restart pod, scale up, adjust limits)
+✅ **Monitors** remediation effectiveness and learns from outcomes
 
 ## What You'll Learn
 
@@ -86,18 +86,18 @@ data:
     coordination_engine:
       url: "http://coordination-engine.self-healing-platform.svc:8080"
       timeout: 30s
-    
+
     alert_rules:
       - name: high_memory_usage
         threshold: 0.85
         severity: warning
         remediation_priority: medium
-      
+
       - name: critical_memory_usage
         threshold: 0.95
         severity: critical
         remediation_priority: high
-    
+
     safety:
       max_remediations_per_hour: 10
       cooldown_period: 300s  # 5 minutes between remediations
@@ -225,23 +225,23 @@ def detect_anomalies():
     Runs every 60 seconds.
     """
     prom = PrometheusConnect(url=PROMETHEUS_URL, disable_ssl=True)
-    
+
     while True:
         try:
             # Query current memory usage
             query = 'sum(container_memory_usage_bytes{namespace="self-healing-platform"}) by (pod) / sum(container_spec_memory_limit_bytes{namespace="self-healing-platform"}) by (pod)'
             result = prom.custom_query(query=query)
-            
+
             if not result:
                 logger.warning("No metrics returned from Prometheus")
                 time.sleep(60)
                 continue
-            
+
             # Process each pod
             for metric in result:
                 pod = metric['metric']['pod']
                 memory_ratio = float(metric['value'][1])
-                
+
                 # Prepare features for model
                 now = datetime.now()
                 features = [
@@ -251,21 +251,21 @@ def detect_anomalies():
                     memory_ratio,           # Rolling mean (simplified)
                     0.05                    # Rolling std (simplified)
                 ]
-                
+
                 # Call ML model
                 response = requests.post(
                     MODEL_URL,
                     json={"instances": [features]},
                     timeout=10
                 )
-                
+
                 if response.status_code == 200:
                     prediction = response.json()['predictions'][0]
-                    
+
                     # If anomaly detected (-1), send alert
                     if prediction == -1:
                         logger.info(f"🔴 ANOMALY DETECTED: {pod} memory={memory_ratio:.2%}")
-                        
+
                         # Determine severity based on memory usage
                         if memory_ratio > 0.95:
                             severity = "critical"
@@ -273,7 +273,7 @@ def detect_anomalies():
                             severity = "warning"
                         else:
                             severity = "info"
-                        
+
                         # Send alert to webhook
                         alert = {
                             "alert_name": "high_memory_usage",
@@ -290,26 +290,26 @@ def detect_anomalies():
                                 "prediction": "anomaly"
                             }
                         }
-                        
+
                         webhook_response = requests.post(
                             WEBHOOK_URL,
                             json=alert,
                             timeout=10
                         )
-                        
+
                         if webhook_response.status_code == 200:
                             logger.info(f"✅ Alert sent to coordination engine")
                         else:
                             logger.error(f"❌ Failed to send alert: {webhook_response.status_code}")
                     else:
                         logger.debug(f"🟢 {pod} memory normal: {memory_ratio:.2%}")
-                
+
                 else:
                     logger.error(f"❌ Model inference failed: {response.status_code}")
-        
+
         except Exception as e:
             logger.error(f"❌ Detection error: {e}")
-        
+
         # Wait before next check
         time.sleep(60)
 
@@ -325,23 +325,23 @@ detect_anomalies()
 # Cell 3: Test detection (single run)
 def test_detection():
     prom = PrometheusConnect(url=PROMETHEUS_URL, disable_ssl=True)
-    
+
     # Query current memory usage
     query = 'sum(container_memory_usage_bytes{namespace="self-healing-platform"}) by (pod) / sum(container_spec_memory_limit_bytes{namespace="self-healing-platform"}) by (pod)'
     result = prom.custom_query(query=query)
-    
+
     print(f"📊 Checking {len(result)} pods...")
-    
+
     for metric in result:
         pod = metric['metric']['pod']
         memory_ratio = float(metric['value'][1])
-        
+
         now = datetime.now()
         features = [memory_ratio, now.hour, now.weekday(), memory_ratio, 0.05]
-        
+
         # Call ML model
         response = requests.post(MODEL_URL, json={"instances": [features]}, timeout=10)
-        
+
         if response.status_code == 200:
             prediction = response.json()['predictions'][0]
             status = "🔴 ANOMALY" if prediction == -1 else "🟢 Normal"
@@ -373,36 +373,36 @@ data:
           severity: warning
           min_occurrences: 2
           time_window: 300s  # 5 minutes
-        
+
         action:
           type: pod_restart
           target:
             namespace: "{{ .labels.namespace }}"
             pod: "{{ .labels.pod }}"
-          
+
         validation:
           - type: memory_check
             threshold: 0.85
             message: "Memory usage must be > 85% to restart"
-        
+
         conflict_resolution:
           priority: medium
           conflicts_with:
             - pod_scale
             - node_maintenance
           resolution_strategy: queue  # Queue if conflicting action in progress
-        
+
         rollback:
           enabled: true
           on_failure: true
           max_attempts: 3
-      
+
       - name: scale_up_on_critical_memory
         trigger:
           alert: critical_memory_usage
           severity: critical
           min_occurrences: 1
-        
+
         action:
           type: deployment_scale
           target:
@@ -411,31 +411,31 @@ data:
           parameters:
             scale_factor: 1.5  # Increase replicas by 50%
             max_replicas: 10
-        
+
         validation:
           - type: resource_availability
             required_cpu: 2
             required_memory: 4Gi
-        
+
         conflict_resolution:
           priority: high
           conflicts_with:
             - deployment_update
             - node_drain
           resolution_strategy: preempt  # Cancel lower-priority actions
-        
+
         rollback:
           enabled: true
           on_failure: true
           rollback_delay: 300s  # Wait 5 minutes before rollback
-      
+
       - name: adjust_memory_limits
         trigger:
           alert: high_memory_usage
           severity: warning
           min_occurrences: 5
           time_window: 3600s  # 1 hour
-        
+
         action:
           type: resource_limit_update
           target:
@@ -444,18 +444,18 @@ data:
           parameters:
             memory_limit_increase: "256Mi"
             max_memory_limit: "2Gi"
-        
+
         validation:
           - type: quota_check
             namespace: "{{ .labels.namespace }}"
-        
+
         conflict_resolution:
           priority: low
           conflicts_with:
             - pod_restart
             - deployment_scale
           resolution_strategy: defer  # Wait for higher-priority actions
-        
+
         rollback:
           enabled: true
           on_failure: true
@@ -616,21 +616,21 @@ def track_remediation_outcome(action_id, pod_name):
     Monitor if remediation actually solved the problem.
     """
     prom = PrometheusConnect(url=PROMETHEUS_URL, disable_ssl=True)
-    
+
     print(f"📊 Tracking outcome for action {action_id}...")
-    
+
     # Wait for pod to restart
     time.sleep(30)
-    
+
     # Query memory usage after remediation
     query = f'sum(container_memory_usage_bytes{{namespace="self-healing-platform", pod=~"{pod_name}.*"}}) by (pod) / sum(container_spec_memory_limit_bytes{{namespace="self-healing-platform", pod=~"{pod_name}.*"}}) by (pod)'
-    
+
     result = prom.custom_query(query=query)
-    
+
     if result:
         memory_after = float(result[0]['value'][1])
         print(f"Memory usage after remediation: {memory_after:.2%}")
-        
+
         # Report outcome to coordination engine
         outcome = {
             "action_id": action_id,
@@ -639,13 +639,13 @@ def track_remediation_outcome(action_id, pod_name):
             "memory_after": memory_after,
             "timestamp": datetime.now().isoformat()
         }
-        
+
         response = requests.post(
             "http://coordination-engine.self-healing-platform.svc:8080/api/v1/outcomes",
             json=outcome,
             timeout=10
         )
-        
+
         if response.status_code == 200:
             print("✅ Outcome reported to coordination engine")
         else:
@@ -669,11 +669,11 @@ def update_model_with_feedback(outcomes):
     """
     import joblib
     from sklearn.ensemble import IsolationForest
-    
+
     # Load current model
     model_path = "/opt/app-root/src/models/my-first-model/model.joblib"
     model = joblib.load(model_path)
-    
+
     # Collect feedback data
     feedback_data = []
     for outcome in outcomes:
@@ -691,17 +691,17 @@ def update_model_with_feedback(outcomes):
                 'label': 1,   # Normal
                 'weight': 1.5  # Higher weight to adjust model
             })
-    
+
     # Retrain model with feedback (simplified)
     print(f"📈 Incorporating {len(feedback_data)} feedback samples into model")
-    
+
     # In production, you'd retrain with combined original + feedback data
     # For now, we'll just log the feedback
     print("✅ Feedback incorporated (model updated)")
-    
+
     # Save updated model
     joblib.dump(model, model_path)
-    
+
     return model
 
 # Example feedback
@@ -731,20 +731,20 @@ data:
       max_actions_per_hour: 20
       max_actions_per_namespace: 10
       cooldown_between_actions: 120s  # 2 minutes
-    
+
     per_action_type:
       pod_restart:
         max_per_hour: 10
         cooldown: 300s  # 5 minutes
-      
+
       deployment_scale:
         max_per_hour: 5
         cooldown: 600s  # 10 minutes
-      
+
       node_restart:
         max_per_day: 2
         require_approval: true
-    
+
     emergency_brake:
       enabled: true
       failure_threshold: 5  # Stop if 5 consecutive failures
@@ -772,15 +772,15 @@ data:
       - machineconfig_update
       - namespace_delete
       - etcd_compaction
-    
+
     approvers:
       - sre-team@example.com
       - platform-admin@example.com
-    
+
     approval_timeout: 3600s  # 1 hour
-    
+
     auto_reject_after: 7200s  # 2 hours
-    
+
     notification_channels:
       - type: slack
         webhook: "https://hooks.slack.com/services/XXX"
@@ -802,22 +802,22 @@ oc apply -f /tmp/approval-workflow.yaml
 # Cell 7: Query remediation metrics from Prometheus
 def get_remediation_metrics():
     prom = PrometheusConnect(url=PROMETHEUS_URL, disable_ssl=True)
-    
+
     # Total remediations
     total = prom.custom_query(
         query='sum(increase(self_healing_remediations_total[1h]))'
     )
-    
+
     # Success rate
     success = prom.custom_query(
         query='sum(increase(self_healing_remediations_total{outcome="success"}[1h])) / sum(increase(self_healing_remediations_total[1h]))'
     )
-    
+
     # Average execution time
     avg_time = prom.custom_query(
         query='avg(self_healing_remediation_duration_seconds)'
     )
-    
+
     print("📊 Remediation Metrics (Last Hour)")
     print(f"Total remediations: {total[0]['value'][1] if total else 0}")
     print(f"Success rate: {float(success[0]['value'][1]) * 100 if success else 0:.2f}%")
@@ -870,12 +870,12 @@ Create a dashboard to visualize:
 
 In this tutorial, you built a complete self-healing automation:
 
-✅ **Integrated ML models** with the coordination engine  
-✅ **Created remediation rules** with conflict resolution  
-✅ **Implemented safety guardrails** (rate limiting, approvals)  
-✅ **Built feedback loops** to improve model accuracy  
-✅ **Monitored automation** effectiveness with metrics  
-✅ **Tested end-to-end** with a memory stress scenario  
+✅ **Integrated ML models** with the coordination engine
+✅ **Created remediation rules** with conflict resolution
+✅ **Implemented safety guardrails** (rate limiting, approvals)
+✅ **Built feedback loops** to improve model accuracy
+✅ **Monitored automation** effectiveness with metrics
+✅ **Tested end-to-end** with a memory stress scenario
 
 ## Next Steps
 
@@ -992,5 +992,5 @@ oc delete configmap anomaly-webhook-config remediation-rules rate-limiter-config
 
 ---
 
-**Tutorial last updated**: 2026-05-18  
+**Tutorial last updated**: 2026-05-18
 **Tested on**: OpenShift 4.20, RHOAI 2.22.2, Coordination Engine v1.2.0

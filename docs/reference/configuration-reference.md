@@ -469,7 +469,7 @@ monitoring:
 
 ### Notebook Validation Configuration
 
-**References**: ADR-029, ADR-030  
+**References**: ADR-029, ADR-030
 **Documentation**: [docs/NOTEBOOK-VALIDATION-ARGOCD.md](../NOTEBOOK-VALIDATION-ARGOCD.md)
 
 | Parameter | Type | Default | Description |

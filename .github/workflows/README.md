@@ -243,5 +243,5 @@ When adding new documentation workflows:
 
 ---
 
-**Last Updated**: 2026-05-19  
+**Last Updated**: 2026-05-19
 **Maintained By**: Platform Engineering Team

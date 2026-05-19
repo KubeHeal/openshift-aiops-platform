@@ -40,7 +40,7 @@ You can deploy this platform on **Red Hat Product Demo System (RHPDS)** clusters
 - Pre-configured and ready for platform deployment
 - Ideal for demos, POCs, and exploration
 
-**Deployment Time:** ~1 hour  
+**Deployment Time:** ~1 hour
 **Topology:** SNO (Single Node OpenShift)
 
 ### Option 2: HA Cluster with NVIDIA GPUs on AWS
@@ -53,8 +53,8 @@ You can deploy this platform on **Red Hat Product Demo System (RHPDS)** clusters
 - NVIDIA L4 Tensor Core GPUs
 - Full HA deployment with multiple nodes
 
-**Deployment Time:** ~1 hour, 40 minutes  
-**Topology:** HA (HighlyAvailable)  
+**Deployment Time:** ~1 hour, 40 minutes
+**Topology:** HA (HighlyAvailable)
 **Note:** OCP 4.21 is the current recommended version. Upgrade from 4.18 to 4.19+ recommended — 4.18 is maintenance-only.
 
 **Auto-Stop:** 6 hours | **Auto-Destroy:** 48 hours

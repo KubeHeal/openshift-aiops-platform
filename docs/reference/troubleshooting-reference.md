@@ -502,6 +502,6 @@ oc get cephcluster -n openshift-storage -o jsonpath='{.items[0].status.ceph.heal
 
 ---
 
-**Last Updated**: 2026-05-19  
-**Next Review**: 2026-06-19  
+**Last Updated**: 2026-05-19
+**Next Review**: 2026-06-19
 **Maintained By**: Platform Engineering Team

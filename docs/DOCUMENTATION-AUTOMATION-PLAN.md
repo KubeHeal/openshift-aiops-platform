@@ -1,7 +1,7 @@
 # Documentation Automation and Expansion Plan
 
-**Date**: 2026-05-18  
-**Status**: Proposed  
+**Date**: 2026-05-18
+**Status**: Proposed
 **Related**: Documentation Audit Phases 4-5
 
 ---
@@ -766,20 +766,20 @@ grep -r "OPERATOR_VERSIONS.md" --include="*.md" docs/
 nav:
   - Home: index.md
   - Quick Start: quick-start.md
-  
+
   - How-To Guides:
       - Complete Deployment: how-to/complete-deployment-guide.md
       - Quick Deployment: how-to/quick-deployment.md
       - Configure Values Files: how-to/configure-values-files.md
       - Deploy on SNO: how-to/deploy-on-sno.md
       # ... existing how-to guides
-  
+
   - Reference:
       - API Documentation: reference/api-documentation.md
       - Configuration Reference: reference/configuration-reference.md
       - Operator Versions: reference/operator-versions.md
       - Troubleshooting Reference: reference/troubleshooting-reference.md
-  
+
   - Explanation:
       - Architecture Overview: explanation/architecture-overview.md
       - AI Agent Development: explanation/ai-agent-development-guide.md
@@ -836,13 +836,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check internal links
         uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:
           config-file: '.github/markdown-link-check-config.json'
           use-quiet-mode: 'yes'
-      
+
       - name: Report broken links
         if: failure()
         uses: actions/github-script@v7
@@ -904,32 +904,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check OpenShift version consistency
         run: |
           # Extract version from OPERATOR_VERSIONS.md (source of truth)
           EXPECTED_VERSIONS=$(grep "| 4\." docs/reference/operator-versions.md | awk -F'|' '{print $2}' | tr -d ' ')
-          
+
           # Check for outdated 4.18 references (should have maintenance-only note)
           OUTDATED=$(grep -rn "4\.18" docs/ README.md DEPLOYMENT*.md | grep -v "maintenance-only" | grep -v "4.19-4.21" || true)
-          
+
           if [ ! -z "$OUTDATED" ]; then
             echo "❌ Found outdated 4.18 references without maintenance-only note:"
             echo "$OUTDATED"
             exit 1
           fi
-          
+
           echo "✅ Version consistency check passed"
-      
+
       - name: Check operator version consistency
         run: |
           # Extract operator versions from docs/reference/operator-versions.md
           GITOPS_VERSION=$(grep "GitOps" docs/reference/operator-versions.md | grep "4.20" | awk -F'|' '{print $7}' | tr -d ' ')
           PIPELINES_VERSION=$(grep "Pipelines" docs/reference/operator-versions.md | grep "4.20" | awk -F'|' '{print $6}' | tr -d ' ')
-          
+
           # Check deployment guides for consistency
           GUIDE_GITOPS=$(grep "gitops" docs/guides/NEW-CLUSTER-DEPLOYMENT.md | grep -o "v[0-9]*\.[0-9]*\.[0-9]*" || echo "not-found")
-          
+
           if [ "$GUIDE_GITOPS" != "$GITOPS_VERSION" ]; then
             echo "⚠️  GitOps version mismatch: Guide has $GUIDE_GITOPS, source of truth is $GITOPS_VERSION"
           fi
@@ -961,12 +961,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check deprecated ADRs
         run: |
           # Find ADRs with DEPRECATED status in frontmatter
           DEPRECATED_ADRS=$(grep -l "Status.*DEPRECATED" docs/adrs/*.md | xargs -I {} basename {})
-          
+
           # Check if they're marked in README.md
           for adr in $DEPRECATED_ADRS; do
             if ! grep -q "$adr.*DEPRECATED" docs/adrs/README.md; then
@@ -974,14 +974,14 @@ jobs:
               exit 1
             fi
           done
-          
+
           echo "✅ All deprecated ADRs are properly marked in index"
-      
+
       - name: Check superseded ADRs
         run: |
           # Find ADRs with SUPERSEDED status
           SUPERSEDED_ADRS=$(grep -l "Status.*SUPERSEDED" docs/adrs/*.md | xargs -I {} basename {})
-          
+
           # Check if superseding ADR is referenced
           for adr in $SUPERSEDED_ADRS; do
             if ! grep -q "Superseded by" docs/adrs/$adr; then
@@ -1014,7 +1014,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Full git history
-      
+
       - name: Find stale docs
         run: |
           # Find markdown files not updated in 180 days
@@ -1026,11 +1026,11 @@ jobs:
               echo "$1 ($DAYS_OLD days old)"
             fi
           ' _ {} \;)
-          
+
           if [ ! -z "$STALE_DOCS" ]; then
             echo "📅 Stale documentation (180+ days):"
             echo "$STALE_DOCS"
-            
+
             # Create issue
             gh issue create \
               --title "📅 Stale documentation detected" \
@@ -1066,14 +1066,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Generate configuration reference
         run: |
           # Extract comments from values-hub.yaml.example
           python3 scripts/generate-config-docs.py \
             --input values-hub.yaml.example \
             --output docs/reference/configuration-reference.md
-      
+
       - name: Create pull request if changes
         uses: peter-evans/create-pull-request@v6
         with:
@@ -1098,7 +1098,7 @@ def extract_comments(yaml_file):
     """Extract inline comments from YAML file."""
     with open(yaml_file, 'r') as f:
         lines = f.readlines()
-    
+
     config_docs = []
     for line in lines:
         # Match: key: value  # Comment
@@ -1110,7 +1110,7 @@ def extract_comments(yaml_file):
                 'default': default,
                 'description': comment.strip()
             })
-    
+
     return config_docs
 
 def generate_markdown(config_docs, output_file):
@@ -1120,7 +1120,7 @@ def generate_markdown(config_docs, output_file):
         f.write('Auto-generated from `values-hub.yaml.example`.\n\n')
         f.write('| Configuration Key | Default Value | Description |\n')
         f.write('|-------------------|---------------|-------------|\n')
-        
+
         for config in config_docs:
             f.write(f"| `{config['key']}` | `{config['default']}` | {config['description']} |\n")
 
@@ -1129,7 +1129,7 @@ if __name__ == '__main__':
     parser.add_argument('--input', required=True, help='Input YAML file')
     parser.add_argument('--output', required=True, help='Output markdown file')
     args = parser.parse_args()
-    
+
     config_docs = extract_comments(args.input)
     generate_markdown(config_docs, args.output)
     print(f'✅ Generated {args.output} with {len(config_docs)} configuration options')

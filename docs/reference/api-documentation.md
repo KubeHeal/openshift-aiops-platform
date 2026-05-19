@@ -428,7 +428,7 @@ oc get inferenceservice anomaly-detector -n self-healing-platform
 
 # Expected output:
 # NAME                URL                                                  READY   PREV   LATEST
-# anomaly-detector    https://anomaly-detector-...apps.cluster.com        True    100           
+# anomaly-detector    https://anomaly-detector-...apps.cluster.com        True    100
 
 # Detailed status
 oc describe inferenceservice anomaly-detector -n self-healing-platform
@@ -880,7 +880,7 @@ from datetime import datetime
 class CoordinationEngineClient:
     def __init__(self, base_url='http://coordination-engine.self-healing-platform.svc.cluster.local:8080'):
         self.base_url = base_url
-    
+
     def submit_anomaly(self, anomaly):
         """Submit anomaly for remediation."""
         response = requests.post(
@@ -890,7 +890,7 @@ class CoordinationEngineClient:
         )
         response.raise_for_status()
         return response.json()
-    
+
     def get_anomaly_status(self, anomaly_id):
         """Get anomaly status."""
         response = requests.get(

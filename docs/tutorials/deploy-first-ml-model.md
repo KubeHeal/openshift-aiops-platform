@@ -11,11 +11,11 @@ description: A hands-on tutorial to train an anomaly detection model and deploy 
 
 By the end of this tutorial, you will have:
 
-✅ Trained a simple anomaly detection model using real cluster metrics  
-✅ Saved the model to persistent storage  
-✅ Deployed the model as a KServe InferenceService  
-✅ Made predictions via HTTP REST API  
-✅ Monitored model performance metrics  
+✅ Trained a simple anomaly detection model using real cluster metrics
+✅ Saved the model to persistent storage
+✅ Deployed the model as a KServe InferenceService
+✅ Made predictions via HTTP REST API
+✅ Monitored model performance metrics
 
 ## What You'll Learn
 
@@ -351,7 +351,7 @@ oc get inferenceservice my-first-model -n self-healing-platform -w
 **Wait for**:
 ```
 NAME              URL                                                 READY   PREV   LATEST   ...
-my-first-model    http://my-first-model.self-healing-platform...     True    100                
+my-first-model    http://my-first-model.self-healing-platform...     True    100
 ```
 
 **Press Ctrl+C** when `READY` shows `True`.
@@ -416,7 +416,7 @@ if response.status_code == 200:
     predictions = response.json()
     print("✅ Predictions received:")
     print(json.dumps(predictions, indent=2))
-    
+
     # Interpret results
     for i, pred in enumerate(predictions['predictions']):
         label = "🔴 ANOMALY" if pred == -1 else "🟢 Normal"
@@ -470,13 +470,13 @@ else:
 
 In this tutorial, you:
 
-✅ **Collected real data** from Prometheus  
-✅ **Engineered features** for time-series anomaly detection  
-✅ **Trained an Isolation Forest** model on cluster CPU metrics  
-✅ **Serialized and stored** the model  
-✅ **Deployed to KServe** as a scalable inference service  
-✅ **Made predictions** via HTTP REST API  
-✅ **Monitored** model deployment and logs  
+✅ **Collected real data** from Prometheus
+✅ **Engineered features** for time-series anomaly detection
+✅ **Trained an Isolation Forest** model on cluster CPU metrics
+✅ **Serialized and stored** the model
+✅ **Deployed to KServe** as a scalable inference service
+✅ **Made predictions** via HTTP REST API
+✅ **Monitored** model deployment and logs
 
 ## Next Steps
 
@@ -582,5 +582,5 @@ oc delete inferenceservice my-first-model -n self-healing-platform
 
 ---
 
-**Tutorial last updated**: 2026-05-18  
+**Tutorial last updated**: 2026-05-18
 **Tested on**: OpenShift 4.20, RHOAI 2.22.2, KServe 1.36.1

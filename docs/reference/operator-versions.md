@@ -10,9 +10,9 @@ This document tracks the required versions of all operators for the OpenShift AI
 
 ### Jupyter Notebook Validator Operator
 
-**Required Version**: v1.0.8  
-**Channel**: stable  
-**Source**: community-operators  
+**Required Version**: v1.0.8
+**Channel**: stable
+**Source**: community-operators
 **Install Mode**: AllNamespaces (targetNamespaces: [])
 
 **Why v1.0.8?**
@@ -66,16 +66,16 @@ notebooks:
 - Build Type: Docker (Git source)
 - Pre-installs: Papermill, boto3, kubernetes, prometheus-api-client
 
-**Related Issues**: #66  
+**Related Issues**: #66
 **Related ADRs**: ADR-029, ADR-054
 
 ---
 
 ### External Secrets Operator (Red Hat)
 
-**Required Version**: v1.1.0+  
-**Channel**: stable-v1  
-**Source**: redhat-operators  
+**Required Version**: v1.1.0+
+**Channel**: stable-v1
+**Source**: redhat-operators
 **Install Mode**: AllNamespaces
 
 **Why Red Hat Version?**
@@ -92,16 +92,16 @@ eso:
   source: redhat-operators
 ```
 
-**Related Issues**: #72, #84  
+**Related Issues**: #72, #84
 **Related ADRs**: ADR-026 (MANDATORY)
 
 ---
 
 ### Red Hat OpenShift AI
 
-**Required Version**: v2.22.2+  
-**Channel**: stable  
-**Source**: redhat-operators  
+**Required Version**: v2.22.2+
+**Channel**: stable
+**Source**: redhat-operators
 **Install Mode**: AllNamespaces
 
 **Configuration** (`values-hub.yaml`):
@@ -125,9 +125,9 @@ openshift-ai:
 
 ### Red Hat OpenShift Pipelines
 
-**Required Version**: v1.22.0+  
-**Channel**: latest  
-**Source**: redhat-operators  
+**Required Version**: v1.22.0+
+**Channel**: latest
+**Source**: redhat-operators
 **Install Mode**: AllNamespaces
 
 **Configuration** (`values-hub.yaml`):
@@ -150,9 +150,9 @@ openshift-pipelines:
 
 ### Red Hat OpenShift GitOps
 
-**Required Version**: v1.20.3+  
-**Channel**: gitops-1.20  
-**Source**: redhat-operators  
+**Required Version**: v1.20.3+
+**Channel**: gitops-1.20
+**Source**: redhat-operators
 **Install Mode**: AllNamespaces
 
 **Configuration**: Deployed by Validated Patterns Operator
@@ -168,9 +168,9 @@ openshift-pipelines:
 
 ### Validated Patterns Operator
 
-**Required Version**: v0.0.72+  
-**Channel**: fast  
-**Source**: community-operators  
+**Required Version**: v0.0.72+
+**Channel**: fast
+**Source**: community-operators
 **Install Mode**: AllNamespaces
 
 **Configuration**: Deployed via `make operator-deploy`
@@ -188,9 +188,9 @@ openshift-pipelines:
 
 ### NVIDIA GPU Operator
 
-**Required Version**: v24.9.2+  
-**Channel**: stable  
-**Source**: certified-operators  
+**Required Version**: v24.9.2+
+**Channel**: stable
+**Source**: certified-operators
 **Install Mode**: AllNamespaces
 
 **When Required**:
@@ -213,9 +213,9 @@ openshift-pipelines:
 
 ### OpenShift Data Foundation (ODF)
 
-**Required Version**: v4.20+ (matches OpenShift version)  
-**Channel**: stable-4.20  
-**Source**: redhat-operators  
+**Required Version**: v4.20+ (matches OpenShift version)
+**Channel**: stable-4.20
+**Source**: redhat-operators
 **Install Mode**: AllNamespaces
 
 **When Required**:
@@ -371,6 +371,6 @@ oc get csv -A --no-headers | grep -v Succeeded
 
 ---
 
-**Maintained By**: Platform Team  
-**Review Frequency**: After each OpenShift minor version release  
+**Maintained By**: Platform Team
+**Review Frequency**: After each OpenShift minor version release
 **Last Reviewer**: Architecture Team

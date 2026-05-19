@@ -225,7 +225,7 @@ Platform users are not limited to pre-deployed models. They can:
 
 ### 4. Secrets Management with External Secrets Operator
 
-**Problem**: 
+**Problem**:
 - Hardcoded secrets in Git are insecure
 - Manual secret creation is error-prone and not reproducible
 - Secret rotation requires manual intervention
@@ -276,10 +276,10 @@ Platform users are not limited to pre-deployed models. They can:
 
 #### Benefits
 
-✅ **No secrets in Git**: ExternalSecret CRs only contain references, not actual secrets  
-✅ **Automated rotation**: Secrets auto-update when backend changes  
-✅ **Centralized management**: One secret in backend, synced to multiple namespaces  
-✅ **Declarative**: Secret configuration as code (GitOps-compatible)  
+✅ **No secrets in Git**: ExternalSecret CRs only contain references, not actual secrets
+✅ **Automated rotation**: Secrets auto-update when backend changes
+✅ **Centralized management**: One secret in backend, synced to multiple namespaces
+✅ **Declarative**: Secret configuration as code (GitOps-compatible)
 ✅ **Extensible**: Supports Vault, AWS Secrets Manager, Azure Key Vault, etc.
 
 **⚠️ MANDATORY**: All deployments must use External Secrets Operator (ADR-026).
@@ -290,7 +290,7 @@ Platform users are not limited to pre-deployed models. They can:
 
 ### 5. Notebook-Based Development Workflow
 
-**Problem**: 
+**Problem**:
 - Data scientists need familiar tools (Jupyter notebooks)
 - Production requires automation and validation
 - Gap between development and deployment

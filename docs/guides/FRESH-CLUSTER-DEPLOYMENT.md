@@ -468,12 +468,12 @@ oc annotate application self-healing-platform -n self-healing-platform-hub \
    # Edit values-hub.yaml
    vi values-hub.yaml
    # Set: workbench.gpu.enabled: false
-   
+
    # Commit and push
    git add values-hub.yaml
    git commit -s -m "fix: Disable workbench GPU on SNO per ADR-057"
    git push origin main
-   
+
    # Trigger ArgoCD sync
    oc annotate application self-healing-platform -n self-healing-platform-hub \
      argocd.argoproj.io/refresh=hard --overwrite

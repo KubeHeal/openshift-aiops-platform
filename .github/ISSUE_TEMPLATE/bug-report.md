@@ -12,21 +12,21 @@ assignees: ''
 
 ## Environment
 
-- **OpenShift Version**: 
+- **OpenShift Version**:
 - **Platform**: [ ] AWS [ ] Azure [ ] GCP [ ] Bare Metal [ ] Other
 - **Cluster Topology**: [ ] SNO [ ] HA
 - **GPU Enabled**: [ ] Yes [ ] No
 - **Operator Version** (if applicable):
-  - Red Hat OpenShift AI: 
-  - GitOps: 
-  - Pipelines: 
-  - External Secrets: 
+  - Red Hat OpenShift AI:
+  - GitOps:
+  - Pipelines:
+  - External Secrets:
 
 ## Steps to Reproduce
 
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ## Expected Behavior
 
