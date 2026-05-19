@@ -57,14 +57,17 @@ jobs:
         run: |
           git add docs/README.md docs/DEPLOYMENT.md docs/CONTRIBUTING.md docs/CODE_OF_CONDUCT.md docs/AGENTS.md
 
+          # Create commit message with file list
+          CHANGED_FILES=$(git diff --cached --name-only | grep '^docs/' || echo '  (none)')
+
           git commit -m "docs: Auto-sync root files to docs/
 
-Automatically synced by .github/workflows/sync-docs.yml
+          Automatically synced by .github/workflows/sync-docs.yml
 
-Root files updated in this commit triggered automatic sync to docs/.
-This ensures GitHub Pages shows the latest content.
+          Root files updated in this commit triggered automatic sync to docs/.
+          This ensures GitHub Pages shows the latest content.
 
-Changed files:
-$(git diff --cached --name-only | grep '^docs/' || echo '  (none)')"
+          Changed files:
+          ${CHANGED_FILES}"
 
           git push
