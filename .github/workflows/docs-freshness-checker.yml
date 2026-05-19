@@ -1,0 +1,249 @@
+name: Documentation Freshness Checker
+
+on:
+  schedule:
+    # Run monthly on the 1st at 9 AM UTC
+    - cron: '0 9 1 * *'
+  workflow_dispatch:
+    inputs:
+      staleness_threshold_days:
+        description: 'Days threshold for stale documentation'
+        required: false
+        default: '180'
+        type: string
+
+jobs:
+  check-freshness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git log
+
+      - name: Check documentation staleness
+        id: check_staleness
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Checking documentation freshness..."
+
+          THRESHOLD_DAYS="${{ github.event.inputs.staleness_threshold_days || '180' }}"
+          THRESHOLD_SECONDS=$((THRESHOLD_DAYS * 86400))
+          NOW=$(date +%s)
+
+          stale_docs=()
+          very_stale_docs=()
+
+          # Function to get last modified date from git
+          get_last_modified() {
+            local file="$1"
+            git log -1 --format="%at" -- "$file" 2>/dev/null || echo "0"
+          }
+
+          # Check all markdown files in docs/
+          find docs -name "*.md" -type f | while read file; do
+            last_modified=$(get_last_modified "$file")
+
+            if [ "$last_modified" -eq 0 ]; then
+              echo "⚠️ $file - No git history (new file or untracked)"
+              continue
+            fi
+
+            age_seconds=$((NOW - last_modified))
+            age_days=$((age_seconds / 86400))
+
+            if [ $age_seconds -gt $THRESHOLD_SECONDS ]; then
+              if [ $age_days -gt 365 ]; then
+                echo "🚨 VERY STALE ($age_days days): $file"
+                very_stale_docs+=("$file ($age_days days)")
+              else
+                echo "⚠️ STALE ($age_days days): $file"
+                stale_docs+=("$file ($age_days days)")
+              fi
+            fi
+          done
+
+          # Generate report
+          {
+            echo "## 📅 Documentation Freshness Report"
+            echo ""
+            echo "**Threshold**: ${THRESHOLD_DAYS} days"
+            echo "**Date**: $(date -u +"%Y-%m-%d %H:%M UTC")"
+            echo ""
+
+            if [ ${#very_stale_docs[@]} -gt 0 ]; then
+              echo "### 🚨 Very Stale (>365 days)"
+              echo ""
+              printf '%s\n' "${very_stale_docs[@]}" | while read doc; do
+                echo "- $doc"
+              done
+              echo ""
+            fi
+
+            if [ ${#stale_docs[@]} -gt 0 ]; then
+              echo "### ⚠️ Stale (${THRESHOLD_DAYS}-365 days)"
+              echo ""
+              printf '%s\n' "${stale_docs[@]}" | while read doc; do
+                echo "- $doc"
+              done
+              echo ""
+            fi
+
+            if [ ${#stale_docs[@]} -eq 0 ] && [ ${#very_stale_docs[@]} -eq 0 ]; then
+              echo "✅ **All documentation is fresh!**"
+              echo ""
+            fi
+
+            echo "---"
+            echo ""
+            echo "**Recommendations**:"
+            echo "- Review stale documentation for accuracy"
+            echo "- Update or archive outdated content"
+            echo "- Consider adding 'Last Updated' dates to frequently changing docs"
+          } > freshness-report.md
+
+          cat freshness-report.md
+
+          # Set output for issue creation
+          if [ ${#stale_docs[@]} -gt 0 ] || [ ${#very_stale_docs[@]} -gt 0 ]; then
+            echo "has_stale_docs=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_stale_docs=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for documentation without last-updated metadata
+        run: |
+          #!/bin/bash
+
+          echo "🔍 Checking for documentation without 'Last Updated' metadata..."
+
+          missing_metadata=0
+
+          # Check key documentation files for Last Updated metadata
+          key_docs=(
+            "docs/reference/api-documentation.md"
+            "docs/reference/configuration-reference.md"
+            "docs/reference/troubleshooting-reference.md"
+            "docs/explanation/architecture-overview.md"
+            "README.md"
+            "CLAUDE.md"
+          )
+
+          for doc in "${key_docs[@]}"; do
+            if [ -f "$doc" ]; then
+              if ! grep -qi "last.updated\|last.review" "$doc"; then
+                echo "⚠️ $doc - Missing 'Last Updated' metadata"
+                missing_metadata=$((missing_metadata + 1))
+              fi
+            fi
+          done
+
+          if [ $missing_metadata -gt 0 ]; then
+            echo ""
+            echo "ℹ️ Consider adding 'Last Updated' metadata to key documentation files"
+            echo "   Example: **Last Updated**: $(date -u +"%Y-%m-%d")"
+          else
+            echo "✅ All key documentation files have 'Last Updated' metadata"
+          fi
+
+      - name: Generate freshness metrics
+        run: |
+          #!/bin/bash
+
+          echo "📊 Documentation Freshness Metrics"
+          echo "==================================="
+
+          total_docs=$(find docs -name "*.md" -type f | wc -l)
+          echo "Total documentation files: $total_docs"
+
+          # Count docs by age
+          fresh=0       # < 90 days
+          recent=0      # 90-180 days
+          stale=0       # 180-365 days
+          very_stale=0  # > 365 days
+
+          NOW=$(date +%s)
+
+          find docs -name "*.md" -type f | while read file; do
+            last_modified=$(git log -1 --format="%at" -- "$file" 2>/dev/null || echo "0")
+
+            if [ "$last_modified" -eq 0 ]; then
+              continue
+            fi
+
+            age_days=$(( (NOW - last_modified) / 86400 ))
+
+            if [ $age_days -lt 90 ]; then
+              fresh=$((fresh + 1))
+            elif [ $age_days -lt 180 ]; then
+              recent=$((recent + 1))
+            elif [ $age_days -lt 365 ]; then
+              stale=$((stale + 1))
+            else
+              very_stale=$((very_stale + 1))
+            fi
+          done
+
+          echo ""
+          echo "Fresh (< 90 days): $fresh"
+          echo "Recent (90-180 days): $recent"
+          echo "Stale (180-365 days): $stale"
+          echo "Very Stale (> 365 days): $very_stale"
+
+          # Calculate freshness score (percentage of docs < 180 days old)
+          if [ $total_docs -gt 0 ]; then
+            fresh_count=$((fresh + recent))
+            freshness_score=$(awk "BEGIN {printf \"%.1f\", ($fresh_count / $total_docs) * 100}")
+            echo ""
+            echo "Freshness Score: ${freshness_score}%"
+          fi
+
+      - name: Create issue for stale documentation
+        if: steps.check_staleness.outputs.has_stale_docs == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('freshness-report.md', 'utf8');
+
+            const title = `📅 Monthly Documentation Freshness Report - ${new Date().toISOString().split('T')[0]}`;
+
+            // Check if issue already exists this month
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'documentation,freshness'
+            });
+
+            const existingIssue = issues.data.find(issue =>
+              issue.title.includes(new Date().toISOString().slice(0, 7))
+            );
+
+            if (existingIssue) {
+              console.log('Issue already exists for this month, updating...');
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: report
+              });
+            } else {
+              console.log('Creating new freshness report issue...');
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: report,
+                labels: ['documentation', 'freshness', 'maintenance']
+              });
+            }
+
+      - name: Upload freshness report
+        uses: actions/upload-artifact@v4
+        with:
+          name: freshness-report
+          path: freshness-report.md
+          retention-days: 90

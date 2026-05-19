@@ -1,0 +1,124 @@
+name: Documentation Link Checker
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**/*.md'
+      - '*.md'
+      - 'mkdocs.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**/*.md'
+      - '*.md'
+      - 'mkdocs.yml'
+  workflow_dispatch:
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check internal links
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Checking internal documentation links..."
+
+          broken_links=0
+
+          # Find all markdown files
+          find docs -name "*.md" -o -name "README.md" -o -name "CLAUDE.md" | while read file; do
+            echo "Checking: $file"
+
+            # Extract markdown links [text](path)
+            grep -oP '\[.*?\]\(\K[^)]+' "$file" 2>/dev/null | while read link; do
+              # Skip external URLs and anchors
+              if [[ "$link" =~ ^https?:// ]] || [[ "$link" =~ ^# ]]; then
+                continue
+              fi
+
+              # Resolve relative path
+              dir=$(dirname "$file")
+              target="$dir/$link"
+
+              # Normalize path
+              target=$(realpath -m "$target" 2>/dev/null || echo "$target")
+
+              # Check if file exists
+              if [ ! -f "$target" ] && [ ! -d "$target" ]; then
+                echo "❌ BROKEN LINK in $file: $link -> $target"
+                broken_links=$((broken_links + 1))
+              fi
+            done
+          done
+
+          if [ $broken_links -gt 0 ]; then
+            echo "❌ Found $broken_links broken internal link(s)"
+            exit 1
+          fi
+
+          echo "✅ All internal links are valid"
+
+      - name: Check mkdocs navigation
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Checking mkdocs navigation references..."
+
+          # Extract file references from mkdocs.yml
+          grep -oP ':\s*\K[^#]+\.md' mkdocs.yml 2>/dev/null | while read nav_file; do
+            # Check if file exists in docs/ or root
+            if [ ! -f "docs/$nav_file" ] && [ ! -f "$nav_file" ]; then
+              echo "❌ Missing file referenced in mkdocs.yml: $nav_file"
+              exit 1
+            fi
+          done
+
+          echo "✅ All mkdocs navigation references are valid"
+
+      - name: Build mkdocs (strict mode)
+        run: |
+          pip install mkdocs-material mkdocs-mermaid2-plugin
+          mkdocs build --strict 2>&1 | tee build.log
+
+          # Check for warnings
+          if grep -i "WARNING" build.log; then
+            echo "⚠️ MkDocs build completed with warnings"
+          else
+            echo "✅ MkDocs build completed successfully"
+          fi
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const buildLog = fs.readFileSync('build.log', 'utf8');
+
+            const comment = `## 📚 Documentation Link Check Results
+
+            ${buildLog.includes('WARNING') ? '⚠️ Build completed with warnings' : '✅ All links valid'}
+
+            <details>
+            <summary>Build Log</summary>
+
+            \`\`\`
+            ${buildLog}
+            \`\`\`
+
+            </details>
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

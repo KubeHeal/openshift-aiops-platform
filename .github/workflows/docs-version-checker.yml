@@ -1,0 +1,177 @@
+name: Documentation Version Consistency Checker
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**/*.md'
+      - '*.md'
+      - 'OPERATOR_VERSIONS.md'
+      - 'docs/reference/operator-versions.md'
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  check-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check OpenShift version consistency
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Checking OpenShift version references..."
+
+          # Expected versions (as of 2026-05-19)
+          EXPECTED_MIN="4.19"
+          EXPECTED_RECOMMENDED="4.21"
+          DEPRECATED="4.18"
+
+          issues=0
+
+          # Find files mentioning OpenShift versions
+          grep -rn "OpenShift.*4\.[0-9]" docs/ README.md CLAUDE.md 2>/dev/null | while IFS=: read file line content; do
+            # Check for deprecated version without maintenance notice
+            if echo "$content" | grep -q "$DEPRECATED" && ! echo "$content" | grep -qi "maintenance"; then
+              echo "⚠️ $file:$line - OpenShift $DEPRECATED should include maintenance notice"
+              issues=$((issues + 1))
+            fi
+          done
+
+          # Check deployment guides specifically
+          for guide in docs/how-to/complete-deployment-guide.md docs/how-to/quick-deployment.md docs/guides/NEW-CLUSTER-DEPLOYMENT.md; do
+            if [ -f "$guide" ]; then
+              if grep -q "4.18" "$guide" && ! grep -q "4.19" "$guide"; then
+                echo "❌ $guide still references 4.18 without 4.19+ update"
+                issues=$((issues + 1))
+              fi
+            fi
+          done
+
+          if [ $issues -gt 0 ]; then
+            echo "❌ Found $issues version consistency issue(s)"
+            exit 1
+          fi
+
+          echo "✅ OpenShift versions are consistent"
+
+      - name: Check operator version consistency
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Checking operator version consistency..."
+
+          # Reference file for operator versions
+          REFERENCE_FILE="docs/reference/operator-versions.md"
+
+          if [ ! -f "$REFERENCE_FILE" ]; then
+            echo "⚠️ Reference file not found: $REFERENCE_FILE"
+            exit 0
+          fi
+
+          # Extract operator versions from reference file
+          declare -A expected_versions
+
+          # GitOps
+          if grep -q "GitOps.*1\.20\.3" "$REFERENCE_FILE"; then
+            expected_versions["gitops"]="1.20.3"
+          fi
+
+          # Pipelines
+          if grep -q "Pipelines.*1\.22\.0" "$REFERENCE_FILE"; then
+            expected_versions["pipelines"]="1.22.0"
+          fi
+
+          # ODF
+          if grep -q "ODF.*4\.20" "$REFERENCE_FILE"; then
+            expected_versions["odf"]="4.20"
+          fi
+
+          # External Secrets
+          if grep -q "External Secrets.*1\.1\.0" "$REFERENCE_FILE"; then
+            expected_versions["external-secrets"]="1.1.0"
+          fi
+
+          issues=0
+
+          # Check deployment guides for outdated versions
+          for guide in docs/guides/NEW-CLUSTER-DEPLOYMENT.md docs/how-to/complete-deployment-guide.md; do
+            if [ -f "$guide" ]; then
+              echo "Checking: $guide"
+
+              # GitOps
+              if grep -qE "GitOps.*1\.(15|16|17|18|19)\." "$guide"; then
+                echo "⚠️ $guide: GitOps version should be 1.20.3+"
+                issues=$((issues + 1))
+              fi
+
+              # Pipelines
+              if grep -qE "Pipelines.*1\.(17|18|19|20|21)\." "$guide"; then
+                echo "⚠️ $guide: Pipelines version should be 1.22.0+"
+                issues=$((issues + 1))
+              fi
+            fi
+          done
+
+          if [ $issues -gt 0 ]; then
+            echo "❌ Found $issues operator version inconsistency issue(s)"
+            echo "ℹ️ Please update to match versions in: $REFERENCE_FILE"
+            exit 1
+          fi
+
+          echo "✅ Operator versions are consistent with reference file"
+
+      - name: Validate version references format
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Validating version reference formats..."
+
+          issues=0
+
+          # Check for proper version format (X.Y or X.Y.Z)
+          grep -rn "[Vv]ersion.*[0-9]" docs/ 2>/dev/null | while IFS=: read file line content; do
+            # Look for malformed versions (e.g., "version 4" without minor)
+            if echo "$content" | grep -qE "[Vv]ersion:?\s+[0-9]+\s" && ! echo "$content" | grep -qE "[0-9]+\.[0-9]+"; then
+              echo "⚠️ $file:$line - Version format should include minor version (X.Y)"
+              issues=$((issues + 1))
+            fi
+          done
+
+          if [ $issues -gt 0 ]; then
+            echo "⚠️ Found $issues version format issue(s)"
+          else
+            echo "✅ Version formats are valid"
+          fi
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `## ⚠️ Version Consistency Check Failed
+
+            Please review the workflow logs for details on version inconsistencies.
+
+            **Common issues:**
+            - OpenShift 4.18 referenced without "maintenance-only" notice
+            - Operator versions not matching docs/reference/operator-versions.md
+            - Missing minor version numbers (should be X.Y or X.Y.Z)
+
+            **Quick fix:**
+            - Update to OpenShift 4.19+ (4.21 recommended; 4.18 maintenance-only)
+            - Sync operator versions with docs/reference/operator-versions.md
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

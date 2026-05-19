@@ -1,0 +1,250 @@
+name: Auto-Generate Documentation
+
+on:
+  pull_request:
+    paths:
+      - 'values-global.yaml.example'
+      - 'values-hub.yaml.example'
+      - 'scripts/generate-config-docs.py'
+  push:
+    branches:
+      - main
+    paths:
+      - 'values-global.yaml.example'
+      - 'values-hub.yaml.example'
+  workflow_dispatch:
+
+jobs:
+  auto-generate-config-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Create documentation generator script
+        run: |
+          mkdir -p scripts
+
+          cat > scripts/generate-config-docs.py << 'PYTHON_SCRIPT_EOF'
+          #!/usr/bin/env python3
+          """
+          Auto-generate configuration documentation from values YAML files.
+          Extracts configuration parameters with comments and generates markdown tables.
+          """
+
+          import yaml
+          import re
+          from pathlib import Path
+          from typing import Dict, List, Tuple
+
+          def extract_comments_and_values(yaml_file: Path) -> List[Tuple[str, str, str]]:
+              """
+              Extract parameter paths, default values, and comments from YAML file.
+              Returns list of (path, default, comment) tuples.
+              """
+              with open(yaml_file, 'r') as f:
+                  lines = f.readlines()
+
+              params = []
+              current_path = []
+              comment_buffer = []
+
+              for i, line in enumerate(lines):
+                  stripped = line.strip()
+
+                  # Collect comments
+                  if stripped.startswith('#'):
+                      comment = stripped.lstrip('#').strip()
+                      if comment and not comment.startswith('---'):
+                          comment_buffer.append(comment)
+                      continue
+
+                  # Skip empty lines
+                  if not stripped or stripped.startswith('---'):
+                      continue
+
+                  # Parse YAML key-value pairs
+                  match = re.match(r'^(\s*)([a-zA-Z0-9_-]+):\s*(.*)$', line)
+                  if match:
+                      indent_str, key, value = match.groups()
+                      indent_level = len(indent_str) // 2
+
+                      # Adjust current path based on indentation
+                      current_path = current_path[:indent_level]
+                      current_path.append(key)
+
+                      # Extract default value
+                      default = value.strip(' "\'') if value and value.strip() not in ['', '{}', '[]'] else ''
+
+                      # Join multi-line comments
+                      comment = ' '.join(comment_buffer) if comment_buffer else ''
+
+                      # Save parameter
+                      path = '.'.join(current_path)
+                      if default or comment:  # Only save if has value or comment
+                          params.append((path, default, comment))
+
+                      # Clear comment buffer
+                      comment_buffer = []
+
+              return params
+
+          def generate_markdown_table(params: List[Tuple[str, str, str]], title: str) -> str:
+              """Generate markdown table from parameters."""
+              md = f"### {title}\n\n"
+              md += "| Parameter | Type/Default | Description |\n"
+              md += "|-----------|--------------|-------------|\n"
+
+              for path, default, comment in params:
+                  # Infer type from default value
+                  if default.lower() in ['true', 'false']:
+                      param_type = 'boolean'
+                  elif default.isdigit():
+                      param_type = 'integer'
+                  elif re.match(r'^\d+[A-Za-z]+$', default):
+                      param_type = 'string (size)'
+                  elif default.startswith('[') or default.startswith('{'):
+                      param_type = 'object/array'
+                  elif default:
+                      param_type = 'string'
+                  else:
+                      param_type = ''
+
+                  # Format default value
+                  default_str = f"`{default}`" if default else '(auto-detected)' if 'auto' in comment.lower() else ''
+
+                  # Format type and default
+                  type_default = f"{param_type}<br>{default_str}" if param_type and default_str else param_type or default_str
+
+                  # Clean up description
+                  description = comment.replace('|', '\\|')  # Escape pipes
+
+                  md += f"| `{path}` | {type_default} | {description} |\n"
+
+              md += "\n"
+              return md
+
+          def main():
+              """Main function to generate configuration documentation."""
+              base_dir = Path(__file__).parent.parent
+
+              # Parse values files
+              global_file = base_dir / 'values-global.yaml.example'
+              hub_file = base_dir / 'values-hub.yaml.example'
+
+              if not global_file.exists() or not hub_file.exists():
+                  print("❌ values-global.yaml.example or values-hub.yaml.example not found")
+                  return 1
+
+              print("🔍 Extracting configuration from values files...")
+
+              global_params = extract_comments_and_values(global_file)
+              hub_params = extract_comments_and_values(hub_file)
+
+              print(f"✅ Extracted {len(global_params)} parameters from values-global.yaml.example")
+              print(f"✅ Extracted {len(hub_params)} parameters from values-hub.yaml.example")
+
+              # Generate markdown
+              output_file = base_dir / 'docs' / 'reference' / 'auto-generated-config.md'
+              output_file.parent.mkdir(parents=True, exist_ok=True)
+
+              with open(output_file, 'w') as f:
+                  f.write("# Auto-Generated Configuration Reference\n\n")
+                  f.write("> **⚠️ This file is auto-generated from values YAML files. Do not edit manually.**\n\n")
+                  f.write("## values-global.yaml Configuration\n\n")
+                  f.write(generate_markdown_table(global_params[:50], "Global Configuration Parameters"))
+                  f.write("\n## values-hub.yaml Configuration\n\n")
+                  f.write(generate_markdown_table(hub_params[:50], "Hub Cluster Configuration Parameters"))
+
+              print(f"✅ Generated configuration documentation: {output_file}")
+              return 0
+
+          if __name__ == '__main__':
+              exit(main())
+          PYTHON_SCRIPT_EOF
+
+          chmod +x scripts/generate-config-docs.py
+
+      - name: Generate configuration documentation
+        id: generate_docs
+        run: |
+          python3 scripts/generate-config-docs.py
+
+          if [ -f docs/reference/auto-generated-config.md ]; then
+            echo "generated=true" >> $GITHUB_OUTPUT
+          else
+            echo "generated=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet docs/reference/auto-generated-config.md; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No changes to auto-generated documentation"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "✅ Auto-generated documentation updated"
+          fi
+
+      - name: Upload generated documentation
+        if: steps.generate_docs.outputs.generated == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-generated-config-docs
+          path: docs/reference/auto-generated-config.md
+          retention-days: 30
+
+      - name: Create PR comment with preview
+        if: github.event_name == 'pull_request' && steps.check_changes.outputs.changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const content = fs.readFileSync('docs/reference/auto-generated-config.md', 'utf8');
+
+            // Get first 50 lines for preview
+            const preview = content.split('\n').slice(0, 50).join('\n');
+
+            const comment = `## 📝 Auto-Generated Configuration Documentation Updated
+
+            The configuration documentation has been automatically regenerated from the values YAML files.
+
+            <details>
+            <summary>Preview (first 50 lines)</summary>
+
+            \`\`\`markdown
+            ${preview}
+            \`\`\`
+
+            </details>
+
+            **Full file**: \`docs/reference/auto-generated-config.md\`
+
+            ℹ️ This is an auto-generated file. Changes will be committed automatically on merge.
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Commit auto-generated documentation
+        if: github.event_name == 'push' && steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/reference/auto-generated-config.md
+          git commit -m "docs: auto-generate configuration reference from values files [skip ci]"
+          git push

@@ -1,0 +1,236 @@
+name: ADR Status Checker
+
+on:
+  pull_request:
+    paths:
+      - 'docs/adrs/*.md'
+      - 'docs/adrs/README.md'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/adrs/*.md'
+  schedule:
+    # Run weekly on Mondays at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  check-adr-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate ADR deprecation notices
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Checking ADR deprecation notices..."
+
+          issues=0
+
+          # Find ADRs marked as deprecated/superseded in their frontmatter or content
+          find docs/adrs -name "[0-9]*.md" | while read adr; do
+            adr_file=$(basename "$adr")
+            adr_num=$(echo "$adr_file" | grep -oP '^\d+')
+
+            # Check if ADR contains DEPRECATED or SUPERSEDED markers
+            if grep -qi "DEPRECATED\|SUPERSEDED" "$adr" | head -1; then
+              echo "Found deprecated/superseded ADR: $adr_file"
+
+              # Verify it has proper deprecation notice at top
+              if ! head -20 "$adr" | grep -qE "^>\s*\*\*.*DEPRECATED.*\*\*|^>\s*\*\*.*SUPERSEDED.*\*\*"; then
+                echo "❌ $adr_file: Missing deprecation banner at top of file"
+                echo "   Add: > **⚠️ DEPRECATED**: This ADR describes a superseded approach. See [ADR-XXX](./XXX-new-approach.md)"
+                issues=$((issues + 1))
+              fi
+
+              # Verify it links to replacement ADR
+              if ! grep -qE "See \[?ADR-[0-9]+" "$adr"; then
+                echo "⚠️ $adr_file: Deprecated ADR should link to replacement ADR"
+                issues=$((issues + 1))
+              fi
+            fi
+          done
+
+          if [ $issues -gt 0 ]; then
+            echo "❌ Found $issues ADR deprecation notice issue(s)"
+            exit 1
+          fi
+
+          echo "✅ All deprecated ADRs have proper notices"
+
+      - name: Check ADR index consistency
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Checking ADR index consistency..."
+
+          issues=0
+
+          # Get list of ADR files
+          adr_files=$(find docs/adrs -name "[0-9]*.md" -type f | sort)
+
+          # Check if each ADR is listed in README.md
+          for adr in $adr_files; do
+            adr_file=$(basename "$adr")
+            adr_num=$(echo "$adr_file" | grep -oP '^\d+')
+
+            if ! grep -q "$adr_file\|ADR-$adr_num" docs/adrs/README.md; then
+              echo "⚠️ $adr_file not found in docs/adrs/README.md index"
+              issues=$((issues + 1))
+            fi
+          done
+
+          if [ $issues -gt 0 ]; then
+            echo "⚠️ Found $issues ADR(s) not listed in index"
+            echo "ℹ️ Please update docs/adrs/README.md"
+          else
+            echo "✅ All ADRs are listed in index"
+          fi
+
+      - name: Validate ADR numbering
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Checking ADR numbering sequence..."
+
+          # Get sorted list of ADR numbers
+          adr_numbers=$(find docs/adrs -name "[0-9]*.md" -type f -exec basename {} \; | grep -oP '^\d+' | sort -n)
+
+          prev=0
+          gaps=0
+
+          for num in $adr_numbers; do
+            num=$((10#$num))  # Convert to decimal (remove leading zeros)
+
+            if [ $prev -ne 0 ] && [ $((num - prev)) -gt 1 ]; then
+              echo "⚠️ Gap in ADR numbering: ADR-$(printf '%03d' $prev) -> ADR-$(printf '%03d' $num)"
+              gaps=$((gaps + 1))
+            fi
+
+            prev=$num
+          done
+
+          if [ $gaps -gt 0 ]; then
+            echo "ℹ️ Found $gaps gap(s) in ADR numbering (this is okay if ADRs were deleted)"
+          else
+            echo "✅ ADR numbering is sequential"
+          fi
+
+      - name: Check for duplicate ADR numbers
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Checking for duplicate ADR numbers..."
+
+          duplicates=$(find docs/adrs -name "[0-9]*.md" -type f -exec basename {} \; | grep -oP '^\d+' | sort | uniq -d)
+
+          if [ -n "$duplicates" ]; then
+            echo "❌ Found duplicate ADR numbers:"
+            echo "$duplicates"
+            exit 1
+          fi
+
+          echo "✅ No duplicate ADR numbers found"
+
+      - name: Validate ADR status field
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Validating ADR status fields..."
+
+          issues=0
+
+          # Valid statuses: Proposed, Accepted, Deprecated, Superseded
+          find docs/adrs -name "[0-9]*.md" | while read adr; do
+            adr_file=$(basename "$adr")
+
+            # Extract status from frontmatter or content
+            status=$(grep -i "^Status:" "$adr" | head -1 | cut -d: -f2 | xargs)
+
+            if [ -z "$status" ]; then
+              # Check for status in YAML frontmatter
+              status=$(sed -n '/^---$/,/^---$/p' "$adr" | grep -i "status:" | cut -d: -f2 | xargs)
+            fi
+
+            if [ -n "$status" ]; then
+              case "$status" in
+                Proposed|Accepted|Deprecated|Superseded|Draft)
+                  # Valid status
+                  ;;
+                *)
+                  echo "⚠️ $adr_file: Invalid status '$status' (should be: Proposed, Accepted, Deprecated, Superseded, or Draft)"
+                  issues=$((issues + 1))
+                  ;;
+              esac
+            fi
+          done
+
+          if [ $issues -gt 0 ]; then
+            echo "⚠️ Found $issues ADR(s) with invalid status"
+          else
+            echo "✅ All ADR status fields are valid"
+          fi
+
+      - name: Generate ADR status report
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          #!/bin/bash
+
+          echo "📊 ADR Status Summary Report"
+          echo "============================"
+          echo ""
+
+          total=$(find docs/adrs -name "[0-9]*.md" -type f | wc -l)
+          accepted=$(grep -l "Status:.*Accepted" docs/adrs/[0-9]*.md 2>/dev/null | wc -l)
+          deprecated=$(grep -li "deprecated\|superseded" docs/adrs/[0-9]*.md 2>/dev/null | wc -l)
+          proposed=$(grep -l "Status:.*Proposed\|Status:.*Draft" docs/adrs/[0-9]*.md 2>/dev/null | wc -l)
+
+          echo "Total ADRs: $total"
+          echo "Accepted: $accepted"
+          echo "Proposed/Draft: $proposed"
+          echo "Deprecated/Superseded: $deprecated"
+          echo ""
+
+          if [ $deprecated -gt 0 ]; then
+            echo "Deprecated ADRs:"
+            grep -li "deprecated\|superseded" docs/adrs/[0-9]*.md 2>/dev/null | while read adr; do
+              echo "  - $(basename $adr)"
+            done
+          fi
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `## ❌ ADR Status Check Failed
+
+            Please review the workflow logs for details.
+
+            **Common issues:**
+            - Deprecated ADR missing banner at top of file
+            - Deprecated ADR not linking to replacement
+            - ADR not listed in docs/adrs/README.md index
+            - Invalid status field (should be: Proposed, Accepted, Deprecated, Superseded, or Draft)
+
+            **To fix:**
+            1. Add deprecation banner to deprecated ADRs
+            2. Link to replacement ADR
+            3. Update docs/adrs/README.md index
+            4. Verify status field is valid
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
