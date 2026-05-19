@@ -70,7 +70,7 @@ if grep -rq "password\|token\|secret" values-*.yaml.example 2>/dev/null; then
   secrets_found=true
 fi
 
-if [[ "$secrets_found" == "false" ]]; then
+if [[ "$secrets_found" == "false" ]]; then  # pragma: allowlist secret
   echo -e "${GREEN}✅ No obvious secrets found in example values files${NC}"
 fi
 echo ""
@@ -225,7 +225,7 @@ echo "4. Create PR with your pattern"
 echo "   - Follow submission guide steps"
 echo ""
 
-if [[ "$secrets_found" == "true" ]]; then
+if [[ "$secrets_found" == "true" ]]; then  # pragma: allowlist secret
   echo -e "${YELLOW}⚠️  IMPORTANT: Address secrets in example values files before submission${NC}"
   echo ""
 fi
