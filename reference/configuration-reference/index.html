@@ -1,0 +1,4303 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/reference/configuration-reference/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Configuration Reference - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#configuration-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Configuration Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../quick-start/" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../how-to/" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../explanation/" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../adrs/" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING/" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quick-start/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fresh Cluster Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/deploy-first-ml-model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy Your First ML Model
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/build-first-self-healing-automation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build Self-Healing Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/workbench-development-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-on-sno/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/access-workbench/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-mcp-server-lightspeed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/architecture-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADR-CROSS-REFERENCE-MATRIX/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/IMPLEMENTATION-TRACKER/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fresh Cluster Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/TROUBLESHOOTING-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/VALIDATED-PATTERNS-SUBMISSION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Validated Patterns Submission
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/CI-CD-GITHUB-ACTIONS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#values-globalyaml-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      values-global.yaml Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="values-global.yaml Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#global-pattern-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global Pattern Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#main-pattern-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Main Pattern Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#git-repository-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Git Repository Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secret-management-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Secret Management Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#object-store-configuration-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      Object Store Configuration (Global)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-configuration-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage Configuration (Global)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#networking-configuration-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      Networking Configuration (Global)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-and-observability-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring and Observability (Global)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logging Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-configuration-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      Application Configuration (Global)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-specific-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment-Specific Settings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Environment-Specific Settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#production-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Production Environment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tekton-pipelines-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tekton Pipelines Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gitops-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitOps Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compliance-and-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compliance and Security
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-flags-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      Feature Flags (Global)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metadata-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metadata (Global)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#values-hubyaml-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      values-hub.yaml Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="values-hub.yaml Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cluster-topology-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cluster Topology Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#main-cluster-group-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Main Cluster Group Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#namespace-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Namespace Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clustergroup-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      ClusterGroup Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#argocd-application-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArgoCD Application Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workbench-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workbench Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Storage Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Storage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#self-healing-data-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Self-Healing Data Storage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-artifacts-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Artifacts Storage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-storage-pvc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Storage PVC
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workbench-data-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workbench Data Storage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#object-store-configuration-hub" class="md-nav__link">
+    <span class="md-ellipsis">
+      Object Store Configuration (Hub)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#networking-configuration-hub" class="md-nav__link">
+    <span class="md-ellipsis">
+      Networking Configuration (Hub)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secrets-management-hub" class="md-nav__link">
+    <span class="md-ellipsis">
+      Secrets Management (Hub)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-serving-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Serving Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-and-observability-hub" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring and Observability (Hub)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notebook-validation-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notebook Validation Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Notebook Validation Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tier-specific-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tier-Specific Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-flags-hub" class="md-nav__link">
+    <span class="md-ellipsis">
+      Feature Flags (Hub)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metadata-hub" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metadata (Hub)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment Variables
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Environment Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ansible-execution-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ansible Execution Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build Environment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Reference
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#critical-configuration-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Critical Configuration Steps
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/reference/configuration-reference.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="configuration-reference">Configuration Reference<a class="headerlink" href="#configuration-reference" title="Permanent link">&para;</a></h1>
+<p>Complete reference for all configuration options in the OpenShift AI Ops Self-Healing Platform.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The platform uses two primary configuration files:</p>
+<ul>
+<li><strong>values-global.yaml</strong> - Global pattern configuration (git repository, sync policy, global resources)</li>
+<li><strong>values-hub.yaml</strong> - Hub cluster configuration (storage, applications, operators, deployment-specific settings)</li>
+</ul>
+<p>Both files must be created from their <code>.example</code> templates before deployment:</p>
+<pre class="highlight"><code class="language-bash">cp values-global.yaml.example values-global.yaml
+cp values-hub.yaml.example values-hub.yaml</code></pre>
+<hr />
+<h2 id="values-globalyaml-configuration">values-global.yaml Configuration<a class="headerlink" href="#values-globalyaml-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="global-pattern-configuration">Global Pattern Configuration<a class="headerlink" href="#global-pattern-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>global.pattern</code></td>
+<td>string</td>
+<td><code>self-healing-platform</code></td>
+<td>Pattern name (must match directory name)</td>
+</tr>
+<tr>
+<td><code>global.version</code></td>
+<td>string</td>
+<td><code>1.0.0</code></td>
+<td>Pattern version</td>
+</tr>
+<tr>
+<td><code>global.clusterDomain</code></td>
+<td>string</td>
+<td><code>""</code> (auto-detected)</td>
+<td>OpenShift baseDomain (e.g., "ocp.example.com"). Auto-populated by VP operator. Get via: <code>oc get dns cluster -o jsonpath='{.spec.baseDomain}'</code></td>
+</tr>
+<tr>
+<td><code>global.analyticsUUID</code></td>
+<td>string</td>
+<td><code>""</code></td>
+<td>Optional analytics UUID for tracking</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong>:
+<pre class="highlight"><code class="language-yaml">global:
+  pattern: self-healing-platform
+  version: "1.0.0"
+  clusterDomain: ""  # Auto-detected</code></pre></p>
+<h3 id="main-pattern-configuration">Main Pattern Configuration<a class="headerlink" href="#main-pattern-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>main.multiSourceConfig.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable multisource configuration (uses external Helm charts)</td>
+</tr>
+<tr>
+<td><code>main.multiSourceConfig.clusterGroupChartVersion</code></td>
+<td>string</td>
+<td><code>0.9.*</code></td>
+<td>Cluster group chart version (0.9.* for multisource)</td>
+</tr>
+<tr>
+<td><code>main.clusterGroupName</code></td>
+<td>string</td>
+<td><code>hub</code></td>
+<td>Cluster group name (hub cluster)</td>
+</tr>
+<tr>
+<td><code>main.targetSite</code></td>
+<td>string</td>
+<td><code>hub</code></td>
+<td>Target site for multi-cluster deployments</td>
+</tr>
+<tr>
+<td><code>main.gitOpsOperator</code></td>
+<td>string</td>
+<td><code>openshift-gitops</code></td>
+<td>OpenShift GitOps (ArgoCD) operator namespace</td>
+</tr>
+<tr>
+<td><code>main.namespace</code></td>
+<td>string</td>
+<td><code>self-healing-platform</code></td>
+<td>Namespace for pattern deployment</td>
+</tr>
+<tr>
+<td><code>main.components.openshift-ai</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable OpenShift AI (RHODS)</td>
+</tr>
+<tr>
+<td><code>main.components.gpu-operator</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable GPU Operator</td>
+</tr>
+<tr>
+<td><code>main.components.serverless</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable OpenShift Serverless</td>
+</tr>
+<tr>
+<td><code>main.components.service-mesh</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable Service Mesh</td>
+</tr>
+<tr>
+<td><code>main.components.pipelines</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable OpenShift Pipelines</td>
+</tr>
+<tr>
+<td><code>main.components.acm</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable Advanced Cluster Management</td>
+</tr>
+</tbody>
+</table>
+<h3 id="git-repository-configuration">Git Repository Configuration<a class="headerlink" href="#git-repository-configuration" title="Permanent link">&para;</a></h3>
+<p><strong>⚠️ CRITICAL</strong>: Update <code>git.repoURL</code> to YOUR fork's URL before deployment.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>git.repoURL</code></td>
+<td>string</td>
+<td><code>https://github.com/KubeHeal/openshift-aiops-platform.git</code></td>
+<td><strong>MUST UPDATE</strong> - Git repository URL (GitHub, Gitea, GitLab). Single source of truth for ArgoCD sync.</td>
+</tr>
+<tr>
+<td><code>git.revision</code></td>
+<td>string</td>
+<td><code>main</code></td>
+<td>Git branch/revision to deploy from</td>
+</tr>
+<tr>
+<td><code>git.credentials.username</code></td>
+<td>string</td>
+<td><code>""</code></td>
+<td>Gitea/GitHub username (overridden by values-secret.yaml)</td>
+</tr>
+<tr>
+<td><code>git.credentials.password</code></td>
+<td>string</td>
+<td><code>""</code></td>
+<td>Gitea/GitHub password or token (overridden by values-secret.yaml)</td>
+</tr>
+<tr>
+<td><code>git.credentials.secretName</code></td>
+<td>string</td>
+<td><code>git-credentials</code></td>
+<td>Secret name for credentials (created by ESO or manually)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong>:
+<pre class="highlight"><code class="language-yaml">git:
+  repoURL: "https://github.com/YOUR-USERNAME/openshift-aiops-platform.git"
+  revision: "main"
+  credentials:
+    secretName: "git-credentials"</code></pre></p>
+<h3 id="secret-management-configuration">Secret Management Configuration<a class="headerlink" href="#secret-management-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>secrets.backend</code></td>
+<td>string</td>
+<td><code>external-secrets</code></td>
+<td>Secret backend: <code>vault</code>, <code>sealed-secrets</code>, or <code>external-secrets</code></td>
+</tr>
+<tr>
+<td><code>secrets.externalSecrets.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable External Secrets Operator</td>
+</tr>
+<tr>
+<td><code>secrets.externalSecrets.serviceAccount.name</code></td>
+<td>string</td>
+<td><code>external-secrets-sa</code></td>
+<td>Service account for ESO</td>
+</tr>
+<tr>
+<td><code>secrets.externalSecrets.secretStore.name</code></td>
+<td>string</td>
+<td><code>kubernetes-secret-store</code></td>
+<td>SecretStore name</td>
+</tr>
+<tr>
+<td><code>secrets.externalSecrets.secretStore.kind</code></td>
+<td>string</td>
+<td><code>SecretStore</code></td>
+<td>SecretStore kind</td>
+</tr>
+<tr>
+<td><code>secrets.externalSecrets.caProvider.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable CA provider for secure Kubernetes API communication</td>
+</tr>
+<tr>
+<td><code>secrets.externalSecrets.caProvider.type</code></td>
+<td>string</td>
+<td><code>ConfigMap</code></td>
+<td>CA provider type</td>
+</tr>
+<tr>
+<td><code>secrets.externalSecrets.caProvider.name</code></td>
+<td>string</td>
+<td><code>kube-root-ca.crt</code></td>
+<td>CA ConfigMap name</td>
+</tr>
+<tr>
+<td><code>secrets.externalSecrets.caProvider.key</code></td>
+<td>string</td>
+<td><code>ca.crt</code></td>
+<td>CA key in ConfigMap</td>
+</tr>
+<tr>
+<td><code>secrets.externalSecrets.refreshInterval</code></td>
+<td>string</td>
+<td><code>1h</code></td>
+<td>Refresh interval for syncing secrets</td>
+</tr>
+</tbody>
+</table>
+<h3 id="object-store-configuration-global">Object Store Configuration (Global)<a class="headerlink" href="#object-store-configuration-global" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>objectStore.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable object store integration (ODF/NooBaa)</td>
+</tr>
+<tr>
+<td><code>objectStore.endpoint</code></td>
+<td>string</td>
+<td><code>https://s3.openshift-storage.svc:443</code></td>
+<td>S3 endpoint URL (auto-detected from NooBaa if not provided)</td>
+</tr>
+<tr>
+<td><code>objectStore.accessKey</code></td>
+<td>string</td>
+<td><code>admin</code></td>
+<td>S3 access key (overridden by values-secret.yaml)</td>
+</tr>
+<tr>
+<td><code>objectStore.secretKey</code></td>
+<td>string</td>
+<td><code>changeme</code></td>
+<td>S3 secret key (overridden by values-secret.yaml)</td>
+</tr>
+<tr>
+<td><code>objectStore.buckets.models</code></td>
+<td>string</td>
+<td><code>model-storage</code></td>
+<td>Model storage bucket name</td>
+</tr>
+<tr>
+<td><code>objectStore.buckets.trainingData</code></td>
+<td>string</td>
+<td><code>training-data</code></td>
+<td>Training data bucket name</td>
+</tr>
+<tr>
+<td><code>objectStore.buckets.inferenceResults</code></td>
+<td>string</td>
+<td><code>inference-results</code></td>
+<td>Inference results bucket name</td>
+</tr>
+<tr>
+<td><code>objectStore.region</code></td>
+<td>string</td>
+<td><code>us-east-1</code></td>
+<td>AWS region</td>
+</tr>
+<tr>
+<td><code>objectStore.sslVerify</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>SSL verification</td>
+</tr>
+<tr>
+<td><code>objectStore.vault.address</code></td>
+<td>string</td>
+<td><code>""</code></td>
+<td>Vault server address (fallback)</td>
+</tr>
+<tr>
+<td><code>objectStore.vault.namespace</code></td>
+<td>string</td>
+<td><code>""</code></td>
+<td>Vault namespace (for Vault Enterprise)</td>
+</tr>
+<tr>
+<td><code>objectStore.vault.authMethod</code></td>
+<td>string</td>
+<td><code>kubernetes</code></td>
+<td>Vault auth method: <code>kubernetes</code>, <code>jwt</code>, or <code>userpass</code></td>
+</tr>
+<tr>
+<td><code>objectStore.vault.role</code></td>
+<td>string</td>
+<td><code>self-healing-platform</code></td>
+<td>Vault role for Kubernetes auth</td>
+</tr>
+<tr>
+<td><code>objectStore.vault.secretPath</code></td>
+<td>string</td>
+<td><code>secret/data/self-healing-platform</code></td>
+<td>Vault path for secrets</td>
+</tr>
+</tbody>
+</table>
+<h3 id="storage-configuration-global">Storage Configuration (Global)<a class="headerlink" href="#storage-configuration-global" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>storage.storageClass</code></td>
+<td>string</td>
+<td><code>""</code> (cluster default)</td>
+<td>Storage class for persistent volumes</td>
+</tr>
+<tr>
+<td><code>storage.dataVolumeSize</code></td>
+<td>string</td>
+<td><code>5Gi</code></td>
+<td>Data volume size</td>
+</tr>
+<tr>
+<td><code>storage.modelsVolumeSize</code></td>
+<td>string</td>
+<td><code>10Gi</code></td>
+<td>Models volume size</td>
+</tr>
+<tr>
+<td><code>storage.logsVolumeSize</code></td>
+<td>string</td>
+<td><code>5Gi</code></td>
+<td>Logs volume size</td>
+</tr>
+</tbody>
+</table>
+<h3 id="networking-configuration-global">Networking Configuration (Global)<a class="headerlink" href="#networking-configuration-global" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>networking.networkPolicies</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable network policies</td>
+</tr>
+<tr>
+<td><code>networking.ingress.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable ingress</td>
+</tr>
+<tr>
+<td><code>networking.ingress.className</code></td>
+<td>string</td>
+<td><code>openshift</code></td>
+<td>Ingress class name</td>
+</tr>
+<tr>
+<td><code>networking.ingress.domain</code></td>
+<td>string</td>
+<td><code>""</code> (auto-detected)</td>
+<td>Ingress domain</td>
+</tr>
+<tr>
+<td><code>networking.ingress.tls.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable TLS</td>
+</tr>
+<tr>
+<td><code>networking.ingress.tls.issuer</code></td>
+<td>string</td>
+<td><code>letsencrypt-prod</code></td>
+<td>TLS issuer</td>
+</tr>
+</tbody>
+</table>
+<h3 id="monitoring-and-observability-global">Monitoring and Observability (Global)<a class="headerlink" href="#monitoring-and-observability-global" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>monitoring.prometheus</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable Prometheus monitoring</td>
+</tr>
+<tr>
+<td><code>monitoring.grafana</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable Grafana dashboards</td>
+</tr>
+<tr>
+<td><code>monitoring.retention</code></td>
+<td>string</td>
+<td><code>15d</code></td>
+<td>Retention period for metrics</td>
+</tr>
+<tr>
+<td><code>monitoring.scrapeInterval</code></td>
+<td>string</td>
+<td><code>30s</code></td>
+<td>Scrape interval</td>
+</tr>
+</tbody>
+</table>
+<h3 id="logging-configuration">Logging Configuration<a class="headerlink" href="#logging-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>logging.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable centralized logging</td>
+</tr>
+<tr>
+<td><code>logging.level</code></td>
+<td>string</td>
+<td><code>info</code></td>
+<td>Log level: <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code></td>
+</tr>
+<tr>
+<td><code>logging.retention</code></td>
+<td>string</td>
+<td><code>7d</code></td>
+<td>Log retention period</td>
+</tr>
+</tbody>
+</table>
+<h3 id="application-configuration-global">Application Configuration (Global)<a class="headerlink" href="#application-configuration-global" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>application.coordinationEngine.replicas</code></td>
+<td>integer</td>
+<td><code>1</code></td>
+<td>Coordination engine replicas</td>
+</tr>
+<tr>
+<td><code>application.coordinationEngine.resources.requests.memory</code></td>
+<td>string</td>
+<td><code>512Mi</code></td>
+<td>Memory request</td>
+</tr>
+<tr>
+<td><code>application.coordinationEngine.resources.requests.cpu</code></td>
+<td>string</td>
+<td><code>250m</code></td>
+<td>CPU request</td>
+</tr>
+<tr>
+<td><code>application.coordinationEngine.resources.limits.memory</code></td>
+<td>string</td>
+<td><code>1Gi</code></td>
+<td>Memory limit</td>
+</tr>
+<tr>
+<td><code>application.coordinationEngine.resources.limits.cpu</code></td>
+<td>string</td>
+<td><code>500m</code></td>
+<td>CPU limit</td>
+</tr>
+<tr>
+<td><code>application.workbench.replicas</code></td>
+<td>integer</td>
+<td><code>1</code></td>
+<td>Workbench replicas</td>
+</tr>
+<tr>
+<td><code>application.workbench.resources.requests.memory</code></td>
+<td>string</td>
+<td><code>1Gi</code></td>
+<td>Memory request</td>
+</tr>
+<tr>
+<td><code>application.workbench.resources.requests.cpu</code></td>
+<td>string</td>
+<td><code>500m</code></td>
+<td>CPU request</td>
+</tr>
+<tr>
+<td><code>application.workbench.resources.limits.memory</code></td>
+<td>string</td>
+<td><code>2Gi</code></td>
+<td>Memory limit</td>
+</tr>
+<tr>
+<td><code>application.workbench.resources.limits.cpu</code></td>
+<td>string</td>
+<td><code>1000m</code></td>
+<td>CPU limit</td>
+</tr>
+<tr>
+<td><code>application.modelServing.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable model serving</td>
+</tr>
+<tr>
+<td><code>application.modelServing.replicas</code></td>
+<td>integer</td>
+<td><code>1</code></td>
+<td>Model serving replicas</td>
+</tr>
+<tr>
+<td><code>application.modelServing.sklearn.image</code></td>
+<td>string</td>
+<td><code>kserve/sklearnserver:latest</code></td>
+<td>Sklearn serving image</td>
+</tr>
+<tr>
+<td><code>application.modelServing.tensorflow.image</code></td>
+<td>string</td>
+<td><code>kserve/tfserving:latest</code></td>
+<td>TensorFlow serving image</td>
+</tr>
+</tbody>
+</table>
+<h3 id="environment-specific-settings">Environment-Specific Settings<a class="headerlink" href="#environment-specific-settings" title="Permanent link">&para;</a></h3>
+<h4 id="development-environment">Development Environment<a class="headerlink" href="#development-environment" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>development.debug</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable debug logging</td>
+</tr>
+<tr>
+<td><code>development.devFeatures</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable development features</td>
+</tr>
+<tr>
+<td><code>development.imagePullPolicy</code></td>
+<td>string</td>
+<td><code>IfNotPresent</code></td>
+<td>Image pull policy</td>
+</tr>
+<tr>
+<td><code>development.replicas</code></td>
+<td>integer</td>
+<td><code>1</code></td>
+<td>Default replicas for development</td>
+</tr>
+</tbody>
+</table>
+<h4 id="production-environment">Production Environment<a class="headerlink" href="#production-environment" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>production.debug</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable debug logging</td>
+</tr>
+<tr>
+<td><code>production.prodFeatures</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable production features</td>
+</tr>
+<tr>
+<td><code>production.imagePullPolicy</code></td>
+<td>string</td>
+<td><code>Always</code></td>
+<td>Image pull policy</td>
+</tr>
+<tr>
+<td><code>production.replicas</code></td>
+<td>integer</td>
+<td><code>3</code></td>
+<td>Default replicas for production</td>
+</tr>
+<tr>
+<td><code>production.ha</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable high availability</td>
+</tr>
+<tr>
+<td><code>production.podDisruptionBudgets</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable pod disruption budgets</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tekton-pipelines-configuration">Tekton Pipelines Configuration<a class="headerlink" href="#tekton-pipelines-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tekton.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable Tekton pipelines</td>
+</tr>
+<tr>
+<td><code>tekton.namespace</code></td>
+<td>string</td>
+<td><code>openshift-pipelines</code></td>
+<td>Tekton namespace</td>
+</tr>
+<tr>
+<td><code>tekton.s3ConfigurationPipeline.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable S3 configuration pipeline</td>
+</tr>
+<tr>
+<td><code>tekton.s3ConfigurationPipeline.timeout</code></td>
+<td>string</td>
+<td><code>300</code></td>
+<td>Pipeline timeout (seconds)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gitops-configuration">GitOps Configuration<a class="headerlink" href="#gitops-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gitOps.namespace</code></td>
+<td>string</td>
+<td><code>openshift-gitops</code></td>
+<td>ArgoCD namespace</td>
+</tr>
+<tr>
+<td><code>gitOps.serverUrl</code></td>
+<td>string</td>
+<td><code>""</code> (auto-detected)</td>
+<td>ArgoCD server URL</td>
+</tr>
+<tr>
+<td><code>gitOps.syncPolicy.automated.prune</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Auto-prune resources</td>
+</tr>
+<tr>
+<td><code>gitOps.syncPolicy.automated.selfHeal</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Auto-heal resources</td>
+</tr>
+<tr>
+<td><code>gitOps.syncPolicy.syncOptions</code></td>
+<td>array</td>
+<td>See example</td>
+<td>Sync options</td>
+</tr>
+<tr>
+<td><code>gitOps.retry.limit</code></td>
+<td>integer</td>
+<td><code>5</code></td>
+<td>Retry limit</td>
+</tr>
+<tr>
+<td><code>gitOps.retry.backoff.duration</code></td>
+<td>string</td>
+<td><code>5s</code></td>
+<td>Initial backoff duration</td>
+</tr>
+<tr>
+<td><code>gitOps.retry.backoff.factor</code></td>
+<td>integer</td>
+<td><code>2</code></td>
+<td>Backoff multiplier</td>
+</tr>
+<tr>
+<td><code>gitOps.retry.backoff.maxDuration</code></td>
+<td>string</td>
+<td><code>3m</code></td>
+<td>Max backoff duration</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong>:
+<pre class="highlight"><code class="language-yaml">gitOps:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+  retry:
+    limit: 5
+    backoff:
+      duration: 5s
+      factor: 2
+      maxDuration: 3m</code></pre></p>
+<h3 id="compliance-and-security">Compliance and Security<a class="headerlink" href="#compliance-and-security" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compliance.rbac</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable RBAC</td>
+</tr>
+<tr>
+<td><code>compliance.networkPolicies</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable network policies</td>
+</tr>
+<tr>
+<td><code>compliance.podSecurityPolicies</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable pod security policies</td>
+</tr>
+<tr>
+<td><code>compliance.auditLogging</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable audit logging</td>
+</tr>
+<tr>
+<td><code>compliance.securityContext.runAsNonRoot</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Run as non-root</td>
+</tr>
+<tr>
+<td><code>compliance.securityContext.runAsUser</code></td>
+<td>integer</td>
+<td><code>1000</code></td>
+<td>User ID</td>
+</tr>
+<tr>
+<td><code>compliance.securityContext.fsGroup</code></td>
+<td>integer</td>
+<td><code>1000</code></td>
+<td>Filesystem group ID</td>
+</tr>
+</tbody>
+</table>
+<h3 id="feature-flags-global">Feature Flags (Global)<a class="headerlink" href="#feature-flags-global" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>features.experimental</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable experimental features</td>
+</tr>
+<tr>
+<td><code>features.beta</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable beta features</td>
+</tr>
+<tr>
+<td><code>features.aiml</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable AI/ML features</td>
+</tr>
+<tr>
+<td><code>features.edge</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable edge deployment</td>
+</tr>
+</tbody>
+</table>
+<h3 id="metadata-global">Metadata (Global)<a class="headerlink" href="#metadata-global" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>metadata.owner</code></td>
+<td>string</td>
+<td><code>platform-team</code></td>
+<td>Owner/team</td>
+</tr>
+<tr>
+<td><code>metadata.environment</code></td>
+<td>string</td>
+<td><code>development</code></td>
+<td>Environment</td>
+</tr>
+<tr>
+<td><code>metadata.costCenter</code></td>
+<td>string</td>
+<td><code>""</code></td>
+<td>Cost center (for billing)</td>
+</tr>
+<tr>
+<td><code>metadata.tags.project</code></td>
+<td>string</td>
+<td><code>self-healing-platform</code></td>
+<td>Project tag</td>
+</tr>
+<tr>
+<td><code>metadata.tags.managed-by</code></td>
+<td>string</td>
+<td><code>validated-patterns</code></td>
+<td>Managed-by tag</td>
+</tr>
+<tr>
+<td><code>metadata.tags.version</code></td>
+<td>string</td>
+<td><code>1.0.0</code></td>
+<td>Version tag</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="values-hubyaml-configuration">values-hub.yaml Configuration<a class="headerlink" href="#values-hubyaml-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="cluster-topology-configuration">Cluster Topology Configuration<a class="headerlink" href="#cluster-topology-configuration" title="Permanent link">&para;</a></h3>
+<p><strong>⚠️ CRITICAL for SNO deployments</strong>: Update <code>cluster.topology</code> to <code>sno</code> and change storage classes to <code>gp3-csi</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cluster.topology</code></td>
+<td>string</td>
+<td><code>ha</code></td>
+<td>Cluster topology: <code>ha</code> (HighlyAvailable multi-node) or <code>sno</code> (Single Node OpenShift). <strong>Must match actual cluster</strong>. Verify with: <code>make show-cluster-info</code></td>
+</tr>
+<tr>
+<td><code>cluster.version</code></td>
+<td>string</td>
+<td><code>4.18</code> (auto-detected)</td>
+<td>OpenShift version (auto-detected during deployment)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>SNO Configuration Example</strong>:
+<pre class="highlight"><code class="language-yaml">cluster:
+  topology: "sno"
+
+storage:
+  modelStorage:
+    storageClass: "gp3-csi"  # Changed from ocs-storagecluster-cephfs</code></pre></p>
+<h3 id="main-cluster-group-configuration">Main Cluster Group Configuration<a class="headerlink" href="#main-cluster-group-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>main.clusterGroupName</code></td>
+<td>string</td>
+<td><code>hub</code></td>
+<td>Cluster group name</td>
+</tr>
+<tr>
+<td><code>main.targetSite</code></td>
+<td>string</td>
+<td><code>hub</code></td>
+<td>Target site for this deployment</td>
+</tr>
+<tr>
+<td><code>main.gitOpsOperator</code></td>
+<td>string</td>
+<td><code>openshift-gitops</code></td>
+<td>OpenShift GitOps operator namespace</td>
+</tr>
+<tr>
+<td><code>main.namespace</code></td>
+<td>string</td>
+<td><code>self-healing-platform</code></td>
+<td>Namespace for pattern deployment</td>
+</tr>
+</tbody>
+</table>
+<h3 id="namespace-configuration">Namespace Configuration<a class="headerlink" href="#namespace-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>namespace.create</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td><strong>MUST BE FALSE</strong> - Namespace already exists with OpenShift-specific annotations, don't recreate it</td>
+</tr>
+<tr>
+<td><code>namespace.name</code></td>
+<td>string</td>
+<td><code>self-healing-platform</code></td>
+<td>Namespace name</td>
+</tr>
+<tr>
+<td><code>namespace.git.repoURL</code></td>
+<td>string</td>
+<td><code>""</code> (overridden)</td>
+<td>Repository URL (will be overridden - see values-global.yaml)</td>
+</tr>
+<tr>
+<td><code>namespace.git.revision</code></td>
+<td>string</td>
+<td><code>""</code> (overridden)</td>
+<td>Branch to deploy from (will be overridden - see values-global.yaml)</td>
+</tr>
+<tr>
+<td><code>namespace.helm.clusterGroupChartVersion</code></td>
+<td>string</td>
+<td><code>0.9.*</code></td>
+<td>Helm chart repository version</td>
+</tr>
+<tr>
+<td><code>namespace.helm.extraValues</code></td>
+<td>array</td>
+<td><code>[]</code></td>
+<td>Additional Helm options</td>
+</tr>
+</tbody>
+</table>
+<h3 id="clustergroup-configuration">ClusterGroup Configuration<a class="headerlink" href="#clustergroup-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clusterGroup.name</code></td>
+<td>string</td>
+<td><code>hub</code></td>
+<td>ClusterGroup name</td>
+</tr>
+<tr>
+<td><code>clusterGroup.isHubCluster</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Is this a hub cluster?</td>
+</tr>
+<tr>
+<td><code>clusterGroup.namespaces.self-healing-platform.labels."openshift.io/cluster-monitoring"</code></td>
+<td>string</td>
+<td><code>"true"</code></td>
+<td>Enable cluster monitoring</td>
+</tr>
+<tr>
+<td><code>clusterGroup.namespaces.self-healing-platform.annotations."openshift.io/description"</code></td>
+<td>string</td>
+<td>Descriptive text</td>
+<td>Namespace description</td>
+</tr>
+</tbody>
+</table>
+<h3 id="argocd-application-configuration">ArgoCD Application Configuration<a class="headerlink" href="#argocd-application-configuration" title="Permanent link">&para;</a></h3>
+<p><strong>⚠️ CRITICAL</strong>: Update <code>clusterGroup.applications.self-healing-platform.repoURL</code> to YOUR fork's URL.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clusterGroup.applications.self-healing-platform.name</code></td>
+<td>string</td>
+<td><code>self-healing-platform</code></td>
+<td>Application name</td>
+</tr>
+<tr>
+<td><code>clusterGroup.applications.self-healing-platform.namespace</code></td>
+<td>string</td>
+<td><code>self-healing-platform</code></td>
+<td>Target namespace</td>
+</tr>
+<tr>
+<td><code>clusterGroup.applications.self-healing-platform.project</code></td>
+<td>string</td>
+<td><code>default</code></td>
+<td>ArgoCD project</td>
+</tr>
+<tr>
+<td><code>clusterGroup.applications.self-healing-platform.path</code></td>
+<td>string</td>
+<td><code>charts/hub</code></td>
+<td>Helm chart path in repository</td>
+</tr>
+<tr>
+<td><code>clusterGroup.applications.self-healing-platform.repoURL</code></td>
+<td>string</td>
+<td><code>https://github.com/YOUR-USERNAME/...</code></td>
+<td><strong>MUST UPDATE</strong> - Your forked repository URL</td>
+</tr>
+<tr>
+<td><code>clusterGroup.applications.self-healing-platform.targetRevision</code></td>
+<td>string</td>
+<td><code>main</code></td>
+<td>Git branch</td>
+</tr>
+<tr>
+<td><code>clusterGroup.applications.self-healing-platform.helm.valueFiles</code></td>
+<td>array</td>
+<td>See example</td>
+<td>Values files to use</td>
+</tr>
+<tr>
+<td><code>clusterGroup.applications.self-healing-platform.syncPolicy.automated.prune</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Auto-prune resources</td>
+</tr>
+<tr>
+<td><code>clusterGroup.applications.self-healing-platform.syncPolicy.automated.selfHeal</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Auto-heal resources</td>
+</tr>
+<tr>
+<td><code>clusterGroup.applications.self-healing-platform.syncPolicy.retry.limit</code></td>
+<td>integer</td>
+<td><code>5</code></td>
+<td>Retry limit</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong>:
+<pre class="highlight"><code class="language-yaml">clusterGroup:
+  applications:
+    self-healing-platform:
+      repoURL: "https://github.com/YOUR-USERNAME/openshift-aiops-platform.git"
+      helm:
+        valueFiles:
+          - /values-global.yaml
+          - /values-hub.yaml
+          - charts/hub/values-notebooks-validation.yaml</code></pre></p>
+<h3 id="workbench-configuration">Workbench Configuration<a class="headerlink" href="#workbench-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>workbench.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable workbench</td>
+</tr>
+<tr>
+<td><code>workbench.gpu.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable GPU support for AI/ML model training and inference</td>
+</tr>
+</tbody>
+</table>
+<h3 id="storage-configuration">Storage Configuration<a class="headerlink" href="#storage-configuration" title="Permanent link">&para;</a></h3>
+<h4 id="basic-storage">Basic Storage<a class="headerlink" href="#basic-storage" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>storage.storageClass</code></td>
+<td>string</td>
+<td><code>""</code> (cluster default)</td>
+<td>Storage class for persistent volumes</td>
+</tr>
+<tr>
+<td><code>storage.dataVolumeSize</code></td>
+<td>string</td>
+<td><code>5Gi</code></td>
+<td>Data volume size</td>
+</tr>
+<tr>
+<td><code>storage.modelsVolumeSize</code></td>
+<td>string</td>
+<td><code>10Gi</code></td>
+<td>Models volume size</td>
+</tr>
+<tr>
+<td><code>storage.logsVolumeSize</code></td>
+<td>string</td>
+<td><code>5Gi</code></td>
+<td>Logs volume size</td>
+</tr>
+</tbody>
+</table>
+<h4 id="self-healing-data-storage">Self-Healing Data Storage<a class="headerlink" href="#self-healing-data-storage" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>storage.selfHealingData.size</code></td>
+<td>string</td>
+<td><code>10Gi</code></td>
+<td>Self-healing data storage size</td>
+</tr>
+<tr>
+<td><code>storage.selfHealingData.storageClass</code></td>
+<td>string</td>
+<td><code>gp3-csi</code></td>
+<td>Storage class</td>
+</tr>
+</tbody>
+</table>
+<h4 id="model-artifacts-storage">Model Artifacts Storage<a class="headerlink" href="#model-artifacts-storage" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>storage.modelArtifacts.size</code></td>
+<td>string</td>
+<td><code>50Gi</code></td>
+<td>Model artifacts storage size</td>
+</tr>
+<tr>
+<td><code>storage.modelArtifacts.storageClass</code></td>
+<td>string</td>
+<td><code>ocs-storagecluster-cephfs</code> (HA) / <code>gp3-csi</code> (SNO)</td>
+<td>Storage class (RWX for HA, RWO for SNO)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="model-storage-pvc">Model Storage PVC<a class="headerlink" href="#model-storage-pvc" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>storage.modelStorage.size</code></td>
+<td>string</td>
+<td><code>10Gi</code></td>
+<td>Model storage PVC size (shared between notebooks and KServe)</td>
+</tr>
+<tr>
+<td><code>storage.modelStorage.storageClass</code></td>
+<td>string</td>
+<td><code>ocs-storagecluster-cephfs</code> (HA) / <code>gp3-csi</code> (SNO)</td>
+<td><strong>CRITICAL</strong>: Use <code>ocs-storagecluster-cephfs</code> (RWX) on HA clusters, <code>gp3-csi</code> (RWO) on SNO</td>
+</tr>
+</tbody>
+</table>
+<h4 id="workbench-data-storage">Workbench Data Storage<a class="headerlink" href="#workbench-data-storage" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>storage.workbenchData.size</code></td>
+<td>string</td>
+<td><code>20Gi</code></td>
+<td>Workbench data storage size</td>
+</tr>
+<tr>
+<td><code>storage.workbenchData.storageClass</code></td>
+<td>string</td>
+<td><code>gp3-csi</code></td>
+<td>Storage class</td>
+</tr>
+</tbody>
+</table>
+<h3 id="object-store-configuration-hub">Object Store Configuration (Hub)<a class="headerlink" href="#object-store-configuration-hub" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>objectStore.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td><strong>Always enabled</strong> - Provides S3 storage. HA: full ODF (Ceph + NooBaa), SNO: MCG-only ODF (NooBaa without Ceph)</td>
+</tr>
+<tr>
+<td><code>objectStore.endpoint</code></td>
+<td>string</td>
+<td><code>https://s3.openshift-storage.svc:443</code></td>
+<td>S3 endpoint URL</td>
+</tr>
+<tr>
+<td><code>objectStore.region</code></td>
+<td>string</td>
+<td><code>us-east-1</code></td>
+<td>AWS region</td>
+</tr>
+<tr>
+<td><code>objectStore.sslVerify</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>SSL verification</td>
+</tr>
+<tr>
+<td><code>objectStore.buckets.models</code></td>
+<td>string</td>
+<td><code>model-storage</code></td>
+<td>Model storage bucket</td>
+</tr>
+<tr>
+<td><code>objectStore.buckets.trainingData</code></td>
+<td>string</td>
+<td><code>training-data</code></td>
+<td>Training data bucket</td>
+</tr>
+<tr>
+<td><code>objectStore.buckets.inferenceResults</code></td>
+<td>string</td>
+<td><code>inference-results</code></td>
+<td>Inference results bucket</td>
+</tr>
+</tbody>
+</table>
+<h3 id="networking-configuration-hub">Networking Configuration (Hub)<a class="headerlink" href="#networking-configuration-hub" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>networking.networkPolicies</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable network policies</td>
+</tr>
+<tr>
+<td><code>networking.serviceMesh</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable service mesh</td>
+</tr>
+<tr>
+<td><code>networking.ingress.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable ingress</td>
+</tr>
+<tr>
+<td><code>networking.ingress.className</code></td>
+<td>string</td>
+<td><code>openshift</code></td>
+<td>Ingress class name</td>
+</tr>
+</tbody>
+</table>
+<h3 id="security-configuration">Security Configuration<a class="headerlink" href="#security-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>security.rbac</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable RBAC</td>
+</tr>
+<tr>
+<td><code>security.podSecurityPolicies</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable pod security policies</td>
+</tr>
+<tr>
+<td><code>security.securityContext.runAsNonRoot</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Run as non-root</td>
+</tr>
+<tr>
+<td><code>security.securityContext.runAsUser</code></td>
+<td>integer</td>
+<td><code>1000</code></td>
+<td>User ID</td>
+</tr>
+<tr>
+<td><code>security.securityContext.fsGroup</code></td>
+<td>integer</td>
+<td><code>1000</code></td>
+<td>Filesystem group ID</td>
+</tr>
+<tr>
+<td><code>security.networkPolicies</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable network policies</td>
+</tr>
+</tbody>
+</table>
+<h3 id="secrets-management-hub">Secrets Management (Hub)<a class="headerlink" href="#secrets-management-hub" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>secrets.backend</code></td>
+<td>string</td>
+<td><code>external-secrets</code></td>
+<td>Secret backend: <code>vault</code>, <code>sealed-secrets</code>, or <code>external-secrets</code></td>
+</tr>
+<tr>
+<td><code>secrets.vault.address</code></td>
+<td>string</td>
+<td><code>""</code></td>
+<td>Vault server address (set during deployment)</td>
+</tr>
+<tr>
+<td><code>secrets.vault.namespace</code></td>
+<td>string</td>
+<td><code>""</code></td>
+<td>Vault namespace (for Vault Enterprise)</td>
+</tr>
+<tr>
+<td><code>secrets.vault.authMethod</code></td>
+<td>string</td>
+<td><code>kubernetes</code></td>
+<td>Vault auth method: <code>kubernetes</code>, <code>jwt</code>, or <code>userpass</code></td>
+</tr>
+<tr>
+<td><code>secrets.vault.role</code></td>
+<td>string</td>
+<td><code>self-healing-platform</code></td>
+<td>Vault role for Kubernetes auth</td>
+</tr>
+<tr>
+<td><code>secrets.vault.secretPath</code></td>
+<td>string</td>
+<td><code>secret/data/self-healing-platform</code></td>
+<td>Vault path for secrets</td>
+</tr>
+</tbody>
+</table>
+<h3 id="model-serving-configuration">Model Serving Configuration<a class="headerlink" href="#model-serving-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>modelServing.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable model serving</td>
+</tr>
+<tr>
+<td><code>modelServing.sklearn.image</code></td>
+<td>string</td>
+<td><code>kserve/sklearnserver:latest</code></td>
+<td>Sklearn runtime image</td>
+</tr>
+<tr>
+<td><code>modelServing.sklearn.resources.requests.memory</code></td>
+<td>string</td>
+<td><code>256Mi</code></td>
+<td>Memory request</td>
+</tr>
+<tr>
+<td><code>modelServing.sklearn.resources.requests.cpu</code></td>
+<td>string</td>
+<td><code>100m</code></td>
+<td>CPU request</td>
+</tr>
+<tr>
+<td><code>modelServing.sklearn.resources.limits.memory</code></td>
+<td>string</td>
+<td><code>512Mi</code></td>
+<td>Memory limit</td>
+</tr>
+<tr>
+<td><code>modelServing.sklearn.resources.limits.cpu</code></td>
+<td>string</td>
+<td><code>500m</code></td>
+<td>CPU limit</td>
+</tr>
+<tr>
+<td><code>modelServing.tensorflow.image</code></td>
+<td>string</td>
+<td><code>kserve/tfserving:latest</code></td>
+<td>TensorFlow runtime image</td>
+</tr>
+<tr>
+<td><code>modelServing.tensorflow.resources.requests.memory</code></td>
+<td>string</td>
+<td><code>512Mi</code></td>
+<td>Memory request</td>
+</tr>
+<tr>
+<td><code>modelServing.tensorflow.resources.requests.cpu</code></td>
+<td>string</td>
+<td><code>200m</code></td>
+<td>CPU request</td>
+</tr>
+<tr>
+<td><code>modelServing.tensorflow.resources.limits.memory</code></td>
+<td>string</td>
+<td><code>1Gi</code></td>
+<td>Memory limit</td>
+</tr>
+<tr>
+<td><code>modelServing.tensorflow.resources.limits.cpu</code></td>
+<td>string</td>
+<td><code>1000m</code></td>
+<td>CPU limit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="monitoring-and-observability-hub">Monitoring and Observability (Hub)<a class="headerlink" href="#monitoring-and-observability-hub" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>monitoring.prometheus.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable Prometheus</td>
+</tr>
+<tr>
+<td><code>monitoring.prometheus.retention</code></td>
+<td>string</td>
+<td><code>30d</code></td>
+<td>Retention period</td>
+</tr>
+<tr>
+<td><code>monitoring.grafana.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable Grafana</td>
+</tr>
+<tr>
+<td><code>monitoring.grafana.adminPassword</code></td>
+<td>string</td>
+<td><code>""</code> (from secrets)</td>
+<td>Grafana admin password</td>
+</tr>
+<tr>
+<td><code>monitoring.alerting.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable alerting</td>
+</tr>
+<tr>
+<td><code>monitoring.serviceMonitors</code></td>
+<td>array</td>
+<td>See example</td>
+<td>Service monitors list</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong>:
+<pre class="highlight"><code class="language-yaml">monitoring:
+  serviceMonitors:
+    - coordination-engine
+    - mcp-server
+    - self-healing-platform</code></pre></p>
+<h3 id="notebook-validation-configuration">Notebook Validation Configuration<a class="headerlink" href="#notebook-validation-configuration" title="Permanent link">&para;</a></h3>
+<p><strong>References</strong>: ADR-029, ADR-030<br />
+<strong>Documentation</strong>: <a href="../../NOTEBOOK-VALIDATION-ARGOCD/">docs/NOTEBOOK-VALIDATION-ARGOCD.md</a></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>notebooks.validation.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable ArgoCD-based notebook validation</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.git.url</code></td>
+<td>string</td>
+<td><code>""</code> (from values-global.yaml)</td>
+<td>Git repository URL (falls back to values-global.yaml git.repoURL)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.git.ref</code></td>
+<td>string</td>
+<td><code>main</code></td>
+<td>Git branch</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.git.credentialsSecret</code></td>
+<td>string</td>
+<td><code>github-pat-credentials</code></td>
+<td>GitHub PAT secret (must be created before deployment). See: /tmp/github-pat-quick-start.md or docs/NOTEBOOK-VALIDATION-ARGOCD.md</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.containerImage</code></td>
+<td>string</td>
+<td><code>image-registry.openshift-image-registry.svc:5000/self-healing-platform/notebook-validator:latest</code></td>
+<td>Default container image for notebook execution (HYBRID APPROACH: RHOAI base + validation tools via BuildConfig)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tierImages.tier1</code></td>
+<td>string</td>
+<td><code>...s2i-minimal-notebook:2025.1</code></td>
+<td>Tier 1 image override (fast startup)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tierImages.tier2</code></td>
+<td>string</td>
+<td><code>...pytorch:2025.1</code></td>
+<td>Tier 2 image override (ML workloads)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tierImages.tier3</code></td>
+<td>string</td>
+<td><code>...pytorch:2025.1</code></td>
+<td>Tier 3 image override (GPU-enabled)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.fallbackImage</code></td>
+<td>string</td>
+<td><code>quay.io/jupyter/scipy-notebook:latest</code></td>
+<td>Fallback public image (only if RHOAI images unavailable)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.buildConfig.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable BuildConfig (HYBRID: RHOAI base + validation tools)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.buildConfig.baseImage</code></td>
+<td>string</td>
+<td><code>...pytorch:2025.1</code></td>
+<td>Base image for BuildConfig</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.buildConfig.noCache</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Disable build cache</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.buildConfig.imageChangeTrigger</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable image change triggers</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.buildConfig.pullSecret</code></td>
+<td>string</td>
+<td><code>""</code></td>
+<td>Pull secret for base image</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.timeout</code></td>
+<td>string</td>
+<td><code>30m</code></td>
+<td>Default timeout for notebook validation</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.resources.requests.memory</code></td>
+<td>string</td>
+<td><code>2Gi</code></td>
+<td>Default memory request (tier1)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.resources.requests.cpu</code></td>
+<td>string</td>
+<td><code>1000m</code></td>
+<td>Default CPU request (tier1)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.resources.limits.memory</code></td>
+<td>string</td>
+<td><code>4Gi</code></td>
+<td>Default memory limit (tier1)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.resources.limits.cpu</code></td>
+<td>string</td>
+<td><code>2000m</code></td>
+<td>Default CPU limit (tier1)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.operatorImage</code></td>
+<td>string</td>
+<td><code>quay.io/takinosh/jupyter-notebook-validator-operator:release-4.20-f655671</code></td>
+<td>Operator image</td>
+</tr>
+</tbody>
+</table>
+<h4 id="tier-specific-configuration">Tier-Specific Configuration<a class="headerlink" href="#tier-specific-configuration" title="Permanent link">&para;</a></h4>
+<p><strong>Tier 1: Simple notebooks (ArgoCD Sync Wave 10)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>notebooks.validation.tiers.tier1.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable tier 1 validation</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier1.notebooks</code></td>
+<td>array</td>
+<td>See values file</td>
+<td>Notebooks to validate (prerequisites, data collection)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tier 2: Intermediate notebooks (ArgoCD Sync Wave 20)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>notebooks.validation.tiers.tier2.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable tier 2 validation (ML training)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier2.notebooks</code></td>
+<td>array</td>
+<td>See values file</td>
+<td>Notebooks to validate (ML model training, integration)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier2.resources.requests.memory</code></td>
+<td>string</td>
+<td><code>4Gi</code></td>
+<td>Memory request</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier2.resources.requests.cpu</code></td>
+<td>string</td>
+<td><code>2000m</code></td>
+<td>CPU request</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier2.resources.limits.memory</code></td>
+<td>string</td>
+<td><code>8Gi</code></td>
+<td>Memory limit</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier2.resources.limits.cpu</code></td>
+<td>string</td>
+<td><code>4000m</code></td>
+<td>CPU limit</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier2.timeout</code></td>
+<td>string</td>
+<td><code>30m</code></td>
+<td>Timeout</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tier 3: Advanced notebooks (ArgoCD Sync Wave 30)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>notebooks.validation.tiers.tier3.enabled</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable tier 3 validation (enable after tier1+tier2 pass)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier3.notebooks</code></td>
+<td>array</td>
+<td>See values file</td>
+<td>Notebooks to validate (model serving, end-to-end scenarios)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier3.resources.requests.memory</code></td>
+<td>string</td>
+<td><code>6Gi</code></td>
+<td>Memory request</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier3.resources.requests.cpu</code></td>
+<td>string</td>
+<td><code>3000m</code></td>
+<td>CPU request</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier3.resources.limits.memory</code></td>
+<td>string</td>
+<td><code>12Gi</code></td>
+<td>Memory limit</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier3.resources.limits.cpu</code></td>
+<td>string</td>
+<td><code>6000m</code></td>
+<td>CPU limit</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier3.timeout</code></td>
+<td>string</td>
+<td><code>45m</code></td>
+<td>Timeout</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier3.gpu.enabled</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable GPU (set to true for GPU-enabled notebooks)</td>
+</tr>
+<tr>
+<td><code>notebooks.validation.tiers.tier3.gpu.count</code></td>
+<td>string</td>
+<td><code>"1"</code></td>
+<td>GPU count</td>
+</tr>
+</tbody>
+</table>
+<h3 id="feature-flags-hub">Feature Flags (Hub)<a class="headerlink" href="#feature-flags-hub" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>features.experimental</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable experimental features</td>
+</tr>
+<tr>
+<td><code>features.beta</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable beta features</td>
+</tr>
+<tr>
+<td><code>features.aiml</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable AI/ML features</td>
+</tr>
+<tr>
+<td><code>features.edge</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Enable edge deployment</td>
+</tr>
+</tbody>
+</table>
+<h3 id="metadata-hub">Metadata (Hub)<a class="headerlink" href="#metadata-hub" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>metadata.owner</code></td>
+<td>string</td>
+<td><code>platform-team</code></td>
+<td>Owner/team</td>
+</tr>
+<tr>
+<td><code>metadata.environment</code></td>
+<td>string</td>
+<td><code>development</code></td>
+<td>Environment</td>
+</tr>
+<tr>
+<td><code>metadata.costCenter</code></td>
+<td>string</td>
+<td><code>""</code></td>
+<td>Cost center (for billing)</td>
+</tr>
+<tr>
+<td><code>metadata.tags.project</code></td>
+<td>string</td>
+<td><code>self-healing-platform</code></td>
+<td>Project tag</td>
+</tr>
+<tr>
+<td><code>metadata.tags.managed-by</code></td>
+<td>string</td>
+<td><code>validated-patterns</code></td>
+<td>Managed-by tag</td>
+</tr>
+<tr>
+<td><code>metadata.tags.version</code></td>
+<td>string</td>
+<td><code>1.0.0</code></td>
+<td>Version tag</td>
+</tr>
+<tr>
+<td><code>metadata.tags.framework</code></td>
+<td>string</td>
+<td><code>openshift-gitops</code></td>
+<td>Framework tag</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="environment-variables">Environment Variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h2>
+<h3 id="ansible-execution-environment">Ansible Execution Environment<a class="headerlink" href="#ansible-execution-environment" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ANSIBLE_HUB_TOKEN</code></td>
+<td>Red Hat Ansible Automation Hub token (for building execution environment locally)</td>
+<td><code>eyJhbGc...</code></td>
+</tr>
+<tr>
+<td><code>KUBECONFIG</code></td>
+<td>Kubernetes/OpenShift configuration file path</td>
+<td><code>~/.kube/config</code></td>
+</tr>
+<tr>
+<td><code>OC_LOGIN_TOKEN</code></td>
+<td>OpenShift login token (alternative to password)</td>
+<td><code>sha256~abc...</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="build-environment">Build Environment<a class="headerlink" href="#build-environment" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CONTAINER_RUNTIME</code></td>
+<td>Container runtime to use</td>
+<td><code>podman</code> (default) or <code>docker</code></td>
+</tr>
+<tr>
+<td><code>EE_IMAGE_NAME</code></td>
+<td>Execution environment image name</td>
+<td><code>openshift-aiops-platform-ee</code></td>
+</tr>
+<tr>
+<td><code>EE_IMAGE_TAG</code></td>
+<td>Execution environment image tag</td>
+<td><code>latest</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
+<h3 id="critical-configuration-steps">Critical Configuration Steps<a class="headerlink" href="#critical-configuration-steps" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>Create values files</strong>:
+   <pre class="highlight"><code class="language-bash">cp values-global.yaml.example values-global.yaml
+cp values-hub.yaml.example values-hub.yaml</code></pre></p>
+</li>
+<li>
+<p><strong>Update repoURL in BOTH files</strong>:
+   <pre class="highlight"><code class="language-bash">vi values-global.yaml  # Change git.repoURL
+vi values-hub.yaml     # Change clusterGroup.applications.self-healing-platform.repoURL</code></pre></p>
+</li>
+<li>
+<p><strong>For SNO deployments</strong>, update <code>values-hub.yaml</code>:
+   <pre class="highlight"><code class="language-yaml">cluster:
+  topology: "sno"
+storage:
+  modelStorage:
+    storageClass: "gp3-csi"</code></pre></p>
+</li>
+<li>
+<p><strong>Verify configuration</strong>:
+   <pre class="highlight"><code class="language-bash">make show-cluster-info
+cat values-global.yaml | grep repoURL
+cat values-hub.yaml | grep repoURL</code></pre></p>
+</li>
+</ol>
+<h3 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../../DEPLOYMENT.md">DEPLOYMENT.md</a> - Complete deployment guide</li>
+<li><a href="../../how-to/deploy-on-sno/">docs/how-to/deploy-on-sno.md</a> - SNO deployment guide</li>
+<li><a href="../../NOTEBOOK-VALIDATION-ARGOCD/">docs/NOTEBOOK-VALIDATION-ARGOCD.md</a> - Notebook validation configuration</li>
+<li><a href="../../adrs/026-secrets-management-automation/">ADR-026: Secrets Management Automation</a> - Secrets configuration</li>
+<li><a href="../../adrs/035-storage-strategy/">ADR-035: Storage Strategy</a> - Storage configuration</li>
+<li><a href="../../adrs/056-standalone-mcg-on-sno/">ADR-056: Standalone MCG on SNO</a> - SNO storage configuration</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 19, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 19, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>
