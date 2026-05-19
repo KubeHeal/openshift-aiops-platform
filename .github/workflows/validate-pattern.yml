@@ -1,18 +1,45 @@
 name: Validate Pattern
 
+# This workflow validates the pattern deployment on an OpenShift cluster.
+#
+# **Manual Trigger**: Go to Actions → Validate Pattern → Run workflow
+#   - Provide your cluster API URL and login token
+#   - Optionally skip installation to validate an existing deployment
+#
+# **Automatic Runs**: Triggered on push/PR to main
+#   - Requires OCP_API_URL and OCP_TOKEN repository secrets
+#   - Set in: Settings → Secrets and variables → Actions
+#   - Can be disabled by setting SKIP_DEPLOY_VALIDATION=true variable
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      ocp_api_url:
+        description: 'OpenShift API URL (e.g., https://api.cluster.example.com:6443)'
+        required: true
+        type: string
+      ocp_token:
+        description: 'OpenShift login token (from `oc whoami -t`)'
+        required: true
+        type: string
+      skip_install:
+        description: 'Skip pattern installation (validate existing deployment only)'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   validate:
     name: Pattern Deploy Validation
     runs-on: ubuntu-latest
-    # Requires repository secrets: OCP_API_URL and OCP_TOKEN
-    # Set these in: Settings → Secrets → Actions
+    # Credentials can be provided in two ways:
+    # 1. Manual trigger: Provide ocp_api_url and ocp_token as workflow inputs
+    # 2. Automatic runs: Configure OCP_API_URL and OCP_TOKEN as repository secrets
+    # Set repository variable SKIP_DEPLOY_VALIDATION=true to disable automatic runs
     if: ${{ vars.SKIP_DEPLOY_VALIDATION != 'true' }}
 
     steps:
@@ -26,10 +53,24 @@ jobs:
 
       - name: Login to OpenShift
         run: |
-          oc login "${{ secrets.OCP_API_URL }}" \
-            --token="${{ secrets.OCP_TOKEN }}" \
+          # Use workflow inputs if provided (manual trigger), otherwise use secrets (automatic runs)
+          OCP_API_URL="${{ github.event.inputs.ocp_api_url || secrets.OCP_API_URL }}"
+          OCP_TOKEN="${{ github.event.inputs.ocp_token || secrets.OCP_TOKEN }}"
+
+          if [ -z "$OCP_API_URL" ] || [ -z "$OCP_TOKEN" ]; then
+            echo "❌ ERROR: OpenShift credentials not provided"
+            echo "For manual runs: Provide 'ocp_api_url' and 'ocp_token' inputs"
+            echo "For automatic runs: Configure OCP_API_URL and OCP_TOKEN repository secrets"
+            exit 1
+          fi
+
+          echo "🔐 Logging in to OpenShift cluster..."
+          oc login "$OCP_API_URL" \
+            --token="$OCP_TOKEN" \
             --insecure-skip-tls-verify
-          oc whoami
+
+          echo "✅ Logged in as: $(oc whoami)"
+          echo "🌐 Server: $(oc whoami --show-server)"
 
       - name: Install podman (required by pattern.sh)
         run: |
@@ -37,6 +78,7 @@ jobs:
           sudo apt-get install -y podman
 
       - name: Install pattern
+        if: ${{ github.event.inputs.skip_install != 'true' }}
         run: ./pattern.sh make install
 
       - name: Wait for ArgoCD convergence
