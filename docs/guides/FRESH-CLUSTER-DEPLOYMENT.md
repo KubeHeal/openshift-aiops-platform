@@ -26,7 +26,7 @@ This guide walks you through deploying the OpenShift AIOps Self-Healing Platform
 
 | Tool | Minimum Version | Purpose | Installation |
 |------|-----------------|---------|--------------|
-| **oc** | 4.18+ | OpenShift CLI | `./scripts/install-prerequisites-rhel.sh` (RHEL 9/10) |
+| **oc** | 4.19+ | OpenShift CLI | `./scripts/install-prerequisites-rhel.sh` (RHEL 9/10) |
 | **kubectl** | 1.31+ | Kubernetes CLI | Installed with oc |
 | **helm** | 3.16.4+ | Kubernetes package manager | Auto-installed by script |
 | **yq** | 4.44.6+ | YAML processor | Auto-installed by script |

@@ -2,6 +2,12 @@
 
 **Status:** ACCEPTED
 
+> **📌 VERSION UPDATE** (2026-05-19): While this ADR originally targeted OpenShift 4.18+, current deployments should use:
+> - **Recommended**: OpenShift **4.19+** (4.21 preferred for latest features)
+> - **Maintenance-only**: OpenShift 4.18 (supported but not recommended for new deployments)
+> 
+> See [OPERATOR_VERSIONS.md](../OPERATOR_VERSIONS.md) for current version requirements.
+
 ## Status
 
 accepted
@@ -11,7 +17,7 @@ accepted
 **Verification Date:** 2026-01-25
 **Implementation Score:** 10.0/10
 **Verified On:** SNO + HA clusters
-**Evidence:** OpenShift 4.18.21 deployed and operational. Platform selection validated across both topologies.
+**Evidence:** OpenShift 4.18.21 deployed and operational. Platform selection validated across both topologies (historical validation on 4.18; platform now supports 4.19-4.21).
 
 ## Context
 

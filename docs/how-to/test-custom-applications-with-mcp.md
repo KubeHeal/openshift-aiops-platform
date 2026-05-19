@@ -256,9 +256,11 @@ oc lightspeed query "Trigger remediation for my-custom-app-test namespace"
 
 ### Directory Structure
 
+> **Note**: The `09-custom-applications/` directory structure shown below is recommended for organizing your custom notebooks. You can create this directory structure in your fork, or use the existing `notebooks/08-advanced-scenarios/` directory for custom integrations.
+
 ```
 notebooks/
-└── 09-custom-applications/
+└── 09-custom-applications/        # Create this directory for your custom notebooks
     ├── my-app-monitoring.ipynb
     ├── my-app-anomaly-detection.ipynb
     └── my-app-self-healing.ipynb
@@ -450,9 +452,12 @@ oc describe rolebinding my-custom-app-mcp-access -n self-healing-platform
 
 ## Example: Complete Custom Application Integration
 
-See our reference implementation:
-- **Repository**: [custom-app-integration-example](../../examples/custom-app-integration/)
-- **Notebook**: [notebooks/09-custom-applications/example-integration.ipynb](../../notebooks/09-custom-applications/)
+**Reference Implementations**:
+- Use the patterns shown in this guide as templates for your own integration
+- Refer to existing notebooks in `notebooks/06-mcp-lightspeed-integration/` for MCP integration examples
+- See `notebooks/08-advanced-scenarios/` for advanced use cases you can adapt
+
+> **Note**: You can create your own `notebooks/09-custom-applications/` directory for custom notebooks, or add them to the appropriate existing section
 
 ## Advanced Topics
 

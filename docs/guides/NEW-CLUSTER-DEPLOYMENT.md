@@ -2,13 +2,13 @@
 
 ## Overview
 
-This guide provides step-by-step instructions for deploying the OpenShift AI Ops Self-Healing Platform to a fresh OpenShift 4.18+ cluster using the Validated Patterns framework.
+This guide provides step-by-step instructions for deploying the OpenShift AI Ops Self-Healing Platform to a fresh OpenShift 4.19+ cluster using the Validated Patterns framework.
 
 **Target Audience**: Advanced SREs and Platform Engineers with OpenShift experience
 
 **Estimated Time**: 30-45 minutes
 
-**Prerequisites**: OpenShift 4.18+ cluster with required operators installed
+**Prerequisites**: OpenShift 4.19+ cluster (4.21 recommended; 4.18 maintenance-only) with required operators installed
 
 ---
 
@@ -29,7 +29,7 @@ This guide provides step-by-step instructions for deploying the OpenShift AI Ops
 ### Cluster Requirements
 
 **Minimum Configuration**:
-- ✅ OpenShift Container Platform **4.18+** (tested on 4.18.21)
+- ✅ OpenShift Container Platform **4.19+** (4.21 recommended; 4.18 maintenance-only)
 - ✅ **6+ nodes**: 3 control-plane, 3+ workers
 - ✅ **1+ GPU node**: NVIDIA GPU for AI/ML workloads
 - ✅ **24+ CPU cores** across cluster
@@ -39,7 +39,7 @@ This guide provides step-by-step instructions for deploying the OpenShift AI Ops
 **Verify Cluster Version**:
 ```bash
 oc version
-# openshiftVersion: 4.18.21 or higher
+# openshiftVersion: 4.19+ (4.21 recommended)
 ```
 
 ### Required Operators
@@ -50,27 +50,31 @@ The following operators **must be pre-installed**:
 |----------|---------|---------|
 | **Red Hat OpenShift AI** | 2.22.2+ | ML platform |
 | **NVIDIA GPU Operator** | 24.9.2+ | GPU management |
-| **OpenShift GitOps** | 1.15.4+ | ArgoCD/GitOps |
-| **OpenShift Pipelines** | 1.17.2+ | Tekton CI/CD |
+| **OpenShift GitOps** | 1.20.3+ | ArgoCD/GitOps |
+| **OpenShift Pipelines** | 1.22.0+ | Tekton CI/CD |
 | **OpenShift Serverless** | Latest | Knative/Istio |
-| **OpenShift Data Foundation** | Latest | Storage (ODF) |
-| **External Secrets Operator** | Latest | Secrets management |
+| **OpenShift Data Foundation** | 4.20+ (matches cluster version) | Storage (ODF) |
+| **External Secrets Operator** | 1.1.0+ | Secrets management |
+
+> **📖 Reference**: See [OPERATOR_VERSIONS.md](../../OPERATOR_VERSIONS.md) for complete version compatibility matrix
 
 **Verify Operators**:
 ```bash
 oc get csv -n openshift-operators | grep -E 'rhods|gpu|gitops|pipelines|serverless|odf|external-secrets'
 ```
 
-Expected output:
+Expected output (versions may be newer):
 ```
 rhods-operator.2.22.2
 gpu-operator-certified.v24.9.2
-openshift-gitops-operator.v1.15.4
-openshift-pipelines-operator-rh.v1.17.2
+openshift-gitops-operator.v1.20.3
+openshift-pipelines-operator-rh.v1.22.0
 serverless-operator.v1.36.1
-odf-operator.v4.18.0
-external-secrets-operator.v0.11.0
+odf-operator.v4.20.0
+external-secrets-operator.v1.1.0
 ```
+
+> **Note**: Versions shown are minimum requirements. Newer versions are generally compatible. Check [OPERATOR_VERSIONS.md](../../OPERATOR_VERSIONS.md) for latest tested versions.
 
 ### Storage Classes
 
@@ -453,7 +457,7 @@ make -f common/Makefile argo-healthcheck
 oc get pattern self-healing-platform -n openshift-operators
 
 # NAME                    CLUSTER           PLATFORM   VERSION
-# self-healing-platform   cluster-abc123    AWS        4.18.21
+# self-healing-platform   cluster-abc123    AWS        4.21.0
 ```
 
 **ArgoCD Application Health**:
@@ -488,7 +492,7 @@ Execute comprehensive validation:
 # Using Tekton pipeline (26 validation checks)
 tkn pipeline start deployment-validation-pipeline \
   --param namespace=self-healing-platform \
-  --param cluster-version=4.18 \
+  --param cluster-version=4.19 \
   --showlog
 ```
 
@@ -780,6 +784,6 @@ oc get route deployment-validation-trigger -n openshift-pipelines
 
 **Document Version**: 1.0
 **Last Updated**: 2025-12-05
-**Tested With**: OpenShift 4.18.21, RHOAI 2.22.2
+**Tested With**: OpenShift 4.19-4.21, RHOAI 2.22.2, ODF 4.20, GitOps 1.20.3, Pipelines 1.22.0
 **Authors**: Platform Team
 **License**: GPL v3.0

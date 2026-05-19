@@ -33,7 +33,7 @@ Red Hat Advanced Cluster Management (ACM) provides enterprise-grade multi-cluste
 
 ### Hub Cluster Requirements
 
-- OpenShift 4.18+ (tested on 4.18.21)
+- OpenShift 4.19+ (4.21 recommended; 4.18 maintenance-only; originally tested on 4.18.21)
 - 3+ control plane nodes
 - 4+ worker nodes (minimum)
 - 100GB+ available storage

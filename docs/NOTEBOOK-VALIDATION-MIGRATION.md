@@ -44,7 +44,7 @@ Before starting the migration, ensure:
   oc get pods -n cert-manager
   ```
 
-- [ ] **OpenShift 4.18+** or Kubernetes 1.31+ cluster
+- [ ] **OpenShift 4.19+** (4.21 recommended; 4.18 maintenance-only) or Kubernetes 1.31+ cluster
   ```bash
   oc version
   ```

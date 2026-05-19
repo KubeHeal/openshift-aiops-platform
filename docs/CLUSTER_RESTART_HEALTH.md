@@ -616,7 +616,7 @@ For questions or issues related to cluster restart health:
 
 - [Kubernetes Init Containers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/)
 - [Kubernetes Startup Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-startup-probes)
-- [OpenShift Storage Documentation](https://docs.openshift.com/container-platform/4.18/storage/index.html)
+- [OpenShift Storage Documentation](https://docs.openshift.com/container-platform/4.21/storage/index.html)
 - [KServe InferenceService API](https://kserve.github.io/website/latest/reference/api/)
 - [Helm Chart Best Practices](https://helm.sh/docs/chart_best_practices/)
 

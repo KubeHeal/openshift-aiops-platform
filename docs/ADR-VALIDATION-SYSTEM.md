@@ -126,7 +126,7 @@ python3 scripts/generate-validation-report.py
 **ADRs**: 001, 003, 004, 006, 007, 010
 
 Validates:
-- **ADR-001**: OpenShift 4.18+ cluster version, node count, topology
+- **ADR-001**: OpenShift 4.19+ cluster version (4.18 maintenance-only), node count, topology
 - **ADR-003**: RHODS/RHOAI deployment (operator, KServe, dashboard)
 - **ADR-004**: KServe InferenceServices (2 expected, predictor pods)
 - **ADR-006**: GPU Operator deployment, driver pods, GPU nodes

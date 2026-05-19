@@ -6,7 +6,7 @@ The OpenShift AI Ops Self-Healing Platform uses a **Hybrid Management Model** (A
 
 ## Prerequisites
 
-- OpenShift 4.18+ cluster with required operators
+- OpenShift 4.19+ cluster (4.21 recommended; 4.18 maintenance-only) with required operators
 - Configuration files: `values-global.yaml`, `values-hub.yaml`, `values-secret.yaml`
 - Git repository (Gitea or GitHub) with code pushed
 

@@ -77,7 +77,8 @@ openshift-aiops-platform/
 ├── tests/                      # Test suites
 ├── scripts/                    # Automation scripts
 ├── Makefile                    # Main build/deploy/test targets
-├── AGENTS.md                   # 🤖 AI agent development guide (comprehensive)
+├── docs/explanation/
+│   └── ai-agent-development-guide.md  # 🤖 AI agent development guide (comprehensive)
 ├── CLAUDE.md                   # 🤖 AI agent quick reference (this file)
 └── README.md                   # Quick start guide
 ```
@@ -86,10 +87,10 @@ openshift-aiops-platform/
 
 | Document | Purpose |
 |----------|---------|
-| **[AGENTS.md](AGENTS.md)** | 📖 Comprehensive AI agent development guide (1,800+ lines) |
+| **[AI Agent Development Guide](docs/explanation/ai-agent-development-guide.md)** | 📖 Comprehensive AI agent development guide (1,800+ lines) |
 | **[CLAUDE.md](CLAUDE.md)** | 🚀 AI agent quick reference (deployment and troubleshooting) |
 | **[README.md](README.md)** | ⚡ Quick start guide for users |
-| **[DEPLOYMENT.md](DEPLOYMENT.md)** | 📋 Step-by-step deployment guide |
+| **[Complete Deployment Guide](docs/how-to/complete-deployment-guide.md)** | 📋 Step-by-step deployment guide |
 | **[docs/adrs/](docs/adrs/)** | 🏛️ Architectural Decision Records (58+ ADRs) |
 | **[docs/guides/TROUBLESHOOTING-GUIDE.md](docs/guides/TROUBLESHOOTING-GUIDE.md)** | 🔧 Troubleshooting guide |
 | **[docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md](docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md)** | 👨‍💻 Junior developer guide |
@@ -238,7 +239,7 @@ All prerequisites installed successfully!
 
 If not using RHEL 9/10, manually install the tools listed above using your system's package manager. Refer to:
 - [README.md lines 79-87](README.md) - Prerequisites list
-- [AGENTS.md](AGENTS.md) - Detailed setup instructions
+- [AI Agent Development Guide](docs/explanation/ai-agent-development-guide.md) - Detailed setup instructions
 
 ---
 
@@ -1135,9 +1136,9 @@ oc get secret model-storage -n self-healing-platform -o yaml
 | Document | Purpose |
 |----------|---------|
 | `README.md` | Quick start guide |
-| `AGENTS.md` | Comprehensive AI agent development guide (1,800+ lines) |
+| `docs/explanation/ai-agent-development-guide.md` | Comprehensive AI agent development guide (1,800+ lines) |
 | `CLAUDE.md` | AI agent quick reference (this file) |
-| `DEPLOYMENT.md` | Step-by-step deployment guide |
+| `docs/how-to/complete-deployment-guide.md` | Step-by-step deployment guide |
 | `docs/adrs/README.md` | ADR index (58+ ADRs) |
 | `docs/guides/TROUBLESHOOTING-GUIDE.md` | Troubleshooting guide |
 | `docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md` | Junior developer guide |
@@ -1373,11 +1374,11 @@ Great question! The platform has extensive documentation depending on what you n
 **For Deployment**:
 - [CLAUDE.md](CLAUDE.md) (this file) - AI agent quick reference
 - [README.md](README.md) - Quick start guide (lines 115-227: 17-step workflow)
-- [DEPLOYMENT.md](DEPLOYMENT.md) - Step-by-step deployment guide
+- [Complete Deployment Guide](docs/how-to/complete-deployment-guide.md) - Step-by-step deployment guide
 - [docs/how-to/deploy-on-sno.md](docs/how-to/deploy-on-sno.md) - SNO deployment guide
 
 **For Development**:
-- [AGENTS.md](AGENTS.md) - Comprehensive AI agent development guide (1,800+ lines)
+- [AI Agent Development Guide](docs/explanation/ai-agent-development-guide.md) - Comprehensive AI agent development guide (1,800+ lines)
 - [docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md](docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md) - Junior developer guide
 
 **For Troubleshooting**:
@@ -1551,7 +1552,7 @@ make build-ee
 |------|--------|--------|
 | 2026-03-06 | Initial creation of CLAUDE.md | AI Agent |
 | | Added 10 sections: Overview, RHEL setup, deployment, SNO, troubleshooting, architecture, commands, files, patterns, reminders | |
-| | Content based on README.md, AGENTS.md, ADRs, and troubleshooting guides | |
+| | Content based on README.md, AI Agent Development Guide, ADRs, and troubleshooting guides | |
 
 ---
 
@@ -1561,4 +1562,4 @@ make build-ee
 
 **Questions or Issues?**
 - GitHub Issues: https://github.com/KubeHeal/openshift-aiops-platform/issues
-- Documentation: [AGENTS.md](AGENTS.md), [docs/adrs/](docs/adrs/)
+- Documentation: [AI Agent Development Guide](docs/explanation/ai-agent-development-guide.md), [docs/adrs/](docs/adrs/)

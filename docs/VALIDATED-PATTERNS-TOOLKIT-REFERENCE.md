@@ -72,7 +72,7 @@ my-pattern/
   include_role:
     name: validated_patterns_prerequisites
   vars:
-    min_openshift_version: "4.18"
+    min_openshift_version: "4.19"  # 4.21 recommended; 4.18 maintenance-only
     required_operators:
       - openshift-gitops-operator
       - openshift-pipelines-operator

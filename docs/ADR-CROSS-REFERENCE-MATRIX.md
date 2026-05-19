@@ -18,7 +18,7 @@
 
 ## Platform Foundation (ADR-001 to ADR-010)
 
-### ADR-001: OpenShift 4.18+ as Foundation Platform
+### ADR-001: OpenShift as Foundation Platform (originally 4.18+; now 4.19+ recommended)
 **Dependencies**:
 - → ADR-002 (Provides platform for hybrid architecture)
 - → ADR-003 (Enables OpenShift AI deployment)
@@ -46,7 +46,7 @@
 
 ### ADR-003: Red Hat OpenShift AI for ML Platform
 **Dependencies**:
-- → ADR-001 (Requires OpenShift 4.18+)
+- → ADR-001 (Requires OpenShift 4.19+; 4.18 maintenance-only)
 - → ADR-006 (Requires GPU support)
 
 **Referenced By**:

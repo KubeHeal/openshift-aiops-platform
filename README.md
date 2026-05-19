@@ -36,10 +36,10 @@ See the **[User Model Deployment Guide](docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.
 
 | Document | Description |
 |----------|-------------|
-| **[AGENTS.md](AGENTS.md)** | 🤖 **AI Agent Development Guide** (comprehensive reference) |
+| **[AI Agent Development Guide](docs/explanation/ai-agent-development-guide.md)** | 🤖 **AI Agent Development Guide** (comprehensive reference) |
 | **[CLAUDE.md](CLAUDE.md)** | 🤖 **AI Agent Quick Reference** (deployment and troubleshooting) |
 | **[docs/adrs/](docs/adrs/)** | 🏛️ Architectural Decision Records (29+ ADRs) |
-| **[DEPLOYMENT.md](DEPLOYMENT.md)** | 🚀 Step-by-step deployment guide |
+| **[Complete Deployment Guide](docs/how-to/complete-deployment-guide.md)** | 🚀 Step-by-step deployment guide |
 | **[docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md](docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md)** | 🧠 **User Model Deployment Guide** (deploy your own ML models via KServe) |
 | **[docs/guides/TROUBLESHOOTING-GUIDE.md](docs/guides/TROUBLESHOOTING-GUIDE.md)** | 🔧 **Troubleshooting Guide** (common issues and solutions) |
 | **[docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md](docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md)** | 👨‍💻 **Junior Developer Guide** (deployment testing walkthrough) |
@@ -375,10 +375,10 @@ make validate-deployment
 
 ### Development Workflow
 
-1. **Read the Docs**: Start with [AGENTS.md](AGENTS.md) and [ADRs](docs/adrs/)
+1. **Read the Docs**: Start with [AI Agent Development Guide](docs/explanation/ai-agent-development-guide.md) and [ADRs](docs/adrs/)
 2. **Create Feature Branch**: `git checkout -b feature/your-feature-name`
 3. **Make Changes**: Follow coding standards (YAML 2-space indent, yamllint compliant)
-4. **Test Locally**: `make test-ee` (pull or build the EE first; see [DEPLOYMENT.md](DEPLOYMENT.md))
+4. **Test Locally**: `make test-ee` (pull or build the EE first; see [Complete Deployment Guide](docs/how-to/complete-deployment-guide.md))
 5. **Commit**: Use conventional commits (`feat:`, `fix:`, `docs:`, `chore:`)
 6. **Push & PR**: Push to your fork, open pull request with description
 
@@ -409,7 +409,8 @@ openshift-aiops-platform/
 ├── tekton/                     # CI/CD pipelines (26 validation checks)
 ├── tests/                      # Test suites
 ├── Makefile                    # Main build/deploy/test targets
-├── AGENTS.md                   # 🤖 AI agent development guide
+├── docs/explanation/
+│   └── ai-agent-development-guide.md  # 🤖 AI agent development guide
 └── README.md                   # This file
 ```
 
@@ -464,9 +465,9 @@ We welcome contributions! Here's how you can help:
 
 **Before Submitting a PR:**
 
-1. ✅ **Read [AGENTS.md](AGENTS.md)**: Understand project architecture and conventions
+1. ✅ **Read [AI Agent Development Guide](docs/explanation/ai-agent-development-guide.md)**: Understand project architecture and conventions
 2. ✅ **Check existing ADRs**: Review [docs/adrs/](docs/adrs/) for architectural decisions
-3. ✅ **Run tests**: `make test-ee` (pull or build the EE first; see [DEPLOYMENT.md](DEPLOYMENT.md))
+3. ✅ **Run tests**: `make test-ee` (pull or build the EE first; see [Complete Deployment Guide](docs/how-to/complete-deployment-guide.md))
 4. ✅ **Lint your code**: `make super-linter` or use pre-commit hooks
 5. ✅ **Update docs**: If changing behavior, update relevant docs and ADRs
 6. ✅ **Sign commits**: `git commit -s` (DCO required)
@@ -594,7 +595,7 @@ curl http://coordination-engine.self-healing-platform.svc.cluster.local:8080/hea
 
 **Additional Resources**:
 - [Junior Developer Deployment Guide](docs/guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE.md) - Step-by-step testing walkthrough
-- [AGENTS.md § Common Pitfalls](AGENTS.md#common-pitfalls) - Development-specific issues
+- [AI Agent Development Guide § Common Pitfalls](docs/explanation/ai-agent-development-guide.md#common-pitfalls) - Development-specific issues
 
 ## 📊 Project Status
 

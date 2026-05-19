@@ -11,7 +11,7 @@ This guide provides the **complete, step-by-step deployment process** for the Op
 Before starting deployment, ensure you have:
 
 ### Cluster Requirements
-- ✅ OpenShift 4.18.21+ cluster with admin access
+- ✅ OpenShift 4.19+ cluster (4.21 recommended; 4.18 maintenance-only) with admin access
 - ✅ 6+ nodes (3 control-plane, 3 workers, 1 GPU-enabled)
 - ✅ 24+ CPU cores, 96+ GB RAM, 500+ GB storage
 - ✅ OpenShift Data Foundation (ODF) deployed
@@ -219,7 +219,7 @@ make validate-deployment
 # Alternative: Run validation pipeline manually
 tkn pipeline start deployment-validation-pipeline \
   --param namespace=self-healing-platform \
-  --param cluster-version=4.18 \
+  --param cluster-version=4.19 \
   --showlog
 ```
 
@@ -525,4 +525,4 @@ For issues or questions:
 
 **Last Updated**: 2025-12-09
 **Platform Version**: 1.0
-**OpenShift Version**: 4.18.21+
+**OpenShift Version**: 4.19+ (4.21 recommended; 4.18 maintenance-only)
