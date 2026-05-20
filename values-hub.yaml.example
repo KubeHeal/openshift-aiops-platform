@@ -159,7 +159,9 @@ applications:
     coordination-engine:
       enabled: true
       replicas: 1
-      image: coordination-engine:latest
+      # Image auto-derived from cluster.version (e.g. quay.io/takinosh/openshift-coordination-engine:4.20-latest)
+      # Override with explicit tag if needed: quay.io/takinosh/openshift-coordination-engine:v1.0.0
+      image: quay.io/takinosh/openshift-coordination-engine  # Tag auto-set by cluster version
 
     # Model Serving (KServe)
     model-serving:
@@ -175,7 +177,8 @@ applications:
       enabled: true
       workbench:
         name: self-healing-workbench
-        image: jupyter-minimal-notebook:latest
+        # Use official OpenDataHub workbench image with pinned tag
+        image: quay.io/opendatahub/workbench-images:jupyter-datascience-c9s-py311_2023c_latest
 
     # Monitoring
     monitoring:
@@ -263,7 +266,9 @@ modelServing:
 
   # sklearn runtime configuration
   sklearn:
-    image: kserve/sklearnserver:latest
+    # Custom sklearn server with XGBoost support (built via BuildConfig from local source)
+    # Tag matches cluster's internal image registry format
+    image: image-registry.openshift-image-registry.svc:5000/self-healing-platform/sklearn-xgboost-server:latest
     resources:
       requests:
         memory: "256Mi"
@@ -274,7 +279,8 @@ modelServing:
 
   # tensorflow runtime configuration
   tensorflow:
-    image: kserve/tfserving:latest
+    # KServe TensorFlow Serving with pinned version (matches RHOAI 2.22.2 / KServe 1.36.1)
+    image: kserve/tfserving:v0.13.0
     resources:
       requests:
         memory: "512Mi"
