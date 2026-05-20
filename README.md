@@ -38,6 +38,7 @@ See the **[User Model Deployment Guide](docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.
 |----------|-------------|
 | **[AI Agent Development Guide](docs/explanation/ai-agent-development-guide.md)** | 🤖 **AI Agent Development Guide** (comprehensive reference) |
 | **[CLAUDE.md](CLAUDE.md)** | 🤖 **AI Agent Quick Reference** (deployment and troubleshooting) |
+| **[CHANGELOG.md](CHANGELOG.md)** | 📝 **Release History** (version history and notable changes) |
 | **[docs/adrs/](docs/adrs/)** | 🏛️ Architectural Decision Records (29+ ADRs) |
 | **[Complete Deployment Guide](docs/how-to/complete-deployment-guide.md)** | 🚀 Step-by-step deployment guide |
 | **[docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md](docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.md)** | 🧠 **User Model Deployment Guide** (deploy your own ML models via KServe) |
