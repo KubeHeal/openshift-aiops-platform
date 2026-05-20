@@ -54,6 +54,9 @@ This directory contains Architecture Decision Records for the Self-Healing Platf
 || [ADR-055](055-openshift-420-multi-cluster-topology-support.md) | OpenShift 4.20 Multi-Cluster Topology Support | Accepted | 2026-02-23 | Auto-detect SNO vs standard; topology-aware deployment |
 || [ADR-056](056-standalone-mcg-on-sno.md) | Standalone MCG on SNO for Consistent S3 Storage | Accepted | 2026-02-24 | MCG-only ODF on SNO provides NooBaa S3 without Ceph |
 || [ADR-057](057-topology-aware-gpu-scheduling-and-storage.md) | Topology-Aware GPU Scheduling and Storage | Accepted | 2026-02-27 | Gate GPU PVCs, copy jobs, and scheduling on cluster.topology |
+|| [ADR-058](058-topology-aware-deployment-validation.md) | Topology-Aware Deployment Validation | Accepted | 2026-03-01 | Validate deployments based on cluster topology (SNO vs HA) |
+|| [ADR-059](059-patternizer-adoption.md) | Patternizer Adoption for Pattern Scaffolding Automation | Proposed | 2026-05-15 | Automated pattern scaffolding generation |
+|| [ADR-060](060-validated-patterns-sandbox-submission.md) | Validated Patterns Sandbox Tier Submission | Proposed | 2026-05-20 | Submit to VP Sandbox catalog for visibility |
 
 ### Meta-Documents
 
