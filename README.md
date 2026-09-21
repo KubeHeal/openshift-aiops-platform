@@ -1,4 +1,12 @@
-# OpenShift AI Ops Self-Healing Platform
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/branding/png/kubeheal-logo-horizontal.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/branding/png/kubeheal-logo-light.png">
+    <img alt="KubeHeal Logo" src="assets/branding/png/kubeheal-logo-horizontal.png" width="550">
+  </picture>
+</p>
+
+# OpenShift AI Ops Self-Healing Platform (KubeHeal)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![OpenShift](https://img.shields.io/badge/OpenShift-4.19+-red.svg)](https://www.openshift.com/)
