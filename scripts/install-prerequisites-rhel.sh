@@ -36,7 +36,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Versions (update as needed)
-OC_VERSION="${OC_VERSION:-4.18}"
+OC_VERSION="${OC_VERSION:-4.22}"
 HELM_VERSION="${HELM_VERSION:-v3.16.4}"
 YQ_VERSION="${YQ_VERSION:-v4.44.6}"
 TKN_VERSION="${TKN_VERSION:-0.38.1}"

@@ -30,8 +30,8 @@ data:
     echo "1. Checking OpenShift Version..."
     OCP_VERSION=$(oc version 2>/dev/null | grep "Server Version" | awk '{print $3}')
     echo "   OpenShift Version: $OCP_VERSION"
-    if [[ "$OCP_VERSION" < "4.14" ]]; then
-      echo "   ❌ FAIL: OpenShift 4.14+ required"
+    if [[ "$OCP_VERSION" < "4.18" ]]; then
+      echo "   ❌ FAIL: OpenShift 4.18+ required"
       ((ERRORS++))
     else
       echo "   ✅ PASS"
@@ -154,8 +154,8 @@ data:
     # Generated: {{ now | date "2006-01-02T15:04:05Z07:00" }}
 
     ## Minimum Requirements
-    - OpenShift Version: 4.14+
-    - Kubernetes Version: 1.27+
+    - OpenShift Version: 4.18+
+    - Kubernetes Version: 1.31+
     - Total Nodes: 5+ (3 control-plane, 2+ workers)
     - GPU Nodes: 1+ (for model serving)
     - Storage: CephFS (via ODF)

@@ -196,20 +196,20 @@ Usage: {{- include "self-healing-platform.ifEnabled" (dict "enabled" .Values.fea
 {{- end }}
 
 {{/*
-Default image tag: "<version>-latest" (e.g. "4.20-latest").
+Default image tag: "<version>-latest" (e.g. "4.22-latest").
 Used by components whose registry tags have no prefix (MCP server).
 */}}
 {{- define "self-healing-platform.imageTag" -}}
-{{- $version := .Values.cluster.version | default "4.20" }}
+{{- $version := .Values.cluster.version | default "4.22" }}
 {{- printf "%s-latest" $version }}
 {{- end }}
 
 {{/*
-OCP-prefixed image tag: "ocp-<version>-latest" (e.g. "ocp-4.20-latest").
+OCP-prefixed image tag: "ocp-<version>-latest" (e.g. "ocp-4.22-latest").
 Used by components whose registry tags carry the ocp- prefix (coordination engine).
 */}}
 {{- define "self-healing-platform.ocpImageTag" -}}
-{{- $version := .Values.cluster.version | default "4.20" }}
+{{- $version := .Values.cluster.version | default "4.22" }}
 {{- printf "ocp-%s-latest" $version }}
 {{- end }}
 
@@ -224,7 +224,7 @@ Can be overridden explicitly via workbench.dashboardRoute.
 {{- if ((.Values.workbench).dashboardRoute | default "") }}
 {{- .Values.workbench.dashboardRoute }}
 {{- else }}
-{{- $version := .Values.cluster.version | default "4.18" }}
+{{- $version := .Values.cluster.version | default "4.22" }}
 {{- if semverCompare ">=4.20" $version }}
 {{- "data-science-gateway" }}
 {{- else }}

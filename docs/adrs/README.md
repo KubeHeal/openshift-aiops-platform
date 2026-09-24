@@ -57,6 +57,7 @@ This directory contains Architecture Decision Records for the Self-Healing Platf
 || [ADR-058](058-topology-aware-deployment-validation.md) | Topology-Aware Deployment Validation | Accepted | 2026-03-01 | Validate deployments based on cluster topology (SNO vs HA) |
 || [ADR-059](059-patternizer-adoption.md) | Patternizer Adoption for Pattern Scaffolding Automation | Proposed | 2026-05-15 | Automated pattern scaffolding generation |
 || [ADR-060](060-validated-patterns-sandbox-submission.md) | Validated Patterns Sandbox Tier Submission | Proposed | 2026-05-20 | Submit to VP Sandbox catalog for visibility |
+|| [ADR-061](061-ocp-422-rhoai-35-upgrade-strategy.md) | OCP 4.22 and OpenShift AI 3.5 Upgrade Strategy | Proposed | 2026-09-24 | Multi-hop cluster upgrade and RHOAI 3.5 migration |
 
 ### Meta-Documents
 
@@ -250,6 +251,6 @@ This README is maintained by the Architecture Team and should be updated wheneve
 - ADRs are superseded or deprecated
 - Major platform versions change
 
-**Last Updated**: 2026-02-24
+**Last Updated**: 2026-09-24
 **Maintained By**: Architecture Team
 **Review Frequency**: Monthly or when ADRs change

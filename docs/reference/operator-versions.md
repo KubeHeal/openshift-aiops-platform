@@ -2,7 +2,7 @@
 
 This document tracks the required versions of all operators for the OpenShift AI Ops Self-Healing Platform. Use this as a reference for deployments and updates.
 
-**Last Updated**: 2026-05-18
+**Last Updated**: 2026-09-24
 
 ---
 
@@ -99,8 +99,8 @@ eso:
 
 ### Red Hat OpenShift AI
 
-**Required Version**: v2.22.2+
-**Channel**: stable
+**Required Version**: v3.5+
+**Channel**: stable-3.5
 **Source**: redhat-operators
 **Install Mode**: AllNamespaces
 
@@ -109,7 +109,7 @@ eso:
 openshift-ai:
   name: rhods-operator
   namespace: redhat-ods-operator
-  channel: stable
+  channel: stable-3.5
   source: redhat-operators
 ```
 
@@ -213,8 +213,8 @@ openshift-pipelines:
 
 ### OpenShift Data Foundation (ODF)
 
-**Required Version**: v4.20+ (matches OpenShift version)
-**Channel**: stable-4.20
+**Required Version**: v4.22+ (matches OpenShift version)
+**Channel**: stable-4.22
 **Source**: redhat-operators
 **Install Mode**: AllNamespaces
 
@@ -235,6 +235,8 @@ openshift-pipelines:
 | 4.18 | v1.0.8 (stable) | v1.1.0+ | v2.22.2+ | v1.17.2+ | v1.15.4+ | v24.9.2+ | 4.18 |
 | 4.19 | v1.0.8 (stable) | v1.1.0+ | v2.22.2+ | v1.19.0+ | v1.17.1+ | v24.9.2+ | 4.19 |
 | 4.20 | v1.0.8 (stable) | v1.1.0+ | v2.22.2+ | v1.22.0+ | v1.20.3+ | v24.9.2+ | 4.20 |
+| 4.21 | v1.0.8 (stable) | v1.1.0+ | v3.5+ | v1.23.0+ | v1.21.0+ | v24.9.2+ | 4.21 |
+| 4.22 | v1.0.8 (stable) | v1.1.0+ | v3.5+ | v1.24.0+ | v1.22.0+ | v24.9.2+ | 4.22 |
 
 ---
 
