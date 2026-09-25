@@ -12,7 +12,7 @@
         <meta name="author" content="KubeHeal Team">
       
       
-        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/adrs/059-patternizer-adoption/">
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/adrs/061-ocp-422-rhoai-35-upgrade-strategy/">
       
       
       
@@ -22,7 +22,7 @@
     
     
       
-        <title>ADR-059: Patternizer Adoption for Pattern Scaffolding Automation - OpenShift AIOps Self-Healing Platform</title>
+        <title>ADR-061: OCP 4.22 and OpenShift AI 3.5 Upgrade Strategy - OpenShift AIOps Self-Healing Platform</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-059-patternizer-adoption-for-pattern-scaffolding-automation" class="md-skip">
+        <a href="#adr-061-ocp-422-and-openshift-ai-35-upgrade-strategy" class="md-skip">
           Skip to content
         </a>
       
@@ -107,7 +107,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-059: Patternizer Adoption for Pattern Scaffolding Automation
+              ADR-061: OCP 4.22 and OpenShift AI 3.5 Upgrade Strategy
             
           </span>
         </div>
@@ -1708,35 +1708,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#date" class="md-nav__link">
+    <span class="md-ellipsis">
+      Date
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#context" class="md-nav__link">
     <span class="md-ellipsis">
       Context
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Context">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#problems-with-manual-approach" class="md-nav__link">
-    <span class="md-ellipsis">
-      Problems with Manual Approach
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#available-solution-patternizer" class="md-nav__link">
-    <span class="md-ellipsis">
-      Available Solution: Patternizer
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1751,135 +1736,45 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#implementation-strategy" class="md-nav__link">
+  <a href="#upgrade-phases" class="md-nav__link">
     <span class="md-ellipsis">
-      Implementation Strategy
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Implementation Strategy">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#phase-1-initial-patternizer-integration-week-1" class="md-nav__link">
-    <span class="md-ellipsis">
-      Phase 1: Initial Patternizer Integration (Week 1)
+      Upgrade Phases
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-2-documentation-update-week-1" class="md-nav__link">
+  <a href="#safety-features" class="md-nav__link">
     <span class="md-ellipsis">
-      Phase 2: Documentation Update (Week 1)
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-configure-values-files" class="md-nav__link">
-    <span class="md-ellipsis">
-      3. Configure Values Files
+      Safety Features
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-deploy-pattern" class="md-nav__link">
+  <a href="#files-updated-for-422-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Deploy Pattern
+      Files Updated for 4.22 Compatibility
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#integration-with-existing-adrs" class="md-nav__link">
+  <a href="#version-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
-      Integration with Existing ADRs
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Integration with Existing ADRs">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#adr-019-validated-patterns-framework" class="md-nav__link">
-    <span class="md-ellipsis">
-      ADR-019: Validated Patterns Framework
+      Version Compatibility
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#adr-026-secrets-management-automation" class="md-nav__link">
+  <a href="#helm-template-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
-      ADR-026: Secrets Management Automation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#adr-030-hybrid-management-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      ADR-030: Hybrid Management Model
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#adr-055-multi-cluster-topology-support" class="md-nav__link">
-    <span class="md-ellipsis">
-      ADR-055: Multi-Cluster Topology Support
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      Architecture
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Architecture">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#before-patternizer-current-state" class="md-nav__link">
-    <span class="md-ellipsis">
-      Before Patternizer (Current State)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#after-patternizer-proposed-state" class="md-nav__link">
-    <span class="md-ellipsis">
-      After Patternizer (Proposed State)
+      Helm Template Compatibility
     </span>
   </a>
   
@@ -1933,15 +1828,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#implementation-checklist" class="md-nav__link">
-    <span class="md-ellipsis">
-      Implementation Checklist
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#related-adrs" class="md-nav__link">
     <span class="md-ellipsis">
       Related ADRs
@@ -1954,24 +1840,6 @@
   <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
       References
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#timeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      Timeline
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#approval" class="md-nav__link">
-    <span class="md-ellipsis">
-      Approval
     </span>
   </a>
   
@@ -1992,7 +1860,7 @@
                   
 
   
-    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/adrs/059-patternizer-adoption.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/adrs/061-ocp-422-rhoai-35-upgrade-strategy.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
     </a>
@@ -2000,301 +1868,217 @@
   
 
 
-<h1 id="adr-059-patternizer-adoption-for-pattern-scaffolding-automation">ADR-059: Patternizer Adoption for Pattern Scaffolding Automation<a class="headerlink" href="#adr-059-patternizer-adoption-for-pattern-scaffolding-automation" title="Permanent link">&para;</a></h1>
-<p><strong>Status:</strong> PROPOSED</p>
+<h1 id="adr-061-ocp-422-and-openshift-ai-35-upgrade-strategy">ADR-061: OCP 4.22 and OpenShift AI 3.5 Upgrade Strategy<a class="headerlink" href="#adr-061-ocp-422-and-openshift-ai-35-upgrade-strategy" title="Permanent link">&para;</a></h1>
 <h2 id="status">Status<a class="headerlink" href="#status" title="Permanent link">&para;</a></h2>
-<p>accepted - 2026-09-24</p>
+<p>Proposed</p>
+<h2 id="date">Date<a class="headerlink" href="#date" title="Permanent link">&para;</a></h2>
+<p>2026-09-24</p>
 <h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
-<p>The OpenShift AIOps Self-Healing Platform currently uses the Validated Patterns Framework (ADR-019) with <strong>manual creation</strong> of pattern scaffolding files:</p>
-<p><strong>Current Manual Process:</strong>
-<pre class="highlight"><code class="language-bash"># Step 1: Manual file creation (error-prone)
-cp values-global.yaml.example values-global.yaml
-cp values-hub.yaml.example values-hub.yaml
-
-# Step 2: Manual configuration editing
-vi values-global.yaml  # Update repoURL, pattern name, etc.
-vi values-hub.yaml     # Update cluster-specific settings
-
-# Step 3: Manual Makefile management
-# No standardized way to keep Makefile in sync with upstream common/</code></pre></p>
-<h3 id="problems-with-manual-approach">Problems with Manual Approach<a class="headerlink" href="#problems-with-manual-approach" title="Permanent link">&para;</a></h3>
+<p>The platform was originally built and validated on OpenShift 4.18-4.20 with Red Hat
+OpenShift AI (RHOAI) 2.22.2+ on the <code>stable</code> channel. As OpenShift 4.22 and RHOAI
+3.5 become available, the platform needs a documented and repeatable upgrade strategy
+that safely transitions both the cluster infrastructure and all repository
+configuration files.</p>
+<p>Key challenges:</p>
 <ol>
-<li><strong>Error-Prone</strong>: Users frequently forget to update <code>repoURL</code> in both files</li>
-<li><strong>No Standardization</strong>: Pattern structure varies from community patterns</li>
-<li><strong>Difficult Updates</strong>: No automated way to upgrade to latest Validated Patterns common structure</li>
-<li><strong>Documentation Overhead</strong>: Extensive documentation required for setup steps</li>
-<li><strong>Secrets Management</strong>: Manual integration with External Secrets Operator (ADR-026)</li>
-<li><strong>Onboarding Friction</strong>: New users struggle with initial pattern setup</li>
+<li><strong>Multi-hop upgrades</strong>: OpenShift does not support direct jumps across multiple
+   minor versions. A cluster on 4.20 must upgrade through 4.21 before reaching 4.22.</li>
+<li><strong>SNO considerations</strong>: Single Node OpenShift clusters experience a full node
+   reboot during upgrades, causing temporary API unavailability.</li>
+<li><strong>RHOAI channel migration</strong>: RHOAI 3.5 may use a different subscription channel
+   (e.g., <code>stable-3.5</code>) than the previous <code>stable</code> channel that served 2.x versions.</li>
+<li><strong>Operator compatibility</strong>: ODF, Pipelines, GitOps, and other operators have
+   version-specific channels that must be updated alongside the cluster.</li>
+<li><strong>Repository config drift</strong>: Multiple files across the repository reference the
+   OCP version (values files, Helm chart defaults, Kustomize overlays, Ansible
+   defaults, validation scripts, documentation).</li>
 </ol>
-<h3 id="available-solution-patternizer">Available Solution: Patternizer<a class="headerlink" href="#available-solution-patternizer" title="Permanent link">&para;</a></h3>
-<p>The Validated Patterns community provides <strong>Patternizer</strong> (<a href="https://github.com/validatedpatterns/patternizer">validatedpatterns/patternizer</a>), a CLI tool that:</p>
-<ul>
-<li><strong>Automatically generates</strong> pattern scaffolding from existing Helm charts</li>
-<li><strong>Standardizes structure</strong> using community templates</li>
-<li><strong>Runs in container</strong> (no local installation required)</li>
-<li><strong>Supports upgrades</strong> to keep pattern infrastructure current</li>
-<li><strong>Integrates secrets</strong> via <code>--with-secrets</code> flag</li>
-</ul>
 <h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
-<p><strong>Adopt Patternizer as the standard tool for pattern scaffolding generation and upgrades</strong> in the OpenShift AIOps Self-Healing Platform.</p>
-<h3 id="implementation-strategy">Implementation Strategy<a class="headerlink" href="#implementation-strategy" title="Permanent link">&para;</a></h3>
-<h4 id="phase-1-initial-patternizer-integration-week-1">Phase 1: Initial Patternizer Integration (Week 1)<a class="headerlink" href="#phase-1-initial-patternizer-integration-week-1" title="Permanent link">&para;</a></h4>
-<p><strong>Update Repository Structure:</strong>
-<pre class="highlight"><code class="language-bash"># 1. Run Patternizer initialization
-podman run --pull=newer -v "$PWD:$PWD:z" -w "$PWD" \
-  quay.io/validatedpatterns/patternizer init --with-secrets
-
-# 2. Review generated files
-git status
-# New/Updated files:
-#   values-global.yaml
-#   values-hub.yaml (from values-&lt;cluster_group&gt;.yaml template)
-#   pattern.sh (utility wrapper)
-#   Makefile (includes Makefile-common)
-#   Makefile-common (core pattern logic)
-#   ansible.cfg
-#   values-secret.yaml.template
-
-# 3. Commit changes
-git add .
-git commit -m 'feat: adopt Patternizer for pattern scaffolding'</code></pre></p>
-<p><strong>Remove Manual Examples:</strong>
-- Delete <code>values-global.yaml.example</code>
-- Delete <code>values-hub.yaml.example</code>
-- Update documentation to use Patternizer workflow</p>
-<h4 id="phase-2-documentation-update-week-1">Phase 2: Documentation Update (Week 1)<a class="headerlink" href="#phase-2-documentation-update-week-1" title="Permanent link">&para;</a></h4>
-<p><strong>Update README.md, DEPLOYMENT.md, CLAUDE.md:</strong>
-<pre class="highlight"><code class="language-markdown">## Prerequisites
-
-### 1. Fork Repository
-Fork https://github.com/KubeHeal/openshift-aiops-platform to YOUR-USERNAME/openshift-aiops-platform
-
-### 2. Initialize Pattern Scaffolding (NEW - Patternizer)
-```bash
-cd openshift-aiops-platform
-podman run --pull=newer -v "$PWD:$PWD:z" -w "$PWD" \
-  quay.io/validatedpatterns/patternizer init --with-secrets</code></pre></p>
-<h3 id="3-configure-values-files">3. Configure Values Files<a class="headerlink" href="#3-configure-values-files" title="Permanent link">&para;</a></h3>
-<pre class="highlight"><code class="language-bash"># Edit generated files
-vi values-global.yaml  # Update repoURL to YOUR fork
-vi values-hub.yaml     # Update cluster-specific settings
-vi values-secret.yaml  # Configure secrets (from template)</code></pre>
-<h3 id="4-deploy-pattern">4. Deploy Pattern<a class="headerlink" href="#4-deploy-pattern" title="Permanent link">&para;</a></h3>
-<p><pre class="highlight"><code class="language-bash">./pattern.sh make install  # Uses pattern.sh wrapper
-# OR
-make operator-deploy       # Direct Makefile approach</code></pre>
-<pre class="highlight"><code>
-#### Phase 3: Upgrade Workflow Documentation (Week 2)
-
-**Document Patternizer Upgrade Process:**
-```bash
-# Keep pattern infrastructure up-to-date with Validated Patterns common
-# Run periodically (monthly or before major releases)
-
-# 1. Commit current state
-git add .
-git commit -m 'chore: pre-upgrade checkpoint'
-
-# 2. Run Patternizer upgrade
-podman run --pull=newer -v "$PWD:$PWD:z" -w "$PWD" \
-  quay.io/validatedpatterns/patternizer upgrade
-
-# 3. Review changes
-git diff
-
-# 4. Commit upgrades
-git add ansible.cfg Makefile-common pattern.sh
-git commit -m 'chore: upgrade pattern infrastructure via Patternizer'</code></pre></p>
-<h3 id="integration-with-existing-adrs">Integration with Existing ADRs<a class="headerlink" href="#integration-with-existing-adrs" title="Permanent link">&para;</a></h3>
-<h4 id="adr-019-validated-patterns-framework">ADR-019: Validated Patterns Framework<a class="headerlink" href="#adr-019-validated-patterns-framework" title="Permanent link">&para;</a></h4>
-<p><strong>Enhancement</strong>: Patternizer automates the manual scaffolding steps</p>
-<p><strong>Before (Manual)</strong>:
-<pre class="highlight"><code class="language-bash">cp values-global.yaml.example values-global.yaml
-vi values-global.yaml  # Manual editing</code></pre></p>
-<p><strong>After (Patternizer)</strong>:
-<pre class="highlight"><code class="language-bash">podman run ... patternizer init
-vi values-global.yaml  # Edit generated file with correct defaults</code></pre></p>
-<h4 id="adr-026-secrets-management-automation">ADR-026: Secrets Management Automation<a class="headerlink" href="#adr-026-secrets-management-automation" title="Permanent link">&para;</a></h4>
-<p><strong>Enhancement</strong>: <code>--with-secrets</code> flag generates <code>values-secret.yaml.template</code> with External Secrets Operator integration pre-configured</p>
-<p><strong>Generated Integration:</strong>
-- <code>values-global.yaml</code> sets <code>global.secretLoader.disabled: false</code>
-- <code>values-secret.yaml.template</code> provides structure for ESO secrets
-- Vault and ESO automatically added to cluster group configuration</p>
-<h4 id="adr-030-hybrid-management-model">ADR-030: Hybrid Management Model<a class="headerlink" href="#adr-030-hybrid-management-model" title="Permanent link">&para;</a></h4>
-<p><strong>No Change</strong>: Patternizer generates standard pattern structure; hybrid RBAC deployment strategy remains unchanged</p>
-<p><strong>Compatibility</strong>: Generated <code>Makefile-common</code> includes all standard Validated Patterns targets (prerequisites, deploy, validate, cleanup)</p>
-<h4 id="adr-055-multi-cluster-topology-support">ADR-055: Multi-Cluster Topology Support<a class="headerlink" href="#adr-055-multi-cluster-topology-support" title="Permanent link">&para;</a></h4>
-<p><strong>Enhancement</strong>: Patternizer-generated structure standardizes cluster group naming</p>
-<p><strong>Cluster Groups:</strong>
-- <code>values-hub.yaml</code> - Standard/HA cluster configuration
-- <code>values-sno.yaml</code> - SNO-specific cluster configuration (if needed)</p>
-<h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
-<h3 id="before-patternizer-current-state">Before Patternizer (Current State)<a class="headerlink" href="#before-patternizer-current-state" title="Permanent link">&para;</a></h3>
-<pre class="highlight"><code>openshift-aiops-platform/
-├── values-global.yaml.example       # Manual template
-├── values-hub.yaml.example          # Manual template
-├── Makefile                         # Custom Makefile (may diverge from common)
-├── common/                          # Git subtree (manual sync required)
-└── docs/how-to/                     # Extensive manual setup docs</code></pre>
-<p><strong>Problems:</strong>
-- Manual file creation and editing
-- Makefile may diverge from Validated Patterns standards
-- No automated upgrade path</p>
-<h3 id="after-patternizer-proposed-state">After Patternizer (Proposed State)<a class="headerlink" href="#after-patternizer-proposed-state" title="Permanent link">&para;</a></h3>
-<pre class="highlight"><code>openshift-aiops-platform/
-├── values-global.yaml               # Generated by Patternizer
-├── values-hub.yaml                  # Generated by Patternizer
-├── values-secret.yaml.template      # Generated by --with-secrets
-├── pattern.sh                       # Generated utility wrapper
-├── Makefile                         # Generated wrapper (includes Makefile-common)
-├── Makefile-common                  # Generated core logic (upgradeable)
-├── ansible.cfg                      # Generated Ansible config
-├── common/                          # Git subtree (if still used)
-└── docs/how-to/                     # Simplified docs (reference Patternizer)</code></pre>
-<p><strong>Benefits:</strong>
-- Automated scaffolding generation
-- Standardized structure across Validated Patterns community
-- Automated upgrade path via <code>patternizer upgrade</code></p>
+<p>We will implement an automated upgrade script (<code>scripts/upgrade-cluster.sh</code>) that
+handles the full upgrade lifecycle in five phases, with dry-run mode enabled by
+default and manual confirmation gates between destructive operations.</p>
+<h3 id="upgrade-phases">Upgrade Phases<a class="headerlink" href="#upgrade-phases" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Pre-flight Checks</strong>: Verify cluster health, detect current versions, confirm
+   no in-progress upgrades, validate ClusterOperator and node readiness.</li>
+<li><strong>OCP Multi-Hop Upgrade</strong>: For each minor version hop (e.g., 4.20 -&gt; 4.21 -&gt;
+   4.22), set the channel, verify available updates, trigger the upgrade, and wait
+   for completion with health gates.</li>
+<li><strong>RHOAI Upgrade</strong>: Patch the <code>rhods-operator</code> subscription to the target channel,
+   wait for the new CSV to succeed, and verify DataScienceCluster health.</li>
+<li><strong>Repository Config Updates</strong>: Update all version-dependent files in the
+   repository to match the new target versions.</li>
+<li><strong>Post-Upgrade Validation</strong>: Verify final cluster state, operator CSVs, ArgoCD
+   application health, and RHOAI dashboard accessibility.</li>
+</ol>
+<h3 id="safety-features">Safety Features<a class="headerlink" href="#safety-features" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Dry-run by default</strong>: The script shows what it would do without making changes.
+  The <code>--execute</code> flag is required to apply changes.</li>
+<li><strong>Manual confirmations</strong>: Each phase and each hop prompts for confirmation (skip
+  with <code>--yes</code> for CI/CD use).</li>
+<li><strong>SNO-aware retry logic</strong>: When the API becomes unavailable during SNO node
+  reboots, the script retries with exponential backoff instead of failing.</li>
+<li><strong>Health gates</strong>: Between each upgrade hop, the script validates that all
+  ClusterOperators are available and all nodes are Ready before proceeding.</li>
+<li><strong>Phase skip flags</strong>: <code>--skip-ocp</code>, <code>--skip-rhoai</code>, and <code>--skip-config</code> allow
+  running only the phases needed.</li>
+<li><strong>CCO Manual mode fix</strong>: When the root cloud credential secret is missing or
+  expired (common on sandbox/lab clusters), <code>--fix-cco-manual</code> switches the Cloud
+  Credential Operator to Manual mode and adds the <code>upgradeable-to</code> annotation,
+  clearing the <code>Upgradeable=False</code> gate without requiring root IAM credentials.
+  Works on AWS, Azure, and GCP clusters running OCP 4.18+.</li>
+</ul>
+<h3 id="files-updated-for-422-compatibility">Files Updated for 4.22 Compatibility<a class="headerlink" href="#files-updated-for-422-compatibility" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>values-hub.yaml</code></td>
+<td><code>cluster.version: "4.22"</code>, RHOAI channel to <code>stable-3.5</code></td>
+</tr>
+<tr>
+<td><code>values-hub.yaml.example</code></td>
+<td><code>cluster.version: "4.22"</code></td>
+</tr>
+<tr>
+<td><code>charts/hub/values.yaml</code></td>
+<td><code>cluster.version: "4.22"</code></td>
+</tr>
+<tr>
+<td><code>charts/hub/templates/_helpers.tpl</code></td>
+<td>Default version fallbacks to <code>"4.22"</code></td>
+</tr>
+<tr>
+<td><code>charts/hub/templates/ai-ml-workbench.yaml</code></td>
+<td>Default version fallback to <code>"4.22"</code></td>
+</tr>
+<tr>
+<td><code>charts/hub/templates/pre-deployment-validation.yaml</code></td>
+<td>Minimum version to <code>"4.18"</code></td>
+</tr>
+<tr>
+<td><code>charts/hub/templates/tekton-deployment-validation.yaml</code></td>
+<td>Default min version to <code>"4.20"</code></td>
+</tr>
+<tr>
+<td><code>pattern-metadata.yaml</code></td>
+<td><code>openshift_version: "4.22+"</code></td>
+</tr>
+<tr>
+<td><code>ansible/roles/validated_patterns_operator/defaults/main.yml</code></td>
+<td><code>vp_min_openshift_version: "4.20"</code></td>
+</tr>
+<tr>
+<td><code>scripts/install-prerequisites-rhel.sh</code></td>
+<td><code>OC_VERSION</code> default to <code>4.22</code></td>
+</tr>
+<tr>
+<td><code>docs/reference/operator-versions.md</code></td>
+<td>Add 4.21/4.22 rows, RHOAI 3.5</td>
+</tr>
+<tr>
+<td><code>k8s/operators/.../overlays/</code></td>
+<td>Add <code>dev-ocp4.21</code> and <code>dev-ocp4.22</code> overlays</td>
+</tr>
+</tbody>
+</table>
+<h3 id="version-compatibility">Version Compatibility<a class="headerlink" href="#version-compatibility" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>OCP</th>
+<th>RHOAI</th>
+<th>ODF Channel</th>
+<th>Dashboard Route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.18</td>
+<td>2.x</td>
+<td>stable-4.18</td>
+<td>rhods-dashboard-redhat-ods-applications</td>
+</tr>
+<tr>
+<td>4.19</td>
+<td>2.x / 3.x</td>
+<td>stable-4.19</td>
+<td>rhods-dashboard-redhat-ods-applications</td>
+</tr>
+<tr>
+<td>4.20</td>
+<td>3.x</td>
+<td>stable-4.20</td>
+<td>data-science-gateway</td>
+</tr>
+<tr>
+<td>4.21</td>
+<td>3.5</td>
+<td>stable-4.21</td>
+<td>data-science-gateway</td>
+</tr>
+<tr>
+<td>4.22</td>
+<td>3.5</td>
+<td>stable-4.22</td>
+<td>data-science-gateway</td>
+</tr>
+</tbody>
+</table>
+<h3 id="helm-template-compatibility">Helm Template Compatibility<a class="headerlink" href="#helm-template-compatibility" title="Permanent link">&para;</a></h3>
+<p>The existing <code>semverCompare "&gt;=4.20"</code> checks in Helm templates remain correct for
+4.22 (since 4.22 &gt;= 4.20 is true). This means:</p>
+<ul>
+<li>RHOAI 3.x features (inject-auth, data-science-gateway route) are automatically
+  enabled for 4.20+.</li>
+<li>No new semverCompare thresholds are needed unless RHOAI 3.5 introduces
+  behavior that differs from RHOAI 3.x on 4.20.</li>
+</ul>
 <h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Reduced Onboarding Friction</strong></li>
-<li>Single command generates all scaffolding files</li>
-<li>Users don't need to understand values file structure upfront</li>
-<li>
-<p>Generated templates have correct defaults</p>
-</li>
-<li>
-<p><strong>Standardization</strong></p>
-</li>
-<li>Pattern structure matches community best practices</li>
-<li>Consistent across all Validated Patterns</li>
-<li>
-<p>Easier for community contributors to understand</p>
-</li>
-<li>
-<p><strong>Upgrade Path</strong></p>
-</li>
-<li><code>patternizer upgrade</code> keeps infrastructure current</li>
-<li>Automatically incorporates Validated Patterns improvements</li>
-<li>
-<p>Preserves custom Makefile targets</p>
-</li>
-<li>
-<p><strong>Better Secrets Integration</strong></p>
-</li>
-<li><code>--with-secrets</code> flag auto-configures ESO integration</li>
-<li>Aligns with ADR-026 (External Secrets Operator)</li>
-<li>
-<p>Reduces manual configuration errors</p>
-</li>
-<li>
-<p><strong>Container-First</strong></p>
-</li>
-<li>No local tool installation required</li>
-<li>Consistent execution across environments</li>
-<li>
-<p>Aligns with execution environment approach (ADR-019)</p>
-</li>
-<li>
-<p><strong>Documentation Simplification</strong></p>
-</li>
-<li>Less extensive setup documentation required</li>
-<li>Reference Patternizer documentation for scaffolding</li>
-<li>Focus documentation on platform-specific configuration</li>
-</ol>
-<h3 id="negative">Negative<a class="headerlink" href="#negative" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Additional Dependency</strong></li>
-<li>Requires Podman or Docker for Patternizer execution</li>
-<li>Network access to pull <code>quay.io/validatedpatterns/patternizer</code> image</li>
-<li>
-<p>Additional tool to learn (though simple CLI)</p>
-</li>
-<li>
-<p><strong>Generated File Customization</strong></p>
-</li>
-<li>Generated files may need manual editing</li>
-<li>Need to understand Patternizer output structure</li>
-<li>
-<p>Some fields (repoURL, pattern name) require post-generation editing</p>
-</li>
-<li>
-<p><strong>Migration Effort</strong></p>
-</li>
-<li>Existing pattern needs one-time Patternizer initialization</li>
-<li>Need to test upgrade workflow thoroughly</li>
-<li>
-<p>Documentation needs significant updates</p>
-</li>
-<li>
-<p><strong>Makefile Changes</strong></p>
-</li>
-<li>Patternizer uses <code>Makefile</code> + <code>Makefile-common</code> split</li>
-<li>Custom targets may need migration</li>
-<li>Need to test all existing <code>make</code> targets still work</li>
-</ol>
-<h3 id="neutral">Neutral<a class="headerlink" href="#neutral" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Learning Curve</strong></li>
-<li>Team needs to understand Patternizer workflow</li>
-<li>Additional training for contributors</li>
-<li>
-<p>Community Patternizer documentation available</p>
-</li>
-<li>
-<p><strong>Version Control</strong></p>
-</li>
-<li>Generated files committed to repository</li>
-<li>Git diff shows Patternizer changes explicitly</li>
-<li>Easier to track infrastructure updates</li>
-</ol>
-<h2 id="implementation-checklist">Implementation Checklist<a class="headerlink" href="#implementation-checklist" title="Permanent link">&para;</a></h2>
 <ul>
-<li>[ ] Run Patternizer initialization with <code>--with-secrets</code></li>
-<li>[ ] Review generated files vs. current pattern structure</li>
-<li>[ ] Test <code>pattern.sh make install</code> deployment workflow</li>
-<li>[ ] Update <code>values-global.yaml</code> with correct repoURL</li>
-<li>[ ] Update <code>values-hub.yaml</code> with platform-specific settings</li>
-<li>[ ] Migrate custom Makefile targets (if any)</li>
-<li>[ ] Test Patternizer upgrade workflow</li>
-<li>[ ] Update README.md with Patternizer workflow</li>
-<li>[ ] Update DEPLOYMENT.md with Patternizer steps</li>
-<li>[ ] Update CLAUDE.md agent quick reference</li>
-<li>[ ] Update docs/how-to/ guides</li>
-<li>[ ] Remove <code>values-global.yaml.example</code> and <code>values-hub.yaml.example</code></li>
-<li>[ ] Test SNO and HA deployments with new structure</li>
-<li>[ ] Validate all ADR-021 Tekton pipelines still work</li>
-<li>[ ] Document Patternizer upgrade schedule (monthly)</li>
-<li>[ ] Add Patternizer upgrade to CI/CD pipeline (ADR-027)</li>
+<li>Repeatable, scriptable upgrade process that reduces manual errors</li>
+<li>Dry-run mode allows operators to preview changes before applying</li>
+<li>Multi-hop logic handles arbitrary starting versions</li>
+<li>SNO-aware retry logic prevents false failures during node reboots</li>
+<li>All version-dependent config files updated consistently</li>
+<li>Repository stays in sync with the deployed cluster version</li>
+</ul>
+<h3 id="negative">Negative<a class="headerlink" href="#negative" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Script depends on <code>oc adm upgrade</code> output format, which could change</li>
+<li>RHOAI channel naming is assumed (must be verified against live catalog)</li>
+<li>Operator version floors in the compatibility matrix are estimated for
+  4.21/4.22 and should be verified after release</li>
+</ul>
+<h3 id="neutral">Neutral<a class="headerlink" href="#neutral" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The script can be re-run with <code>--skip-ocp</code> to update only config files</li>
+<li>Phase skip flags allow partial upgrades for testing</li>
+<li>The Cincinnati upgrade graph API could be integrated in the future for
+  more precise upgrade path planning</li>
 </ul>
 <h2 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>ADR-019</strong>: Validated Patterns Framework Adoption (foundation for this decision)</li>
-<li><strong>ADR-026</strong>: Secrets Management Automation (enhanced by <code>--with-secrets</code>)</li>
-<li><strong>ADR-027</strong>: CI/CD Pipeline Automation (Patternizer in CI/CD)</li>
-<li><strong>ADR-030</strong>: Hybrid Management Model (unchanged, compatible)</li>
-<li><strong>ADR-055</strong>: Multi-Cluster Topology Support (cluster group naming)</li>
+<li><a href="../001-openshift-platform-selection/">ADR-001</a>: OpenShift 4.18+ as Foundation</li>
+<li><a href="../003-openshift-ai-ml-platform/">ADR-003</a>: Red Hat OpenShift AI for ML</li>
+<li><a href="../055-openshift-420-multi-cluster-topology-support/">ADR-055</a>: Multi-cluster Topology Support</li>
+<li><a href="../056-standalone-mcg-on-sno/">ADR-056</a>: Standalone MCG on SNO</li>
+<li><a href="../057-topology-aware-gpu-scheduling-and-storage/">ADR-057</a>: Topology-Aware GPU Scheduling</li>
 </ul>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="https://github.com/validatedpatterns/patternizer">Patternizer GitHub Repository</a></li>
-<li><a href="https://validatedpatterns.io/learn/vp_openshift_framework/">Validated Patterns OpenShift Framework</a></li>
-<li><a href="https://validatedpatterns.io/learn/secrets-management-in-the-validated-patterns-framework/">Secrets Management in Validated Patterns</a></li>
-<li><a href="https://github.com/validatedpatterns/common">Validated Patterns Common Repository</a></li>
-</ul>
-<h2 id="timeline">Timeline<a class="headerlink" href="#timeline" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Week 1</strong>: Patternizer initialization, documentation updates</li>
-<li><strong>Week 2</strong>: Upgrade workflow testing, CI/CD integration</li>
-<li><strong>Week 3</strong>: Community testing, SNO/HA validation</li>
-<li><strong>Week 4</strong>: Production deployment, team training</li>
-</ul>
-<h2 id="approval">Approval<a class="headerlink" href="#approval" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Architect</strong>: Pending</li>
-<li><strong>Platform Team</strong>: Pending</li>
-<li><strong>Date</strong>: 2026-05-15</li>
+<li><a href="https://access.redhat.com/labs/ocpupgradegraph/update_channel">OpenShift Update Graph</a></li>
+<li><a href="https://docs.openshift.com/container-platform/4.22/updating/index.html">OpenShift Upgrade Documentation</a></li>
+<li><a href="https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/">RHOAI Release Notes</a></li>
+<li>Script: <code>scripts/upgrade-cluster.sh</code></li>
+<li>Operator versions: <code>docs/reference/operator-versions.md</code></li>
 </ul>
 
 
@@ -2318,7 +2102,7 @@ vi values-global.yaml  # Edit generated file with correct defaults</code></pre><
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 24, 2026</span>
   </span>
 
     
@@ -2328,7 +2112,7 @@ vi values-global.yaml  # Edit generated file with correct defaults</code></pre><
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 18, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 24, 2026</span>
   </span>
 
     
