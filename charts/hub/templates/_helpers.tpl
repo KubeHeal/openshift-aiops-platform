@@ -197,18 +197,21 @@ Usage: {{- include "self-healing-platform.ifEnabled" (dict "enabled" .Values.fea
 
 {{/*
 Default image tag for MCP server.
-Prefers .Values.mcpServer.image.tag if set, otherwise "latest".
+Uses the explicit tag from values if set, otherwise falls back to "1.2.0".
+The MCP server uses semver tags (1.2.0, latest) not OCP-versioned tags.
 */}}
 {{- define "self-healing-platform.imageTag" -}}
-{{- "latest" }}
+{{- "1.2.0" }}
 {{- end }}
 
 {{/*
 Default image tag for coordination engine.
-Prefers .Values.coordinationEngine.image.tag if set, otherwise "latest".
+Uses the explicit tag from values if set, otherwise "ocp-<version>-latest".
+The CE uses OCP-versioned tags (ocp-4.22-latest).
 */}}
 {{- define "self-healing-platform.ocpImageTag" -}}
-{{- "latest" }}
+{{- $version := .Values.cluster.version | default "4.22" }}
+{{- printf "ocp-%s-latest" $version }}
 {{- end }}
 
 {{/*
