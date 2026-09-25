@@ -33,6 +33,20 @@ git config user.email "your@email.com"
 
 ## Getting Started
 
+### Platform Support Tiers
+
+The platform uses a tiered model for deployment target support:
+
+| Tier | Platform | Description |
+|------|----------|-------------|
+| **Tier 1 (Primary)** | ROSA Classic (HA and single-worker) | Fully tested, documented, and actively maintained |
+| **Tier 2 (Community)** | AWS IPI, Baremetal/UPI, SNO, other clouds | Community-maintained; contributions welcome |
+
+When contributing changes that affect deployment:
+- **Tier 1 changes** must be tested on ROSA before merging
+- **Tier 2 changes** should include test evidence from the target platform
+- **New platform support** should follow the guidelines in [docs/how-to/deploy-on-other-platforms.md](docs/how-to/deploy-on-other-platforms.md)
+
 ### Prerequisites
 
 | Tool | Minimum Version | Notes |

@@ -48,7 +48,7 @@ key_components:
 # Prerequisites for deployment
 prerequisites:
   openshift_version: "4.22+"
-  topology: "SNO (Single Node OpenShift) or HA"
+  topology: "ROSA Classic (HA or single-worker), SNO (Single Node OpenShift), or HA"
   storage_class: "gp3-csi (AWS EBS) or equivalent RWO storage class"
   pre_installed_operators:
     - Red Hat OpenShift AI (RHOAI)
@@ -85,10 +85,11 @@ requirements:
           type: n1-standard-4
 
 extra_features:
-  hypershift_support: false
+  hypershift_support: true
   spoke_support: false
   sno_support: true
   gpu_support: true
+  rosa_support: true
 
 external_requirements:
   - RHOAI pre-installed (or installable via OperatorHub) on the target cluster

@@ -67,15 +67,19 @@ data:
     fi
     echo ""
 
-    # Check 3: Storage Configuration (HA only -- SNO uses gp3-csi, no CephFS)
+    # Check 3: Storage Configuration (HA only -- SNO and aws-s3 backend use gp3-csi, no CephFS)
     echo "3. Checking Storage Configuration..."
+    STORAGE_BACKEND="{{ default "aws-s3" .Values.objectStore.backend }}"
     if [[ "$TOPOLOGY" == "sno" ]]; then
       echo "   ℹ️  SNO topology: using gp3-csi storage (CephFS not required)"
+      echo "   ✅ PASS"
+    elif [[ "$STORAGE_BACKEND" == "aws-s3" ]]; then
+      echo "   ℹ️  AWS S3 storage backend: CephFS not required (using native S3)"
       echo "   ✅ PASS"
     else
       CEPHFS_SC=$(oc get storageclasses -o name 2>/dev/null | grep -i cephfs | wc -l)
       if [[ $CEPHFS_SC -lt 1 ]]; then
-        echo "   ❌ FAIL: CephFS storage class required for HA topology"
+        echo "   ❌ FAIL: CephFS storage class required for HA topology with NooBaa backend"
         ((ERRORS++))
       else
         echo "   ✅ PASS: CephFS storage class found"
@@ -83,15 +87,18 @@ data:
     fi
     echo ""
 
-    # Check 4: CSI Drivers (HA only -- SNO has no CephFS CSI)
+    # Check 4: CSI Drivers (HA only -- SNO and aws-s3 backend have no CephFS CSI)
     echo "4. Checking CSI Drivers..."
     if [[ "$TOPOLOGY" == "sno" ]]; then
       echo "   ℹ️  SNO topology: CephFS CSI driver not required"
       echo "   ✅ PASS"
+    elif [[ "$STORAGE_BACKEND" == "aws-s3" ]]; then
+      echo "   ℹ️  AWS S3 storage backend: CephFS CSI driver not required"
+      echo "   ✅ PASS"
     else
       CEPHFS_CSI=$(oc get csidriver -o name 2>/dev/null | grep -i cephfs | wc -l)
       if [[ $CEPHFS_CSI -lt 1 ]]; then
-        echo "   ❌ FAIL: CephFS CSI driver required for HA topology"
+        echo "   ❌ FAIL: CephFS CSI driver required for HA topology with NooBaa backend"
         ((ERRORS++))
       else
         echo "   ✅ PASS: CephFS CSI driver found"

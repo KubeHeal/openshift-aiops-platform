@@ -245,15 +245,36 @@ If not using RHEL 9/10, manually install the tools listed above using your syste
 
 ## Section 3: Complete Deployment Workflow
 
+### Primary Target: ROSA Classic
+
+**ROSA (Red Hat OpenShift Service on AWS)** is the primary deployment target. Both HA (multi-node) and single-worker configurations are supported. See [docs/how-to/deploy-on-rosa.md](docs/how-to/deploy-on-rosa.md) for the full guide.
+
+For other platforms (IPI, baremetal, SNO), see [docs/how-to/deploy-on-other-platforms.md](docs/how-to/deploy-on-other-platforms.md).
+
 ### Cluster Requirements
 
-#### HA (HighlyAvailable) Cluster
+#### ROSA Classic HA (Recommended)
+
+- **Nodes**: 3+ worker nodes (control plane managed by ROSA)
+- **Instance Type**: m5.2xlarge or larger
+- **GPU**: Optional g5.2xlarge machine pool for ML training
+- **Storage**: Native AWS S3 (default) or ODF add-on
+- **Use Case**: Production, full features
+
+#### ROSA Classic Single-Worker
+
+- **Nodes**: 1 worker node
+- **Instance Type**: m5.2xlarge or larger
+- **Storage**: Native AWS S3 (default)
+- **Use Case**: Development, testing, demos
+
+#### HA (HighlyAvailable) Cluster -- IPI/Other
 
 - **Nodes**: 6+ nodes (3 control-plane, 3+ workers, 1 GPU-enabled recommended)
 - **CPU**: 24+ cores
 - **RAM**: 96+ GB
 - **Storage**: 500+ GB
-- **ODF**: Full ODF (Ceph + NooBaa)
+- **ODF**: Full ODF (Ceph + NooBaa) or native AWS S3
 - **Use Case**: Production, full features
 
 #### SNO (Single Node OpenShift) Cluster
@@ -265,7 +286,7 @@ If not using RHEL 9/10, manually install the tools listed above using your syste
 - **ODF**: MCG-only (NooBaa S3 without Ceph)
 - **Use Case**: Edge, development, testing
 
-**Supported OpenShift Versions**: 4.18, 4.19, 4.20 (auto-detected during deployment)
+**Supported OpenShift Versions**: 4.19, 4.20, 4.21, 4.22 (auto-detected during deployment)
 
 ### 17-Step Fork-and-Deploy Workflow
 
@@ -520,9 +541,9 @@ Your self-healing platform is now running.
 
 ---
 
-## Section 4: SNO vs HA Differences
+## Section 4: Topology and Platform Differences
 
-### Topology Detection Command
+### Detection Command
 
 ```bash
 make show-cluster-info
@@ -531,21 +552,40 @@ make show-cluster-info
 **Output shows**:
 - `Topology: sno` → Single Node OpenShift
 - `Topology: ha` → HighlyAvailable (3+ nodes)
+- `Cluster Platform: rosa` → ROSA managed cluster
+- `Cluster Platform: ipi` → IPI/self-managed cluster
 
 ### Key Differences Table
 
-| Feature | SNO | HA (HighlyAvailable) |
-|---------|-----|----------------------|
-| **Nodes** | 1 (all roles) | 3+ (separate control-plane/worker) |
-| **ODF Storage** | ⚠️ MCG-only (S3) | ✅ Full ODF (Ceph + S3) |
-| **Storage Classes** | CSI only (gp3-csi) | ODF + CSI (ocs-storagecluster-cephfs, gp3-csi) |
-| **Replicas** | 1 (no HA) | 3+ (HA enabled) |
-| **Resource Isolation** | ❌ Shared | ✅ Distributed |
-| **High Availability** | ❌ No | ✅ Yes |
-| **MachineSet Scaling** | ❌ No | ✅ Yes |
-| **Production Ready** | ⚠️ Limited (edge/dev/test) | ✅ Yes (production) |
-| **Use Case** | Edge, development, testing | Production, full features |
-| **Cost** | 💰 Lower | 💰💰💰 Higher |
+| Feature | ROSA HA | ROSA Single-Worker | IPI HA | SNO |
+|---------|---------|-------------------|--------|-----|
+| **Nodes** | 3+ workers (managed) | 1 worker (managed) | 3+ (self-managed) | 1 (all roles) |
+| **Node Scaling** | Machine Pools (`rosa` CLI) | Machine Pools | MachineSets (`oc`) | N/A |
+| **Storage Backend** | AWS S3 (default) | AWS S3 (default) | AWS S3 or ODF | ODF MCG-only |
+| **ODF** | Optional (add-on) | Not needed | Optional | MCG-only |
+| **GPU Support** | Machine Pool + GPU Operator | Limited | MachineSet + GPU Operator | Single node |
+| **Production Ready** | ✅ Yes | ⚠️ Dev/test | ✅ Yes | ⚠️ Edge/dev |
+| **Cost** | 💰💰 (ROSA + AWS) | 💰 (ROSA + AWS) | 💰💰💰 (self-managed) | 💰 Lower |
+
+### ROSA-Specific Configuration
+
+For ROSA clusters, the platform auto-detects the managed environment and:
+- Skips MachineSet scaling (use `rosa create machinepool` instead)
+- Defaults to native AWS S3 for model storage (`objectStore.backend: "aws-s3"`)
+- Skips CephFS validation checks
+
+```yaml
+# values-hub.yaml for ROSA HA
+cluster:
+  topology: "ha"
+
+objectStore:
+  enabled: true
+  backend: "aws-s3"
+  aws:
+    region: "us-east-1"
+    bucketName: "your-model-storage-bucket"
+```
 
 ### SNO-Specific Configuration
 
@@ -556,10 +596,11 @@ When `make show-cluster-info` shows `topology: sno`, edit `values-hub.yaml` **be
 cluster:
   topology: "sno"
 
-# Storage classes (CSI for block/file - MCG provides S3)
-storage:
-  modelStorage:
-    size: "10Gi"
+# For ROSA single-worker: use aws-s3 (default)
+# For non-ROSA SNO: use noobaa
+objectStore:
+  enabled: true
+  backend: "aws-s3"  # or "noobaa" for non-ROSA SNO
     storageClass: "gp3-csi"  # Changed from ocs-storagecluster-cephfs
 
 # Object store stays enabled -- MCG-only ODF provides NooBaa S3
@@ -876,6 +917,69 @@ cat values-hub.yaml | grep repoURL
 
 **Related Documentation**:
 - [README.md lines 134-148](README.md) - Values files configuration
+
+### Issue 7: ROSA MachineSet Scaling Fails
+
+**Symptoms**:
+- `make configure-cluster` exits with "No worker MachineSets found"
+- Script tries to scale MachineSets on a ROSA cluster
+
+**Diagnosis**:
+
+```bash
+# Check if running on ROSA
+make show-cluster-info
+# Look for "Cluster Platform: rosa"
+
+# ROSA uses Machine Pools, not MachineSets
+rosa list machinepools --cluster=<name>
+```
+
+**Solution**:
+
+The platform auto-detects ROSA and skips MachineSet scaling. If auto-detection fails:
+
+```bash
+# Force ROSA mode
+./scripts/configure-cluster-infrastructure.sh --rosa
+
+# Or scale via rosa CLI manually
+rosa create machinepool --cluster=<name> --name=workers --instance-type=m5.2xlarge --replicas=3
+```
+
+### Issue 8: Native S3 Credentials Not Working on ROSA
+
+**Symptoms**:
+- `model-storage-config` secret has empty `AWS_ACCESS_KEY_ID`
+- Training pipelines fail with S3 access errors
+
+**Diagnosis**:
+
+```bash
+# Check the secret
+oc get secret model-storage-config -n self-healing-platform -o yaml
+
+# Check objectStore backend setting
+helm get values self-healing-platform -n self-healing-platform-hub | grep -A5 objectStore
+```
+
+**Solution**:
+
+For native AWS S3, you need to either:
+1. Set static credentials in `values-hub.yaml` (development only)
+2. Configure IRSA with `objectStore.aws.irsaRoleArn` (production)
+3. Create credentials source secret manually:
+
+```bash
+oc create secret generic aws-s3-credentials-source \
+  --from-literal=AWS_ACCESS_KEY_ID=<key> \
+  --from-literal=AWS_SECRET_ACCESS_KEY=<secret> \
+  -n self-healing-platform
+```
+
+**Related Documentation**:
+- [ADR-062: ROSA as Primary Deployment Target](docs/adrs/062-rosa-primary-deployment-target.md)
+- [Deploy on ROSA](docs/how-to/deploy-on-rosa.md)
 
 ---
 

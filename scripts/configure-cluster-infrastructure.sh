@@ -3,12 +3,15 @@
 # configure-cluster-infrastructure.sh
 # =============================================================================
 # Configures OpenShift cluster infrastructure for the AI Ops Self-Healing Platform:
-# 1. Scales worker nodes (via MachineSet) to meet minimum requirements
-# 2. Installs OpenShift Data Foundation (ODF) operator
+# 1. Scales worker nodes (via MachineSet on IPI, or skips on ROSA)
+# 2. Installs OpenShift Data Foundation (ODF) operator (optional on ROSA with native S3)
 # 3. Creates StorageSystem and StorageCluster for persistent storage
 # 4. Validates storage classes are available
 #
-# This script works on AWS IPI-installed OpenShift clusters.
+# This script supports:
+# - ROSA Classic (HA and single-worker) -- primary deployment target
+# - AWS IPI-installed OpenShift clusters
+# - SNO (Single Node OpenShift)
 # It auto-detects cluster infrastructure and adapts accordingly.
 #
 # Usage:
@@ -17,14 +20,16 @@
 # Options:
 #   --min-workers N        Minimum number of worker nodes (default: 3)
 #   --enable-odf           Install and configure ODF (default: true)
-#   --skip-odf             Skip ODF installation
+#   --skip-odf             Skip ODF installation (recommended for ROSA with native S3)
 #   --odf-storage-size     Size per OSD in Gi (default: 512Gi)
+#   --rosa                 Force ROSA mode (skip MachineSet scaling)
 #   --dry-run              Show what would be done without making changes
 #   --help                 Show this help message
 #
 # Prerequisites:
 #   - oc CLI installed and logged into cluster as cluster-admin
-#   - Cluster running on AWS (IPI installation)
+#   - For ROSA: rosa CLI for machine pool management (scaling done externally)
+#   - For IPI: Cluster running on AWS (IPI installation)
 #
 # =============================================================================
 
@@ -39,6 +44,7 @@ ENABLE_ODF="${ENABLE_ODF:-true}"
 MCG_ONLY="${MCG_ONLY:-false}"
 ODF_STORAGE_SIZE="${ODF_STORAGE_SIZE:-512Gi}"
 DRY_RUN="${DRY_RUN:-false}"
+IS_ROSA="${IS_ROSA:-false}"
 
 # Auto-detect cluster topology if not specified
 # Use ${VAR:-} to avoid 'unbound variable' error with set -u
@@ -53,6 +59,19 @@ if [[ -z "${ODF_CHANNEL:-}" ]]; then
     ODF_CHANNEL="stable-${OCP_VERSION}"
 else
     ODF_CHANNEL="${ODF_CHANNEL:-stable-4.18}"
+fi
+
+# Auto-detect ROSA if not explicitly set
+if [[ "$IS_ROSA" == "false" ]]; then
+    CV_CHANNEL=$(oc get clusterversion version -o jsonpath='{.spec.channel}' 2>/dev/null || echo "")
+    ROSA_ANNOTATIONS=$(oc get infrastructure cluster -o jsonpath='{.metadata.annotations}' 2>/dev/null || echo "")
+    if echo "$CV_CHANNEL" | grep -qi "rosa"; then
+        IS_ROSA=true
+    elif echo "$ROSA_ANNOTATIONS" | grep -qi "red-hat-managed\|rosa\|api\.openshift\.com"; then
+        IS_ROSA=true
+    elif oc get machinepool -A &>/dev/null 2>&1; then
+        IS_ROSA=true
+    fi
 fi
 
 # Colors for output
@@ -121,6 +140,10 @@ parse_args() {
                 DRY_RUN="true"
                 shift
                 ;;
+            --rosa)
+                IS_ROSA="true"
+                shift
+                ;;
             --help|-h)
                 show_help
                 ;;
@@ -174,6 +197,14 @@ check_prerequisites() {
     log_info "Detected cluster topology: $CLUSTER_TOPOLOGY"
     log_info "ODF Channel: $ODF_CHANNEL"
 
+    if [[ "$IS_ROSA" == "true" ]]; then
+        log_info "ROSA cluster detected"
+        log_info "MachineSet scaling will be skipped (use 'rosa create machinepool' for scaling)"
+        if [[ "$ENABLE_ODF" == "true" ]]; then
+            log_info "ODF will be installed (use --skip-odf if using native AWS S3)"
+        fi
+    fi
+
     if [[ "$CLUSTER_TOPOLOGY" == "sno" ]]; then
         log_info "Single Node OpenShift (SNO) detected"
         log_info "Will install MCG-only ODF (NooBaa S3 without Ceph)"
@@ -186,7 +217,7 @@ check_prerequisites() {
         log_warn "Continuing with manual node scaling instructions..."
     fi
 
-    export CLUSTER_NAME PLATFORM_TYPE API_URL CLUSTER_TOPOLOGY
+    export CLUSTER_NAME PLATFORM_TYPE API_URL CLUSTER_TOPOLOGY IS_ROSA
 }
 
 # =============================================================================
@@ -231,6 +262,20 @@ scale_worker_nodes() {
     if [[ "$CLUSTER_TOPOLOGY" == "sno" ]]; then
         log_step "Skipping Worker Node Scaling (SNO Cluster)"
         log_info "Single Node OpenShift does not support MachineSet scaling"
+        return 0
+    fi
+
+    if [[ "$IS_ROSA" == "true" ]]; then
+        log_step "Skipping Worker Node Scaling (ROSA Cluster)"
+        log_info "ROSA uses Machine Pools instead of MachineSets"
+        log_info "To add or scale worker nodes, use the rosa CLI:"
+        log_info "  rosa create machinepool --cluster=<name> --name=<pool> --instance-type=<type> --replicas=<n>"
+        log_info ""
+        log_info "For GPU workloads:"
+        log_info "  rosa create machinepool --cluster=<name> --name=gpu-workers \\"
+        log_info "    --instance-type=g5.2xlarge --replicas=1 \\"
+        log_info "    --labels='nvidia.com/gpu.present=true' \\"
+        log_info "    --taints='nvidia.com/gpu=True:NoSchedule'"
         return 0
     fi
 
@@ -741,6 +786,9 @@ print_summary() {
     echo "Cluster Details:"
     echo "  Name:      $CLUSTER_NAME"
     echo "  Platform:  $PLATFORM_TYPE"
+    if [[ "$IS_ROSA" == "true" ]]; then
+        echo "  Type:      ROSA (managed)"
+    fi
     echo "  API URL:   $API_URL"
     echo ""
 
@@ -777,16 +825,25 @@ print_summary() {
     echo ""
 
     echo -e "${CYAN}Next Steps:${NC}"
-    echo "  1. Continue with platform deployment:"
-    echo "     make operator-deploy"
-    echo ""
-    echo "  2. Or run the full deployment workflow:"
-    echo "     ./scripts/install-prerequisites-rhel.sh  # If not done already"
-    echo "     source ~/.bashrc"
-    echo "     make token"
-    echo "     make build-ee"
-    echo "     make operator-deploy"
-    echo ""
+    if [[ "$IS_ROSA" == "true" ]]; then
+        echo "  1. (If needed) Add GPU machine pool:"
+        echo "     rosa create machinepool --cluster=<name> --name=gpu-workers --instance-type=g5.2xlarge --replicas=1"
+        echo ""
+        echo "  2. Continue with platform deployment:"
+        echo "     make operator-deploy"
+        echo ""
+    else
+        echo "  1. Continue with platform deployment:"
+        echo "     make operator-deploy"
+        echo ""
+        echo "  2. Or run the full deployment workflow:"
+        echo "     ./scripts/install-prerequisites-rhel.sh  # If not done already"
+        echo "     source ~/.bashrc"
+        echo "     make token"
+        echo "     make build-ee"
+        echo "     make operator-deploy"
+        echo ""
+    fi
 }
 
 # =============================================================================

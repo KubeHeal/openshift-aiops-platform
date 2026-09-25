@@ -1,4 +1,4 @@
-{{- if and .Values.objectStore.enabled (eq .Values.secrets.backend "external-secrets") .Values.rbac.crossNamespaceEnabled }}
+{{- if and .Values.objectStore.enabled (eq (default "aws-s3" .Values.objectStore.backend) "noobaa") (eq .Values.secrets.backend "external-secrets") .Values.rbac.crossNamespaceEnabled }}
 ---
 # ⚠️ CROSS-NAMESPACE RBAC - Managed by Ansible (Hybrid Management Model)
 #

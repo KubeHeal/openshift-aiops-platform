@@ -1,4 +1,4 @@
-{{- if .Values.objectStore.enabled }}
+{{- if and .Values.objectStore.enabled (eq (default "aws-s3" .Values.objectStore.backend) "noobaa") }}
 ---
 # BucketClass for PV-backed NooBaa storage
 # Required for ObjectBucketClaim to provision buckets on MCG-only NooBaa (SNO)

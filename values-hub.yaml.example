@@ -385,13 +385,29 @@ storage:
     size: "50Gi"
     storageClass: "ocs-storagecluster-cephfs"  # HA: RWX; SNO: change to "gp3-csi"
 
-# Object Store configuration (NooBaa/ODF S3)
-# HA clusters: full ODF (Ceph + NooBaa S3)
-# SNO clusters: MCG-only ODF (NooBaa S3 without Ceph)
-# Enabled for all topologies -- make configure-cluster installs the appropriate backend
+# Object Store configuration
+# ROSA / AWS clusters (default): native AWS S3 (no ODF dependency)
+# Baremetal / non-AWS: ODF NooBaa S3 (set backend: "noobaa")
+# SNO clusters: MCG-only ODF NooBaa S3 (set backend: "noobaa")
+#
+# For ROSA with native AWS S3:
+#   objectStore.backend: "aws-s3"
+#   objectStore.aws.region: "us-east-1"
+#   objectStore.aws.bucketName: "your-bucket-name"
+#   objectStore.aws.irsaRoleArn: "arn:aws:iam::ACCOUNT_ID:role/AIOpsS3Role"  # Optional IRSA
+#
+# For ODF/NooBaa (baremetal, air-gapped, non-AWS):
+#   objectStore.backend: "noobaa"
+#   objectStore.endpoint: "https://s3.openshift-storage.svc:443"
 objectStore:
   enabled: true
-  endpoint: "https://s3.openshift-storage.svc:443"
+  backend: "aws-s3"  # "aws-s3" (default for ROSA/AWS) or "noobaa" (for baremetal/ODF)
+  aws:
+    region: "us-east-1"
+    bucketName: ""  # Set to your S3 bucket name
+    irsaRoleArn: ""  # Optional: IAM Role ARN for IRSA
+    endpoint: ""  # Leave empty for default AWS S3 endpoint
+  endpoint: "https://s3.openshift-storage.svc:443"  # Only used when backend: "noobaa"
   region: "us-east-1"
   sslVerify: false
   buckets:

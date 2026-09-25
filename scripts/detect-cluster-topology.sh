@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script: detect-cluster-topology.sh
-# Purpose: Detect OpenShift cluster topology (SNO vs HA)
+# Purpose: Detect OpenShift cluster topology (SNO vs HA) and platform (ROSA vs IPI vs Other)
 # Exit Codes:
 #   0 = HA (HighlyAvailable)
 #   1 = SNO (SingleReplica)
@@ -56,6 +56,22 @@ CONTROL_PLANE_TOPOLOGY=$(echo "$INFRASTRUCTURE_JSON" | jq -r '.status.controlPla
 INFRASTRUCTURE_TOPOLOGY=$(echo "$INFRASTRUCTURE_JSON" | jq -r '.status.infrastructureTopology // "Unknown"')
 PLATFORM_TYPE=$(echo "$INFRASTRUCTURE_JSON" | jq -r '.status.platformStatus.type // "Unknown"')
 
+# Detect ROSA vs IPI vs Other
+# ROSA clusters have specific annotations or channel patterns
+CLUSTER_PLATFORM="ipi"
+CV_CHANNEL=$(oc get clusterversion version -o jsonpath='{.spec.channel}' 2>/dev/null || echo "")
+ROSA_ANNOTATIONS=$(oc get infrastructure cluster -o jsonpath='{.metadata.annotations}' 2>/dev/null || echo "")
+
+if echo "$CV_CHANNEL" | grep -qi "rosa"; then
+    CLUSTER_PLATFORM="rosa"
+elif oc get machinepool -A &>/dev/null 2>&1; then
+    CLUSTER_PLATFORM="rosa"
+elif echo "$ROSA_ANNOTATIONS" | grep -qi "red-hat-managed\|rosa\|api\.openshift\.com"; then
+    CLUSTER_PLATFORM="rosa"
+elif [[ -n "$CV_CHANNEL" ]] && ! oc get machinesets -n openshift-machine-api --no-headers 2>/dev/null | grep -q .; then
+    CLUSTER_PLATFORM="managed"
+fi
+
 # Display verbose information
 if [[ "$VERBOSE" == "true" ]]; then
     echo ""
@@ -63,6 +79,10 @@ if [[ "$VERBOSE" == "true" ]]; then
     echo -e "Control Plane Topology:    ${YELLOW}${CONTROL_PLANE_TOPOLOGY}${NC}"
     echo -e "Infrastructure Topology:   ${YELLOW}${INFRASTRUCTURE_TOPOLOGY}${NC}"
     echo -e "Platform Type:             ${YELLOW}${PLATFORM_TYPE}${NC}"
+    echo -e "Cluster Platform:          ${YELLOW}${CLUSTER_PLATFORM}${NC}"
+    if [[ -n "$CV_CHANNEL" ]]; then
+        echo -e "ClusterVersion Channel:    ${YELLOW}${CV_CHANNEL}${NC}"
+    fi
     echo ""
 fi
 
@@ -71,13 +91,17 @@ if [[ "$CONTROL_PLANE_TOPOLOGY" == "SingleReplica" ]] && [[ "$INFRASTRUCTURE_TOP
     # SNO cluster
     if [[ "$VERBOSE" == "true" ]]; then
         echo -e "${GREEN}Cluster Type:              ${YELLOW}SNO (Single Node OpenShift)${NC}"
+        echo -e "${GREEN}Cluster Platform:          ${YELLOW}${CLUSTER_PLATFORM}${NC}"
         echo ""
         echo -e "${YELLOW}Characteristics:${NC}"
         echo "  - Single node with all roles (control-plane, master, worker)"
         echo "  - No MachineSet scaling support"
-        echo "  - ODF (OpenShift Data Foundation) not supported"
-        echo "  - CSI storage classes only"
+        echo "  - CSI storage classes only (gp3-csi on AWS)"
         echo "  - Resource-constrained environment"
+        if [[ "$CLUSTER_PLATFORM" == "rosa" ]]; then
+            echo "  - ROSA managed cluster (use 'rosa' CLI for machine pools)"
+            echo "  - Native AWS S3 recommended for model storage"
+        fi
     else
         echo "SNO"
     fi
@@ -86,13 +110,21 @@ elif [[ "$CONTROL_PLANE_TOPOLOGY" == "HighlyAvailable" ]] && [[ "$INFRASTRUCTURE
     # HA (HighlyAvailable) cluster
     if [[ "$VERBOSE" == "true" ]]; then
         echo -e "${GREEN}Cluster Type:              ${YELLOW}HA (HighlyAvailable)${NC}"
+        echo -e "${GREEN}Cluster Platform:          ${YELLOW}${CLUSTER_PLATFORM}${NC}"
         echo ""
         echo -e "${YELLOW}Characteristics:${NC}"
         echo "  - Multiple nodes (3+ recommended)"
         echo "  - Separate control-plane and worker nodes"
-        echo "  - MachineSet scaling supported"
-        echo "  - ODF (OpenShift Data Foundation) supported"
-        echo "  - Full storage options (ODF + CSI)"
+        if [[ "$CLUSTER_PLATFORM" == "rosa" ]]; then
+            echo "  - ROSA managed cluster (use 'rosa' CLI for machine pools)"
+            echo "  - Machine Pool scaling (not MachineSet)"
+            echo "  - Native AWS S3 recommended for model storage"
+            echo "  - ODF available via ROSA add-on (optional)"
+        else
+            echo "  - MachineSet scaling supported"
+            echo "  - ODF (OpenShift Data Foundation) supported"
+            echo "  - Full storage options (ODF + CSI)"
+        fi
         echo "  - Production-ready high availability"
     else
         echo "HA"

@@ -56,31 +56,42 @@ See the **[User Model Deployment Guide](docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.
 
 ## 🚀 Quick Start (5 Minutes)
 
-### Supported Cluster Topologies
+### Supported Deployment Targets
 
-This platform supports both HighlyAvailable (HA) and Single Node OpenShift (SNO) deployments:
-
-| Topology | Nodes | Storage | ODF | Use Case |
-|----------|-------|---------|-----|----------|
-| **HA (HighlyAvailable)** | 3+ (separate control-plane/worker) | ODF + CSI | ✅ Yes | Production, full features |
-| **SNO SingleReplica** | 1 (all roles on single node) | CSI only | ❌ No | Edge, development, testing |
+| Target | Topology | Storage Backend | Support Level |
+|--------|----------|----------------|---------------|
+| **ROSA Classic (HA)** | 3+ nodes | Native AWS S3 (default) | Primary -- fully tested |
+| **ROSA Classic (single-worker)** | 1 worker node | Native AWS S3 (default) | Primary -- fully tested |
+| **AWS IPI** | HA or SNO | AWS S3 or ODF/NooBaa | Community-supported |
+| **Baremetal / UPI** | HA | ODF/NooBaa | Community-supported |
+| **Other clouds** | HA | ODF/NooBaa | Community-supported |
 
 **Supported OpenShift Versions:**
-- OpenShift 4.19, 4.20, 4.21 (active support window; 4.18 maintenance)
+- OpenShift 4.19, 4.20, 4.21, 4.22 (active support window)
 - Auto-detected during deployment
 - Version-specific operator overlays
 
 **Auto-Detection:**
 
-The platform automatically detects your cluster topology and version. After installing prerequisites and logging into your cluster (see Installation steps below), verify with `make show-cluster-info`.
+The platform automatically detects your cluster topology (HA or SNO) and platform (ROSA or IPI). After installing prerequisites and logging into your cluster, verify with `make show-cluster-info`.
 
-📖 **See also:** [SNO Deployment Guide](docs/how-to/deploy-on-sno.md)
+📖 **See also:** [ROSA Deployment Guide](docs/how-to/deploy-on-rosa.md) | [Other Platforms](docs/how-to/deploy-on-other-platforms.md) | [SNO Guide](docs/how-to/deploy-on-sno.md)
 
-### RHPDS Deployment Options
+### RHPDS / ROSA Deployment Options
 
-You can deploy this platform on **Red Hat Product Demo System (RHPDS)** clusters. Two catalog items are available:
+You can deploy this platform on **ROSA (Red Hat OpenShift Service on AWS)** or **Red Hat Product Demo System (RHPDS)** clusters:
 
-#### Option 1: SNO with OpenShift AI 3 (Recommended for Quick Start)
+#### Option 1: ROSA Classic (Recommended for Production)
+
+Create a ROSA Classic cluster with the `rosa` CLI:
+
+```bash
+rosa create cluster --cluster-name=aiops-platform --sts --mode=auto --region=us-east-1
+```
+
+📖 **See:** [Complete ROSA Deployment Guide](docs/how-to/deploy-on-rosa.md) for step-by-step instructions including GPU machine pool setup and native S3 configuration.
+
+#### Option 2: SNO with OpenShift AI 3 (Quick Start via RHPDS)
 
 **Catalog Item:** [Red Hat OpenShift AI 3](https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/published.openshift-ai-v3.prod&utm_source=webapp&utm_medium=share-link)
 
@@ -93,7 +104,7 @@ You can deploy this platform on **Red Hat Product Demo System (RHPDS)** clusters
 **Deployment Time:** ~1 hour
 **Topology:** SNO (Single Node OpenShift)
 
-#### Option 2: HA Cluster with NVIDIA GPUs on AWS
+#### Option 3: HA Cluster with NVIDIA GPUs on AWS (via RHPDS)
 
 **Catalog Item:** [RHOAI on OCP on AWS with NVIDIA GPUs](https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.ocp4-demo-rhods-nvidia-gpu-aws.prod&utm_source=webapp&utm_medium=share-link)
 
@@ -128,8 +139,10 @@ You can deploy this platform on **Red Hat Product Demo System (RHPDS)** clusters
 - 8+ CPU cores (16+ recommended), 32+ GB RAM (64+ recommended), 120+ GB storage
 
 **Local Workstation Tools:**
+- `rosa` - ROSA CLI for cluster and machine pool management (primary)
 - `podman` - Container runtime for building execution environments
 - `oc` and `kubectl` - OpenShift/Kubernetes CLI
+- `aws` - AWS CLI for S3 bucket management
 - `helm` 3.12+ - Kubernetes package manager
 - `ansible-navigator` - Ansible execution environment runner
 - `ansible-builder` - Build custom Ansible execution environments
@@ -163,7 +176,7 @@ source ~/.bashrc
 
 ### Installation
 
-#### Option 1: Validated Patterns Operator (Recommended)
+#### Option 1: Validated Patterns Operator (Recommended for ROSA)
 
 This pattern is installed via the [Validated Patterns Operator](https://validatedpatterns.io/). The operator manages the full GitOps lifecycle — no `make load-secrets` step is required for the default public-GitHub configuration.
 
@@ -175,8 +188,9 @@ This pattern is installed via the [Validated Patterns Operator](https://validate
 git clone https://github.com/YOUR-USERNAME/openshift-aiops-platform.git
 cd openshift-aiops-platform
 
-# 3. Log into your OpenShift cluster
+# 3. Log into your OpenShift cluster (ROSA or IPI)
 oc login <cluster-api-url>
+# For ROSA: oc login --token=<token> --server=<api-url>
 
 # 4. Update git.repoURL in values-global.yaml to point to YOUR fork
 vi values-global.yaml
@@ -223,7 +237,7 @@ oc create secret generic github-pat-credentials-source \
 
 See `values-secret.yaml.template` at the repository root for the full decision matrix.
 
-> **SNO Deployment**: Set `cluster.topology: "sno"` and `storage.modelStorage.storageClass: "gp3-csi"` in `values-hub.yaml` before running `./pattern.sh make install`. Object storage (NooBaa) is automatically provided by MCG-only ODF. See [SNO Deployment Guide](docs/how-to/deploy-on-sno.md) for details.
+> **SNO / Single-Worker Deployment**: Set `cluster.topology: "sno"` and `storage.modelStorage.storageClass: "gp3-csi"` in `values-hub.yaml` before running `./pattern.sh make install`. For ROSA single-worker nodes, use `objectStore.backend: "aws-s3"` (default). For non-ROSA SNO, object storage (NooBaa) is automatically provided by MCG-only ODF with `objectStore.backend: "noobaa"`. See [ROSA Guide](docs/how-to/deploy-on-rosa.md) or [SNO Guide](docs/how-to/deploy-on-sno.md) for details.
 
 #### Option 2: Fork and Deploy with Local Gitea (Air-Gapped/Development)
 

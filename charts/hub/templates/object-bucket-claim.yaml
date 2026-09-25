@@ -1,4 +1,4 @@
-{{- if .Values.objectStore.enabled }}
+{{- if and .Values.objectStore.enabled (eq (default "aws-s3" .Values.objectStore.backend) "noobaa") }}
 ---
 # ObjectBucketClaim for Model Storage
 # Creates S3 bucket and credentials in OpenShift Data Foundation (NooBaa)

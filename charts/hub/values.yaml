@@ -178,16 +178,33 @@ objectStore:
   # Enable object store integration
   enabled: true
 
-  # S3 endpoint URL (auto-detected from NooBaa route if empty)
+  # Storage backend: "aws-s3" (native AWS S3, default for ROSA) or "noobaa" (ODF/NooBaa, for baremetal/air-gapped)
+  # aws-s3: Uses native AWS S3 buckets with IRSA or static IAM credentials (no ODF dependency)
+  # noobaa: Uses OpenShift Data Foundation NooBaa S3 (requires ODF operator)
+  backend: "aws-s3"
+
+  # AWS S3 native configuration (only used when backend: "aws-s3")
+  aws:
+    # AWS region for S3 buckets
+    region: "us-east-1"
+    # S3 bucket name for model storage (must be pre-created or created by s3-bucket-setup job)
+    bucketName: ""
+    # IAM Role ARN for IRSA (leave empty for static credentials)
+    # When set, ServiceAccount is annotated with eks.amazonaws.com/role-arn
+    irsaRoleArn: ""
+    # S3 endpoint URL (leave empty for default AWS S3 endpoint)
+    endpoint: ""
+
+  # S3 endpoint URL (auto-detected from NooBaa route if empty, used by noobaa backend)
   # For ODF/NooBaa: https://s3.openshift-storage.svc.cluster.local
   # Leave empty to auto-detect from route
   endpoint: ""
 
-  # S3 access key (from ObjectBucketClaim secret)
+  # S3 access key (from ObjectBucketClaim secret, used by noobaa backend)
   # Will be populated from values-secret.yaml
   accessKey: ""
 
-  # S3 secret key (from ObjectBucketClaim secret)
+  # S3 secret key (from ObjectBucketClaim secret, used by noobaa backend)
   # Will be populated from values-secret.yaml
   secretKey: ""
 
@@ -200,10 +217,10 @@ objectStore:
   # S3 region
   region: "us-east-1"
 
-  # SSL verification (false for self-signed certs in dev)
+  # SSL verification (false for self-signed certs in dev, true for native AWS S3)
   sslVerify: false
 
-  # Auto-detect S3 endpoint from NooBaa route
+  # Auto-detect S3 endpoint from NooBaa route (only for noobaa backend)
   autoDetectEndpoint: true
 
 # Model Serving configuration

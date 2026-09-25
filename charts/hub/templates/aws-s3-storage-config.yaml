@@ -1,0 +1,102 @@
+{{- if and .Values.objectStore.enabled (eq (default "aws-s3" .Values.objectStore.backend) "aws-s3") }}
+---
+# Native AWS S3 storage configuration for ROSA and AWS-based clusters
+# Creates model-storage-config secret directly from AWS S3 credentials
+# No ODF/NooBaa dependency required
+#
+# Credential sources (in order of preference):
+# 1. IRSA (IAM Roles for Service Accounts) - set objectStore.aws.irsaRoleArn
+# 2. Static IAM credentials - create aws-s3-credentials-source secret manually
+# 3. Values file - set objectStore.accessKey and objectStore.secretKey (not recommended)
+#
+# Reference: ADR-062 - ROSA as Primary Deployment Target
+
+{{- if .Values.objectStore.aws.irsaRoleArn }}
+---
+# ServiceAccount annotation for IRSA (IAM Roles for Service Accounts)
+# Allows pods to assume an IAM role for S3 access without static credentials
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: self-healing-s3-access
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/name: self-healing-s3-access
+    app.kubernetes.io/component: object-store
+    app.kubernetes.io/part-of: self-healing-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "-7"
+    eks.amazonaws.com/role-arn: {{ .Values.objectStore.aws.irsaRoleArn }}
+{{- end }}
+
+---
+# Model storage config secret for native AWS S3
+# This secret is consumed by KServe InferenceServices, notebooks, and Tekton pipelines
+apiVersion: v1
+kind: Secret
+metadata:
+  name: model-storage-config
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/name: model-storage-config
+    app.kubernetes.io/component: model-serving
+    app.kubernetes.io/part-of: self-healing-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
+    description: "AWS S3 credentials for model storage (native S3 backend)"
+type: Opaque
+stringData:
+  AWS_DEFAULT_REGION: {{ .Values.objectStore.aws.region | default .Values.objectStore.region | default "us-east-1" | quote }}
+  AWS_S3_ENDPOINT: {{ .Values.objectStore.aws.endpoint | default (printf "https://s3.%s.amazonaws.com" (.Values.objectStore.aws.region | default .Values.objectStore.region | default "us-east-1")) | quote }}
+  MODEL_BUCKET: {{ .Values.objectStore.buckets.models | default "model-storage" | quote }}
+  AWS_S3_BUCKET: {{ .Values.objectStore.buckets.models | default "model-storage" | quote }}
+  TRAINING_DATA_BUCKET: {{ .Values.objectStore.buckets.trainingData | default "training-data" | quote }}
+  INFERENCE_RESULTS_BUCKET: {{ .Values.objectStore.buckets.inferenceResults | default "inference-results" | quote }}
+  AWS_SSL_VERIFY: {{ .Values.objectStore.sslVerify | default true | quote }}
+  {{- if .Values.objectStore.accessKey }}
+  AWS_ACCESS_KEY_ID: {{ .Values.objectStore.accessKey | quote }}
+  {{- else }}
+  AWS_ACCESS_KEY_ID: ""
+  {{- end }}
+  {{- if .Values.objectStore.secretKey }}
+  AWS_SECRET_ACCESS_KEY: {{ .Values.objectStore.secretKey | quote }}
+  {{- else }}
+  AWS_SECRET_ACCESS_KEY: ""
+  {{- end }}
+
+---
+# KServe storage-config secret for native AWS S3
+# Used by KServe storage-initializer for model downloads
+apiVersion: v1
+kind: Secret
+metadata:
+  name: storage-config
+  namespace: {{ .Values.main.namespace }}
+  labels:
+    app.kubernetes.io/name: storage-config
+    app.kubernetes.io/component: model-serving
+    app.kubernetes.io/part-of: self-healing-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
+    description: "KServe storage-initializer S3 credentials (native S3 backend)"
+type: Opaque
+stringData:
+  AWS_DEFAULT_REGION: {{ .Values.objectStore.aws.region | default .Values.objectStore.region | default "us-east-1" | quote }}
+  AWS_S3_ENDPOINT: {{ .Values.objectStore.aws.endpoint | default (printf "https://s3.%s.amazonaws.com" (.Values.objectStore.aws.region | default .Values.objectStore.region | default "us-east-1")) | quote }}
+  AWS_S3_BUCKET: {{ .Values.objectStore.buckets.models | default "model-storage" | quote }}
+  {{- if .Values.objectStore.accessKey }}
+  AWS_ACCESS_KEY_ID: {{ .Values.objectStore.accessKey | quote }}
+  awsAccessKeyID: {{ .Values.objectStore.accessKey | quote }}
+  {{- else }}
+  AWS_ACCESS_KEY_ID: ""
+  awsAccessKeyID: ""
+  {{- end }}
+  {{- if .Values.objectStore.secretKey }}
+  AWS_SECRET_ACCESS_KEY: {{ .Values.objectStore.secretKey | quote }}
+  awsSecretAccessKey: {{ .Values.objectStore.secretKey | quote }}
+  {{- else }}
+  AWS_SECRET_ACCESS_KEY: ""
+  awsSecretAccessKey: ""
+  {{- end }}
+
+{{- end }}

@@ -1,5 +1,5 @@
 ---
-# Detect cluster topology using Kubernetes API
+# Detect cluster topology and platform using Kubernetes API
 
 - name: Get cluster infrastructure information
   kubernetes.core.k8s_info:
@@ -14,19 +14,50 @@
     infrastructure_topology: "{{ cluster_infrastructure.resources[0].status.infrastructureTopology }}"
     platform_type: "{{ cluster_infrastructure.resources[0].status.platformStatus.type }}"
 
+- name: Get ClusterVersion for platform detection
+  kubernetes.core.k8s_info:
+    api_version: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+  register: cluster_version
+  ignore_errors: true
+
 - name: Determine cluster type
   set_fact:
     detected_cluster_topology: "{{ 'sno' if (control_plane_topology == 'SingleReplica' and infrastructure_topology == 'SingleReplica') else 'ha' }}"
 
+- name: Detect ROSA cluster
+  set_fact:
+    detected_cluster_platform: >-
+      {%- if cluster_version.resources is defined and cluster_version.resources | length > 0 -%}
+        {%- set channel = cluster_version.resources[0].spec.channel | default('') -%}
+        {%- if 'rosa' in channel | lower -%}
+          rosa
+        {%- else -%}
+          ipi
+        {%- endif -%}
+      {%- else -%}
+        ipi
+      {%- endif -%}
+
 - name: Set cluster topology (prefer environment variable)
   set_fact:
     cluster_topology: "{{ lookup('env', 'CLUSTER_TOPOLOGY') | default(detected_cluster_topology, true) }}"
+
+- name: Set cluster platform (prefer environment variable)
+  set_fact:
+    cluster_platform: "{{ lookup('env', 'CLUSTER_PLATFORM') | default(detected_cluster_platform | trim, true) }}"
 
 - name: Display cluster topology
   debug:
     msg: |
       Cluster Topology Information:
         Type: {{ cluster_topology | upper }}
+        Platform: {{ cluster_platform | upper }}
         Control Plane: {{ control_plane_topology }}
         Infrastructure: {{ infrastructure_topology }}
-        Platform: {{ platform_type }}
+        Cloud: {{ platform_type }}
+      {% if cluster_platform == 'rosa' %}
+        Note: ROSA cluster detected -- MachineSet scaling skipped (use rosa CLI for machine pools)
+        Recommended storage backend: aws-s3 (native AWS S3)
+      {% endif %}
