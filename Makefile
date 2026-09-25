@@ -2,4 +2,20 @@
 # This Makefile includes the common pattern targets from Makefile-common
 # You can add custom targets above or below the include line
 
+##@ Platform Setup Tasks
+.PHONY: configure-cluster
+configure-cluster: ## Configure cluster infrastructure (ODF/NooBaa, MachineSet scaling)
+	@echo "Configuring cluster infrastructure..."
+	@bash scripts/configure-cluster-infrastructure.sh
+
+.PHONY: show-cluster-info
+show-cluster-info: ## Show cluster topology, version, and platform info
+	@bash scripts/detect-cluster-topology.sh 2>/dev/null || true
+	@echo ""
+	@oc version 2>/dev/null | head -2 || true
+
+.PHONY: check-prerequisites
+check-prerequisites: ## Validate cluster prerequisites for deployment
+	@bash scripts/configure-cluster-infrastructure.sh --dry-run
+
 include Makefile-common

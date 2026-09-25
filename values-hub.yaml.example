@@ -242,6 +242,13 @@ secrets:
   # Secret backend: vault, sealed-secrets, or external-secrets
   backend: external-secrets
 
+# RBAC configuration
+# crossNamespaceEnabled: true allows ArgoCD to manage Role/RoleBinding in
+# openshift-storage (NooBaa RBAC) and other cluster-managed namespaces.
+# Requires ArgoCD controller to have cluster-admin (set up by operator-deploy-prereqs).
+rbac:
+  crossNamespaceEnabled: true
+
   # Vault configuration
   vault:
     # Vault server address (will be set during deployment)

@@ -41,13 +41,14 @@ ODF_STORAGE_SIZE="${ODF_STORAGE_SIZE:-512Gi}"
 DRY_RUN="${DRY_RUN:-false}"
 
 # Auto-detect cluster topology if not specified
-if [[ -z "$CLUSTER_TOPOLOGY" ]]; then
+# Use ${VAR:-} to avoid 'unbound variable' error with set -u
+if [[ -z "${CLUSTER_TOPOLOGY:-}" ]]; then
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     CLUSTER_TOPOLOGY=$(${SCRIPT_DIR}/detect-cluster-topology.sh 2>/dev/null | tr '[:upper:]' '[:lower:]' || echo "ha")
 fi
 
 # Auto-detect ODF channel based on OpenShift version
-if [[ -z "$ODF_CHANNEL" ]]; then
+if [[ -z "${ODF_CHANNEL:-}" ]]; then
     OCP_VERSION=$(oc version -o json 2>/dev/null | jq -r '.openshiftVersion // "4.18.0"' | cut -d. -f1-2)
     ODF_CHANNEL="stable-${OCP_VERSION}"
 else
