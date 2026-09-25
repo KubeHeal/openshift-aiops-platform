@@ -106,6 +106,28 @@ spec:
           value: {{ .Values.coordinationEngine.featureEngineering.expectedFeatureCount | quote }}
         {{- end }}
         {{- end }}
+        {{- /* Alert Webhook Sinks (coordination-engine v1.2.0) */}}
+        {{- if .Values.coordinationEngine.alertWebhooks }}
+        {{- if .Values.coordinationEngine.alertWebhooks.slackWebhookUrl }}
+        - name: KUBEHEAL_SLACK_WEBHOOK_URL
+          value: {{ .Values.coordinationEngine.alertWebhooks.slackWebhookUrl | quote }}
+        {{- end }}
+        {{- if .Values.coordinationEngine.alertWebhooks.pagerdutyRoutingKey }}
+        - name: KUBEHEAL_PAGERDUTY_ROUTING_KEY
+          value: {{ .Values.coordinationEngine.alertWebhooks.pagerdutyRoutingKey | quote }}
+        {{- end }}
+        {{- if .Values.coordinationEngine.alertWebhooks.alertmanagerUrl }}
+        - name: KUBEHEAL_ALERTMANAGER_URL
+          value: {{ .Values.coordinationEngine.alertWebhooks.alertmanagerUrl | quote }}
+        {{- end }}
+        {{- end }}
+        {{- /* OOM Remediation Configuration (coordination-engine v1.2.0) */}}
+        {{- if .Values.coordinationEngine.oomRemediation }}
+        - name: OOM_MEMORY_MULTIPLIER
+          value: {{ .Values.coordinationEngine.oomRemediation.memoryMultiplier | default "2.5" | quote }}
+        - name: OOM_MEMORY_MAX_LIMIT
+          value: {{ .Values.coordinationEngine.oomRemediation.memoryMaxLimit | default "2Gi" | quote }}
+        {{- end }}
         resources:
           requests:
             memory: {{ .Values.coordinationEngine.resources.requests.memory | default "256Mi" | quote }}
@@ -145,6 +167,16 @@ spec:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
           # Let OpenShift assign UID from allowed range
+        volumeMounts:
+        - name: incident-store
+          mountPath: /data/incidents
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: incident-store
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service

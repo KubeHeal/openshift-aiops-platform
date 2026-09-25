@@ -97,7 +97,7 @@ Create an OLSConfig resource to integrate the MCP server with OpenShift Lightspe
 The OLSConfig supports multiple LLM providers. Choose the configuration that matches your provider:
 
 ```yaml
-apiVersion: ols.openshift.io/v1alpha1
+apiVersion: ols.openshift.io/v1
 kind: OLSConfig
 metadata:
   name: cluster  # MUST be 'cluster' (cluster-scoped singleton)

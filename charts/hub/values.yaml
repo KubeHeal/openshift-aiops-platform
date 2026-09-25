@@ -359,6 +359,12 @@ networking:
     hosts: []
     tls: []
 
+# Alerting Rules Configuration
+alerts:
+  enabled: false
+  cpuThrottleThreshold: 0.25
+  anomalyScoreThreshold: 0.8
+
 # MCP Server Configuration
 mcpServer:
   enabled: true
@@ -382,8 +388,17 @@ mcpServer:
   # Transport protocol
   transport: http
 
+  # Server version
+  version: "0.2.0"
+
   # Logging level
   logLevel: info
+
+  # Request timeout (Go duration format)
+  requestTimeout: "30s"
+
+  # Maximum concurrent tool calls
+  maxConcurrentTools: "10"
 
   # Coordination Engine integration
   coordinationEngine:
@@ -394,6 +409,7 @@ mcpServer:
   kserve:
     enabled: true
     namespace: self-healing-platform
+    predictorPort: "8012"
 
   # Prometheus integration
   prometheus:
@@ -402,7 +418,7 @@ mcpServer:
 
   # Cache configuration
   cache:
-    ttlSeconds: 30
+    ttl: "30s"
 
   # Resource limits
   resources:
@@ -469,6 +485,19 @@ coordinationEngine:
     # For full feature engineering: 24 × 136 = 3264
     # For simple model: 5 (raw metrics only)
     expectedFeatureCount: 5
+
+  # Alert Webhook Sinks (coordination-engine v1.2.0)
+  # Configure external notification channels for critical anomalies
+  alertWebhooks:
+    slackWebhookUrl: ""
+    pagerdutyRoutingKey: ""
+    alertmanagerUrl: ""
+
+  # OOM Remediation Configuration (coordination-engine v1.2.0)
+  # Controls automatic memory limit patching for OOMKilled pods
+  oomRemediation:
+    memoryMultiplier: "2.5"
+    memoryMaxLimit: "2Gi"
 
   # Resource limits
   resources:

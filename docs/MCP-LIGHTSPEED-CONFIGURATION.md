@@ -113,7 +113,7 @@ Create the OLSConfig custom resource to configure Lightspeed with MCP:
 
 ```yaml
 # k8s/olsconfig/cluster-olsconfig.yaml
-apiVersion: ols.openshift.io/v1alpha1
+apiVersion: ols.openshift.io/v1
 kind: OLSConfig
 metadata:
   name: cluster

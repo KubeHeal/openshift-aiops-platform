@@ -1,5 +1,5 @@
 ---
-# Check OpenShift version is 4.12 or higher
+# Check OpenShift version is 4.20 or higher
 
 - name: Get OpenShift version
   kubernetes.core.k8s_info:
@@ -13,9 +13,9 @@
   set_fact:
     ocp_version: "{{ openshift_version.resources[0].status.desired.version.split('.')[0:2] | join('.') }}"
 
-- name: Validate OpenShift version is 4.12 or higher
+- name: Validate OpenShift version is 4.20 or higher
   assert:
     that:
-      - ocp_version is version('4.12', '>=')
-    fail_msg: "OpenShift version {{ ocp_version }} is not supported. Minimum required: 4.12"
-    success_msg: "✅ OpenShift version {{ ocp_version }} is supported"
+      - ocp_version is version('4.20', '>=')
+    fail_msg: "OpenShift version {{ ocp_version }} is not supported. Minimum required: 4.20"
+    success_msg: "OpenShift version {{ ocp_version }} is supported"

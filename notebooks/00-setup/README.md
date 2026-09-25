@@ -6,7 +6,7 @@
 
 ## Overview
 
-This phase contains a single setup notebook that verifies your RHODS workbench is properly configured before executing the 30 notebooks in the Self-Healing Platform.
+This phase contains a single setup notebook that verifies your OpenShift AI workbench is properly configured before executing the 30 notebooks in the Self-Healing Platform.
 
 ## Notebooks
 

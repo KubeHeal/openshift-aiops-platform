@@ -3,7 +3,7 @@
 **Status:** PROPOSED
 
 ## Status
-proposed - 2026-05-20
+accepted - 2026-09-24
 
 ## Context
 
@@ -199,7 +199,7 @@ Key features: Hybrid deterministic + AI-driven approach, KServe model serving, T
 
 **Positive**:
 
-1. **Visibility**: 
+1. **Visibility**:
    - Listed in official Validated Patterns catalog (https://validatedpatterns.io/patterns/)
    - Increased discoverability by Red Hat customers and partners
    - GitHub topic tags and search optimization

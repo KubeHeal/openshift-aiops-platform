@@ -1,0 +1,81 @@
+{
+  "$comment": "PROPOSAL in manifest shape. Review every line, then rename to .repo-governor.json and commit. The engine never reads this file.",
+  "repo_governor": {
+    "version": 1,
+    "engine_min_version": "0.1.0"
+  },
+  "repository": {
+    "id": "KubeHeal/openshift-aiops-platform"
+  },
+  "condition": {
+    "assessed": "L2",
+    "profile": "GOVERNOR_STANDARD",
+    "$comment": "Assessed by engine/onboard.py. No floor indicator; may be raised if obligations exceed what is observable."
+  },
+  "permissions": {
+    "$comment": "Deny by default (ADR-005). Read-only, with ONE exception: decision_history has write=true so CAPTURE_ONLY dispositions can be recorded.",
+    "repository": {
+      "read": true,
+      "write": false
+    },
+    "roadmap_authority": {
+      "read": true,
+      "write": false
+    },
+    "acceptance_criteria": {
+      "read": true,
+      "write": false
+    },
+    "decision_history": {
+      "read": true,
+      "write": true
+    },
+    "architecture": {
+      "read": true,
+      "write": false
+    }
+  },
+  "providers": {
+    "repository": {
+      "type": "git",
+      "adapter": "adapters/git",
+      "contract_version": 1
+    },
+    "roadmap_authority": {
+      "type": "github-projects",
+      "adapter": "adapters/github-projects",
+      "contract_version": 1,
+      "admission": {
+        "signal": "milestone"
+      },
+      "transport": {
+        "kind": "cli",
+        "command": "gh"
+      },
+      "env": {
+        "REPO_GOVERNOR_GH_REPO": "KubeHeal/openshift-aiops-platform",
+        "REPO_GOVERNOR_GH_ADMISSION": "milestone"
+      }
+    },
+    "acceptance_criteria": {
+      "type": "acceptance-file",
+      "adapter": "adapters/acceptance-file",
+      "contract_version": 1
+    },
+    "decision_history": [
+      {
+        "type": "decision-history-file",
+        "adapter": "adapters/decision-history-file",
+        "contract_version": 1
+      }
+    ],
+    "architecture": [
+      {
+        "type": "adr",
+        "adapter": "adapters/adr",
+        "contract_version": 1,
+        "path": "docs/adrs"
+      }
+    ]
+  }
+}

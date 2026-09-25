@@ -10,7 +10,7 @@
 #   - kubernetes, prometheus_client
 #   - curl, wget, git, jq, oc CLI
 
-FROM image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.1
+FROM image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.2
 
 USER root
 

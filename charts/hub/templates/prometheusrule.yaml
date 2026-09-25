@@ -1,0 +1,78 @@
+{{- if .Values.alerts.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: self-healing-platform-alerts
+  labels:
+    app.kubernetes.io/component: alerting
+    app.kubernetes.io/part-of: self-healing-platform
+spec:
+  groups:
+    - name: self-healing-platform.rules
+      rules:
+        - alert: PodCPUThrottlingHigh
+          expr: |
+            sum by (namespace, pod, container) (
+              rate(container_cpu_cfs_throttled_periods_total[5m])
+            )
+            /
+            sum by (namespace, pod, container) (
+              rate(container_cpu_cfs_periods_total[5m])
+            )
+            > {{ .Values.alerts.cpuThrottleThreshold | default 0.25 }}
+          for: 15m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: >-
+              Pod {{`{{ $labels.namespace }}`}}/{{`{{ $labels.pod }}`}} container
+              {{`{{ $labels.container }}`}} is throttled above
+              {{ .Values.alerts.cpuThrottleThreshold | default 0.25 | mul 100 }}%
+            description: >-
+              Container {{`{{ $labels.container }}`}} in pod
+              {{`{{ $labels.namespace }}`}}/{{`{{ $labels.pod }}`}} has been
+              CPU-throttled at {{`{{ $value | humanizePercentage }}`}} for more
+              than 15 minutes. Consider increasing CPU limits.
+            runbook_url: >-
+              https://github.com/KubeHeal/openshift-aiops-platform/blob/main/docs/guides/TROUBLESHOOTING-GUIDE.md#cpu-throttling
+        - alert: AnomalyScoreHigh
+          expr: |
+            anomaly_score > {{ .Values.alerts.anomalyScoreThreshold | default 0.8 }}
+          for: 10m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: >-
+              Anomaly score for {{`{{ $labels.namespace }}`}}/{{`{{ $labels.pod }}`}}
+              exceeds threshold
+            description: >-
+              Anomaly score is {{`{{ $value }}`}} (threshold:
+              {{ .Values.alerts.anomalyScoreThreshold | default 0.8 }}).
+              Investigate via coordination engine or MCP server.
+        - alert: CoordinationEngineDown
+          expr: |
+            up{job="coordination-engine"} == 0
+          for: 5m
+          labels:
+            severity: critical
+            team: platform
+          annotations:
+            summary: Coordination Engine is down
+            description: >-
+              The coordination engine has been unreachable for more than 5 minutes.
+              Self-healing remediation actions are unavailable.
+        - alert: MCPServerDown
+          expr: |
+            up{job="mcp-server"} == 0
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: MCP Server is down
+            description: >-
+              The MCP server has been unreachable for more than 5 minutes.
+              OpenShift Lightspeed integration is unavailable.
+{{- end }}

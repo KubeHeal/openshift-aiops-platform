@@ -71,8 +71,14 @@ spec:
           value: "0.0.0.0"
         - name: MCP_HTTP_PORT
           value: "8080"
+        - name: MCP_SERVER_VERSION
+          value: {{ .Values.mcpServer.version | default "0.2.0" | quote }}
         - name: LOG_LEVEL
           value: {{ .Values.mcpServer.logLevel | default "info" | quote }}
+        - name: REQUEST_TIMEOUT
+          value: {{ .Values.mcpServer.requestTimeout | default "30s" | quote }}
+        - name: MAX_CONCURRENT_TOOLS
+          value: {{ .Values.mcpServer.maxConcurrentTools | default "10" | quote }}
         {{- if .Values.mcpServer.coordinationEngine.enabled }}
         - name: ENABLE_COORDINATION_ENGINE
           value: "true"
@@ -84,6 +90,8 @@ spec:
           value: "true"
         - name: KSERVE_NAMESPACE
           value: {{ .Values.mcpServer.kserve.namespace | default .Release.Namespace | quote }}
+        - name: KSERVE_PREDICTOR_PORT
+          value: {{ .Values.mcpServer.kserve.predictorPort | default "8012" | quote }}
         {{- end }}
         {{- if .Values.mcpServer.prometheus.enabled }}
         - name: ENABLE_PROMETHEUS
@@ -92,8 +100,8 @@ spec:
           value: {{ .Values.mcpServer.prometheus.url | default "https://prometheus-k8s.openshift-monitoring.svc:9091" | quote }}
         {{- end }}
         {{- if .Values.mcpServer.cache }}
-        - name: CACHE_TTL_SECONDS
-          value: {{ .Values.mcpServer.cache.ttlSeconds | default 30 | quote }}
+        - name: CACHE_TTL
+          value: {{ .Values.mcpServer.cache.ttl | default "30s" | quote }}
         {{- end }}
         resources:
           requests:

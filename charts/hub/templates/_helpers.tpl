@@ -217,7 +217,7 @@ Used by components whose registry tags carry the ocp- prefix (coordination engin
 RHOAI dashboard route name
 Returns the route hostname prefix based on RHOAI version:
   - RHOAI 3.x (OCP 4.20+): "data-science-gateway"
-  - RHOAI 2.x (OCP 4.18):  "rhods-dashboard-redhat-ods-applications"
+  - RHOAI 2.x (legacy):     "rhods-dashboard-redhat-ods-applications"
 Can be overridden explicitly via workbench.dashboardRoute.
 */}}
 {{- define "self-healing-platform.dashboardRoute" -}}

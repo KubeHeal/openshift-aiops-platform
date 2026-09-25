@@ -1,0 +1,175 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: openshift-aiops-platform
+  title: OpenShift AI Ops Self-Healing Platform
+  description: >
+    Production-ready AIOps platform combining deterministic automation with
+    AI-driven analysis for OpenShift cluster self-healing.
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: KubeHeal/openshift-aiops-platform
+  tags:
+    - openshift
+    - aiops
+    - self-healing
+    - validated-pattern
+    - machine-learning
+  links:
+    - url: https://github.com/KubeHeal/openshift-aiops-platform
+      title: GitHub Repository
+      icon: github
+    - url: https://github.com/KubeHeal/openshift-aiops-platform/tree/main/docs
+      title: Documentation
+      icon: docs
+spec:
+  owner: group:kubeheal
+  lifecycle: production
+  domain: aiops
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: coordination-engine
+  title: Self-Healing Coordination Engine
+  description: >
+    Go-based orchestration engine for hybrid deterministic-AI remediation.
+    Manages conflict resolution, priority, and action orchestration.
+  annotations:
+    github.com/project-slug: KubeHeal/openshift-coordination-engine
+  tags:
+    - go
+    - coordination
+    - self-healing
+  links:
+    - url: https://github.com/KubeHeal/openshift-coordination-engine
+      title: GitHub Repository
+      icon: github
+    - url: https://quay.io/repository/takinosh/openshift-coordination-engine
+      title: Container Image
+      icon: docker
+spec:
+  type: service
+  owner: group:kubeheal
+  lifecycle: production
+  system: openshift-aiops-platform
+  dependsOn:
+    - resource:prometheus
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cluster-health-mcp
+  title: Cluster Health MCP Server
+  description: >
+    Go-based Model Context Protocol server providing 17 tools, 4 resources,
+    and 6 prompts for OpenShift Lightspeed integration.
+  annotations:
+    github.com/project-slug: KubeHeal/openshift-cluster-health-mcp
+  tags:
+    - go
+    - mcp
+    - lightspeed
+  links:
+    - url: https://github.com/KubeHeal/openshift-cluster-health-mcp
+      title: GitHub Repository
+      icon: github
+    - url: https://quay.io/repository/takinosh/openshift-cluster-health-mcp
+      title: Container Image
+      icon: docker
+spec:
+  type: service
+  owner: group:kubeheal
+  lifecycle: production
+  system: openshift-aiops-platform
+  dependsOn:
+    - component:coordination-engine
+    - resource:prometheus
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: jupyter-notebook-validator
+  title: Jupyter Notebook Validator Operator
+  description: >
+    Kubernetes operator for automated Jupyter notebook validation
+    using NotebookValidationJob CRDs.
+  annotations:
+    github.com/project-slug: tosin2013/jupyter-notebook-validator-operator
+  tags:
+    - operator
+    - jupyter
+    - validation
+  links:
+    - url: https://github.com/tosin2013/jupyter-notebook-validator-operator
+      title: GitHub Repository
+      icon: github
+spec:
+  type: service
+  owner: group:kubeheal
+  lifecycle: production
+  system: openshift-aiops-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: anomaly-detector
+  title: Anomaly Detection Model (Isolation Forest)
+  description: >
+    CPU-based Isolation Forest model for real-time cluster anomaly detection.
+    Served via KServe InferenceService.
+  tags:
+    - machine-learning
+    - kserve
+    - anomaly-detection
+spec:
+  type: service
+  owner: group:kubeheal
+  lifecycle: production
+  system: openshift-aiops-platform
+  dependsOn:
+    - resource:kserve
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: predictive-analytics
+  title: Predictive Analytics Model (LSTM)
+  description: >
+    GPU-accelerated LSTM model for predictive failure analysis.
+    Served via KServe InferenceService.
+  tags:
+    - machine-learning
+    - kserve
+    - lstm
+    - gpu
+spec:
+  type: service
+  owner: group:kubeheal
+  lifecycle: production
+  system: openshift-aiops-platform
+  dependsOn:
+    - resource:kserve
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: self-healing-workshop
+  title: Self-Healing Workshop (Showroom)
+  description: >
+    Interactive workshop for learning OpenShift AI Ops self-healing concepts.
+  annotations:
+    github.com/project-slug: KubeHeal/self-healing-workshop
+  tags:
+    - workshop
+    - documentation
+    - showroom
+  links:
+    - url: https://github.com/KubeHeal/self-healing-workshop
+      title: GitHub Repository
+      icon: github
+spec:
+  type: documentation
+  owner: group:kubeheal
+  lifecycle: production
+  system: openshift-aiops-platform

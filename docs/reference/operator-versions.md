@@ -56,8 +56,8 @@ notebooks:
 - Custom notebook-validator image has Papermill and dependencies pre-installed via BuildConfig
 
 **DO NOT USE**:
-- ❌ `image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/s2i-minimal-notebook:2025.1`
-- ❌ `image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.1`
+- ❌ `image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/s2i-minimal-notebook:2025.2`
+- ❌ `image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/pytorch:2025.2`
 
 **BuildConfig Details**:
 - Name: `notebook-validator`

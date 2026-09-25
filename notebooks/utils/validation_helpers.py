@@ -31,7 +31,7 @@ from typing import Dict, Any, List, Tuple, Optional
 from datetime import datetime
 import time
 
-# Optional imports - will be available in RHODS workbench
+# Optional imports - will be available in OpenShift AI workbench
 try:
     import boto3
     from botocore.exceptions import ClientError, NoCredentialsError, EndpointConnectionError
@@ -521,7 +521,7 @@ def validate_object_storage() -> List[Dict[str, Any]]:
                 check_name="S3 Connectivity",
                 status="WARNING",
                 details="boto3 not available in current environment",
-                remediation="boto3 will be available in RHODS workbench"
+                remediation="boto3 will be available in OpenShift AI workbench"
             ))
             return checks
 

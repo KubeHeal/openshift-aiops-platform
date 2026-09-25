@@ -1,0 +1,218 @@
+{{- if .Values.grafana.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: self-healing-platform-dashboard
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/component: grafana-dashboard
+    app.kubernetes.io/part-of: self-healing-platform
+data:
+  self-healing-platform.json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": "-- Grafana --",
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 1,
+      "id": null,
+      "links": [],
+      "panels": [
+        {
+          "title": "Anomaly Score Over Time",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10,
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 0.5 },
+                  { "color": "red", "value": 0.8 }
+                ]
+              },
+              "unit": "none"
+            }
+          },
+          "targets": [
+            {
+              "expr": "anomaly_score{namespace=~\"$namespace\"}",
+              "legendFormat": "{{`{{namespace}}`}}/{{`{{pod}}`}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Disk Exhaustion ETA",
+          "type": "gauge",
+          "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "red", "value": null },
+                  { "color": "yellow", "value": 24 },
+                  { "color": "green", "value": 72 }
+                ]
+              },
+              "unit": "h",
+              "min": 0,
+              "max": 720
+            }
+          },
+          "targets": [
+            {
+              "expr": "predict_linear(node_filesystem_avail_bytes{mountpoint=\"/\"}[6h], 3600) / (node_filesystem_avail_bytes{mountpoint=\"/\"} - predict_linear(node_filesystem_avail_bytes{mountpoint=\"/\"}[6h], 3600)) * -1 / 3600",
+              "legendFormat": "{{`{{instance}}`}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Remediation Actions (24h)",
+          "type": "stat",
+          "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 5 },
+                  { "color": "red", "value": 20 }
+                ]
+              }
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum(increase(coordination_engine_remediations_total[24h]))",
+              "legendFormat": "Total",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "CPU Right-Sizing Delta",
+          "type": "table",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": { "unit": "none" },
+            "overrides": [
+              {
+                "matcher": { "id": "byName", "options": "Delta" },
+                "properties": [
+                  { "id": "custom.cellOptions", "value": { "type": "color-background" } },
+                  { "id": "thresholds", "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      { "color": "green", "value": null },
+                      { "color": "yellow", "value": 0.5 },
+                      { "color": "red", "value": 1.0 }
+                    ]
+                  }}
+                ]
+              }
+            ]
+          },
+          "targets": [
+            {
+              "expr": "kube_pod_container_resource_requests{resource=\"cpu\"} - rate(container_cpu_usage_seconds_total[5m])",
+              "legendFormat": "{{`{{namespace}}`}}/{{`{{pod}}`}}/{{`{{container}}`}}",
+              "refId": "A",
+              "format": "table",
+              "instant": true
+            }
+          ],
+          "transformations": [
+            { "id": "organize", "options": {
+              "renameByName": { "Value": "Delta (cores)" }
+            }}
+          ]
+        },
+        {
+          "title": "Memory Right-Sizing Delta",
+          "type": "table",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": { "unit": "bytes" }
+          },
+          "targets": [
+            {
+              "expr": "kube_pod_container_resource_requests{resource=\"memory\"} - container_memory_working_set_bytes",
+              "legendFormat": "{{`{{namespace}}`}}/{{`{{pod}}`}}/{{`{{container}}`}}",
+              "refId": "A",
+              "format": "table",
+              "instant": true
+            }
+          ],
+          "transformations": [
+            { "id": "organize", "options": {
+              "renameByName": { "Value": "Delta (bytes)" }
+            }}
+          ]
+        },
+        {
+          "title": "CPU Throttle Rate Heatmap",
+          "type": "heatmap",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "targets": [
+            {
+              "expr": "rate(container_cpu_cfs_throttled_seconds_total{namespace=~\"$namespace\"}[5m])",
+              "legendFormat": "{{`{{namespace}}`}}/{{`{{pod}}`}}",
+              "refId": "A"
+            }
+          ],
+          "options": {
+            "calculate": false,
+            "color": { "scheme": "Oranges" }
+          }
+        }
+      ],
+      "schemaVersion": 39,
+      "tags": ["aiops", "self-healing", "openshift"],
+      "templating": {
+        "list": [
+          {
+            "current": { "text": "All", "value": "$__all" },
+            "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+            "definition": "label_values(kube_pod_info, namespace)",
+            "name": "namespace",
+            "type": "query",
+            "multi": true,
+            "includeAll": true
+          }
+        ]
+      },
+      "time": { "from": "now-6h", "to": "now" },
+      "title": "Self-Healing Platform Overview",
+      "uid": "self-healing-platform-overview"
+    }
+{{- end }}
