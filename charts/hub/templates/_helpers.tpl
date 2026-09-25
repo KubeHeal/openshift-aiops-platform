@@ -196,21 +196,19 @@ Usage: {{- include "self-healing-platform.ifEnabled" (dict "enabled" .Values.fea
 {{- end }}
 
 {{/*
-Default image tag: "<version>-latest" (e.g. "4.22-latest").
-Used by components whose registry tags have no prefix (MCP server).
+Default image tag for MCP server.
+Prefers .Values.mcpServer.image.tag if set, otherwise "latest".
 */}}
 {{- define "self-healing-platform.imageTag" -}}
-{{- $version := .Values.cluster.version | default "4.22" }}
-{{- printf "%s-latest" $version }}
+{{- "latest" }}
 {{- end }}
 
 {{/*
-OCP-prefixed image tag: "ocp-<version>-latest" (e.g. "ocp-4.22-latest").
-Used by components whose registry tags carry the ocp- prefix (coordination engine).
+Default image tag for coordination engine.
+Prefers .Values.coordinationEngine.image.tag if set, otherwise "latest".
 */}}
 {{- define "self-healing-platform.ocpImageTag" -}}
-{{- $version := .Values.cluster.version | default "4.22" }}
-{{- printf "ocp-%s-latest" $version }}
+{{- "latest" }}
 {{- end }}
 
 {{/*
