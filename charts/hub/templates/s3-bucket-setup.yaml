@@ -1,4 +1,4 @@
-{{- if .Values.objectStore.enabled }}
+{{- if and .Values.objectStore.enabled (ne (default "aws-s3" .Values.objectStore.backend) "aws-s3") }}
 ---
 # Job to create S3 buckets in ODF
 # This ensures buckets exist before InferenceServices try to access them
