@@ -24,6 +24,12 @@ clusterGroup:
     - openshift-serverless:
         operatorGroup: true
         targetNamespaces: []
+    - openshift-nfd:
+        operatorGroup: true
+        targetNamespaces: []
+    - nvidia-gpu-operator:
+        operatorGroup: true
+        targetNamespaces: []
   subscriptions:
     eso:
       name: openshift-external-secrets-operator
@@ -50,6 +56,16 @@ clusterGroup:
       namespace: openshift-serverless
       channel: stable
       source: redhat-operators
+    nfd:
+      name: nfd
+      namespace: openshift-nfd
+      channel: stable
+      source: redhat-operators
+    gpu-operator:
+      name: gpu-operator-certified
+      namespace: nvidia-gpu-operator
+      channel: v26.7
+      source: certified-operators
   applications:
     self-healing-platform:
       name: self-healing-platform

@@ -1,0 +1,88 @@
+{{- /*
+  NVIDIA GPU Operator Configuration
+  Deploys NodeFeatureDiscovery (NFD) and ClusterPolicy CRs to enable
+  GPU scheduling on OpenShift clusters with NVIDIA GPU nodes.
+
+  Prerequisites (managed by VP subscriptions in values-hub.yaml):
+  - NFD Operator (openshift-nfd namespace)
+  - GPU Operator Certified (nvidia-gpu-operator namespace)
+
+  Gated on: nodeConfig.gpu.enabled (default: true in values.yaml)
+  Reference: ADR-006 (NVIDIA GPU Management), ADR-057 (Topology-Aware GPU Scheduling)
+*/ -}}
+{{- if and .Values.nodeConfig .Values.nodeConfig.gpu .Values.nodeConfig.gpu.enabled }}
+---
+# NodeFeatureDiscovery CR - tells the NFD operator to discover hardware features
+# This enables automatic labeling of GPU nodes with nvidia.com/gpu.present=true
+apiVersion: nfd.openshift.io/v1
+kind: NodeFeatureDiscovery
+metadata:
+  name: nfd-instance
+  namespace: openshift-nfd
+  labels:
+    app.kubernetes.io/name: nfd
+    app.kubernetes.io/part-of: {{ .Values.global.pattern | default "self-healing-platform" }}
+    app.kubernetes.io/managed-by: validated-patterns
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  operand:
+    image: registry.redhat.io/openshift4/ose-node-feature-discovery-rhel9:v4.21
+    imagePullPolicy: IfNotPresent
+  workerConfig:
+    configData: |
+      core:
+        sleepInterval: 60s
+      sources:
+        pci:
+          deviceClassWhitelist:
+            - "0200"
+            - "03"
+            - "12"
+          deviceLabelFields:
+            - "vendor"
+---
+# ClusterPolicy CR - tells the GPU Operator to deploy NVIDIA drivers,
+# device plugin, container toolkit, DCGM exporter, and GPU feature discovery
+apiVersion: nvidia.com/v1
+kind: ClusterPolicy
+metadata:
+  name: gpu-cluster-policy
+  labels:
+    app.kubernetes.io/name: nvidia-gpu-operator
+    app.kubernetes.io/part-of: {{ .Values.global.pattern | default "self-healing-platform" }}
+    app.kubernetes.io/managed-by: validated-patterns
+  annotations:
+    argocd.argoproj.io/sync-wave: "-9"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  operator:
+    defaultRuntime: crio
+    use_ocp_driver_toolkit: true
+  daemonsets:
+    tolerations:
+    - effect: NoSchedule
+      key: nvidia.com/gpu
+      operator: Exists
+  driver:
+    enabled: true
+    use_ocp_driver_toolkit: true
+  devicePlugin:
+    enabled: true
+  dcgmExporter:
+    enabled: true
+  gfd:
+    enabled: true
+  migManager:
+    enabled: false
+  nodeStatusExporter:
+    enabled: true
+  toolkit:
+    enabled: true
+  validator:
+    plugin:
+      env:
+      - name: WITH_WORKLOAD
+        value: "false"
+{{- end }}
