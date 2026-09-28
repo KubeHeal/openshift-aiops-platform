@@ -306,7 +306,7 @@ spec:
             volumes:
               - name: model-storage
                 persistentVolumeClaim:
-                  {{- if eq ((.Values.cluster).topology | default "ha") "sno" }}
+                  {{- if or (eq ((.Values.cluster).topology | default "ha") "sno") (eq (default "aws-s3" ((.Values.objectStore).backend)) "aws-s3") }}
                   claimName: model-storage-pvc
                   {{- else }}
                   claimName: model-storage-gpu-pvc
@@ -709,7 +709,7 @@ spec:
         print(f"Endpoint test failed after {max_retries} attempts")
         sys.exit(1)
 
-{{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
+{{- if and (ne ((.Values.cluster).topology | default "ha") "sno") (ne (default "aws-s3" ((.Values.objectStore).backend)) "aws-s3") }}
 ---
 # =============================================================================
 # Task: copy-gpu-model-to-shared (GPU pipeline only, HA only)
@@ -1009,7 +1009,7 @@ spec:
         - name: git-ref
           value: $(params.git-ref)
 
-    {{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
+    {{- if and (ne ((.Values.cluster).topology | default "ha") "sno") (ne (default "aws-s3" ((.Values.objectStore).backend)) "aws-s3") }}
     # Task 2: Copy GPU model to shared storage (HA only -- SNO writes directly to shared PVC)
     - name: copy-gpu-model
       runAfter:
@@ -1029,7 +1029,7 @@ spec:
           operator: in
           values: ["true"]
       runAfter:
-        {{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
+        {{- if and (ne ((.Values.cluster).topology | default "ha") "sno") (ne (default "aws-s3" ((.Values.objectStore).backend)) "aws-s3") }}
         - copy-gpu-model
         {{- else }}
         - train-model
