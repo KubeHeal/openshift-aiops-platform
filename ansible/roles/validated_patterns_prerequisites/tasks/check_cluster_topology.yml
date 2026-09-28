@@ -31,7 +31,10 @@
     detected_cluster_platform: >-
       {%- if cluster_version.resources is defined and cluster_version.resources | length > 0 -%}
         {%- set channel = cluster_version.resources[0].spec.channel | default('') -%}
+        {%- set labels = cluster_version.resources[0].metadata.labels | default({}) -%}
         {%- if 'rosa' in channel | lower -%}
+          rosa
+        {%- elif labels.get('hive.openshift.io/managed', '') == 'true' -%}
           rosa
         {%- else -%}
           ipi
@@ -39,6 +42,23 @@
       {%- else -%}
         ipi
       {%- endif -%}
+
+- name: Check for ROSA brand logo (fallback detection)
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: ConfigMap
+    name: rosa-brand-logo
+    namespace: openshift-config
+  register: rosa_brand
+  ignore_errors: true
+
+- name: Override platform to ROSA if brand logo found
+  set_fact:
+    detected_cluster_platform: "rosa"
+  when:
+    - detected_cluster_platform != 'rosa'
+    - rosa_brand.resources is defined
+    - rosa_brand.resources | length > 0
 
 - name: Set cluster topology (prefer environment variable)
   set_fact:

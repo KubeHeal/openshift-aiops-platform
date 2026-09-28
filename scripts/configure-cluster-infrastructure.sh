@@ -65,7 +65,13 @@ fi
 if [[ "$IS_ROSA" == "false" ]]; then
     CV_CHANNEL=$(oc get clusterversion version -o jsonpath='{.spec.channel}' 2>/dev/null || echo "")
     ROSA_ANNOTATIONS=$(oc get infrastructure cluster -o jsonpath='{.metadata.annotations}' 2>/dev/null || echo "")
+    CV_MANAGED_LABEL=$(oc get clusterversion version -o jsonpath='{.metadata.labels.hive\.openshift\.io/managed}' 2>/dev/null || echo "")
+    ROSA_BRAND=$(oc get configmap rosa-brand-logo -n openshift-config --no-headers 2>/dev/null && echo "found" || echo "")
     if echo "$CV_CHANNEL" | grep -qi "rosa"; then
+        IS_ROSA=true
+    elif [[ "$CV_MANAGED_LABEL" == "true" ]]; then
+        IS_ROSA=true
+    elif [[ -n "$ROSA_BRAND" ]]; then
         IS_ROSA=true
     elif echo "$ROSA_ANNOTATIONS" | grep -qi "red-hat-managed\|rosa\|api\.openshift\.com"; then
         IS_ROSA=true

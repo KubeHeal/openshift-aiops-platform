@@ -123,8 +123,8 @@ clusterGroup:
           - ServerSideApply=true
       targetRevision: main
 cluster:
-  topology: sno
-  version: "4.22"
+  topology: ha
+  version: "4.21"
 features:
   aiml: true
   beta: false
@@ -266,11 +266,16 @@ notebooks:
     timeout: 30m
 objectStore:
   enabled: true
+  backend: "aws-s3"
+  aws:
+    region: "us-east-1"
+    bucketName: "aiops-model-storage-2t44b5re"
+    irsaRoleArn: ""
+    endpoint: ""
   buckets:
     inferenceResults: inference-results
     models: model-storage
     trainingData: training-data
-  endpoint: https://s3.openshift-storage.svc:443
   region: us-east-1
   sslVerify: false
 gitea:

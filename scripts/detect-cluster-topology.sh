@@ -57,19 +57,28 @@ INFRASTRUCTURE_TOPOLOGY=$(echo "$INFRASTRUCTURE_JSON" | jq -r '.status.infrastru
 PLATFORM_TYPE=$(echo "$INFRASTRUCTURE_JSON" | jq -r '.status.platformStatus.type // "Unknown"')
 
 # Detect ROSA vs IPI vs Other
-# ROSA clusters have specific annotations or channel patterns
+# ROSA clusters can be identified by multiple signals:
+#   1. "rosa" in the ClusterVersion channel (e.g., "rosa-classic-4.21")
+#   2. hive.openshift.io/managed=true label on ClusterVersion
+#   3. rosa-brand-logo ConfigMap in openshift-config namespace
+#   4. *.openshiftapps.com in the console route
+#   5. Infrastructure annotations containing "red-hat-managed" or "rosa"
 CLUSTER_PLATFORM="ipi"
 CV_CHANNEL=$(oc get clusterversion version -o jsonpath='{.spec.channel}' 2>/dev/null || echo "")
 ROSA_ANNOTATIONS=$(oc get infrastructure cluster -o jsonpath='{.metadata.annotations}' 2>/dev/null || echo "")
+CV_MANAGED_LABEL=$(oc get clusterversion version -o jsonpath='{.metadata.labels.hive\.openshift\.io/managed}' 2>/dev/null || echo "")
+ROSA_BRAND=$(oc get configmap rosa-brand-logo -n openshift-config --no-headers 2>/dev/null && echo "found" || echo "")
 
 if echo "$CV_CHANNEL" | grep -qi "rosa"; then
     CLUSTER_PLATFORM="rosa"
-elif oc get machinepool -A &>/dev/null 2>&1; then
+elif [[ "$CV_MANAGED_LABEL" == "true" ]]; then
+    CLUSTER_PLATFORM="rosa"
+elif [[ -n "$ROSA_BRAND" ]]; then
     CLUSTER_PLATFORM="rosa"
 elif echo "$ROSA_ANNOTATIONS" | grep -qi "red-hat-managed\|rosa\|api\.openshift\.com"; then
     CLUSTER_PLATFORM="rosa"
-elif [[ -n "$CV_CHANNEL" ]] && ! oc get machinesets -n openshift-machine-api --no-headers 2>/dev/null | grep -q .; then
-    CLUSTER_PLATFORM="managed"
+elif oc get machinepool -A &>/dev/null 2>&1; then
+    CLUSTER_PLATFORM="rosa"
 fi
 
 # Display verbose information
