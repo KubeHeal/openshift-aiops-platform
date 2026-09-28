@@ -206,7 +206,7 @@ done
 # Step 1: Validate Prerequisites
 # =============================================================================
 
-log_step "Step 1/8: Validating Prerequisites"
+log_step "Step 1/9: Validating Prerequisites"
 
 PREREQ_FAILED=false
 
@@ -284,7 +284,7 @@ fi
 # Step 2: Create ROSA Classic Cluster
 # =============================================================================
 
-log_step "Step 2/8: Creating ROSA Classic Cluster"
+log_step "Step 2/9: Creating ROSA Classic Cluster"
 
 echo ""
 echo -e "  ${BOLD}Configuration:${NC}"
@@ -342,7 +342,7 @@ fi
 # Step 3: Wait for Cluster Ready
 # =============================================================================
 
-log_step "Step 3/8: Waiting for Cluster to be Ready"
+log_step "Step 3/9: Waiting for Cluster to be Ready"
 
 if [[ "$DRY_RUN" == "true" ]]; then
     echo -e "${YELLOW}[DRY-RUN]${NC} Would poll 'rosa describe cluster' until state=ready (~35-45 min)"
@@ -390,7 +390,7 @@ fi
 # Step 4: Create Cluster-Admin User
 # =============================================================================
 
-log_step "Step 4/8: Creating Cluster-Admin User"
+log_step "Step 4/9: Creating Cluster-Admin User"
 
 ADMIN_USER=""
 ADMIN_PASS=""
@@ -442,7 +442,7 @@ fi
 # Step 5: Add GPU Machine Pool (Optional)
 # =============================================================================
 
-log_step "Step 5/8: GPU Machine Pool"
+log_step "Step 5/9: GPU Machine Pool"
 
 if [[ "$ENABLE_GPU" == "false" ]]; then
     log_info "GPU machine pool disabled (--no-gpu). Skipping."
@@ -487,7 +487,7 @@ fi
 # Step 6: Create S3 Bucket
 # =============================================================================
 
-log_step "Step 6/8: S3 Model Storage Bucket"
+log_step "Step 6/9: S3 Model Storage Bucket"
 
 BUCKET_NAME=""
 
@@ -540,10 +540,99 @@ else
 fi
 
 # =============================================================================
-# Step 7: Log Into Cluster
+# Step 7: Create S3 IAM Credentials
 # =============================================================================
 
-log_step "Step 7/8: Logging Into Cluster"
+log_step "Step 7/9: S3 IAM Credentials"
+
+S3_ACCESS_KEY_ID=""
+S3_SECRET_ACCESS_KEY=""
+
+if [[ "$ENABLE_BUCKET" == "false" ]] || [[ -z "${BUCKET_NAME}" ]]; then
+    log_info "No S3 bucket configured. Skipping IAM credential creation."
+else
+    IAM_USER="${CLUSTER_NAME}-s3-access"
+    IAM_POLICY_NAME="${CLUSTER_NAME}-s3-policy"
+
+    if [[ "$DRY_RUN" == "true" ]]; then
+        echo -e "${YELLOW}[DRY-RUN]${NC} Would create IAM user '${IAM_USER}' with S3 access to '${BUCKET_NAME}'"
+    else
+        # Check if user already exists
+        if aws iam get-user --user-name "$IAM_USER" &>/dev/null 2>&1; then
+            log_warn "IAM user '${IAM_USER}' already exists."
+            # Check for existing access keys
+            EXISTING_KEY=$(aws iam list-access-keys --user-name "$IAM_USER" \
+                --query 'AccessKeyMetadata[0].AccessKeyId' --output text 2>/dev/null || echo "")
+            if [[ -n "$EXISTING_KEY" && "$EXISTING_KEY" != "None" ]]; then
+                log_info "Using existing access key: ${EXISTING_KEY}"
+                S3_ACCESS_KEY_ID="$EXISTING_KEY"
+                log_warn "Cannot retrieve existing secret key. If needed, delete and recreate:"
+                echo -e "  ${CYAN}aws iam delete-access-key --user-name ${IAM_USER} --access-key-id ${EXISTING_KEY}${NC}"
+                echo -e "  ${CYAN}Re-run this script to generate a new key${NC}"
+            fi
+        else
+            log_info "Creating IAM user: ${IAM_USER}"
+            aws iam create-user --user-name "$IAM_USER" >/dev/null 2>&1
+
+            # Create scoped IAM policy
+            POLICY_DOC=$(cat <<POLICYEOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:ListBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": [
+        "arn:aws:s3:::${BUCKET_NAME}",
+        "arn:aws:s3:::${BUCKET_NAME}/*"
+      ]
+    }
+  ]
+}
+POLICYEOF
+)
+
+            POLICY_ARN=$(aws iam create-policy \
+                --policy-name "$IAM_POLICY_NAME" \
+                --policy-document "$POLICY_DOC" \
+                --query 'Policy.Arn' --output text 2>/dev/null || echo "")
+
+            if [[ -z "$POLICY_ARN" ]]; then
+                # Policy may already exist
+                AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
+                POLICY_ARN="arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${IAM_POLICY_NAME}"
+            fi
+
+            aws iam attach-user-policy --user-name "$IAM_USER" --policy-arn "$POLICY_ARN" 2>/dev/null || true
+
+            log_success "IAM user '${IAM_USER}' created with S3 policy"
+        fi
+
+        # Create access key if we don't have one
+        if [[ -z "$S3_ACCESS_KEY_ID" ]]; then
+            KEY_OUTPUT=$(aws iam create-access-key --user-name "$IAM_USER" 2>/dev/null || echo "")
+            if [[ -n "$KEY_OUTPUT" ]]; then
+                S3_ACCESS_KEY_ID=$(echo "$KEY_OUTPUT" | jq -r '.AccessKey.AccessKeyId')
+                S3_SECRET_ACCESS_KEY=$(echo "$KEY_OUTPUT" | jq -r '.AccessKey.SecretAccessKey')
+                log_success "Access key created: ${S3_ACCESS_KEY_ID}"
+            else
+                log_warn "Could not create access key. IAM user may already have 2 keys (max)."
+            fi
+        fi
+    fi
+fi
+
+# =============================================================================
+# Step 8: Log Into Cluster
+# =============================================================================
+
+log_step "Step 8/9: Logging Into Cluster"
 
 if [[ "$DRY_RUN" == "true" ]]; then
     echo -e "${YELLOW}[DRY-RUN]${NC} Would run: oc login <api-url> --username cluster-admin --password <password>"
@@ -595,7 +684,7 @@ fi
 # Step 8: Summary and Next Steps
 # =============================================================================
 
-log_step "Step 8/8: Summary"
+log_step "Step 9/9: Summary"
 
 echo ""
 echo -e "${GREEN}${BOLD}ROSA Cluster Provisioning Complete${NC}"
@@ -609,6 +698,9 @@ if [[ "$ENABLE_GPU" == "true" ]]; then
 fi
 if [[ -n "${BUCKET_NAME:-}" ]]; then
     echo -e "    S3 Bucket:       ${CYAN}${BUCKET_NAME}${NC}"
+fi
+if [[ -n "${S3_ACCESS_KEY_ID:-}" ]]; then
+    echo -e "    S3 Access Key:   ${CYAN}${S3_ACCESS_KEY_ID}${NC}"
 fi
 if [[ -n "${API_URL:-}" ]]; then
     echo -e "    API URL:         ${CYAN}${API_URL}${NC}"
@@ -631,8 +723,18 @@ if [[ -n "${BUCKET_NAME:-}" ]]; then
     echo -e "         aws:"
     echo -e "           region: \"${AWS_REGION}\""
     echo -e "           bucketName: \"${BUCKET_NAME}\""
+    if [[ -n "${S3_ACCESS_KEY_ID:-}" && -n "${S3_SECRET_ACCESS_KEY:-}" ]]; then
+        echo -e "         accessKey: \"${S3_ACCESS_KEY_ID}\""
+        echo -e "         secretKey: \"<see output above>\""
+        echo ""
+        echo -e "    ${YELLOW}IMPORTANT:${NC} Set S3 credentials in values-hub.yaml (NOT committed to git):"
+        echo -e "       objectStore:"
+        echo -e "         accessKey: \"${S3_ACCESS_KEY_ID}\""
+        echo -e "         secretKey: \"${S3_SECRET_ACCESS_KEY}\""
+    fi
     echo ""
-    echo -e "    ${CYAN}4.${NC} Deploy the platform:"
+    NEXT_STEP=4
+    echo -e "    ${CYAN}${NEXT_STEP}.${NC} Deploy the platform:"
 else
     echo -e "    ${CYAN}3.${NC} Deploy the platform:"
 fi
@@ -655,5 +757,8 @@ echo -e "  ${BOLD}Cleanup (when done):${NC}"
 echo -e "    rosa delete cluster --cluster ${CLUSTER_NAME} --yes --watch"
 if [[ -n "${BUCKET_NAME:-}" ]]; then
     echo -e "    aws s3 rb s3://${BUCKET_NAME} --force --region ${AWS_REGION}"
+fi
+if [[ -n "${IAM_USER:-}" ]]; then
+    echo -e "    aws iam delete-user --user-name ${IAM_USER}  # delete IAM user after detaching policy and keys"
 fi
 echo ""
