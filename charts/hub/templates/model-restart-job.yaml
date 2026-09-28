@@ -299,7 +299,7 @@ spec:
         volumeMounts:
         - name: model-storage
           mountPath: /mnt/models
-        {{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
+        {{- if and (ne ((.Values.cluster).topology | default "ha") "sno") (ne (default "aws-s3" ((.Values.objectStore).backend)) "aws-s3") }}
         - name: model-storage-gpu
           mountPath: /mnt/models-gpu
         {{- end }}
@@ -307,7 +307,7 @@ spec:
       - name: model-storage
         persistentVolumeClaim:
           claimName: model-storage-pvc
-      {{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
+      {{- if and (ne ((.Values.cluster).topology | default "ha") "sno") (ne (default "aws-s3" ((.Values.objectStore).backend)) "aws-s3") }}
       - name: model-storage-gpu
         persistentVolumeClaim:
           claimName: model-storage-gpu-pvc
