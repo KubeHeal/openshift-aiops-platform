@@ -37,6 +37,14 @@ spec:
     spec:
       serviceAccountName: self-healing-operator
       restartPolicy: OnFailure
+      # Co-schedule with predictor pods so the RWO PVC is on the same node
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                serving.kserve.io/inferenceservice: anomaly-detector
+            topologyKey: kubernetes.io/hostname
       initContainers:
       # Wait for PVC to be mounted
       - name: wait-for-pvc

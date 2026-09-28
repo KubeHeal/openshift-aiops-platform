@@ -47,6 +47,14 @@ spec:
       # No securityContext — let OpenShift SCC assign UID/GID from namespace range.
       # The namespace range is [1000960000, 1000969999]; hardcoding any value
       # outside that range causes "forbidden: unable to validate against any SCC".
+      # Co-schedule with predictor pods so the RWO PVC is on the same node
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                serving.kserve.io/inferenceservice: anomaly-detector
+            topologyKey: kubernetes.io/hostname
       initContainers:
       # Wait for final PVC to be mounted (required)
       - name: wait-for-pvcs
