@@ -31,7 +31,7 @@ metadata:
     description: "Shared model storage for notebooks and KServe"
 spec:
   accessModes:
-    {{- if eq ((.Values.cluster).topology | default "ha") "sno" }}
+    {{- if or (eq ((.Values.cluster).topology | default "ha") "sno") (eq (default "aws-s3" ((.Values.objectStore).backend)) "aws-s3") }}
     - ReadWriteOnce
     {{- else }}
     - ReadWriteMany
@@ -39,8 +39,8 @@ spec:
   resources:
     requests:
       storage: {{ if and .Values.storage .Values.storage.modelStorage .Values.storage.modelStorage.size }}{{ .Values.storage.modelStorage.size }}{{ else }}"10Gi"{{ end }}
-  storageClassName: {{ if and .Values.storage .Values.storage.modelStorage .Values.storage.modelStorage.storageClass }}{{ .Values.storage.modelStorage.storageClass }}{{ else if eq ((.Values.cluster).topology | default "ha") "sno" }}"gp3-csi"{{ else }}"ocs-storagecluster-cephfs"{{ end }}
-{{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
+  storageClassName: {{ if and .Values.storage .Values.storage.modelStorage .Values.storage.modelStorage.storageClass }}{{ .Values.storage.modelStorage.storageClass }}{{ else if or (eq ((.Values.cluster).topology | default "ha") "sno") (eq (default "aws-s3" ((.Values.objectStore).backend)) "aws-s3") }}"gp3-csi"{{ else }}"ocs-storagecluster-cephfs"{{ end }}
+{{- if and (ne ((.Values.cluster).topology | default "ha") "sno") (ne (default "aws-s3" ((.Values.objectStore).backend)) "aws-s3") }}
 ---
 # Model Storage PVC for GPU Training (HA only)
 # GPU nodes cannot mount CephFS; this gp3-csi (RWO) PVC is used for training,
