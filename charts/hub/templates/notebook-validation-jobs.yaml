@@ -69,6 +69,14 @@ spec:
         nvidia.com/gpu: {{ .resources.gpu.count | default "1" | quote }}
         {{- end }}
     serviceAccountName: self-healing-workbench
+    {{- if and .notebook.gpuRequired (and .resources.gpu .resources.gpu.enabled) }}
+    tolerations:
+    - key: nvidia.com/gpu
+      operator: Exists
+      effect: NoSchedule
+    nodeSelector:
+      nvidia.com/gpu.present: "true"
+    {{- end }}
     envFrom:
     - secretRef:
         name: model-storage-config
