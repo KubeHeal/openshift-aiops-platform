@@ -266,6 +266,20 @@ fi
 
 log_success "All prerequisites validated"
 
+# Ensure STS account roles exist (required for --sts --mode=auto)
+if [[ "$DRY_RUN" == "false" ]]; then
+    EXISTING_ROLES=$(aws iam list-roles --query "Roles[?starts_with(RoleName,'ManagedOpenShift-Installer')].RoleName" --output text 2>/dev/null || echo "")
+    if [[ -z "$EXISTING_ROLES" ]]; then
+        log_info "Creating ROSA STS account roles (first-time setup)..."
+        rosa create account-roles --mode auto --yes
+        log_success "STS account roles created"
+    else
+        log_success "STS account roles already exist"
+    fi
+else
+    echo -e "${YELLOW}[DRY-RUN]${NC} Would verify/create STS account roles: rosa create account-roles --mode auto --yes"
+fi
+
 # =============================================================================
 # Step 2: Create ROSA Classic Cluster
 # =============================================================================
