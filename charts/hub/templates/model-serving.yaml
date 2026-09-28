@@ -14,6 +14,16 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   predictor:
+    {{- if eq (default "aws-s3" ($.Values.objectStore).backend) "aws-s3" }}
+    # EBS RWO volumes can only attach to one node; co-schedule with workbench
+    affinity:
+      podAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              opendatahub.io/notebook-name: self-healing-workbench
+          topologyKey: kubernetes.io/hostname
+    {{- end }}
     containers:
     - name: kserve-container  # Must be named kserve-container for webhook compatibility
       # Use custom sklearn-xgboost-server image with XGBoost support
