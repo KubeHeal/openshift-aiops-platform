@@ -288,7 +288,29 @@ For other platforms (IPI, baremetal, SNO), see [docs/how-to/deploy-on-other-plat
 
 **Supported OpenShift Versions**: 4.19, 4.20, 4.21, 4.22 (auto-detected during deployment)
 
-### 17-Step Fork-and-Deploy Workflow
+### 18-Step Fork-and-Deploy Workflow
+
+#### Step 0: Provision ROSA Cluster (If Needed)
+
+If you don't already have a ROSA cluster, use the automated provisioning script:
+
+```bash
+# Full HA cluster with GPU (3x m5.2xlarge + 1x g5.2xlarge + S3 bucket)
+./scripts/create-rosa-cluster.sh
+
+# Single-worker for dev/test
+./scripts/create-rosa-cluster.sh --replicas 1 --no-gpu
+
+# Or via Make
+make create-rosa-cluster
+
+# Preview without executing
+./scripts/create-rosa-cluster.sh --dry-run
+```
+
+The script handles cluster creation, admin user, GPU machine pool, S3 bucket, and `oc login`. Takes ~35-45 minutes. See `--help` for all options.
+
+**Skip if you already have a ROSA cluster** or are deploying on another platform.
 
 #### Step 1: Fork on GitHub
 
@@ -1231,6 +1253,7 @@ oc get secret model-storage -n self-healing-platform -o yaml
 
 | Script | Purpose |
 |--------|---------|
+| `scripts/create-rosa-cluster.sh` | ROSA Classic cluster provisioning (cluster + GPU + S3) |
 | `scripts/install-prerequisites-rhel.sh` | RHEL 9/10 prerequisites installer |
 | `scripts/configure-cluster-infrastructure.sh` | ODF deployment and MachineSet scaling |
 | `scripts/post-deployment-validation.sh` | Post-deployment health checks |

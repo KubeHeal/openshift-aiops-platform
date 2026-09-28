@@ -3,6 +3,10 @@
 # You can add custom targets above or below the include line
 
 ##@ Platform Setup Tasks
+.PHONY: create-rosa-cluster
+create-rosa-cluster: ## Provision a ROSA Classic cluster (HA with GPU by default)
+	@bash scripts/create-rosa-cluster.sh $(ROSA_ARGS)
+
 .PHONY: configure-cluster
 configure-cluster: ## Configure cluster infrastructure (ODF/NooBaa, MachineSet scaling)
 	@echo "Configuring cluster infrastructure..."

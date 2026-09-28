@@ -36,7 +36,36 @@ rosa login --token=<your-ocm-token>
 
 ## Step 1: Create or Access Your ROSA Cluster
 
-### Option A: Create a New ROSA Classic Cluster (HA)
+### Automated Provisioning (Recommended)
+
+Use the provisioning script to create a complete ROSA cluster with GPU machine pool and S3 bucket in one command:
+
+```bash
+# Full HA cluster with GPU (matches CLAUDE.md spec: 3x m5.2xlarge + 1x g5.2xlarge)
+./scripts/create-rosa-cluster.sh
+
+# Or via Make
+make create-rosa-cluster
+
+# Single-worker for dev/test
+./scripts/create-rosa-cluster.sh --replicas 1 --no-gpu --cluster-name aiops-dev
+
+# Custom region, bigger GPU
+./scripts/create-rosa-cluster.sh --region us-west-2 --gpu-instance-type g5.4xlarge
+
+# Preview commands without executing
+./scripts/create-rosa-cluster.sh --dry-run
+```
+
+The script handles: cluster creation, wait-for-ready, admin user, GPU machine pool, S3 bucket, and `oc login`. See `./scripts/create-rosa-cluster.sh --help` for all options.
+
+After the script completes, skip to [Step 4: Fork and Configure the Repository](#step-4-fork-and-configure-the-repository).
+
+### Manual Provisioning (Alternative)
+
+If you prefer to run each step individually:
+
+#### Option A: Create a New ROSA Classic Cluster (HA)
 
 ```bash
 rosa create cluster --cluster-name=aiops-platform \
@@ -49,7 +78,7 @@ rosa create cluster --cluster-name=aiops-platform \
 rosa describe cluster --cluster=aiops-platform
 ```
 
-### Option B: Create a Single-Worker ROSA Cluster
+#### Option B: Create a Single-Worker ROSA Cluster
 
 ```bash
 rosa create cluster --cluster-name=aiops-sno \
@@ -59,7 +88,7 @@ rosa create cluster --cluster-name=aiops-sno \
   --replicas=1
 ```
 
-### Option C: Use an Existing ROSA Cluster
+#### Option C: Use an Existing ROSA Cluster
 
 ```bash
 rosa list clusters
