@@ -126,6 +126,13 @@ spec:
               - secretRef:
                   name: model-storage-config
             serviceAccountName: self-healing-workbench
+            affinity:
+              podAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  - labelSelector:
+                      matchLabels:
+                        app: self-healing-workbench
+                    topologyKey: kubernetes.io/hostname
             volumeMounts:
               - name: model-storage
                 mountPath: /mnt/models
@@ -518,6 +525,14 @@ spec:
     - name: model-storage
       persistentVolumeClaim:
         claimName: model-storage-pvc
+  podTemplate:
+    affinity:
+      podAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: self-healing-workbench
+            topologyKey: kubernetes.io/hostname
 
 ---
 # =============================================================================
