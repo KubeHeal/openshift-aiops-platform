@@ -56,6 +56,15 @@ spec:
                   spec:
                     pipelineRef:
                       name: model-training-pipeline
+                    taskRunTemplate:
+                      podTemplate:
+                        affinity:
+                          podAffinity:
+                            requiredDuringSchedulingIgnoredDuringExecution:
+                              - labelSelector:
+                                  matchLabels:
+                                    app: self-healing-workbench
+                                topologyKey: kubernetes.io/hostname
                     params:
                       - name: model-name
                         value: "anomaly-detector"
@@ -142,6 +151,15 @@ spec:
                   spec:
                     pipelineRef:
                       name: model-training-pipeline-gpu
+                    taskRunTemplate:
+                      podTemplate:
+                        affinity:
+                          podAffinity:
+                            requiredDuringSchedulingIgnoredDuringExecution:
+                              - labelSelector:
+                                  matchLabels:
+                                    app: self-healing-workbench
+                                topologyKey: kubernetes.io/hostname
                     params:
                       - name: model-name
                         value: "predictive-analytics"
