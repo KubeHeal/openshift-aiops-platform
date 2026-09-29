@@ -36,6 +36,7 @@
 #   --no-bucket                Skip S3 bucket creation
 #   --bucket-prefix PREFIX     S3 bucket name prefix (default: aiops-model-storage)
 #   --dry-run                  Show commands without executing
+#   --no-inject-creds          Skip writing S3 credentials into values-hub.yaml
 #   --help                     Show this help message
 #
 # Prerequisites:
@@ -75,6 +76,7 @@ GPU_REPLICAS="${GPU_REPLICAS:-1}"
 ENABLE_BUCKET="${ENABLE_BUCKET:-true}"
 BUCKET_PREFIX="${BUCKET_PREFIX:-aiops-model-storage}"
 DRY_RUN="${DRY_RUN:-false}"
+INJECT_CREDS="${INJECT_CREDS:-true}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -142,6 +144,7 @@ Options:
   --no-bucket                Skip S3 bucket creation
   --bucket-prefix PREFIX     S3 bucket name prefix (default: aiops-model-storage)
   --dry-run                  Show commands without executing
+  --no-inject-creds          Skip writing S3 credentials into values-hub.yaml
   --help                     Show this help message
 
 Cluster Configurations (from CLAUDE.md):
@@ -193,6 +196,8 @@ while [[ $# -gt 0 ]]; do
             BUCKET_PREFIX="$2"; shift 2 ;;
         --dry-run)
             DRY_RUN="true"; shift ;;
+        --no-inject-creds)
+            INJECT_CREDS="false"; shift ;;
         --help|-h)
             show_help ;;
         *)
@@ -678,6 +683,44 @@ else
             echo -e "  ${CYAN}oc login ${API_URL} --username cluster-admin --password <your-password>${NC}"
         fi
     fi
+fi
+
+# =============================================================================
+# Step 8.5: Inject S3 Credentials into values-hub.yaml
+# =============================================================================
+
+if [[ "$INJECT_CREDS" == "true" ]] && [[ -n "$S3_ACCESS_KEY_ID" ]] && [[ -n "$S3_SECRET_ACCESS_KEY" ]]; then
+    VALUES_HUB="values-hub.yaml"
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+    VALUES_HUB_PATH="${REPO_ROOT}/${VALUES_HUB}"
+
+    if [[ -f "$VALUES_HUB_PATH" ]]; then
+        log_step "Injecting S3 credentials into ${VALUES_HUB}"
+
+        if command -v yq &>/dev/null; then
+            yq -i ".objectStore.aws.accessKeyId = \"${S3_ACCESS_KEY_ID}\"" "$VALUES_HUB_PATH"
+            yq -i ".objectStore.aws.secretAccessKey = \"${S3_SECRET_ACCESS_KEY}\"" "$VALUES_HUB_PATH"
+            if [[ -n "${BUCKET_NAME:-}" ]]; then
+                yq -i ".objectStore.aws.bucketName = \"${BUCKET_NAME}\"" "$VALUES_HUB_PATH"
+            fi
+            if [[ -n "${REGION:-}" ]]; then
+                yq -i ".objectStore.aws.region = \"${REGION}\"" "$VALUES_HUB_PATH"
+            fi
+            log_success "S3 credentials written to ${VALUES_HUB}"
+            log_warn "${VALUES_HUB} is gitignored — credentials will NOT be committed."
+        else
+            log_warn "yq not found. Skipping credential injection."
+            log_info "Manually add S3 credentials to ${VALUES_HUB}:"
+            echo -e "  ${CYAN}objectStore.aws.accessKeyId: ${S3_ACCESS_KEY_ID}${NC}"
+            echo -e "  ${CYAN}objectStore.aws.secretAccessKey: ****${NC}"
+        fi
+    else
+        log_warn "${VALUES_HUB} not found at ${VALUES_HUB_PATH}. Skipping credential injection."
+        log_info "After creating ${VALUES_HUB}, set the S3 credentials manually."
+    fi
+elif [[ "$INJECT_CREDS" == "false" ]]; then
+    log_info "Credential injection skipped (--no-inject-creds)."
 fi
 
 # =============================================================================

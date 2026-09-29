@@ -1031,14 +1031,17 @@ spec:
           value: $(params.model-name)
     {{- end }}
 
-    # Task 3: Health check (only if enabled)
+    # Task 3: Health check (only if enabled and PVC-based storage available)
+    # Skipped for aws-s3 backend on GPU pipeline: model is on S3, not local PVC.
+    # The post-deployment-check (test-inference-endpoint) validates the model works.
+    {{- if not (eq (default "aws-s3" ((.Values.objectStore).backend)) "aws-s3") }}
     - name: health-check
       when:
         - input: "$(params.health-check-enabled)"
           operator: in
           values: ["true"]
       runAfter:
-        {{- if and (ne ((.Values.cluster).topology | default "ha") "sno") (ne (default "aws-s3" ((.Values.objectStore).backend)) "aws-s3") }}
+        {{- if ne ((.Values.cluster).topology | default "ha") "sno" }}
         - copy-gpu-model
         {{- else }}
         - train-model
@@ -1049,11 +1052,16 @@ spec:
       params:
         - name: model-name
           value: $(params.model-name)
+    {{- end }}
 
     # Task 4: Deploy to InferenceService
     - name: deploy-model
       runAfter:
+        {{- if not (eq (default "aws-s3" ((.Values.objectStore).backend)) "aws-s3") }}
         - health-check
+        {{- else }}
+        - train-model
+        {{- end }}
       taskRef:
         kind: Task
         name: restart-inference-service
