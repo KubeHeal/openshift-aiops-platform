@@ -1,0 +1,3054 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Register custom remediation actions, configure deterministic and AI-driven rules, test self-healing workflows, and monitor engine decisions">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/tutorials/coordination-engine-integration/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/branding/png/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Integrate with the Coordination Engine - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#integrate-with-the-coordination-engine" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  <img src="../../assets/branding/svg/kubeheal-icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Integrate with the Coordination Engine
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../quick-start.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../how-to/" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../explanation/" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../adrs/" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  <img src="../../assets/branding/svg/kubeheal-icon.svg" alt="logo">
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quick-start.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/complete-deployment-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/quick-deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fresh Cluster Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deploy-first-ml-model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy Your First ML Model
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build-first-self-healing-automation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build Self-Healing Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workbench-development-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/complete-deployment-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/quick-deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/configure-values-files/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configure Values Files
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-on-sno/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/access-workbench/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-mcp-server-lightspeed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api-documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/troubleshooting-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/operator-versions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operator Versions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/architecture-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/ai-agent-development-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Agent Development Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/IMPLEMENTATION-TRACKER/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fresh Cluster Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/TROUBLESHOOTING-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/VALIDATED-PATTERNS-SUBMISSION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Validated Patterns Submission
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/CI-CD-GITHUB-ACTIONS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-will-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      What You Will Build
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-knowledge" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required Knowledge
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required Tools
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-connect-to-the-coordination-engine-10-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Connect to the Coordination Engine (10 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Connect to the Coordination Engine (10 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-access-the-workbench" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1 Access the Workbench
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-set-up-the-api-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2 Set Up the API Client
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-check-engine-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.3 Check Engine Status
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-submit-anomalies-to-the-engine-15-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Submit Anomalies to the Engine (15 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Submit Anomalies to the Engine (15 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-understand-the-anomaly-report-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1 Understand the Anomaly Report Format
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-submit-a-test-anomaly" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2 Submit a Test Anomaly
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-submit-multiple-anomaly-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.3 Submit Multiple Anomaly Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-query-submitted-anomalies" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.4 Query Submitted Anomalies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-configure-deterministic-rules-10-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Configure Deterministic Rules (10 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Configure Deterministic Rules (10 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-understand-rule-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 Understand Rule Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-create-deterministic-remediation-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 Create Deterministic Remediation Rules
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-verify-rules-are-loaded" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 Verify Rules Are Loaded
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-connect-ml-models-to-the-engine-15-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Connect ML Models to the Engine (15 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Connect ML Models to the Engine (15 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-create-a-detection-to-engine-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.1 Create a Detection-to-Engine Bridge
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-build-a-monitoring-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2 Build a Monitoring Loop
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-test-end-to-end-self-healing-15-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 5: Test End-to-End Self-Healing (15 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Test End-to-End Self-Healing (15 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-create-a-test-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.1 Create a Test Application
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-simulate-a-failure-scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.2 Simulate a Failure Scenario
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-check-the-engine-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.3 Check the Engine Response
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-view-engine-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.4 View Engine Logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-clean-up-test-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.5 Clean Up Test Application
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-monitor-engine-decisions-10-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 6: Monitor Engine Decisions (10 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6: Monitor Engine Decisions (10 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-query-engine-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.1 Query Engine Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-build-a-decision-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.2 Build a Decision Summary
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-set-up-continuous-monitoring-advanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.3 Set Up Continuous Monitoring (Advanced)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cleanup
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-learned" class="md-nav__link">
+    <span class="md-ellipsis">
+      What You Learned
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Next Steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-external-notifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add External Notifications
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-custom-remediation-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build Custom Remediation Actions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integrate-with-openshift-lightspeed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integrate with OpenShift Lightspeed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate-training-feedback-loops" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automate Training Feedback Loops
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coordination-engine-returns-503" class="md-nav__link">
+    <span class="md-ellipsis">
+      Coordination Engine Returns 503
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anomaly-submission-returns-400" class="md-nav__link">
+    <span class="md-ellipsis">
+      Anomaly Submission Returns 400
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#engine-logs-show-kserve-model-not-reachable" class="md-nav__link">
+    <span class="md-ellipsis">
+      Engine Logs Show "KServe model not reachable"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remediation-actions-not-executing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remediation Actions Not Executing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional Resources
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/tutorials/coordination-engine-integration.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="integrate-with-the-coordination-engine">Integrate with the Coordination Engine<a class="headerlink" href="#integrate-with-the-coordination-engine" title="Permanent link">&para;</a></h1>
+<p><strong>Learning Objective</strong>: Integrate your ML models and custom automation with the Go-based coordination engine. Register remediation actions, configure rule priorities, test end-to-end self-healing, and monitor the engine's decisions.</p>
+<p><strong>Level</strong>: Intermediate
+<strong>Time</strong>: ~75 minutes
+<strong>Last Updated</strong>: 2026-09-29</p>
+<hr />
+<h2 id="what-you-will-build">What You Will Build<a class="headerlink" href="#what-you-will-build" title="Permanent link">&para;</a></h2>
+<p>By the end of this tutorial, you will have:</p>
+<ul>
+<li>A working connection to the coordination engine REST API</li>
+<li>Custom remediation actions registered with the engine</li>
+<li>Deterministic rules for known failure patterns</li>
+<li>AI-driven rules that use your deployed ML models</li>
+<li>An end-to-end test that triggers anomaly detection and automated remediation</li>
+<li>A monitoring setup that tracks engine decisions and outcomes</li>
+</ul>
+<p><strong>Technologies Used</strong>:</p>
+<ul>
+<li>Coordination Engine (Go-based, external repo)</li>
+<li>KServe InferenceServices (anomaly-detector, predictive-analytics)</li>
+<li>Prometheus (metrics and alerts)</li>
+<li>Python (notebook integration)</li>
+</ul>
+<hr />
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<h3 id="required-knowledge">Required Knowledge<a class="headerlink" href="#required-knowledge" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Familiarity with REST APIs (HTTP methods, JSON payloads)</li>
+<li>Completed the <a href="../end-to-end-anomaly-detection/">End-to-End Anomaly Detection</a> tutorial</li>
+<li>Basic understanding of self-healing concepts (detection, diagnosis, remediation)</li>
+</ul>
+<h3 id="required-tools">Required Tools<a class="headerlink" href="#required-tools" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] OpenShift cluster with the Self-Healing Platform deployed</li>
+<li>[ ] <code>oc</code> CLI installed and logged into the cluster</li>
+<li>[ ] Coordination engine running in <code>self-healing-platform</code> namespace</li>
+<li>[ ] At least one KServe InferenceService deployed</li>
+</ul>
+<p><strong>Verify your setup</strong>:</p>
+<pre class="highlight"><code class="language-bash"># Check coordination engine is running
+oc get deployment coordination-engine -n self-healing-platform
+
+# Test health endpoint
+oc exec -n self-healing-platform deployment/coordination-engine -- \
+  curl -s http://localhost:8080/health</code></pre>
+<p><strong>Expected output</strong>:</p>
+<pre class="highlight"><code class="language-json">{"status":"healthy"}</code></pre>
+<p>If the coordination engine is not running, deploy prerequisites first:</p>
+<pre class="highlight"><code class="language-bash">make operator-deploy-prereqs</code></pre>
+<hr />
+<h2 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
+<p>The coordination engine sits at the center of the self-healing loop. It receives anomaly reports from ML models and dispatches remediation actions.</p>
+<pre class="highlight"><code class="language-mermaid">flowchart TB
+    subgraph Detection["Detection Layer"]
+        A[Prometheus Metrics]
+        B[Anomaly Detector\nKServe]
+        C[Predictive Analytics\nKServe]
+    end
+
+    subgraph Engine["Coordination Engine"]
+        D[REST API\nport 8080]
+        E[Rule Engine]
+        F[Conflict Resolver]
+        G[Action Queue]
+    end
+
+    subgraph Remediation["Remediation Layer"]
+        H[Pod Restart]
+        I[Scale Deployment]
+        J[Adjust Resources]
+        K[Notify Operator]
+    end
+
+    A --&gt; B
+    A --&gt; C
+    B --&gt;|anomaly alert| D
+    C --&gt;|prediction| D
+    D --&gt; E
+    E --&gt; F
+    F --&gt; G
+    G --&gt; H
+    G --&gt; I
+    G --&gt; J
+    G --&gt; K
+
+    style Engine fill:#e3f2fd
+    style Detection fill:#e8f5e9
+    style Remediation fill:#fff3e0</code></pre>
+<p><strong>Key API endpoints</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/health</code></td>
+<td>GET</td>
+<td>Health check</td>
+</tr>
+<tr>
+<td><code>/api/v1/anomalies</code></td>
+<td>POST</td>
+<td>Submit an anomaly report</td>
+</tr>
+<tr>
+<td><code>/api/v1/anomalies</code></td>
+<td>GET</td>
+<td>List recent anomalies</td>
+</tr>
+<tr>
+<td><code>/api/v1/status</code></td>
+<td>GET</td>
+<td>Get engine status</td>
+</tr>
+<tr>
+<td><code>/metrics</code></td>
+<td>GET</td>
+<td>Prometheus metrics</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="step-1-connect-to-the-coordination-engine-10-minutes">Step 1: Connect to the Coordination Engine (10 Minutes)<a class="headerlink" href="#step-1-connect-to-the-coordination-engine-10-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="11-access-the-workbench">1.1 Access the Workbench<a class="headerlink" href="#11-access-the-workbench" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc port-forward self-healing-workbench-0 8888:8888 -n self-healing-platform</code></pre>
+<p>Open http://localhost:8888 and create a new notebook at:
+<code>/opt/app-root/src/tutorials/coordination/coordination-integration.ipynb</code></p>
+<h3 id="12-set-up-the-api-client">1.2 Set Up the API Client<a class="headerlink" href="#12-set-up-the-api-client" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 1: Set up the coordination engine client
+import requests
+import json
+import time
+from datetime import datetime
+
+# The coordination engine is accessible via its Kubernetes service
+ENGINE_URL = "http://coordination-engine.self-healing-platform.svc:8080"
+
+def call_engine(method, path, data=None, timeout=30):
+    """Make a request to the coordination engine API."""
+    url = f"{ENGINE_URL}{path}"
+    try:
+        if method == "GET":
+            response = requests.get(url, timeout=timeout)
+        elif method == "POST":
+            response = requests.post(url, json=data, timeout=timeout)
+        else:
+            raise ValueError(f"Unsupported method: {method}")
+
+        return {
+            "status_code": response.status_code,
+            "body": response.json() if response.headers.get("content-type", "").startswith("application/json") else response.text,
+        }
+    except requests.exceptions.RequestException as e:
+        return {"status_code": 0, "body": str(e)}
+
+# Test the connection
+result = call_engine("GET", "/health")
+print(f"Health check: {json.dumps(result, indent=2)}")</code></pre>
+<p><strong>Expected output</strong>:</p>
+<pre class="highlight"><code class="language-json">{
+  "status_code": 200,
+  "body": {
+    "status": "healthy"
+  }
+}</code></pre>
+<h3 id="13-check-engine-status">1.3 Check Engine Status<a class="headerlink" href="#13-check-engine-status" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 2: Get detailed engine status
+result = call_engine("GET", "/api/v1/status")
+print(f"Engine status:")
+print(json.dumps(result["body"], indent=2))</code></pre>
+<p>This returns information about the engine version, connected models, and active rules.</p>
+<p>Checkpoint: You can communicate with the coordination engine from within the workbench.</p>
+<hr />
+<h2 id="step-2-submit-anomalies-to-the-engine-15-minutes">Step 2: Submit Anomalies to the Engine (15 Minutes)<a class="headerlink" href="#step-2-submit-anomalies-to-the-engine-15-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="21-understand-the-anomaly-report-format">2.1 Understand the Anomaly Report Format<a class="headerlink" href="#21-understand-the-anomaly-report-format" title="Permanent link">&para;</a></h3>
+<p>The coordination engine accepts anomaly reports in the following format:</p>
+<pre class="highlight"><code class="language-python"># Cell 3: Define anomaly report structure
+ANOMALY_TEMPLATE = {
+    "timestamp": "",           # ISO 8601 timestamp
+    "type": "",                # Anomaly type: resource_exhaustion, crash_loop, etc.
+    "severity": "",            # Severity: info, warning, critical
+    "source": "",              # Detection source: ml-model, prometheus-alert, etc.
+    "namespace": "",           # Affected namespace
+    "resource": "",            # Affected resource (pod, deployment, node)
+    "details": {},             # Additional context
+    "confidence_score": 0.0,   # Model confidence (0.0 to 1.0)
+    "recommended_action": "",  # Suggested remediation
+}
+
+print("Anomaly report fields:")
+for key, value in ANOMALY_TEMPLATE.items():
+    print(f"  {key}: {type(value).__name__}")</code></pre>
+<h3 id="22-submit-a-test-anomaly">2.2 Submit a Test Anomaly<a class="headerlink" href="#22-submit-a-test-anomaly" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 4: Submit a simulated high-memory anomaly
+test_anomaly = {
+    "timestamp": datetime.now().isoformat(),
+    "type": "resource_exhaustion",
+    "severity": "warning",
+    "source": "tutorial-notebook",
+    "namespace": "self-healing-platform",
+    "resource": "deployment/test-app",
+    "details": {
+        "metric": "memory_usage_ratio",
+        "current_value": 0.87,
+        "threshold": 0.85,
+        "pod": "test-app-abc123",
+        "container": "main",
+    },
+    "confidence_score": 0.92,
+    "recommended_action": "restart_pod",
+}
+
+result = call_engine("POST", "/api/v1/anomalies", data=test_anomaly)
+print(f"Submit result ({result['status_code']}):")
+print(json.dumps(result["body"], indent=2))</code></pre>
+<h3 id="23-submit-multiple-anomaly-types">2.3 Submit Multiple Anomaly Types<a class="headerlink" href="#23-submit-multiple-anomaly-types" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 5: Submit different anomaly types
+anomaly_types = [
+    {
+        "type": "crash_loop",
+        "severity": "critical",
+        "resource": "pod/unstable-service-xyz",
+        "details": {
+            "restart_count": 5,
+            "last_exit_code": 137,
+            "reason": "OOMKilled",
+        },
+        "confidence_score": 0.99,
+        "recommended_action": "increase_memory_limit",
+    },
+    {
+        "type": "network_anomaly",
+        "severity": "warning",
+        "resource": "service/api-gateway",
+        "details": {
+            "metric": "request_latency_p99",
+            "current_value_ms": 2500,
+            "baseline_ms": 200,
+        },
+        "confidence_score": 0.78,
+        "recommended_action": "scale_up",
+    },
+    {
+        "type": "cpu_throttling",
+        "severity": "info",
+        "resource": "deployment/batch-processor",
+        "details": {
+            "throttle_rate": 0.35,
+            "cpu_request": "500m",
+            "cpu_limit": "1000m",
+        },
+        "confidence_score": 0.85,
+        "recommended_action": "increase_cpu_limit",
+    },
+]
+
+for anomaly_data in anomaly_types:
+    anomaly_data["timestamp"] = datetime.now().isoformat()
+    anomaly_data["source"] = "tutorial-notebook"
+    anomaly_data["namespace"] = "self-healing-platform"
+
+    result = call_engine("POST", "/api/v1/anomalies", data=anomaly_data)
+    status = "OK" if result["status_code"] in [200, 201, 202] else "FAILED"
+    print(f"  [{status}] {anomaly_data['type']} - {anomaly_data['severity']}")</code></pre>
+<h3 id="24-query-submitted-anomalies">2.4 Query Submitted Anomalies<a class="headerlink" href="#24-query-submitted-anomalies" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 6: List recent anomalies
+result = call_engine("GET", "/api/v1/anomalies")
+if result["status_code"] == 200:
+    anomalies = result["body"]
+    if isinstance(anomalies, list):
+        print(f"Recent anomalies ({len(anomalies)}):")
+        for a in anomalies[:10]:
+            print(f"  [{a.get('severity', 'unknown'):8s}] "
+                  f"{a.get('type', 'unknown'):25s} "
+                  f"confidence={a.get('confidence_score', 0):.2f}")
+    else:
+        print(json.dumps(anomalies, indent=2))
+else:
+    print(f"Query failed: {result}")</code></pre>
+<p>Checkpoint: You can submit and query anomalies through the coordination engine API.</p>
+<hr />
+<h2 id="step-3-configure-deterministic-rules-10-minutes">Step 3: Configure Deterministic Rules (10 Minutes)<a class="headerlink" href="#step-3-configure-deterministic-rules-10-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="31-understand-rule-types">3.1 Understand Rule Types<a class="headerlink" href="#31-understand-rule-types" title="Permanent link">&para;</a></h3>
+<p>The coordination engine supports two rule categories:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>When to Use</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Deterministic</strong></td>
+<td>Known failure patterns with well-defined remediation</td>
+<td>Restart OOMKilled pods</td>
+</tr>
+<tr>
+<td><strong>AI-Driven</strong></td>
+<td>Novel patterns where ML models guide decisions</td>
+<td>Anomaly detection-based scaling</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-create-deterministic-remediation-rules">3.2 Create Deterministic Remediation Rules<a class="headerlink" href="#32-create-deterministic-remediation-rules" title="Permanent link">&para;</a></h3>
+<p>In the workbench terminal, create a ConfigMap with remediation rules:</p>
+<pre class="highlight"><code class="language-bash">cat &gt; /tmp/tutorial-remediation-rules.yaml &lt;&lt;'EOF'
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tutorial-remediation-rules
+  namespace: self-healing-platform
+  labels:
+    app.kubernetes.io/part-of: self-healing-platform
+data:
+  rules.yaml: |
+    # Deterministic rules for known failure patterns
+    deterministic_rules:
+
+      # Rule 1: Restart OOMKilled pods
+      - name: restart-oomkilled-pods
+        description: "Restart pods killed by OOM and increase memory limit"
+        trigger:
+          type: crash_loop
+          conditions:
+            - field: details.reason
+              operator: equals
+              value: "OOMKilled"
+            - field: details.restart_count
+              operator: greater_than
+              value: 3
+        action:
+          type: increase_memory_limit
+          parameters:
+            multiplier: 2.5
+            max_limit: "2Gi"
+        priority: high
+        cooldown_seconds: 300
+
+      # Rule 2: Scale up on sustained high CPU
+      - name: scale-on-high-cpu
+        description: "Scale deployment when CPU exceeds 85% for 5 minutes"
+        trigger:
+          type: cpu_throttling
+          conditions:
+            - field: details.throttle_rate
+              operator: greater_than
+              value: 0.25
+        action:
+          type: scale_up
+          parameters:
+            increment: 1
+            max_replicas: 10
+        priority: medium
+        cooldown_seconds: 600
+
+      # Rule 3: Notify on network latency spikes
+      - name: notify-network-latency
+        description: "Send notification when p99 latency exceeds 5x baseline"
+        trigger:
+          type: network_anomaly
+          conditions:
+            - field: details.current_value_ms
+              operator: greater_than
+              value: 1000
+        action:
+          type: notify
+          parameters:
+            channels:
+              - coordination-engine-log
+        priority: low
+        cooldown_seconds: 900
+
+    # AI-driven rules that use ML model confidence scores
+    ai_driven_rules:
+
+      # Rule 4: ML-based anomaly response
+      - name: ml-anomaly-response
+        description: "Take action based on ML model confidence score"
+        trigger:
+          source: ml-model
+          conditions:
+            - field: confidence_score
+              operator: greater_than
+              value: 0.85
+            - field: severity
+              operator: in
+              value: ["warning", "critical"]
+        action:
+          type: recommended_action
+          parameters:
+            use_model_recommendation: true
+            require_approval_above: 0.95
+        priority: medium
+        cooldown_seconds: 300
+EOF
+
+oc apply -f /tmp/tutorial-remediation-rules.yaml</code></pre>
+<h3 id="33-verify-rules-are-loaded">3.3 Verify Rules Are Loaded<a class="headerlink" href="#33-verify-rules-are-loaded" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc get configmap tutorial-remediation-rules -n self-healing-platform -o yaml | head -20</code></pre>
+<p>Checkpoint: Remediation rules are deployed as a ConfigMap in the platform namespace.</p>
+<hr />
+<h2 id="step-4-connect-ml-models-to-the-engine-15-minutes">Step 4: Connect ML Models to the Engine (15 Minutes)<a class="headerlink" href="#step-4-connect-ml-models-to-the-engine-15-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="41-create-a-detection-to-engine-bridge">4.1 Create a Detection-to-Engine Bridge<a class="headerlink" href="#41-create-a-detection-to-engine-bridge" title="Permanent link">&para;</a></h3>
+<p>Back in your notebook, create a function that queries your ML model and reports anomalies to the engine:</p>
+<pre class="highlight"><code class="language-python"># Cell 7: Build the ML detection bridge
+import numpy as np
+import subprocess
+
+def get_model_prediction(model_name, features):
+    """Query a KServe InferenceService for predictions."""
+    try:
+        result = subprocess.run(
+            ["oc", "get", "pod", "-n", "self-healing-platform",
+             "-l", f"serving.kserve.io/inferenceservice={model_name}",
+             "-o", "jsonpath={.items[0].status.podIP}"],
+            capture_output=True, text=True, check=True,
+        )
+        pod_ip = result.stdout.strip()
+        if not pod_ip:
+            return None
+
+        url = f"http://{pod_ip}:8080/v1/models/{model_name}:predict"
+        response = requests.post(url, json={"instances": [features]}, timeout=10)
+
+        if response.status_code == 200:
+            return response.json()["predictions"][0]
+    except Exception as e:
+        print(f"  Model query failed: {e}")
+    return None
+
+def detect_and_report(metric_name, metric_value, pod_name, threshold=0.85):
+    """Run anomaly detection and report results to the coordination engine."""
+    print(f"\nChecking {metric_name} for {pod_name}: {metric_value:.4f}")
+
+    # Simple threshold check (deterministic)
+    if metric_value &gt; threshold:
+        severity = "critical" if metric_value &gt; 0.95 else "warning"
+
+        anomaly = {
+            "timestamp": datetime.now().isoformat(),
+            "type": "resource_exhaustion",
+            "severity": severity,
+            "source": "hybrid-detection",
+            "namespace": "self-healing-platform",
+            "resource": f"pod/{pod_name}",
+            "details": {
+                "metric": metric_name,
+                "current_value": round(metric_value, 4),
+                "threshold": threshold,
+            },
+            "confidence_score": min(metric_value / threshold, 1.0),
+            "recommended_action": "restart_pod" if severity == "critical" else "scale_up",
+        }
+
+        result = call_engine("POST", "/api/v1/anomalies", data=anomaly)
+        status = "Reported" if result["status_code"] in [200, 201, 202] else "Failed"
+        print(f"  Anomaly detected ({severity}). {status} to coordination engine.")
+        return True
+
+    print(f"  Normal (below threshold {threshold})")
+    return False
+
+# Test the detection bridge
+detect_and_report("cpu_usage", 0.92, "test-pod-001", threshold=0.85)
+detect_and_report("cpu_usage", 0.45, "test-pod-002", threshold=0.85)</code></pre>
+<h3 id="42-build-a-monitoring-loop">4.2 Build a Monitoring Loop<a class="headerlink" href="#42-build-a-monitoring-loop" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 8: Continuous monitoring loop (single iteration for tutorial)
+from prometheus_api_client import PrometheusConnect
+
+PROMETHEUS_URL = "http://prometheus-k8s.openshift-monitoring.svc:9090"
+prom = PrometheusConnect(url=PROMETHEUS_URL, disable_ssl=True)
+
+def run_monitoring_cycle():
+    """Execute one monitoring cycle: collect metrics, detect anomalies, report."""
+    print("=" * 60)
+    print(f"Monitoring Cycle: {datetime.now().isoformat()}")
+    print("=" * 60)
+
+    # Query current CPU usage per pod
+    cpu_query = 'sum(rate(container_cpu_usage_seconds_total{namespace="self-healing-platform"}[5m])) by (pod)'
+    cpu_result = prom.custom_query(query=cpu_query)
+
+    anomaly_count = 0
+    for metric in cpu_result:
+        pod = metric["metric"].get("pod", "unknown")
+        cpu_value = float(metric["value"][1])
+
+        # Skip very low values (idle pods)
+        if cpu_value &lt; 0.01:
+            continue
+
+        if detect_and_report("cpu_usage", cpu_value, pod, threshold=0.5):
+            anomaly_count += 1
+
+    # Query memory usage ratio
+    mem_query = (
+        'sum(container_memory_usage_bytes{namespace="self-healing-platform"}) by (pod) / '
+        'sum(container_spec_memory_limit_bytes{namespace="self-healing-platform"}) by (pod)'
+    )
+    mem_result = prom.custom_query(query=mem_query)
+
+    for metric in mem_result:
+        pod = metric["metric"].get("pod", "unknown")
+        mem_ratio = float(metric["value"][1])
+
+        if detect_and_report("memory_ratio", mem_ratio, pod, threshold=0.85):
+            anomaly_count += 1
+
+    print(f"\nCycle complete: {anomaly_count} anomalies detected and reported")
+    return anomaly_count
+
+# Run one cycle
+run_monitoring_cycle()</code></pre>
+<p>Checkpoint: The monitoring loop queries Prometheus, detects anomalies, and reports them to the coordination engine.</p>
+<hr />
+<h2 id="step-5-test-end-to-end-self-healing-15-minutes">Step 5: Test End-to-End Self-Healing (15 Minutes)<a class="headerlink" href="#step-5-test-end-to-end-self-healing-15-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="51-create-a-test-application">5.1 Create a Test Application<a class="headerlink" href="#51-create-a-test-application" title="Permanent link">&para;</a></h3>
+<p>Deploy a simple application that you will use to test self-healing:</p>
+<pre class="highlight"><code class="language-bash">cat &gt; /tmp/test-self-healing-app.yaml &lt;&lt;'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tutorial-test-app
+  namespace: self-healing-platform
+  labels:
+    app: tutorial-test-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tutorial-test-app
+  template:
+    metadata:
+      labels:
+        app: tutorial-test-app
+    spec:
+      containers:
+      - name: app
+        image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+        command: ["sh", "-c", "while true; do echo 'running'; sleep 10; done"]
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+EOF
+
+oc apply -f /tmp/test-self-healing-app.yaml
+
+# Wait for the pod to be ready
+oc rollout status deployment/tutorial-test-app -n self-healing-platform</code></pre>
+<h3 id="52-simulate-a-failure-scenario">5.2 Simulate a Failure Scenario<a class="headerlink" href="#52-simulate-a-failure-scenario" title="Permanent link">&para;</a></h3>
+<p>Submit an anomaly report that represents a real failure:</p>
+<pre class="highlight"><code class="language-python"># Cell 9: Simulate a critical OOMKill scenario
+oom_anomaly = {
+    "timestamp": datetime.now().isoformat(),
+    "type": "crash_loop",
+    "severity": "critical",
+    "source": "kubernetes-events",
+    "namespace": "self-healing-platform",
+    "resource": "deployment/tutorial-test-app",
+    "details": {
+        "reason": "OOMKilled",
+        "restart_count": 5,
+        "last_exit_code": 137,
+        "pod": "tutorial-test-app-abc123",
+        "container": "app",
+        "memory_request": "128Mi",
+        "memory_limit": "256Mi",
+    },
+    "confidence_score": 0.99,
+    "recommended_action": "increase_memory_limit",
+}
+
+result = call_engine("POST", "/api/v1/anomalies", data=oom_anomaly)
+print(f"OOMKill anomaly submitted ({result['status_code']})")
+print(json.dumps(result["body"], indent=2))</code></pre>
+<h3 id="53-check-the-engine-response">5.3 Check the Engine Response<a class="headerlink" href="#53-check-the-engine-response" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 10: Monitor the engine's response
+print("Waiting 10 seconds for the engine to process the anomaly...")
+time.sleep(10)
+
+# Check engine status
+status = call_engine("GET", "/api/v1/status")
+print(f"\nEngine Status:")
+print(json.dumps(status["body"], indent=2))
+
+# Check recent anomalies
+anomalies = call_engine("GET", "/api/v1/anomalies")
+if anomalies["status_code"] == 200 and isinstance(anomalies["body"], list):
+    recent = [a for a in anomalies["body"] if a.get("type") == "crash_loop"]
+    print(f"\nRecent crash_loop anomalies: {len(recent)}")
+    for a in recent[:3]:
+        print(f"  [{a.get('severity')}] {a.get('resource')} "
+              f"confidence={a.get('confidence_score', 0)}")</code></pre>
+<h3 id="54-view-engine-logs">5.4 View Engine Logs<a class="headerlink" href="#54-view-engine-logs" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># From a separate terminal, check coordination engine logs
+oc logs -n self-healing-platform deployment/coordination-engine --tail=30</code></pre>
+<p>Look for log entries that show:</p>
+<ul>
+<li>Anomaly received</li>
+<li>Rule evaluation</li>
+<li>Action queued or executed</li>
+<li>Outcome recorded</li>
+</ul>
+<h3 id="55-clean-up-test-application">5.5 Clean Up Test Application<a class="headerlink" href="#55-clean-up-test-application" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc delete deployment tutorial-test-app -n self-healing-platform</code></pre>
+<hr />
+<h2 id="step-6-monitor-engine-decisions-10-minutes">Step 6: Monitor Engine Decisions (10 Minutes)<a class="headerlink" href="#step-6-monitor-engine-decisions-10-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="61-query-engine-metrics">6.1 Query Engine Metrics<a class="headerlink" href="#61-query-engine-metrics" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 11: Query coordination engine Prometheus metrics
+engine_metrics = [
+    "coordination_engine_anomalies_received_total",
+    "coordination_engine_remediations_executed_total",
+    "coordination_engine_processing_duration_seconds",
+]
+
+print("Coordination Engine Metrics:")
+for metric in engine_metrics:
+    try:
+        result = prom.custom_query(query=metric)
+        if result:
+            for series in result:
+                labels = series.get("metric", {})
+                value = series["value"][1]
+                label_str = ", ".join(f"{k}={v}" for k, v in labels.items()
+                                      if k != "__name__")
+                print(f"  {metric}({label_str}): {value}")
+        else:
+            print(f"  {metric}: no data")
+    except Exception as e:
+        print(f"  {metric}: query error ({e})")</code></pre>
+<h3 id="62-build-a-decision-summary">6.2 Build a Decision Summary<a class="headerlink" href="#62-build-a-decision-summary" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 12: Create a summary of engine activity
+def get_engine_summary():
+    """Collect and display a summary of engine activity."""
+    print("=" * 60)
+    print("Coordination Engine Decision Summary")
+    print("=" * 60)
+
+    # Get status
+    status = call_engine("GET", "/api/v1/status")
+    if status["status_code"] == 200:
+        body = status["body"]
+        print(f"\nEngine Version: {body.get('version', 'unknown')}")
+        print(f"Uptime: {body.get('uptime', 'unknown')}")
+
+    # Get anomaly counts
+    anomalies = call_engine("GET", "/api/v1/anomalies")
+    if anomalies["status_code"] == 200 and isinstance(anomalies["body"], list):
+        all_anomalies = anomalies["body"]
+        print(f"\nAnomaly Statistics:")
+        print(f"  Total anomalies: {len(all_anomalies)}")
+
+        # Count by severity
+        severity_counts = {}
+        for a in all_anomalies:
+            sev = a.get("severity", "unknown")
+            severity_counts[sev] = severity_counts.get(sev, 0) + 1
+        for sev, count in sorted(severity_counts.items()):
+            print(f"    {sev}: {count}")
+
+        # Count by type
+        type_counts = {}
+        for a in all_anomalies:
+            atype = a.get("type", "unknown")
+            type_counts[atype] = type_counts.get(atype, 0) + 1
+        print(f"\n  By type:")
+        for atype, count in sorted(type_counts.items()):
+            print(f"    {atype}: {count}")
+
+    print("=" * 60)
+
+get_engine_summary()</code></pre>
+<h3 id="63-set-up-continuous-monitoring-advanced">6.3 Set Up Continuous Monitoring (Advanced)<a class="headerlink" href="#63-set-up-continuous-monitoring-advanced" title="Permanent link">&para;</a></h3>
+<p>For production monitoring, the coordination engine exposes metrics on port 9090. These are automatically scraped by Prometheus via the <code>prometheus.io/scrape: "true"</code> annotation on the deployment.</p>
+<p>View metrics in the OpenShift console:</p>
+<ol>
+<li>Navigate to <strong>Observe</strong> &gt; <strong>Metrics</strong> in the OpenShift console.</li>
+<li>Query: <code>coordination_engine_anomalies_received_total</code></li>
+<li>Query: <code>coordination_engine_remediations_executed_total</code></li>
+</ol>
+<hr />
+<h2 id="cleanup">Cleanup<a class="headerlink" href="#cleanup" title="Permanent link">&para;</a></h2>
+<p>Remove tutorial resources:</p>
+<pre class="highlight"><code class="language-bash"># Delete tutorial ConfigMap
+oc delete configmap tutorial-remediation-rules -n self-healing-platform --ignore-not-found
+
+# Delete tutorial test application
+oc delete deployment tutorial-test-app -n self-healing-platform --ignore-not-found
+
+# Remove tutorial notebook files
+rm -rf /opt/app-root/src/tutorials/coordination/</code></pre>
+<hr />
+<h2 id="what-you-learned">What You Learned<a class="headerlink" href="#what-you-learned" title="Permanent link">&para;</a></h2>
+<p>In this tutorial, you:</p>
+<ul>
+<li>Connected to the coordination engine REST API from within the workbench</li>
+<li>Submitted anomaly reports with different types, severities, and confidence scores</li>
+<li>Created deterministic remediation rules for known failure patterns</li>
+<li>Built an ML detection bridge that queries KServe models and reports anomalies</li>
+<li>Implemented a monitoring loop that continuously checks Prometheus metrics</li>
+<li>Tested an end-to-end self-healing scenario with a simulated OOMKill failure</li>
+<li>Queried engine metrics and built a decision summary dashboard</li>
+</ul>
+<hr />
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<h3 id="add-external-notifications">Add External Notifications<a class="headerlink" href="#add-external-notifications" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Configure Slack webhook, PagerDuty routing key, or AlertManager URL in <code>values-hub.yaml</code>:</li>
+</ul>
+<pre class="highlight"><code class="language-yaml">coordinationEngine:
+  alertWebhooks:
+    slackWebhookUrl: "https://hooks.slack.com/services/..."
+    pagerdutyRoutingKey: "your-routing-key"
+    alertmanagerUrl: "http://alertmanager.openshift-monitoring.svc:9093"</code></pre>
+<h3 id="build-custom-remediation-actions">Build Custom Remediation Actions<a class="headerlink" href="#build-custom-remediation-actions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fork the coordination engine repository at https://github.com/KubeHeal/openshift-coordination-engine</li>
+<li>Add new action handlers in the Go codebase</li>
+<li><strong>See</strong>: <a href="../../adrs/038-go-coordination-engine-migration/">ADR-038: Go Coordination Engine Migration</a></li>
+</ul>
+<h3 id="integrate-with-openshift-lightspeed">Integrate with OpenShift Lightspeed<a class="headerlink" href="#integrate-with-openshift-lightspeed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Use the MCP server to expose coordination engine tools to Lightspeed</li>
+<li>Enable natural language queries like "What anomalies were detected in the last hour?"</li>
+<li><strong>See</strong>: <a href="../../adrs/036-go-based-standalone-mcp-server/">ADR-036: Go-Based Standalone MCP Server</a></li>
+</ul>
+<h3 id="automate-training-feedback-loops">Automate Training Feedback Loops<a class="headerlink" href="#automate-training-feedback-loops" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Send remediation outcomes back to the ML training pipeline</li>
+<li>Retrain models with labeled data from successful and failed remediations</li>
+<li><strong>See</strong>: <a href="../custom-tekton-pipeline/">Build a Custom Tekton Pipeline</a></li>
+</ul>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="coordination-engine-returns-503">Coordination Engine Returns 503<a class="headerlink" href="#coordination-engine-returns-503" title="Permanent link">&para;</a></h3>
+<p>The engine may still be starting. Check the init container:</p>
+<pre class="highlight"><code class="language-bash">oc describe pod -n self-healing-platform -l app.kubernetes.io/component=coordination-engine</code></pre>
+<p>The engine waits for Prometheus to be available before starting. If Prometheus is slow, the init container retries every 10 seconds.</p>
+<h3 id="anomaly-submission-returns-400">Anomaly Submission Returns 400<a class="headerlink" href="#anomaly-submission-returns-400" title="Permanent link">&para;</a></h3>
+<p>Check the JSON payload structure. All required fields must be present:</p>
+<pre class="highlight"><code class="language-python"># Minimum required fields
+required_fields = ["timestamp", "type", "severity", "namespace"]</code></pre>
+<h3 id="engine-logs-show-kserve-model-not-reachable">Engine Logs Show "KServe model not reachable"<a class="headerlink" href="#engine-logs-show-kserve-model-not-reachable" title="Permanent link">&para;</a></h3>
+<p>Verify your InferenceServices are running:</p>
+<pre class="highlight"><code class="language-bash">oc get inferenceservice -n self-healing-platform</code></pre>
+<p>If models show <code>READY=False</code>, check the predictor pods:</p>
+<pre class="highlight"><code class="language-bash">oc get pods -n self-healing-platform -l serving.kserve.io/inferenceservice</code></pre>
+<h3 id="remediation-actions-not-executing">Remediation Actions Not Executing<a class="headerlink" href="#remediation-actions-not-executing" title="Permanent link">&para;</a></h3>
+<p>The coordination engine requires proper RBAC to modify resources. Verify the service account permissions:</p>
+<pre class="highlight"><code class="language-bash">oc describe clusterrolebinding | grep self-healing-operator</code></pre>
+<p>If permissions are missing, re-run prerequisites:</p>
+<pre class="highlight"><code class="language-bash">make operator-deploy-prereqs</code></pre>
+<hr />
+<h2 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><a href="https://github.com/KubeHeal/openshift-coordination-engine">Coordination Engine Repository</a></strong> - Source code and API documentation</li>
+<li><strong><a href="../../adrs/002-hybrid-self-healing-approach/">ADR-002: Hybrid Self-Healing Approach</a></strong> - Core architecture</li>
+<li><strong><a href="../../adrs/038-go-coordination-engine-migration/">ADR-038: Go Coordination Engine Migration</a></strong> - Engine design</li>
+<li><strong><a href="../../adrs/043-deployment-stability-health-checks/">ADR-043: Deployment Stability and Health Checks</a></strong> - Health check patterns</li>
+<li><strong><a href="https://github.com/KubeHeal/openshift-coordination-engine/blob/main/docs/FEATURE-ENGINEERING-GUIDE.md">Feature Engineering Guide</a></strong> - Model feature configuration</li>
+</ul>
+<hr />
+<p><strong>Tutorial last tested</strong>: 2026-09-29
+<strong>Tested on</strong>: OpenShift 4.22, Coordination Engine v1.2.0, KServe 1.36.1</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

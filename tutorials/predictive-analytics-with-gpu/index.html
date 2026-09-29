@@ -1,0 +1,3082 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Train an LSTM predictive analytics model with GPU acceleration, compare performance, and deploy GPU-optimized inference">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/tutorials/predictive-analytics-with-gpu/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/branding/png/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Predictive Analytics with GPU-Accelerated Training - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#predictive-analytics-with-gpu-accelerated-training" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  <img src="../../assets/branding/svg/kubeheal-icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Predictive Analytics with GPU-Accelerated Training
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../quick-start.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../how-to/" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../explanation/" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../adrs/" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  <img src="../../assets/branding/svg/kubeheal-icon.svg" alt="logo">
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quick-start.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/complete-deployment-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/quick-deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fresh Cluster Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deploy-first-ml-model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy Your First ML Model
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build-first-self-healing-automation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build Self-Healing Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workbench-development-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/complete-deployment-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/quick-deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/configure-values-files/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configure Values Files
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-on-sno/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/access-workbench/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-mcp-server-lightspeed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api-documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/troubleshooting-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/operator-versions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operator Versions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/architecture-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/ai-agent-development-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Agent Development Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/IMPLEMENTATION-TRACKER/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fresh Cluster Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/TROUBLESHOOTING-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/VALIDATED-PATTERNS-SUBMISSION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Validated Patterns Submission
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/CI-CD-GITHUB-ACTIONS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-will-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      What You Will Build
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-knowledge" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required Knowledge
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required Tools
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optional (Recommended)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-verify-gpu-environment-10-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Verify GPU Environment (10 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Verify GPU Environment (10 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-access-the-workbench" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1 Access the Workbench
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-check-gpu-from-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2 Check GPU from Python
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-check-gpu-resource-allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.3 Check GPU Resource Allocation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-prepare-time-series-data-15-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Prepare Time-Series Data (15 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Prepare Time-Series Data (15 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-collect-prometheus-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1 Collect Prometheus Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-build-the-dataframe" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2 Build the DataFrame
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-create-sequences-for-lstm" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.3 Create Sequences for LSTM
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-build-the-lstm-model-10-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Build the LSTM Model (10 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Build the LSTM Model (10 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-define-the-model-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 Define the Model Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-prepare-pytorch-dataloaders" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 Prepare PyTorch DataLoaders
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-train-and-benchmark-25-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Train and Benchmark (25 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Train and Benchmark (25 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-define-the-training-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.1 Define the Training Function
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-train-on-gpu-or-cpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2 Train on GPU (or CPU)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-compare-cpu-vs-gpu-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.3 Compare CPU vs GPU (Optional)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-visualize-training-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.4 Visualize Training Progress
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-save-the-trained-model-10-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 5: Save the Trained Model (10 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Save the Trained Model (10 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-export-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.1 Export the Model
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-verify-the-model-loads-correctly" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.2 Verify the Model Loads Correctly
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-deploy-the-gpu-trained-model-15-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 6: Deploy the GPU-Trained Model (15 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6: Deploy the GPU-Trained Model (15 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-create-the-inferenceservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.1 Create the InferenceService
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-wait-for-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.2 Wait for Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-test-the-deployed-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.3 Test the Deployed Model
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-run-the-gpu-training-pipeline-15-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 7: Run the GPU Training Pipeline (15 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 7: Run the GPU Training Pipeline (15 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-start-the-built-in-gpu-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.1 Start the Built-In GPU Pipeline
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-monitor-the-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.2 Monitor the Pipeline
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-8-make-predictions-10-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 8: Make Predictions (10 Minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 8: Make Predictions (10 Minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-generate-future-predictions" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.1 Generate Future Predictions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-visualize-the-forecast" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.2 Visualize the Forecast
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cleanup
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-learned" class="md-nav__link">
+    <span class="md-ellipsis">
+      What You Learned
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Next Steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#improve-prediction-accuracy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Improve Prediction Accuracy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-up-automated-retraining" class="md-nav__link">
+    <span class="md-ellipsis">
+      Set Up Automated Retraining
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integrate-with-self-healing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integrate with Self-Healing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimize-gpu-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimize GPU Usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cuda-out-of-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      CUDA Out of Memory
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu-node-not-scheduling-pods" class="md-nav__link">
+    <span class="md-ellipsis">
+      GPU Node Not Scheduling Pods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-serving-fails-with-import-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Serving Fails with Import Error
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional Resources
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/tutorials/predictive-analytics-with-gpu.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="predictive-analytics-with-gpu-accelerated-training">Predictive Analytics with GPU-Accelerated Training<a class="headerlink" href="#predictive-analytics-with-gpu-accelerated-training" title="Permanent link">&para;</a></h1>
+<p><strong>Learning Objective</strong>: Train an LSTM-based predictive analytics model using GPU acceleration, compare CPU and GPU training performance, and deploy the model as a GPU-optimized KServe InferenceService.</p>
+<p><strong>Level</strong>: Advanced
+<strong>Time</strong>: ~120 minutes
+<strong>Last Updated</strong>: 2026-09-29</p>
+<hr />
+<h2 id="what-you-will-build">What You Will Build<a class="headerlink" href="#what-you-will-build" title="Permanent link">&para;</a></h2>
+<p>By the end of this tutorial, you will have created:</p>
+<ul>
+<li>A verified GPU environment inside the OpenShift AI workbench</li>
+<li>An LSTM neural network for predictive analytics on cluster metrics</li>
+<li>A training benchmark comparing CPU and GPU performance</li>
+<li>A GPU-trained model deployed to KServe as an InferenceService</li>
+<li>A prediction test that forecasts future cluster resource usage</li>
+</ul>
+<p><strong>Technologies Used</strong>:</p>
+<ul>
+<li>NVIDIA GPU Operator 24.9.2</li>
+<li>PyTorch 2.x with CUDA support</li>
+<li>Red Hat OpenShift AI 2.22.2</li>
+<li>KServe 1.36.1 (model serving)</li>
+<li>Tekton <code>model-training-pipeline-gpu</code> (automated training)</li>
+</ul>
+<hr />
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<h3 id="required-knowledge">Required Knowledge<a class="headerlink" href="#required-knowledge" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Python programming and PyTorch basics</li>
+<li>Understanding of neural network concepts (layers, loss functions, optimizers)</li>
+<li>Completed the <a href="../end-to-end-anomaly-detection/">End-to-End Anomaly Detection</a> tutorial</li>
+</ul>
+<h3 id="required-tools">Required Tools<a class="headerlink" href="#required-tools" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] OpenShift cluster with <strong>at least one GPU node</strong> (NVIDIA)</li>
+<li>[ ] GPU Operator installed and running</li>
+<li>[ ] <code>oc</code> CLI installed and logged into the cluster</li>
+<li>[ ] Access to the <code>self-healing-platform</code> namespace</li>
+</ul>
+<h3 id="optional-recommended">Optional (Recommended)<a class="headerlink" href="#optional-recommended" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] <code>tkn</code> CLI for running the GPU training pipeline</li>
+<li>[ ] Familiarity with LSTM networks and time-series forecasting</li>
+</ul>
+<p><strong>Verify GPU availability</strong>:</p>
+<pre class="highlight"><code class="language-bash"># Check for GPU-enabled nodes
+oc get nodes -l nvidia.com/gpu.present=true</code></pre>
+<p><strong>Expected output</strong> shows at least one node:</p>
+<pre class="highlight"><code>NAME                    STATUS   ROLES    AGE   VERSION
+ip-10-0-xxx-xxx.ec2..  Ready    worker   1d    v1.29.x</code></pre>
+<p>If no GPU nodes appear, your cluster does not have GPU workers. You can complete this tutorial on CPU only (training will be slower).</p>
+<pre class="highlight"><code class="language-bash"># Verify GPU operator pods are running
+oc get pods -n nvidia-gpu-operator | grep -E "driver|device-plugin"</code></pre>
+<p><strong>Expected output</strong> includes running driver and device plugin pods.</p>
+<hr />
+<h2 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
+<pre class="highlight"><code class="language-mermaid">flowchart TB
+    subgraph GPU["GPU Node"]
+        A[NVIDIA Driver] --&gt; B[CUDA Runtime]
+        B --&gt; C[PyTorch CUDA]
+        C --&gt; D[LSTM Training]
+    end
+
+    subgraph Storage["Storage Layer"]
+        E[Training Data PVC\ngp3-csi RWO]
+        F[Model Storage PVC\nCephFS RWX]
+    end
+
+    subgraph Serving["Model Serving"]
+        G[KServe InferenceService]
+        H[sklearn Predictor Pod]
+    end
+
+    D --&gt; E
+    D --&gt;|model.pkl| F
+    F --&gt; G
+    G --&gt; H
+
+    style GPU fill:#e3f2fd
+    style Storage fill:#fff3e0
+    style Serving fill:#e8f5e9</code></pre>
+<p><strong>Key architecture decisions</strong>:</p>
+<ul>
+<li>GPU nodes use <code>gp3-csi</code> (RWO) for training because they may not have the CephFS CSI driver.</li>
+<li>After training, a copy task moves the model to the shared CephFS PVC (RWX) for KServe access.</li>
+<li>On SNO clusters, both training and serving use the same <code>gp3-csi</code> PVC.</li>
+</ul>
+<hr />
+<h2 id="step-1-verify-gpu-environment-10-minutes">Step 1: Verify GPU Environment (10 Minutes)<a class="headerlink" href="#step-1-verify-gpu-environment-10-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="11-access-the-workbench">1.1 Access the Workbench<a class="headerlink" href="#11-access-the-workbench" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc port-forward self-healing-workbench-0 8888:8888 -n self-healing-platform</code></pre>
+<p>Open http://localhost:8888 and create a new notebook at:
+<code>/opt/app-root/src/tutorials/gpu-predictive/gpu-predictive-analytics.ipynb</code></p>
+<h3 id="12-check-gpu-from-python">1.2 Check GPU from Python<a class="headerlink" href="#12-check-gpu-from-python" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 1: Verify GPU availability
+import torch
+import sys
+
+print(f"Python version: {sys.version}")
+print(f"PyTorch version: {torch.__version__}")
+print(f"CUDA available: {torch.cuda.is_available()}")
+
+if torch.cuda.is_available():
+    print(f"CUDA version: {torch.version.cuda}")
+    print(f"GPU count: {torch.cuda.device_count()}")
+    for i in range(torch.cuda.device_count()):
+        props = torch.cuda.get_device_properties(i)
+        print(f"  GPU {i}: {props.name}")
+        print(f"    Memory: {props.total_mem / 1024**3:.1f} GB")
+        print(f"    Compute capability: {props.major}.{props.minor}")
+
+    # Test GPU tensor operations
+    x = torch.randn(1000, 1000, device="cuda")
+    y = torch.matmul(x, x)
+    print(f"\nGPU tensor test: OK (matrix multiply {x.shape} = {y.shape})")
+else:
+    print("\nNo GPU detected. Training will use CPU (slower).")
+    print("To add GPU: create a GPU machine pool with 'rosa create machinepool'")
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"\nUsing device: {DEVICE}")</code></pre>
+<h3 id="13-check-gpu-resource-allocation">1.3 Check GPU Resource Allocation<a class="headerlink" href="#13-check-gpu-resource-allocation" title="Permanent link">&para;</a></h3>
+<p>If CUDA is available, verify the GPU allocation in the cluster:</p>
+<pre class="highlight"><code class="language-bash"># From a separate terminal
+oc describe node $(oc get nodes -l nvidia.com/gpu.present=true -o jsonpath='{.items[0].metadata.name}') \
+  | grep -A 10 "Allocated resources"</code></pre>
+<p>Checkpoint: You know whether GPU is available and which device to use.</p>
+<hr />
+<h2 id="step-2-prepare-time-series-data-15-minutes">Step 2: Prepare Time-Series Data (15 Minutes)<a class="headerlink" href="#step-2-prepare-time-series-data-15-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="21-collect-prometheus-metrics">2.1 Collect Prometheus Metrics<a class="headerlink" href="#21-collect-prometheus-metrics" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 2: Install dependencies and collect data
+!pip install -q prometheus-api-client scikit-learn joblib
+
+import numpy as np
+import pandas as pd
+from prometheus_api_client import PrometheusConnect
+from datetime import datetime, timedelta
+
+PROMETHEUS_URL = "http://prometheus-k8s.openshift-monitoring.svc:9090"
+prom = PrometheusConnect(url=PROMETHEUS_URL, disable_ssl=True)
+
+# Collect 30 days of data for predictive analytics
+end_time = datetime.now()
+start_time = end_time - timedelta(days=30)
+
+queries = {
+    "cpu": 'avg(rate(container_cpu_usage_seconds_total{namespace="self-healing-platform"}[5m]))',
+    "memory": 'avg(container_memory_usage_bytes{namespace="self-healing-platform"})',
+    "network_in": 'sum(rate(container_network_receive_bytes_total{namespace="self-healing-platform"}[5m]))',
+    "network_out": 'sum(rate(container_network_transmit_bytes_total{namespace="self-healing-platform"}[5m]))',
+}
+
+print(f"Collecting 30 days of metrics ({start_time.date()} to {end_time.date()})...")
+
+all_series = {}
+for name, query in queries.items():
+    try:
+        data = prom.get_metric_range_data(
+            metric_name=query,
+            start_time=start_time,
+            end_time=end_time,
+            chunk_size=timedelta(hours=6),
+        )
+        if data:
+            values = [(float(ts), float(val)) for ts, val in data[0]["values"]]
+            all_series[name] = values
+            print(f"  {name}: {len(values)} data points")
+    except Exception as e:
+        print(f"  {name}: Could not collect ({e}), using synthetic data")
+
+# Fall back to synthetic data if Prometheus data is insufficient
+if len(all_series) &lt; 2:
+    print("\nInsufficient Prometheus data. Generating synthetic training data...")
+    np.random.seed(42)
+    n_points = 4320  # 30 days at 10-minute intervals
+    timestamps = pd.date_range(start=start_time, periods=n_points, freq="10min")
+
+    all_series = {
+        "cpu": [(t.timestamp(), 0.3 + 0.1 * np.sin(2 * np.pi * t.hour / 24) + np.random.normal(0, 0.02))
+                for t in timestamps],
+        "memory": [(t.timestamp(), 2e9 + 5e8 * np.sin(2 * np.pi * t.hour / 24) + np.random.normal(0, 1e8))
+                   for t in timestamps],
+        "network_in": [(t.timestamp(), 1e6 + 5e5 * np.sin(2 * np.pi * t.hour / 24) + np.random.normal(0, 1e5))
+                       for t in timestamps],
+        "network_out": [(t.timestamp(), 8e5 + 3e5 * np.sin(2 * np.pi * t.hour / 24) + np.random.normal(0, 8e4))
+                        for t in timestamps],
+    }
+    print(f"  Generated {n_points} synthetic data points per metric")</code></pre>
+<h3 id="22-build-the-dataframe">2.2 Build the DataFrame<a class="headerlink" href="#22-build-the-dataframe" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 3: Build and normalize the DataFrame
+# Convert to DataFrame
+frames = []
+for name, values in all_series.items():
+    df_metric = pd.DataFrame(values, columns=["timestamp", name])
+    df_metric["timestamp"] = pd.to_datetime(df_metric["timestamp"], unit="s")
+    frames.append(df_metric.set_index("timestamp"))
+
+df = pd.concat(frames, axis=1)
+df = df.dropna().sort_index()
+
+# Normalize to [0, 1] range
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()
+feature_columns = list(all_series.keys())
+df_scaled = pd.DataFrame(
+    scaler.fit_transform(df[feature_columns]),
+    columns=feature_columns,
+    index=df.index,
+)
+
+print(f"Dataset shape: {df_scaled.shape}")
+print(f"Date range: {df_scaled.index.min()} to {df_scaled.index.max()}")
+print(f"\nScaled feature statistics:")
+print(df_scaled.describe().round(3))</code></pre>
+<h3 id="23-create-sequences-for-lstm">2.3 Create Sequences for LSTM<a class="headerlink" href="#23-create-sequences-for-lstm" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 4: Create sliding window sequences
+SEQUENCE_LENGTH = 24  # 24 time steps to predict the next step
+FORECAST_HORIZON = 1  # Predict 1 step ahead
+
+def create_sequences(data, seq_length, forecast_horizon):
+    """Create input-output pairs for LSTM training."""
+    X, y = [], []
+    for i in range(len(data) - seq_length - forecast_horizon + 1):
+        X.append(data[i : i + seq_length])
+        y.append(data[i + seq_length : i + seq_length + forecast_horizon])
+    return np.array(X), np.array(y)
+
+data_array = df_scaled.values
+X, y = create_sequences(data_array, SEQUENCE_LENGTH, FORECAST_HORIZON)
+
+# Reshape y to 2D
+y = y.reshape(y.shape[0], -1)
+
+# Split into train/test (80/20)
+split_idx = int(len(X) * 0.8)
+X_train, X_test = X[:split_idx], X[split_idx:]
+y_train, y_test = y[:split_idx], y[split_idx:]
+
+print(f"Training sequences: {X_train.shape[0]}")
+print(f"Test sequences: {X_test.shape[0]}")
+print(f"Input shape: {X_train.shape} (samples, timesteps, features)")
+print(f"Output shape: {y_train.shape} (samples, features)")</code></pre>
+<p>Checkpoint: You have training and test sequences ready for LSTM training.</p>
+<hr />
+<h2 id="step-3-build-the-lstm-model-10-minutes">Step 3: Build the LSTM Model (10 Minutes)<a class="headerlink" href="#step-3-build-the-lstm-model-10-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="31-define-the-model-architecture">3.1 Define the Model Architecture<a class="headerlink" href="#31-define-the-model-architecture" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 5: Define the LSTM model
+import torch
+import torch.nn as nn
+
+class PredictiveLSTM(nn.Module):
+    """LSTM model for multi-variate time series prediction."""
+
+    def __init__(self, input_size, hidden_size, num_layers, output_size, dropout=0.2):
+        super().__init__()
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+
+        self.lstm = nn.LSTM(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            num_layers=num_layers,
+            batch_first=True,
+            dropout=dropout if num_layers &gt; 1 else 0,
+        )
+        self.fc1 = nn.Linear(hidden_size, hidden_size // 2)
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(dropout)
+        self.fc2 = nn.Linear(hidden_size // 2, output_size)
+
+    def forward(self, x):
+        # x shape: (batch, sequence_length, input_size)
+        lstm_out, _ = self.lstm(x)
+        # Use the last time step output
+        last_output = lstm_out[:, -1, :]
+        out = self.fc1(last_output)
+        out = self.relu(out)
+        out = self.dropout(out)
+        out = self.fc2(out)
+        return out
+
+# Model parameters
+INPUT_SIZE = len(feature_columns)  # Number of metrics
+HIDDEN_SIZE = 128
+NUM_LAYERS = 2
+OUTPUT_SIZE = len(feature_columns) * FORECAST_HORIZON
+DROPOUT = 0.2
+
+model = PredictiveLSTM(INPUT_SIZE, HIDDEN_SIZE, NUM_LAYERS, OUTPUT_SIZE, DROPOUT)
+model = model.to(DEVICE)
+
+total_params = sum(p.numel() for p in model.parameters())
+trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+print(f"Model architecture:")
+print(model)
+print(f"\nTotal parameters: {total_params:,}")
+print(f"Trainable parameters: {trainable_params:,}")
+print(f"Device: {DEVICE}")</code></pre>
+<h3 id="32-prepare-pytorch-dataloaders">3.2 Prepare PyTorch DataLoaders<a class="headerlink" href="#32-prepare-pytorch-dataloaders" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 6: Create data loaders
+from torch.utils.data import TensorDataset, DataLoader
+
+BATCH_SIZE = 64
+
+# Convert to tensors and move to device
+X_train_t = torch.FloatTensor(X_train).to(DEVICE)
+y_train_t = torch.FloatTensor(y_train).to(DEVICE)
+X_test_t = torch.FloatTensor(X_test).to(DEVICE)
+y_test_t = torch.FloatTensor(y_test).to(DEVICE)
+
+train_dataset = TensorDataset(X_train_t, y_train_t)
+test_dataset = TensorDataset(X_test_t, y_test_t)
+
+train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+
+print(f"Train batches: {len(train_loader)}")
+print(f"Test batches: {len(test_loader)}")
+print(f"Batch size: {BATCH_SIZE}")</code></pre>
+<hr />
+<h2 id="step-4-train-and-benchmark-25-minutes">Step 4: Train and Benchmark (25 Minutes)<a class="headerlink" href="#step-4-train-and-benchmark-25-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="41-define-the-training-function">4.1 Define the Training Function<a class="headerlink" href="#41-define-the-training-function" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 7: Training function
+import time
+
+def train_model(model, train_loader, test_loader, epochs, device, label=""):
+    """Train the LSTM model and return training history."""
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    criterion = nn.MSELoss()
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode="min", factor=0.5, patience=5
+    )
+
+    history = {"train_loss": [], "test_loss": [], "epoch_time": []}
+
+    print(f"\n{'='*50}")
+    print(f"Training on {device} ({label})")
+    print(f"{'='*50}")
+
+    total_start = time.time()
+
+    for epoch in range(epochs):
+        epoch_start = time.time()
+
+        # Training phase
+        model.train()
+        train_loss = 0.0
+        for batch_X, batch_y in train_loader:
+            optimizer.zero_grad()
+            predictions = model(batch_X)
+            loss = criterion(predictions, batch_y)
+            loss.backward()
+            optimizer.step()
+            train_loss += loss.item()
+
+        train_loss /= len(train_loader)
+
+        # Evaluation phase
+        model.eval()
+        test_loss = 0.0
+        with torch.no_grad():
+            for batch_X, batch_y in test_loader:
+                predictions = model(batch_X)
+                loss = criterion(predictions, batch_y)
+                test_loss += loss.item()
+        test_loss /= len(test_loader)
+
+        epoch_time = time.time() - epoch_start
+        history["train_loss"].append(train_loss)
+        history["test_loss"].append(test_loss)
+        history["epoch_time"].append(epoch_time)
+
+        scheduler.step(test_loss)
+
+        if (epoch + 1) % 5 == 0 or epoch == 0:
+            print(f"  Epoch {epoch+1:3d}/{epochs}: "
+                  f"Train Loss={train_loss:.6f}, "
+                  f"Test Loss={test_loss:.6f}, "
+                  f"Time={epoch_time:.2f}s")
+
+    total_time = time.time() - total_start
+    history["total_time"] = total_time
+
+    print(f"\nTraining complete: {total_time:.1f}s total")
+    return history</code></pre>
+<h3 id="42-train-on-gpu-or-cpu">4.2 Train on GPU (or CPU)<a class="headerlink" href="#42-train-on-gpu-or-cpu" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 8: Train the model
+EPOCHS = 50
+
+history = train_model(model, train_loader, test_loader, EPOCHS, DEVICE, label=str(DEVICE))
+
+print(f"\nFinal train loss: {history['train_loss'][-1]:.6f}")
+print(f"Final test loss: {history['test_loss'][-1]:.6f}")
+print(f"Average epoch time: {np.mean(history['epoch_time']):.2f}s")
+print(f"Total training time: {history['total_time']:.1f}s")</code></pre>
+<h3 id="43-compare-cpu-vs-gpu-optional">4.3 Compare CPU vs GPU (Optional)<a class="headerlink" href="#43-compare-cpu-vs-gpu-optional" title="Permanent link">&para;</a></h3>
+<p>If you have a GPU, run this cell to benchmark CPU performance:</p>
+<pre class="highlight"><code class="language-python"># Cell 9: CPU benchmark (optional - run only if GPU is available)
+if torch.cuda.is_available():
+    print("Running CPU benchmark for comparison...")
+
+    # Create a fresh model on CPU
+    cpu_model = PredictiveLSTM(INPUT_SIZE, HIDDEN_SIZE, NUM_LAYERS, OUTPUT_SIZE, DROPOUT)
+    cpu_model = cpu_model.to("cpu")
+
+    # Move data to CPU
+    X_train_cpu = torch.FloatTensor(X_train)
+    y_train_cpu = torch.FloatTensor(y_train)
+    X_test_cpu = torch.FloatTensor(X_test)
+    y_test_cpu = torch.FloatTensor(y_test)
+
+    cpu_train_ds = TensorDataset(X_train_cpu, y_train_cpu)
+    cpu_test_ds = TensorDataset(X_test_cpu, y_test_cpu)
+    cpu_train_loader = DataLoader(cpu_train_ds, batch_size=BATCH_SIZE, shuffle=True)
+    cpu_test_loader = DataLoader(cpu_test_ds, batch_size=BATCH_SIZE, shuffle=False)
+
+    # Train for 10 epochs only (to save time)
+    cpu_history = train_model(cpu_model, cpu_train_loader, cpu_test_loader, 10, "cpu", label="CPU")
+
+    # Compare
+    gpu_avg = np.mean(history["epoch_time"][:10])
+    cpu_avg = np.mean(cpu_history["epoch_time"])
+    speedup = cpu_avg / gpu_avg if gpu_avg &gt; 0 else 0
+
+    print(f"\n{'='*50}")
+    print(f"Performance Comparison (first 10 epochs)")
+    print(f"{'='*50}")
+    print(f"  GPU avg epoch: {gpu_avg:.2f}s")
+    print(f"  CPU avg epoch: {cpu_avg:.2f}s")
+    print(f"  GPU speedup:   {speedup:.1f}x faster")
+else:
+    print("GPU not available. Skipping CPU comparison benchmark.")</code></pre>
+<h3 id="44-visualize-training-progress">4.4 Visualize Training Progress<a class="headerlink" href="#44-visualize-training-progress" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 10: Plot training curves
+import matplotlib.pyplot as plt
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+axes[0].plot(history["train_loss"], label="Train Loss")
+axes[0].plot(history["test_loss"], label="Test Loss")
+axes[0].set_xlabel("Epoch")
+axes[0].set_ylabel("MSE Loss")
+axes[0].set_title("Training and Test Loss")
+axes[0].legend()
+
+axes[1].plot(history["epoch_time"])
+axes[1].set_xlabel("Epoch")
+axes[1].set_ylabel("Time (seconds)")
+axes[1].set_title(f"Epoch Duration ({DEVICE})")
+
+plt.tight_layout()
+plt.savefig("/opt/app-root/src/tutorials/gpu-predictive/training_curves.png", dpi=100)
+plt.show()</code></pre>
+<p>Checkpoint: The model trains to convergence with decreasing loss values.</p>
+<hr />
+<h2 id="step-5-save-the-trained-model-10-minutes">Step 5: Save the Trained Model (10 Minutes)<a class="headerlink" href="#step-5-save-the-trained-model-10-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="51-export-the-model">5.1 Export the Model<a class="headerlink" href="#51-export-the-model" title="Permanent link">&para;</a></h3>
+<p>The platform uses scikit-learn's joblib format for KServe compatibility. Wrap the PyTorch model in a scikit-learn-compatible predictor:</p>
+<pre class="highlight"><code class="language-python"># Cell 11: Save model in KServe-compatible format
+import joblib
+import os
+
+class PredictiveAnalyticsPredictor:
+    """Wrapper for the LSTM model in scikit-learn predict() interface."""
+
+    def __init__(self, model, scaler, feature_columns, seq_length, device):
+        self.model = model
+        self.scaler = scaler
+        self.feature_columns = feature_columns
+        self.seq_length = seq_length
+        self.device = device
+
+    def predict(self, X):
+        """Predict from raw feature values.
+
+        Args:
+            X: numpy array of shape (n_samples, n_features)
+
+        Returns:
+            numpy array of predictions
+        """
+        self.model.eval()
+        with torch.no_grad():
+            X_tensor = torch.FloatTensor(X).to(self.device)
+            if X_tensor.dim() == 2:
+                # Add sequence dimension if missing
+                X_tensor = X_tensor.unsqueeze(0)
+            predictions = self.model(X_tensor)
+            return predictions.cpu().numpy()
+
+# Move model to CPU for serving (GPU not required for inference)
+model_cpu = model.to("cpu")
+model_cpu.eval()
+
+predictor = PredictiveAnalyticsPredictor(
+    model=model_cpu,
+    scaler=scaler,
+    feature_columns=feature_columns,
+    seq_length=SEQUENCE_LENGTH,
+    device="cpu",
+)
+
+# Save to the model storage directory
+MODEL_DIR = "/opt/app-root/src/models/predictive-analytics"
+os.makedirs(MODEL_DIR, exist_ok=True)
+
+model_path = os.path.join(MODEL_DIR, "model.pkl")
+joblib.dump(predictor, model_path)
+
+# Save metadata
+metadata = {
+    "model_type": "LSTM",
+    "trained_at": datetime.now().isoformat(),
+    "device": str(DEVICE),
+    "epochs": EPOCHS,
+    "hidden_size": HIDDEN_SIZE,
+    "num_layers": NUM_LAYERS,
+    "sequence_length": SEQUENCE_LENGTH,
+    "features": feature_columns,
+    "final_train_loss": float(history["train_loss"][-1]),
+    "final_test_loss": float(history["test_loss"][-1]),
+    "total_training_time": float(history["total_time"]),
+    "total_parameters": total_params,
+}
+
+import json
+with open(os.path.join(MODEL_DIR, "metadata.json"), "w") as f:
+    json.dump(metadata, f, indent=2)
+
+# Verify
+for fname in os.listdir(MODEL_DIR):
+    fpath = os.path.join(MODEL_DIR, fname)
+    size_kb = os.path.getsize(fpath) / 1024
+    print(f"  {fname}: {size_kb:.1f} KB")
+
+print(f"\nModel saved to {MODEL_DIR}")</code></pre>
+<h3 id="52-verify-the-model-loads-correctly">5.2 Verify the Model Loads Correctly<a class="headerlink" href="#52-verify-the-model-loads-correctly" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 12: Verify model loading
+loaded = joblib.load(model_path)
+test_input = np.random.rand(1, SEQUENCE_LENGTH, len(feature_columns))
+test_pred = loaded.predict(test_input)
+print(f"Model loaded successfully")
+print(f"  Input shape: {test_input.shape}")
+print(f"  Output shape: {test_pred.shape}")
+print(f"  Sample prediction: {test_pred[0][:4].round(4)}")</code></pre>
+<hr />
+<h2 id="step-6-deploy-the-gpu-trained-model-15-minutes">Step 6: Deploy the GPU-Trained Model (15 Minutes)<a class="headerlink" href="#step-6-deploy-the-gpu-trained-model-15-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="61-create-the-inferenceservice">6.1 Create the InferenceService<a class="headerlink" href="#61-create-the-inferenceservice" title="Permanent link">&para;</a></h3>
+<p>In the workbench terminal:</p>
+<pre class="highlight"><code class="language-bash">cat &gt; /tmp/predictive-analytics-inferenceservice.yaml &lt;&lt;'EOF'
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: predictive-analytics
+  namespace: self-healing-platform
+  annotations:
+    serving.kserve.io/deploymentMode: RawDeployment
+spec:
+  predictor:
+    model:
+      modelFormat:
+        name: sklearn
+      storageUri: pvc://model-storage-pvc/predictive-analytics
+      resources:
+        requests:
+          cpu: "200m"
+          memory: "512Mi"
+        limits:
+          cpu: "2"
+          memory: "2Gi"
+EOF
+
+oc apply -f /tmp/predictive-analytics-inferenceservice.yaml</code></pre>
+<h3 id="62-wait-for-deployment">6.2 Wait for Deployment<a class="headerlink" href="#62-wait-for-deployment" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc get inferenceservice predictive-analytics -n self-healing-platform -w</code></pre>
+<p>Wait until <code>READY</code> shows <code>True</code> (2-5 minutes).</p>
+<h3 id="63-test-the-deployed-model">6.3 Test the Deployed Model<a class="headerlink" href="#63-test-the-deployed-model" title="Permanent link">&para;</a></h3>
+<p>Back in your notebook:</p>
+<pre class="highlight"><code class="language-python"># Cell 13: Test the deployed model
+import subprocess
+import requests
+
+result = subprocess.run(
+    ["oc", "get", "pod", "-n", "self-healing-platform",
+     "-l", "serving.kserve.io/inferenceservice=predictive-analytics",
+     "-o", "jsonpath={.items[0].status.podIP}"],
+    capture_output=True, text=True, check=True,
+)
+pod_ip = result.stdout.strip()
+url = f"http://{pod_ip}:8080/v1/models/predictive-analytics:predict"
+
+# Send test prediction (5 features: cpu, memory, network_in, network_out, disk)
+test_data = np.random.rand(5).tolist()
+payload = {"instances": [test_data]}
+
+response = requests.post(url, json=payload, timeout=30)
+if response.status_code == 200:
+    result = response.json()
+    print(f"Prediction successful:")
+    print(f"  Input: {[round(v, 3) for v in test_data]}")
+    print(f"  Prediction: {result['predictions']}")
+else:
+    print(f"Request failed: {response.status_code}")
+    print(response.text)</code></pre>
+<p>Checkpoint: The predictive analytics model serves predictions from KServe.</p>
+<hr />
+<h2 id="step-7-run-the-gpu-training-pipeline-15-minutes">Step 7: Run the GPU Training Pipeline (15 Minutes)<a class="headerlink" href="#step-7-run-the-gpu-training-pipeline-15-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="71-start-the-built-in-gpu-pipeline">7.1 Start the Built-In GPU Pipeline<a class="headerlink" href="#71-start-the-built-in-gpu-pipeline" title="Permanent link">&para;</a></h3>
+<p>The platform includes <code>model-training-pipeline-gpu</code> for automated GPU training. Run it with:</p>
+<pre class="highlight"><code class="language-bash">tkn pipeline start model-training-pipeline-gpu \
+  -p model-name=predictive-analytics \
+  -p notebook-path=notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb \
+  -p data-source=synthetic \
+  -p training-hours=168 \
+  -p inference-service-name=predictive-analytics \
+  -p health-check-enabled=true \
+  -p git-url=https://github.com/YOUR-USERNAME/openshift-aiops-platform.git \
+  -p git-ref=main \
+  -n self-healing-platform \
+  --showlog</code></pre>
+<p>Replace <code>YOUR-USERNAME</code> with your GitHub username.</p>
+<h3 id="72-monitor-the-pipeline">7.2 Monitor the Pipeline<a class="headerlink" href="#72-monitor-the-pipeline" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># View pipeline run status
+tkn pipelinerun list -n self-healing-platform
+
+# View logs of the latest run
+tkn pipelinerun logs --last -n self-healing-platform -f</code></pre>
+<p>The GPU pipeline follows these stages:</p>
+<ol>
+<li><strong>train-model</strong>: Executes the notebook on a GPU node (with tolerations and nodeSelector).</li>
+<li><strong>copy-gpu-model</strong> (HA only): Copies the model from the GPU PVC to the shared CephFS PVC.</li>
+<li><strong>health-check</strong>: Validates the model file loads and produces predictions.</li>
+<li><strong>deploy-model</strong>: Restarts the KServe predictor pods.</li>
+<li><strong>post-deployment-check</strong>: Tests the live inference endpoint.</li>
+</ol>
+<hr />
+<h2 id="step-8-make-predictions-10-minutes">Step 8: Make Predictions (10 Minutes)<a class="headerlink" href="#step-8-make-predictions-10-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="81-generate-future-predictions">8.1 Generate Future Predictions<a class="headerlink" href="#81-generate-future-predictions" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 14: Generate multi-step forecast
+model.to(DEVICE)
+model.eval()
+
+# Use the last sequence from test data as the starting point
+last_sequence = X_test[-1:]  # Shape: (1, seq_length, features)
+last_sequence_t = torch.FloatTensor(last_sequence).to(DEVICE)
+
+# Predict the next 24 time steps
+STEPS_AHEAD = 24
+forecasts = []
+
+current_input = last_sequence_t.clone()
+with torch.no_grad():
+    for step in range(STEPS_AHEAD):
+        pred = model(current_input)  # Shape: (1, features)
+        forecasts.append(pred.cpu().numpy().flatten())
+        # Slide the window: remove first, append prediction
+        pred_expanded = pred.unsqueeze(1)  # Shape: (1, 1, features)
+        current_input = torch.cat([current_input[:, 1:, :], pred_expanded], dim=1)
+
+forecasts = np.array(forecasts)
+
+# Inverse transform to original scale
+forecasts_original = scaler.inverse_transform(forecasts)
+
+print(f"Forecast shape: {forecasts_original.shape}")
+print(f"\nPredicted values for next {STEPS_AHEAD} time steps:")
+forecast_df = pd.DataFrame(forecasts_original, columns=feature_columns)
+print(forecast_df.round(4).to_string())</code></pre>
+<h3 id="82-visualize-the-forecast">8.2 Visualize the Forecast<a class="headerlink" href="#82-visualize-the-forecast" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-python"># Cell 15: Plot forecast vs actual
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+for idx, col in enumerate(feature_columns[:4]):
+    ax = axes[idx // 2][idx % 2]
+
+    # Plot last 100 actual values
+    actual = scaler.inverse_transform(X_test[-100:, -1, :])[:, idx]
+    ax.plot(range(100), actual, label="Actual", color="blue", alpha=0.7)
+
+    # Plot forecast
+    ax.plot(range(100, 100 + STEPS_AHEAD), forecasts_original[:, idx],
+            label="Forecast", color="red", linestyle="--", linewidth=2)
+
+    ax.set_title(col)
+    ax.set_xlabel("Time Step")
+    ax.legend()
+
+plt.suptitle("Predictive Analytics: Actual vs Forecast", fontsize=14)
+plt.tight_layout()
+plt.savefig("/opt/app-root/src/tutorials/gpu-predictive/forecast_plot.png", dpi=100)
+plt.show()</code></pre>
+<hr />
+<h2 id="cleanup">Cleanup<a class="headerlink" href="#cleanup" title="Permanent link">&para;</a></h2>
+<p>Remove tutorial resources:</p>
+<pre class="highlight"><code class="language-bash"># Delete tutorial InferenceService (if separate from platform default)
+oc delete inferenceservice predictive-analytics -n self-healing-platform --ignore-not-found
+
+# Remove tutorial files
+rm -rf /opt/app-root/src/tutorials/gpu-predictive/</code></pre>
+<hr />
+<h2 id="what-you-learned">What You Learned<a class="headerlink" href="#what-you-learned" title="Permanent link">&para;</a></h2>
+<p>In this tutorial, you:</p>
+<ul>
+<li>Verified GPU availability and CUDA configuration in the OpenShift AI workbench</li>
+<li>Collected 30 days of cluster metrics and prepared time-series sequences</li>
+<li>Built an LSTM neural network with PyTorch for predictive analytics</li>
+<li>Trained the model on GPU and benchmarked CPU vs GPU performance</li>
+<li>Saved the model in KServe-compatible format with a scikit-learn wrapper</li>
+<li>Deployed the GPU-trained model as a KServe InferenceService</li>
+<li>Ran the platform's built-in GPU training pipeline via Tekton</li>
+<li>Generated multi-step forecasts of future cluster resource usage</li>
+</ul>
+<hr />
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<h3 id="improve-prediction-accuracy">Improve Prediction Accuracy<a class="headerlink" href="#improve-prediction-accuracy" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Increase <code>SEQUENCE_LENGTH</code> to capture longer patterns (48, 96 time steps)</li>
+<li>Add more layers or increase <code>HIDDEN_SIZE</code> for complex patterns</li>
+<li>Experiment with GRU cells instead of LSTM for faster training</li>
+</ul>
+<h3 id="set-up-automated-retraining">Set Up Automated Retraining<a class="headerlink" href="#set-up-automated-retraining" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Configure the Tekton GPU pipeline CronJob for weekly retraining</li>
+<li><strong>See</strong>: <a href="../custom-tekton-pipeline/">Build a Custom Tekton Pipeline</a></li>
+</ul>
+<h3 id="integrate-with-self-healing">Integrate with Self-Healing<a class="headerlink" href="#integrate-with-self-healing" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Feed predictions to the coordination engine for proactive remediation</li>
+<li><strong>See</strong>: <a href="../coordination-engine-integration/">Coordination Engine Integration</a></li>
+</ul>
+<h3 id="optimize-gpu-usage">Optimize GPU Usage<a class="headerlink" href="#optimize-gpu-usage" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Use mixed-precision training (<code>torch.cuda.amp</code>) for faster training</li>
+<li>Implement gradient accumulation for larger effective batch sizes</li>
+<li>Profile GPU memory usage with <code>torch.cuda.memory_summary()</code></li>
+</ul>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="cuda-out-of-memory">CUDA Out of Memory<a class="headerlink" href="#cuda-out-of-memory" title="Permanent link">&para;</a></h3>
+<p>Reduce batch size or sequence length:</p>
+<pre class="highlight"><code class="language-python">BATCH_SIZE = 32  # Reduce from 64
+SEQUENCE_LENGTH = 12  # Reduce from 24</code></pre>
+<p>Clear GPU memory:</p>
+<pre class="highlight"><code class="language-python">torch.cuda.empty_cache()</code></pre>
+<h3 id="gpu-node-not-scheduling-pods">GPU Node Not Scheduling Pods<a class="headerlink" href="#gpu-node-not-scheduling-pods" title="Permanent link">&para;</a></h3>
+<p>Check for taints on GPU nodes:</p>
+<pre class="highlight"><code class="language-bash">oc describe node &lt;gpu-node&gt; | grep -A 5 Taints</code></pre>
+<p>Verify GPU operator driver pods are running:</p>
+<pre class="highlight"><code class="language-bash">oc get pods -n nvidia-gpu-operator -l app=nvidia-driver-daemonset</code></pre>
+<h3 id="model-serving-fails-with-import-error">Model Serving Fails with Import Error<a class="headerlink" href="#model-serving-fails-with-import-error" title="Permanent link">&para;</a></h3>
+<p>The KServe sklearn runtime may not have PyTorch installed. Use the scikit-learn wrapper approach shown in Step 5 to avoid PyTorch dependencies at inference time.</p>
+<hr />
+<h2 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><a href="https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/">NVIDIA GPU Operator Documentation</a></strong> - GPU management</li>
+<li><strong><a href="https://pytorch.org/docs/stable/cuda.html">PyTorch CUDA Documentation</a></strong> - GPU programming</li>
+<li><strong><a href="../../adrs/006-nvidia-gpu-management/">ADR-006: NVIDIA GPU Operator</a></strong> - Architecture decision</li>
+<li><strong><a href="../../adrs/057-topology-aware-gpu-scheduling-and-storage/">ADR-057: Topology-Aware GPU Scheduling</a></strong> - GPU storage strategy</li>
+</ul>
+<hr />
+<p><strong>Tutorial last tested</strong>: 2026-09-29
+<strong>Tested on</strong>: OpenShift 4.22, GPU Operator 24.9.2, PyTorch 2.x, CUDA 12.x</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,3393 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/user-guide/developer-guide/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/branding/png/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Developer Guide - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#developer-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  <img src="../../assets/branding/svg/kubeheal-icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Developer Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../quick-start.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../how-to/" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../explanation/" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../adrs/" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  <img src="../../assets/branding/svg/kubeheal-icon.svg" alt="logo">
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quick-start.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/complete-deployment-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/quick-deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fresh Cluster Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/deploy-first-ml-model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy Your First ML Model
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/build-first-self-healing-automation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build Self-Healing Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/workbench-development-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/complete-deployment-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/quick-deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/configure-values-files/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configure Values Files
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-on-sno/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/access-workbench/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-mcp-server-lightspeed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api-documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/troubleshooting-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/operator-versions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operator Versions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/architecture-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/ai-agent-development-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Agent Development Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/IMPLEMENTATION-TRACKER/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fresh Cluster Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/TROUBLESHOOTING-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/VALIDATED-PATTERNS-SUBMISSION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Validated Patterns Submission
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/CI-CD-GITHUB-ACTIONS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      Table of Contents
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-you-will-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      What You Will Build
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#document-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document Scope
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development-environment-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Environment Setup
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Development Environment Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fork-and-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fork and Clone
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-pre-commit-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install Pre-Commit Hooks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-the-execution-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get the Execution Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Project Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-the-coordination-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with the Coordination Engine
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with the Coordination Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Endpoints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-the-coordination-engine-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test the Coordination Engine Locally
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-engineering-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Feature Engineering Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alert-webhooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alert Webhooks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-and-deploying-custom-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Building and Deploying Custom Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Building and Deploying Custom Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#source-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Source Code
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kserve-model-api-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      KServe Model API Contract
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-a-custom-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploy a Custom Model
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tekton-pipeline-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tekton Pipeline Development
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tekton Pipeline Development">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pipeline-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pipeline Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reusable-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reusable Tasks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-a-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run a Pipeline
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-custom-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create a Custom Task
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-training-cronjobs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automated Training CronJobs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-driven-triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Event-Driven Triggers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helm-chart-customization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helm Chart Customization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Helm Chart Customization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chart-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chart Structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#values-configuration-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Values Configuration Hierarchy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-customizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Customizations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-chart-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validate Chart Changes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gitops-workflow-with-argocd" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitOps Workflow with ArgoCD
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GitOps Workflow with ArgoCD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      How It Works
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Workflow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sync-waves" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sync Waves
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manual Sync
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-and-cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing and CI/CD
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing and CI/CD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-commit-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-Commit Checks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helm-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helm Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notebook-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notebook Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-to-end-deployment-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      End-to-End Deployment Test
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tekton-validation-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tekton Validation Pipeline
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#github-actions-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub Actions CI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-tests-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run Tests Locally
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing Guidelines
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contributing Guidelines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commit-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Commit Messages
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sign-your-commits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sign Your Commits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pull-request-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pull Request Process
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-style" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Style
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADR Updates
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#values-files-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      Values Files Not Found
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-commit-hook-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-Commit Hook Failures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helm-template-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helm Template Errors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tekton-pipeline-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tekton Pipeline Fails
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Glossary
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/user-guide/developer-guide.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="developer-guide">Developer Guide<a class="headerlink" href="#developer-guide" title="Permanent link">&para;</a></h1>
+<p><strong>Version</strong>: 1.0.0
+<strong>Last Updated</strong>: 2026-09-29
+<strong>Audience</strong>: Software developers, DevOps engineers, contributors</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#development-environment-setup">Development Environment Setup</a></li>
+<li><a href="#working-with-the-coordination-engine">Working with the Coordination Engine</a></li>
+<li><a href="#building-and-deploying-custom-models">Building and Deploying Custom Models</a></li>
+<li><a href="#tekton-pipeline-development">Tekton Pipeline Development</a></li>
+<li><a href="#helm-chart-customization">Helm Chart Customization</a></li>
+<li><a href="#gitops-workflow-with-argocd">GitOps Workflow with ArgoCD</a></li>
+<li><a href="#testing-and-cicd">Testing and CI/CD</a></li>
+<li><a href="#contributing-guidelines">Contributing Guidelines</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#glossary">Glossary</a></li>
+</ol>
+<hr />
+<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
+<h3 id="what-you-will-build">What You Will Build<a class="headerlink" href="#what-you-will-build" title="Permanent link">&para;</a></h3>
+<p>As a developer on this platform, you work with:</p>
+<ul>
+<li><strong>Coordination Engine</strong>: A Go-based service that orchestrates self-healing actions</li>
+<li><strong>ML Models</strong>: Python-based anomaly detection and predictive analytics models</li>
+<li><strong>Tekton Pipelines</strong>: CI/CD pipelines for validation and model training</li>
+<li><strong>Helm Charts</strong>: Kubernetes resource templates for deployment</li>
+<li><strong>GitOps Workflows</strong>: ArgoCD-driven deployments from Git</li>
+</ul>
+<h3 id="document-scope">Document Scope<a class="headerlink" href="#document-scope" title="Permanent link">&para;</a></h3>
+<p>This guide covers:</p>
+<ul>
+<li>✅ Development environment setup</li>
+<li>✅ Coordination Engine development</li>
+<li>✅ Custom model building and deployment</li>
+<li>✅ Tekton pipeline authoring</li>
+<li>✅ Helm chart customization</li>
+<li>✅ Testing, CI/CD, and contribution workflow</li>
+<li>❌ Cluster provisioning (see <a href="../platform-engineer-guide/">Platform Engineer Guide</a>)</li>
+<li>❌ ML algorithm selection (see <a href="../data-scientist-guide/">Data Scientist Guide</a>)</li>
+</ul>
+<hr />
+<h2 id="development-environment-setup">Development Environment Setup<a class="headerlink" href="#development-environment-setup" title="Permanent link">&para;</a></h2>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<p>Install these tools on your workstation:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Version</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>oc</code></td>
+<td>4.18+</td>
+<td>OpenShift CLI</td>
+</tr>
+<tr>
+<td><code>kubectl</code></td>
+<td>1.31+</td>
+<td>Kubernetes CLI</td>
+</tr>
+<tr>
+<td><code>helm</code></td>
+<td>3.16+</td>
+<td>Kubernetes package manager</td>
+</tr>
+<tr>
+<td><code>git</code></td>
+<td>2.x</td>
+<td>Version control</td>
+</tr>
+<tr>
+<td><code>make</code></td>
+<td>4.x</td>
+<td>Build automation</td>
+</tr>
+<tr>
+<td><code>podman</code></td>
+<td>4.x</td>
+<td>Container runtime</td>
+</tr>
+<tr>
+<td><code>tkn</code></td>
+<td>0.38+</td>
+<td>Tekton CLI</td>
+</tr>
+<tr>
+<td><code>yq</code></td>
+<td>4.44+</td>
+<td>YAML processor</td>
+</tr>
+<tr>
+<td><code>python3</code></td>
+<td>3.11+</td>
+<td>Python runtime</td>
+</tr>
+<tr>
+<td><code>go</code></td>
+<td>1.21+</td>
+<td>Go runtime (for coordination engine)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>RHEL 9/10 automated setup</strong>:</p>
+<pre class="highlight"><code class="language-bash">./scripts/install-prerequisites-rhel.sh
+source ~/.bashrc</code></pre>
+<h3 id="fork-and-clone">Fork and Clone<a class="headerlink" href="#fork-and-clone" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Fork the repository at <a href="https://github.com/KubeHeal/openshift-aiops-platform">github.com/KubeHeal/openshift-aiops-platform</a>.</li>
+<li>Clone your fork:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">git clone https://github.com/YOUR-USERNAME/openshift-aiops-platform.git
+cd openshift-aiops-platform</code></pre>
+<ol>
+<li>Create values files:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">cp values-global.yaml.example values-global.yaml
+cp values-hub.yaml.example values-hub.yaml</code></pre>
+<ol>
+<li>Update <code>repoURL</code> in both files to point to your fork.</li>
+</ol>
+<h3 id="install-pre-commit-hooks">Install Pre-Commit Hooks<a class="headerlink" href="#install-pre-commit-hooks" title="Permanent link">&para;</a></h3>
+<p>The repository uses pre-commit hooks for code quality:</p>
+<pre class="highlight"><code class="language-bash">pip install pre-commit
+pre-commit install
+pre-commit install --hook-type pre-push</code></pre>
+<p>Active hooks include:</p>
+<ul>
+<li><code>detect-secrets</code> -- Scans for hardcoded secrets and API keys</li>
+<li><code>check-added-large-files</code> -- Prevents committing files larger than 500KB</li>
+<li><code>check-merge-conflict</code> -- Detects unresolved merge conflicts</li>
+<li><code>trailing-whitespace</code> -- Removes trailing whitespace</li>
+<li><code>end-of-file-fixer</code> -- Ensures files end with a newline</li>
+</ul>
+<h3 id="get-the-execution-environment">Get the Execution Environment<a class="headerlink" href="#get-the-execution-environment" title="Permanent link">&para;</a></h3>
+<p>The Ansible execution environment contains all dependencies for deployment playbooks:</p>
+<pre class="highlight"><code class="language-bash"># Option A: Pull pre-built image (recommended)
+podman pull quay.io/takinosh/openshift-aiops-platform-ee:latest
+podman tag quay.io/takinosh/openshift-aiops-platform-ee:latest \
+  openshift-aiops-platform-ee:latest
+
+# Option B: Build locally (requires ANSIBLE_HUB_TOKEN)
+export ANSIBLE_HUB_TOKEN='your-token-here'
+podman login registry.redhat.io
+make token
+make build-ee</code></pre>
+<h3 id="project-structure">Project Structure<a class="headerlink" href="#project-structure" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code>openshift-aiops-platform/
+├── ansible/                    # Ansible roles and playbooks
+│   ├── roles/                  # 8 production-ready roles
+│   └── playbooks/              # Deployment, validation, cleanup
+├── charts/hub/                 # Main Helm chart
+│   ├── Chart.yaml              # Chart metadata
+│   ├── values.yaml             # Default values
+│   └── templates/              # Kubernetes resource templates
+├── docs/adrs/                  # Architectural Decision Records
+├── k8s/                        # Kubernetes manifests
+├── notebooks/                  # Jupyter notebooks (ML workflows)
+├── scripts/                    # Automation scripts
+├── src/models/                 # ML model source code
+├── tekton/                     # CI/CD pipelines
+│   ├── pipelines/              # Pipeline definitions
+│   ├── tasks/                  # Reusable tasks
+│   └── triggers/               # Event-driven triggers
+├── tests/                      # Test suites
+├── Makefile                    # Custom targets
+├── Makefile-common             # Validated Patterns common targets
+├── values-global.yaml.example  # Global config template
+└── values-hub.yaml.example     # Hub config template</code></pre>
+<hr />
+<h2 id="working-with-the-coordination-engine">Working with the Coordination Engine<a class="headerlink" href="#working-with-the-coordination-engine" title="Permanent link">&para;</a></h2>
+<h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
+<p>The Coordination Engine is a Go-based service that orchestrates the hybrid self-healing approach. It lives in a separate repository:</p>
+<ul>
+<li><strong>Repository</strong>: <a href="https://github.com/KubeHeal/openshift-coordination-engine">github.com/KubeHeal/openshift-coordination-engine</a></li>
+<li><strong>Language</strong>: Go 1.21+</li>
+<li><strong>Deployment</strong>: Managed by this platform's Helm chart</li>
+</ul>
+<p>The engine receives anomaly alerts, routes them to the deterministic or AI layer, and executes remediation actions.</p>
+<h3 id="api-endpoints">API Endpoints<a class="headerlink" href="#api-endpoints" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/health</code></td>
+<td>GET</td>
+<td>Health check</td>
+</tr>
+<tr>
+<td><code>/api/v1/anomalies</code></td>
+<td>POST</td>
+<td>Submit anomaly for processing</td>
+</tr>
+<tr>
+<td><code>/api/v1/anomalies/&lt;id&gt;</code></td>
+<td>GET</td>
+<td>Get anomaly status</td>
+</tr>
+<tr>
+<td><code>/api/v1/remediate</code></td>
+<td>POST</td>
+<td>Trigger remediation action</td>
+</tr>
+<tr>
+<td><code>/api/v1/status</code></td>
+<td>GET</td>
+<td>Get engine status</td>
+</tr>
+<tr>
+<td><code>/metrics</code></td>
+<td>GET</td>
+<td>Prometheus metrics</td>
+</tr>
+</tbody>
+</table>
+<h3 id="test-the-coordination-engine-locally">Test the Coordination Engine Locally<a class="headerlink" href="#test-the-coordination-engine-locally" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Check pod status
+oc get pods -n self-healing-platform -l app.kubernetes.io/component=coordination-engine
+
+# View logs
+oc logs -n self-healing-platform -l app.kubernetes.io/component=coordination-engine --tail=100
+
+# Test health endpoint
+oc exec -n self-healing-platform deployment/self-healing-coordination-engine -- \
+  curl -s http://localhost:8080/health</code></pre>
+<h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
+<p>The Coordination Engine configuration is managed in <code>values-hub.yaml</code>:</p>
+<pre class="highlight"><code class="language-yaml">coordinationEngine:
+  enabled: true
+  replicas: 1
+  image:
+    repository: quay.io/takinosh/openshift-coordination-engine
+    tag: ""  # Auto-derived from cluster.version
+  logLevel: info
+  kserve:
+    enabled: true
+    namespace: self-healing-platform
+    predictorPort: 8080
+    anomalyDetectorService: anomaly-detector-stable
+    predictiveAnalyticsService: predictive-analytics-stable
+    timeout: "120s"
+  prometheus:
+    enabled: true
+    url: "https://prometheus-k8s.openshift-monitoring.svc:9091"</code></pre>
+<h3 id="feature-engineering-configuration">Feature Engineering Configuration<a class="headerlink" href="#feature-engineering-configuration" title="Permanent link">&para;</a></h3>
+<p>The Coordination Engine can build engineered features from Prometheus metrics before calling models:</p>
+<pre class="highlight"><code class="language-yaml">coordinationEngine:
+  featureEngineering:
+    enabled: false    # Set true for production models with full features
+    lookbackHours: 24
+    expectedFeatureCount: 5  # 5 for simple models, 3264 for full feature engineering</code></pre>
+<p>When <code>enabled: true</code>, the engine builds 3264 features (24 hours x 136 feature types) from Prometheus data. This configuration must match the model training notebook.</p>
+<h3 id="alert-webhooks">Alert Webhooks<a class="headerlink" href="#alert-webhooks" title="Permanent link">&para;</a></h3>
+<p>Configure external notification channels for critical anomalies:</p>
+<pre class="highlight"><code class="language-yaml">coordinationEngine:
+  alertWebhooks:
+    slackWebhookUrl: ""
+    pagerdutyRoutingKey: ""
+    alertmanagerUrl: ""</code></pre>
+<p><strong>Reference</strong>: <a href="../../adrs/038-go-coordination-engine-migration/">ADR-038: Go Coordination Engine Migration</a></p>
+<hr />
+<h2 id="building-and-deploying-custom-models">Building and Deploying Custom Models<a class="headerlink" href="#building-and-deploying-custom-models" title="Permanent link">&para;</a></h2>
+<h3 id="model-architecture">Model Architecture<a class="headerlink" href="#model-architecture" title="Permanent link">&para;</a></h3>
+<p>The platform serves two default models via KServe:</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Algorithm</th>
+<th>Purpose</th>
+<th>Training</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>anomaly-detector</td>
+<td>Isolation Forest</td>
+<td>Detects anomalous infrastructure metrics</td>
+<td>CPU-based</td>
+</tr>
+<tr>
+<td>predictive-analytics</td>
+<td>XGBoost / RandomForest</td>
+<td>Forecasts resource usage</td>
+<td>GPU-based</td>
+</tr>
+</tbody>
+</table>
+<h3 id="source-code">Source Code<a class="headerlink" href="#source-code" title="Permanent link">&para;</a></h3>
+<p>Model source code is in <code>src/models/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>anomaly_detector.py</code></td>
+<td>Isolation Forest anomaly detection</td>
+</tr>
+<tr>
+<td><code>predictive_analytics.py</code></td>
+<td>Time series forecasting with XGBoost</td>
+</tr>
+<tr>
+<td><code>kserve_wrapper.py</code></td>
+<td>KServe-compatible wrapper (deprecated)</td>
+</tr>
+<tr>
+<td><code>model_server.py</code></td>
+<td>Model serving utilities</td>
+</tr>
+<tr>
+<td><code>train_predictive_analytics.py</code></td>
+<td>Training script</td>
+</tr>
+</tbody>
+</table>
+<h3 id="kserve-model-api-contract">KServe Model API Contract<a class="headerlink" href="#kserve-model-api-contract" title="Permanent link">&para;</a></h3>
+<p>All models served on the platform must implement the KServe v1 prediction API:</p>
+<p><strong>Request format</strong>:</p>
+<pre class="highlight"><code class="language-json">POST /v1/models/&lt;model-name&gt;:predict
+Content-Type: application/json
+
+{
+  "instances": [
+    [0.5, 1.2, 0.8, 100.0, 80.0]
+  ]
+}</code></pre>
+<p><strong>Response format</strong>:</p>
+<pre class="highlight"><code class="language-json">{
+  "predictions": [1]
+}</code></pre>
+<h3 id="deploy-a-custom-model">Deploy a Custom Model<a class="headerlink" href="#deploy-a-custom-model" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Train and save the model as a sklearn Pipeline:</li>
+</ol>
+<pre class="highlight"><code class="language-python">from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import IsolationForest
+import joblib
+
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('model', IsolationForest(contamination=0.1, n_estimators=100))
+])
+
+pipeline.fit(X_train)
+joblib.dump(pipeline, '/mnt/models/my-model/model.pkl')</code></pre>
+<ol>
+<li>Upload the model to S3:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">aws s3 cp /mnt/models/my-model/model.pkl \
+  s3://your-bucket/my-model/model.pkl</code></pre>
+<ol>
+<li>Register the model in <code>values-hub.yaml</code>:</li>
+</ol>
+<pre class="highlight"><code class="language-yaml">models:
+  - name: my-custom-model
+    cpu: "1"
+    memory: "1Gi"
+    cpuLimit: "2"
+    memoryLimit: "4Gi"
+    syncWave: "2"
+    gpuTrained: false</code></pre>
+<ol>
+<li>
+<p>Push the change to your fork. ArgoCD creates the InferenceService automatically.</p>
+</li>
+<li>
+<p>Verify the deployment:</p>
+</li>
+</ol>
+<pre class="highlight"><code class="language-bash">oc get inferenceservices -n self-healing-platform</code></pre>
+<p><strong>Reference</strong>: <a href="../../guides/USER-MODEL-DEPLOYMENT-GUIDE/">User Model Deployment Guide</a>, <a href="../../adrs/039-user-deployed-kserve-models/">ADR-039: User-Deployed KServe Models</a></p>
+<hr />
+<h2 id="tekton-pipeline-development">Tekton Pipeline Development<a class="headerlink" href="#tekton-pipeline-development" title="Permanent link">&para;</a></h2>
+<h3 id="pipeline-architecture">Pipeline Architecture<a class="headerlink" href="#pipeline-architecture" title="Permanent link">&para;</a></h3>
+<p>The platform includes these Tekton pipelines:</p>
+<table>
+<thead>
+<tr>
+<th>Pipeline</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>deployment-validation-pipeline</code></td>
+<td>Post-deployment health checks (26 checks)</td>
+</tr>
+<tr>
+<td><code>model-training-pipeline</code></td>
+<td>CPU-based model training (anomaly detector)</td>
+</tr>
+<tr>
+<td><code>model-training-pipeline-gpu</code></td>
+<td>GPU-based model training (predictive analytics)</td>
+</tr>
+<tr>
+<td><code>model-serving-validation-pipeline</code></td>
+<td>Model serving endpoint validation</td>
+</tr>
+<tr>
+<td><code>platform-readiness-validation-pipeline</code></td>
+<td>Cluster prerequisite validation</td>
+</tr>
+<tr>
+<td><code>s3-configuration-pipeline</code></td>
+<td>S3 bucket setup and configuration</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reusable-tasks">Reusable Tasks<a class="headerlink" href="#reusable-tasks" title="Permanent link">&para;</a></h3>
+<p>Tasks are in <code>tekton/tasks/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>validate-prerequisites</code></td>
+<td>Check cluster prerequisites</td>
+</tr>
+<tr>
+<td><code>validate-operators</code></td>
+<td>Verify operator installations</td>
+</tr>
+<tr>
+<td><code>validate-storage</code></td>
+<td>Check storage classes and PVCs</td>
+</tr>
+<tr>
+<td><code>validate-model-serving</code></td>
+<td>Test InferenceService endpoints</td>
+</tr>
+<tr>
+<td><code>validate-coordination-engine</code></td>
+<td>Health check the coordination engine</td>
+</tr>
+<tr>
+<td><code>validate-monitoring</code></td>
+<td>Verify Prometheus and alerting</td>
+</tr>
+<tr>
+<td><code>validate-s3-connectivity</code></td>
+<td>Test S3 bucket access</td>
+</tr>
+<tr>
+<td><code>upload-placeholder-models</code></td>
+<td>Upload initial model artifacts</td>
+</tr>
+<tr>
+<td><code>reconcile-inferenceservices</code></td>
+<td>Restart InferenceService predictors</td>
+</tr>
+<tr>
+<td><code>generate-validation-report</code></td>
+<td>Create a validation summary</td>
+</tr>
+<tr>
+<td><code>cleanup-validation-resources</code></td>
+<td>Remove temporary resources</td>
+</tr>
+</tbody>
+</table>
+<h3 id="run-a-pipeline">Run a Pipeline<a class="headerlink" href="#run-a-pipeline" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Start the deployment validation pipeline
+tkn pipeline start deployment-validation-pipeline --showlog
+
+# Start model training
+tkn pipeline start model-training-pipeline \
+  -p model-name=anomaly-detector \
+  -p notebook-path=notebooks/02-anomaly-detection/01-isolation-forest-implementation.ipynb \
+  -p data-source=prometheus \
+  -p training-hours=168 \
+  -p inference-service-name=anomaly-detector \
+  -p health-check-enabled=true \
+  -p git-url=https://github.com/YOUR-USERNAME/openshift-aiops-platform.git \
+  -p git-ref=main \
+  -n self-healing-platform --showlog
+
+# List pipeline runs
+tkn pipelinerun list -n self-healing-platform
+
+# View logs for a specific run
+tkn pipelinerun logs &lt;run-name&gt; -n self-healing-platform -f</code></pre>
+<h3 id="create-a-custom-task">Create a Custom Task<a class="headerlink" href="#create-a-custom-task" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Define the task YAML in <code>tekton/tasks/</code>:</li>
+</ol>
+<pre class="highlight"><code class="language-yaml">apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: my-custom-check
+  namespace: self-healing-platform
+spec:
+  params:
+    - name: namespace
+      type: string
+      default: self-healing-platform
+  steps:
+    - name: run-check
+      image: registry.redhat.io/openshift4/ose-cli:latest
+      script: |
+        #!/bin/bash
+        echo "Running custom validation..."
+        oc get pods -n $(params.namespace)</code></pre>
+<ol>
+<li>Reference the task in a pipeline definition.</li>
+<li>Add the task YAML to the Helm chart templates or apply it directly.</li>
+</ol>
+<h3 id="automated-training-cronjobs">Automated Training CronJobs<a class="headerlink" href="#automated-training-cronjobs" title="Permanent link">&para;</a></h3>
+<p>The platform configures scheduled model training:</p>
+<pre class="highlight"><code class="language-yaml">tekton:
+  modelTraining:
+    anomalyDetector:
+      schedule: "0 2 * * 0"     # Every Sunday at 2:00 AM UTC
+      dataSource: "prometheus"
+    predictiveAnalytics:
+      schedule: "0 3 * * 0"     # Every Sunday at 3:00 AM UTC
+      dataSource: "prometheus"</code></pre>
+<h3 id="event-driven-triggers">Event-Driven Triggers<a class="headerlink" href="#event-driven-triggers" title="Permanent link">&para;</a></h3>
+<p>Triggers in <code>tekton/triggers/</code> enable webhook-driven pipeline execution:</p>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>Event Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>deployment-validation-trigger</code></td>
+<td>Manual or post-deployment</td>
+</tr>
+<tr>
+<td><code>manual-validation-trigger</code></td>
+<td>Manual execution</td>
+</tr>
+<tr>
+<td><code>github-gitea-webhook-eventlistener</code></td>
+<td>Git push events</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reference</strong>: <a href="../../adrs/053-tekton-model-training-pipelines/">ADR-053: Tekton Pipelines for Model Training</a></p>
+<hr />
+<h2 id="helm-chart-customization">Helm Chart Customization<a class="headerlink" href="#helm-chart-customization" title="Permanent link">&para;</a></h2>
+<h3 id="chart-structure">Chart Structure<a class="headerlink" href="#chart-structure" title="Permanent link">&para;</a></h3>
+<p>The main Helm chart is in <code>charts/hub/</code>:</p>
+<pre class="highlight"><code>charts/hub/
+├── Chart.yaml                          # Chart metadata
+├── values.yaml                         # Default values
+└── templates/
+    ├── namespace.yaml                  # Namespace creation
+    ├── rbac.yaml                       # RBAC resources
+    ├── serviceaccount.yaml             # Service accounts
+    ├── configmap.yaml                  # Configuration
+    ├── storage.yaml                    # PVCs
+    ├── coordination-engine-deployment.yaml  # Coordination Engine
+    ├── mcp-server-deployment.yaml      # MCP Server
+    ├── model-serving.yaml              # KServe InferenceServices
+    ├── model-serving-services.yaml     # Stable ClusterIP services
+    ├── ai-ml-workbench.yaml            # Jupyter Workbench
+    ├── tekton-pipelines.yaml           # Tekton pipeline definitions
+    ├── notebook-validation-jobs.yaml   # Notebook validation CRs
+    ├── externalsecrets.yaml            # External Secrets
+    ├── monitoring.yaml                 # ServiceMonitors
+    ├── grafana-dashboards.yaml         # Grafana dashboard ConfigMaps
+    └── ...                             # Additional templates</code></pre>
+<h3 id="values-configuration-hierarchy">Values Configuration Hierarchy<a class="headerlink" href="#values-configuration-hierarchy" title="Permanent link">&para;</a></h3>
+<p>Values are merged in this order (later overrides earlier):</p>
+<ol>
+<li><code>charts/hub/values.yaml</code> -- Chart defaults</li>
+<li><code>values-hub.yaml</code> -- Your cluster-specific overrides</li>
+<li><code>values-global.yaml</code> -- Global pattern settings</li>
+</ol>
+<h3 id="common-customizations">Common Customizations<a class="headerlink" href="#common-customizations" title="Permanent link">&para;</a></h3>
+<p><strong>Change the cluster topology</strong>:</p>
+<pre class="highlight"><code class="language-yaml"># values-hub.yaml
+cluster:
+  topology: "sno"    # or "ha"
+  version: "4.22"</code></pre>
+<p><strong>Disable a component</strong>:</p>
+<pre class="highlight"><code class="language-yaml"># values-hub.yaml
+mcpServer:
+  enabled: false
+
+coordinationEngine:
+  enabled: false</code></pre>
+<p><strong>Add a new model</strong>:</p>
+<pre class="highlight"><code class="language-yaml"># values-hub.yaml
+models:
+  - name: anomaly-detector
+    cpu: "1"
+    memory: "1Gi"
+    cpuLimit: "4"
+    memoryLimit: "8Gi"
+    syncWave: "2"
+    gpuTrained: false
+  - name: my-new-model
+    cpu: "500m"
+    memory: "512Mi"
+    cpuLimit: "1"
+    memoryLimit: "2Gi"
+    syncWave: "3"
+    gpuTrained: false</code></pre>
+<p><strong>Change the object store backend</strong>:</p>
+<pre class="highlight"><code class="language-yaml"># values-hub.yaml
+objectStore:
+  backend: "noobaa"   # or "aws-s3"</code></pre>
+<h3 id="validate-chart-changes">Validate Chart Changes<a class="headerlink" href="#validate-chart-changes" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Lint the chart
+helm lint charts/hub/
+
+# Template the chart to see rendered YAML
+helm template self-healing-platform charts/hub/ \
+  -f values-hub.yaml \
+  --debug</code></pre>
+<hr />
+<h2 id="gitops-workflow-with-argocd">GitOps Workflow with ArgoCD<a class="headerlink" href="#gitops-workflow-with-argocd" title="Permanent link">&para;</a></h2>
+<h3 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-mermaid">sequenceDiagram
+    participant Dev as Developer
+    participant Git as Git Repository
+    participant Argo as ArgoCD
+    participant K8s as Kubernetes Cluster
+
+    Dev-&gt;&gt;Git: Push code change
+    Argo-&gt;&gt;Git: Detect change (poll or webhook)
+    Argo-&gt;&gt;Argo: Render Helm templates
+    Argo-&gt;&gt;K8s: Apply resources
+    K8s-&gt;&gt;Argo: Report health status
+    Argo-&gt;&gt;Dev: Sync status visible in UI</code></pre>
+<h3 id="development-workflow">Development Workflow<a class="headerlink" href="#development-workflow" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Make changes to Helm templates or values.</li>
+<li>Commit and push to your fork:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">git add &lt;changed-files&gt;
+git commit -s -m "feat(charts): add new model configuration"
+pre-commit run --all-files
+git push origin main</code></pre>
+<ol>
+<li>
+<p>ArgoCD detects the change and syncs automatically.</p>
+</li>
+<li>
+<p>Monitor the sync:</p>
+</li>
+</ol>
+<pre class="highlight"><code class="language-bash">oc get applications -n self-healing-platform-hub
+make argo-healthcheck</code></pre>
+<h3 id="sync-waves">Sync Waves<a class="headerlink" href="#sync-waves" title="Permanent link">&para;</a></h3>
+<p>The platform deploys resources in ordered sync waves:</p>
+<table>
+<thead>
+<tr>
+<th>Wave</th>
+<th>Resources</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-10</td>
+<td>Namespaces, ServiceAccounts</td>
+</tr>
+<tr>
+<td>-5</td>
+<td>RBAC, ConfigMaps, Secrets</td>
+</tr>
+<tr>
+<td>0</td>
+<td>Operators, Storage</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Coordination Engine, MCP Server</td>
+</tr>
+<tr>
+<td>2</td>
+<td>InferenceServices (model serving)</td>
+</tr>
+<tr>
+<td>3-10</td>
+<td>Notebook validation jobs (by tier)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="manual-sync">Manual Sync<a class="headerlink" href="#manual-sync" title="Permanent link">&para;</a></h3>
+<p>If automatic sync is not enabled or you need to force a sync:</p>
+<pre class="highlight"><code class="language-bash"># Hard refresh
+oc annotate application self-healing-platform -n self-healing-platform-hub \
+  argocd.argoproj.io/refresh=hard --overwrite
+
+# Check sync status
+oc get applications -n self-healing-platform-hub</code></pre>
+<p><strong>Reference</strong>: <a href="../../adrs/042-argocd-deployment-lessons-learned/">ADR-042: ArgoCD Deployment Lessons Learned</a></p>
+<hr />
+<h2 id="testing-and-cicd">Testing and CI/CD<a class="headerlink" href="#testing-and-cicd" title="Permanent link">&para;</a></h2>
+<h3 id="pre-commit-checks">Pre-Commit Checks<a class="headerlink" href="#pre-commit-checks" title="Permanent link">&para;</a></h3>
+<p>Run pre-commit hooks before every push:</p>
+<pre class="highlight"><code class="language-bash">pre-commit run --all-files</code></pre>
+<h3 id="helm-validation">Helm Validation<a class="headerlink" href="#helm-validation" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Lint all charts
+helm lint charts/hub/
+
+# Template and review output
+helm template self-healing-platform charts/hub/ -f values-hub.yaml</code></pre>
+<h3 id="notebook-validation">Notebook Validation<a class="headerlink" href="#notebook-validation" title="Permanent link">&para;</a></h3>
+<p>Execute notebooks to verify they run without errors:</p>
+<pre class="highlight"><code class="language-bash">cd notebooks
+jupyter nbconvert --to notebook --execute \
+  00-setup/00-platform-readiness-validation.ipynb</code></pre>
+<h3 id="end-to-end-deployment-test">End-to-End Deployment Test<a class="headerlink" href="#end-to-end-deployment-test" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">make test-deploy-complete-pattern</code></pre>
+<h3 id="tekton-validation-pipeline">Tekton Validation Pipeline<a class="headerlink" href="#tekton-validation-pipeline" title="Permanent link">&para;</a></h3>
+<p>After deployment, run the post-deployment validation:</p>
+<pre class="highlight"><code class="language-bash">tkn pipeline start deployment-validation-pipeline --showlog</code></pre>
+<h3 id="github-actions-ci">GitHub Actions CI<a class="headerlink" href="#github-actions-ci" title="Permanent link">&para;</a></h3>
+<p>The repository uses GitHub Actions for continuous integration:</p>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th>Trigger</th>
+<th>Checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Helm Chart Validation</td>
+<td>Push, PR</td>
+<td>Lints and validates all Helm charts</td>
+</tr>
+<tr>
+<td>CI/CD Pipeline</td>
+<td>Push, PR</td>
+<td>Python tests, notebook validation, security scans</td>
+</tr>
+<tr>
+<td>Pre-commit Hooks</td>
+<td>Push, PR</td>
+<td>YAML linting, whitespace, secrets detection</td>
+</tr>
+</tbody>
+</table>
+<h3 id="run-tests-locally">Run Tests Locally<a class="headerlink" href="#run-tests-locally" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># Test execution environment
+make test-ee
+
+# Run Python unit tests
+cd src/models &amp;&amp; python -m pytest
+
+# Run full linter suite
+make super-linter</code></pre>
+<hr />
+<h2 id="contributing-guidelines">Contributing Guidelines<a class="headerlink" href="#contributing-guidelines" title="Permanent link">&para;</a></h2>
+<h3 id="commit-messages">Commit Messages<a class="headerlink" href="#commit-messages" title="Permanent link">&para;</a></h3>
+<p>Use conventional commit format:</p>
+<pre class="highlight"><code>&lt;type&gt;(&lt;scope&gt;): &lt;description&gt;</code></pre>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>feat</code></td>
+<td>New features</td>
+</tr>
+<tr>
+<td><code>fix</code></td>
+<td>Bug fixes</td>
+</tr>
+<tr>
+<td><code>docs</code></td>
+<td>Documentation changes</td>
+</tr>
+<tr>
+<td><code>chore</code></td>
+<td>Maintenance tasks</td>
+</tr>
+<tr>
+<td><code>refactor</code></td>
+<td>Code restructuring</td>
+</tr>
+<tr>
+<td><code>test</code></td>
+<td>Test additions or changes</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<pre class="highlight"><code>feat(notebooks): add LSTM anomaly detection model
+fix(kserve): resolve model loading race condition
+docs(adr): add ADR-060 for new storage backend
+chore(ci): update GitHub Actions to v4</code></pre>
+<h3 id="sign-your-commits">Sign Your Commits<a class="headerlink" href="#sign-your-commits" title="Permanent link">&para;</a></h3>
+<p>All commits require a Developer Certificate of Origin (DCO) sign-off:</p>
+<pre class="highlight"><code class="language-bash">git commit -s -m "feat: add new feature"</code></pre>
+<h3 id="pull-request-process">Pull Request Process<a class="headerlink" href="#pull-request-process" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Create a feature branch:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">git checkout -b feature/your-feature-name</code></pre>
+<ol>
+<li>Make and test your changes.</li>
+<li>Run pre-commit hooks:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">pre-commit run --all-files</code></pre>
+<ol>
+<li>Push and create a pull request.</li>
+<li>Fill in the PR template with description, motivation, testing, and checklist.</li>
+</ol>
+<h3 id="code-style">Code Style<a class="headerlink" href="#code-style" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>Standard</th>
+<th>Tool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python</td>
+<td>PEP 8</td>
+<td>Black formatter, isort</td>
+</tr>
+<tr>
+<td>YAML</td>
+<td>2-space indent</td>
+<td>yamllint</td>
+</tr>
+<tr>
+<td>Go</td>
+<td>gofmt</td>
+<td>Built-in formatter</td>
+</tr>
+<tr>
+<td>Markdown</td>
+<td>CommonMark</td>
+<td>markdownlint</td>
+</tr>
+</tbody>
+</table>
+<h3 id="adr-updates">ADR Updates<a class="headerlink" href="#adr-updates" title="Permanent link">&para;</a></h3>
+<p>When you make an architectural change, create or update an ADR:</p>
+<ol>
+<li>Copy the template:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">cp docs/adrs/template.md docs/adrs/XXX-your-decision.md</code></pre>
+<ol>
+<li>Fill in the Context, Decision, and Consequences sections.</li>
+<li>Update the index in <code>docs/adrs/README.md</code>.</li>
+</ol>
+<p><strong>Reference</strong>: <a href="../../adrs/002-hybrid-self-healing-approach/">ADR-002: Hybrid Self-Healing Approach</a></p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="values-files-not-found">Values Files Not Found<a class="headerlink" href="#values-files-not-found" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: <code>make</code> commands fail with <code>values-global.yaml: No such file or directory</code>.</p>
+<p><strong>Fix</strong>:</p>
+<pre class="highlight"><code class="language-bash">cp values-global.yaml.example values-global.yaml
+cp values-hub.yaml.example values-hub.yaml</code></pre>
+<p>Update <code>repoURL</code> in both files to your fork URL.</p>
+<h3 id="pre-commit-hook-failures">Pre-Commit Hook Failures<a class="headerlink" href="#pre-commit-hook-failures" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: <code>detect-secrets</code> reports false positives.</p>
+<p><strong>Fix</strong>:</p>
+<pre class="highlight"><code class="language-bash"># Add inline comment to ignore a specific line
+# pragma: allowlist secret
+
+# Or update the baseline
+detect-secrets scan --baseline .secrets.baseline</code></pre>
+<h3 id="helm-template-errors">Helm Template Errors<a class="headerlink" href="#helm-template-errors" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: <code>helm template</code> fails with rendering errors.</p>
+<p><strong>Fix</strong>:</p>
+<pre class="highlight"><code class="language-bash"># Debug with verbose output
+helm template self-healing-platform charts/hub/ -f values-hub.yaml --debug
+
+# Check for YAML syntax errors
+yamllint charts/hub/templates/</code></pre>
+<h3 id="tekton-pipeline-fails">Tekton Pipeline Fails<a class="headerlink" href="#tekton-pipeline-fails" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: PipelineRun shows "Failed" status.</p>
+<p><strong>Fix</strong>:</p>
+<pre class="highlight"><code class="language-bash"># View logs for the failed run
+tkn pipelinerun logs &lt;run-name&gt; -n self-healing-platform -f
+
+# Check task-level failures
+tkn taskrun list -n self-healing-platform
+
+# Re-run the pipeline
+tkn pipeline start &lt;pipeline-name&gt; --showlog</code></pre>
+<p>For more issues, see the <a href="../../guides/TROUBLESHOOTING-GUIDE/">Troubleshooting Guide</a>.</p>
+<hr />
+<h2 id="glossary">Glossary<a class="headerlink" href="#glossary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ADR</td>
+<td>Architectural Decision Record, documents design choices</td>
+</tr>
+<tr>
+<td>ArgoCD</td>
+<td>GitOps continuous delivery tool for Kubernetes</td>
+</tr>
+<tr>
+<td>DCO</td>
+<td>Developer Certificate of Origin, commit sign-off requirement</td>
+</tr>
+<tr>
+<td>EE</td>
+<td>Execution Environment, container image with Ansible dependencies</td>
+</tr>
+<tr>
+<td>GitOps</td>
+<td>Managing infrastructure through Git as the source of truth</td>
+</tr>
+<tr>
+<td>Helm</td>
+<td>Kubernetes package manager using templated YAML</td>
+</tr>
+<tr>
+<td>InferenceService</td>
+<td>KServe resource for deploying ML models as services</td>
+</tr>
+<tr>
+<td>KServe</td>
+<td>Kubernetes-native model serving framework</td>
+</tr>
+<tr>
+<td>MCP</td>
+<td>Model Context Protocol for OpenShift Lightspeed</td>
+</tr>
+<tr>
+<td>Sync Wave</td>
+<td>ArgoCD ordering mechanism for resource deployment</td>
+</tr>
+<tr>
+<td>Tekton</td>
+<td>Kubernetes-native CI/CD pipeline framework</td>
+</tr>
+<tr>
+<td>VP</td>
+<td>Validated Patterns, Red Hat GitOps deployment framework</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

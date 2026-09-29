@@ -1,0 +1,3429 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/user-guide/platform-engineer-guide/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/branding/png/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Platform Engineer Guide - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#platform-engineer-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  <img src="../../assets/branding/svg/kubeheal-icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Platform Engineer Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../quick-start.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../how-to/" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../explanation/" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../adrs/" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  <img src="../../assets/branding/svg/kubeheal-icon.svg" alt="logo">
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quick-start.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/complete-deployment-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/quick-deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fresh Cluster Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/deploy-first-ml-model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy Your First ML Model
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/build-first-self-healing-automation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build Self-Healing Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/workbench-development-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/complete-deployment-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/quick-deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/configure-values-files/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configure Values Files
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-on-sno/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/access-workbench/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-mcp-server-lightspeed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api-documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/troubleshooting-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/operator-versions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operator Versions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/architecture-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/ai-agent-development-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Agent Development Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/IMPLEMENTATION-TRACKER/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fresh Cluster Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/TROUBLESHOOTING-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/VALIDATED-PATTERNS-SUBMISSION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Validated Patterns Submission
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/CI-CD-GITHUB-ACTIONS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      Table of Contents
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-self-healing-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is the Self-Healing Platform?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#your-role-as-a-platform-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Your Role as a Platform Engineer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#document-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document Scope
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#platform-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Platform Architecture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Platform Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#component-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Component Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architecture-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Diagram
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-topology-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Topology Options
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-provisioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cluster Provisioning
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cluster Provisioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#provision-a-rosa-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      Provision a ROSA Cluster
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Provision a ROSA Cluster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automated-provisioning-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automated Provisioning (Recommended)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-provisioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manual Provisioning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-a-gpu-machine-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a GPU Machine Pool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#provision-an-sno-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      Provision an SNO Cluster
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-cluster-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verify Cluster Topology
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#storage-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Storage Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#storage-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-aws-s3-rosa-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configure AWS S3 (ROSA Default)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-odf-non-rosa-clusters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configure ODF (Non-ROSA Clusters)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-mcg-only-storage-sno" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configure MCG-Only Storage (SNO)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-pvc-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage PVC Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operator-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operator Management
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operator Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required Operators
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-the-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install the Platform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-the-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validate the Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-operator-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check Operator Status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upgrade-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrade Operators
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-and-observability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring and Observability
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring and Observability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prometheus Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service-monitors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service Monitors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alerting-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alerting Rules
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana-dashboards" class="md-nav__link">
+    <span class="md-ellipsis">
+      Grafana Dashboards
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-platform-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check Platform Health
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scaling-and-resource-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scaling and Resource Management
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scaling and Resource Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#node-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Node Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu-node-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      GPU Node Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resource-requests-and-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resource Requests and Limits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workbench-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workbench Scaling
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-and-rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security and RBAC
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security and RBAC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rbac-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      RBAC Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service-accounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service Accounts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-prerequisites-rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploy Prerequisites (RBAC)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network Policies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pod-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pod Security
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secrets-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Secrets Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backup-and-disaster-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backup and Disaster Recovery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backup and Disaster Recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-to-back-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      What to Back Up
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#git-based-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Git-Based Recovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-artifact-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Artifact Recovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#etcd-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      etcd Backup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pvc-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      PVC Snapshots
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#operators-failing-with-toomanyoperatorgroups" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operators Failing with "TooManyOperatorGroups"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#argocd-application-not-syncing" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArgoCD Application Not Syncing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rosa-machineset-scaling-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      ROSA MachineSet Scaling Fails
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-classes-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage Classes Not Found
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Glossary
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/user-guide/platform-engineer-guide.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="platform-engineer-guide">Platform Engineer Guide<a class="headerlink" href="#platform-engineer-guide" title="Permanent link">&para;</a></h1>
+<p><strong>Version</strong>: 1.0.0
+<strong>Last Updated</strong>: 2026-09-29
+<strong>Audience</strong>: Infrastructure engineers, cluster administrators, SREs</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#platform-architecture">Platform Architecture</a></li>
+<li><a href="#cluster-provisioning">Cluster Provisioning</a></li>
+<li><a href="#storage-configuration">Storage Configuration</a></li>
+<li><a href="#operator-management">Operator Management</a></li>
+<li><a href="#monitoring-and-observability">Monitoring and Observability</a></li>
+<li><a href="#scaling-and-resource-management">Scaling and Resource Management</a></li>
+<li><a href="#security-and-rbac">Security and RBAC</a></li>
+<li><a href="#backup-and-disaster-recovery">Backup and Disaster Recovery</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#glossary">Glossary</a></li>
+</ol>
+<hr />
+<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
+<h3 id="what-is-the-self-healing-platform">What is the Self-Healing Platform?<a class="headerlink" href="#what-is-the-self-healing-platform" title="Permanent link">&para;</a></h3>
+<p>The OpenShift AI Ops Self-Healing Platform is a production-ready AIOps solution. It combines deterministic automation with AI-driven analysis to detect and remediate cluster issues automatically.</p>
+<h3 id="your-role-as-a-platform-engineer">Your Role as a Platform Engineer<a class="headerlink" href="#your-role-as-a-platform-engineer" title="Permanent link">&para;</a></h3>
+<p>As a platform engineer, you are responsible for:</p>
+<ul>
+<li>Provisioning and configuring OpenShift clusters</li>
+<li>Installing and managing platform operators</li>
+<li>Configuring storage, networking, and security</li>
+<li>Monitoring cluster health and platform performance</li>
+<li>Scaling resources based on workload demands</li>
+<li>Managing secrets and credentials</li>
+<li>Performing backup and recovery operations</li>
+</ul>
+<h3 id="document-scope">Document Scope<a class="headerlink" href="#document-scope" title="Permanent link">&para;</a></h3>
+<p>This guide covers:</p>
+<ul>
+<li>✅ Cluster provisioning on ROSA, SNO, and HA environments</li>
+<li>✅ Storage configuration (ODF, MCG, AWS S3)</li>
+<li>✅ Operator lifecycle management</li>
+<li>✅ Monitoring, alerting, and observability</li>
+<li>✅ Security, RBAC, and secrets management</li>
+<li>❌ ML model development (see <a href="../data-scientist-guide/">Data Scientist Guide</a>)</li>
+<li>❌ Application code changes (see <a href="../developer-guide/">Developer Guide</a>)</li>
+</ul>
+<hr />
+<h2 id="platform-architecture">Platform Architecture<a class="headerlink" href="#platform-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="component-overview">Component Overview<a class="headerlink" href="#component-overview" title="Permanent link">&para;</a></h3>
+<p>The platform consists of these core components:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Version</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Red Hat OpenShift AI</td>
+<td>2.22.2</td>
+<td>ML platform for model training and serving</td>
+</tr>
+<tr>
+<td>KServe</td>
+<td>1.36.1</td>
+<td>Model serving infrastructure</td>
+</tr>
+<tr>
+<td>Coordination Engine</td>
+<td>Go-based</td>
+<td>Orchestrates deterministic and AI-driven actions</td>
+</tr>
+<tr>
+<td>Tekton Pipelines</td>
+<td>1.17.2</td>
+<td>CI/CD automation and validation</td>
+</tr>
+<tr>
+<td>OpenShift GitOps (ArgoCD)</td>
+<td>1.15.4</td>
+<td>GitOps-based deployment</td>
+</tr>
+<tr>
+<td>GPU Operator</td>
+<td>24.9.2</td>
+<td>NVIDIA GPU management</td>
+</tr>
+<tr>
+<td>External Secrets Operator</td>
+<td>Latest</td>
+<td>Automated secrets management</td>
+</tr>
+<tr>
+<td>MCP Server</td>
+<td>Go-based</td>
+<td>Model Context Protocol for Lightspeed integration</td>
+</tr>
+</tbody>
+</table>
+<h3 id="architecture-diagram">Architecture Diagram<a class="headerlink" href="#architecture-diagram" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-mermaid">graph TB
+    subgraph ControlPlane["Control Plane"]
+        API[Kubernetes API Server]
+        ETCD[etcd]
+        CTRL[Controllers]
+    end
+
+    subgraph WorkerNodes["Worker Nodes"]
+        subgraph Platform["Self-Healing Platform Namespace"]
+            CE[Coordination Engine]
+            WB[Jupyter Workbench]
+            MCP[MCP Server]
+        end
+
+        subgraph ModelServing["Model Serving"]
+            AD_IS[anomaly-detector InferenceService]
+            PA_IS[predictive-analytics InferenceService]
+        end
+
+        subgraph Operators["Operator Namespace"]
+            RHOAI[OpenShift AI Operator]
+            GPU_OP[GPU Operator]
+            PIPE_OP[Pipelines Operator]
+            GITOPS[GitOps Operator]
+            ESO[External Secrets Operator]
+        end
+    end
+
+    subgraph Storage["Storage Layer"]
+        S3[AWS S3 / NooBaa]
+        PVC[Persistent Volumes]
+    end
+
+    subgraph Monitoring["Monitoring"]
+        PROM[Prometheus]
+        ALERT[Alertmanager]
+        GRAF[Grafana]
+    end
+
+    CE --&gt; AD_IS
+    CE --&gt; PA_IS
+    CE --&gt; PROM
+    WB --&gt; S3
+    AD_IS --&gt; S3
+    PA_IS --&gt; S3
+    PROM --&gt; ALERT
+    PROM --&gt; GRAF
+    GITOPS --&gt; Platform</code></pre>
+<h3 id="deployment-topology-options">Deployment Topology Options<a class="headerlink" href="#deployment-topology-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Topology</th>
+<th>Nodes</th>
+<th>Storage</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ROSA Classic HA</td>
+<td>3+ workers (managed)</td>
+<td>AWS S3 (default)</td>
+<td>Production</td>
+</tr>
+<tr>
+<td>ROSA Single-Worker</td>
+<td>1 worker (managed)</td>
+<td>AWS S3 (default)</td>
+<td>Development, testing</td>
+</tr>
+<tr>
+<td>IPI HA</td>
+<td>3+ workers (self-managed)</td>
+<td>ODF or AWS S3</td>
+<td>Production</td>
+</tr>
+<tr>
+<td>SNO</td>
+<td>1 node (all roles)</td>
+<td>MCG-only ODF</td>
+<td>Edge, development</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reference</strong>: <a href="../../adrs/055-openshift-420-multi-cluster-topology-support/">ADR-055: Multi-Cluster Topology Support</a></p>
+<hr />
+<h2 id="cluster-provisioning">Cluster Provisioning<a class="headerlink" href="#cluster-provisioning" title="Permanent link">&para;</a></h2>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<p>Install the required CLI tools on your workstation:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rosa</code></td>
+<td>ROSA cluster and machine pool management</td>
+</tr>
+<tr>
+<td><code>oc</code></td>
+<td>OpenShift CLI</td>
+</tr>
+<tr>
+<td><code>aws</code></td>
+<td>AWS CLI for S3 bucket management</td>
+</tr>
+<tr>
+<td><code>helm</code></td>
+<td>Kubernetes package manager (3.12+)</td>
+</tr>
+<tr>
+<td><code>ansible-navigator</code></td>
+<td>Ansible execution environment runner</td>
+</tr>
+<tr>
+<td><code>yq</code></td>
+<td>YAML processor</td>
+</tr>
+<tr>
+<td><code>tkn</code></td>
+<td>Tekton CLI</td>
+</tr>
+</tbody>
+</table>
+<p><strong>RHEL 9/10 automated setup</strong>:</p>
+<pre class="highlight"><code class="language-bash">./scripts/install-prerequisites-rhel.sh
+source ~/.bashrc</code></pre>
+<p>This script installs all required tools. It is idempotent and safe to run multiple times.</p>
+<h3 id="provision-a-rosa-cluster">Provision a ROSA Cluster<a class="headerlink" href="#provision-a-rosa-cluster" title="Permanent link">&para;</a></h3>
+<p>ROSA (Red Hat OpenShift Service on AWS) is the primary deployment target.</p>
+<h4 id="automated-provisioning-recommended">Automated Provisioning (Recommended)<a class="headerlink" href="#automated-provisioning-recommended" title="Permanent link">&para;</a></h4>
+<p>Use the provisioning script to create a complete ROSA cluster:</p>
+<pre class="highlight"><code class="language-bash"># Full HA cluster with GPU machine pool and S3 bucket
+./scripts/create-rosa-cluster.sh
+
+# Single-worker cluster for development
+./scripts/create-rosa-cluster.sh --replicas 1 --no-gpu --cluster-name aiops-dev
+
+# Custom region with larger GPU
+./scripts/create-rosa-cluster.sh --region us-west-2 --gpu-instance-type g5.4xlarge
+
+# Preview commands without executing
+./scripts/create-rosa-cluster.sh --dry-run</code></pre>
+<p>The script performs these steps automatically:</p>
+<ol>
+<li>Validates prerequisites (<code>rosa</code>, <code>aws</code>, <code>oc</code> CLIs)</li>
+<li>Creates a ROSA Classic HA cluster with STS (3x m5.2xlarge default)</li>
+<li>Waits for the cluster to reach "ready" state (35-45 minutes)</li>
+<li>Creates a cluster-admin user</li>
+<li>Adds a GPU machine pool (g5.2xlarge default)</li>
+<li>Creates an S3 bucket for model storage</li>
+<li>Logs into the cluster with <code>oc</code></li>
+</ol>
+<h4 id="manual-provisioning">Manual Provisioning<a class="headerlink" href="#manual-provisioning" title="Permanent link">&para;</a></h4>
+<p>If you prefer step-by-step control:</p>
+<pre class="highlight"><code class="language-bash"># Create the cluster
+rosa create cluster --cluster-name=aiops-platform \
+  --sts --mode=auto \
+  --region=us-east-1 \
+  --compute-machine-type=m5.2xlarge \
+  --replicas=3
+
+# Wait for ready state (~40 minutes)
+rosa describe cluster --cluster=aiops-platform
+
+# Create admin user
+rosa create admin --cluster=aiops-platform
+
+# Log in
+oc login &lt;api-url&gt; --username cluster-admin --password &lt;password&gt;</code></pre>
+<h4 id="add-a-gpu-machine-pool">Add a GPU Machine Pool<a class="headerlink" href="#add-a-gpu-machine-pool" title="Permanent link">&para;</a></h4>
+<p>GPU nodes are required for training the predictive analytics model:</p>
+<pre class="highlight"><code class="language-bash">rosa create machinepool --cluster=aiops-platform \
+  --name=gpu-pool \
+  --instance-type=g5.2xlarge \
+  --replicas=1
+
+# Verify GPU nodes
+oc get nodes -l nvidia.com/gpu.present=true</code></pre>
+<p><strong>Reference</strong>: <a href="../../how-to/deploy-on-rosa/">ROSA Deployment Guide</a></p>
+<h3 id="provision-an-sno-cluster">Provision an SNO Cluster<a class="headerlink" href="#provision-an-sno-cluster" title="Permanent link">&para;</a></h3>
+<p>Single Node OpenShift (SNO) is suitable for edge deployments and development:</p>
+<ol>
+<li>Install OpenShift on a single node using the standard installer.</li>
+<li>Verify the topology:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">make show-cluster-info
+# Output should show: Topology: sno</code></pre>
+<ol>
+<li>Update <code>values-hub.yaml</code> before deployment:</li>
+</ol>
+<pre class="highlight"><code class="language-yaml">cluster:
+  topology: "sno"
+
+storage:
+  modelStorage:
+    storageClass: "gp3-csi"</code></pre>
+<p><strong>Reference</strong>: <a href="../../how-to/deploy-on-sno/">SNO Deployment Guide</a>, <a href="../../adrs/056-standalone-mcg-on-sno/">ADR-056: Standalone MCG on SNO</a></p>
+<h3 id="verify-cluster-topology">Verify Cluster Topology<a class="headerlink" href="#verify-cluster-topology" title="Permanent link">&para;</a></h3>
+<p>After provisioning, confirm the cluster configuration:</p>
+<pre class="highlight"><code class="language-bash">make show-cluster-info</code></pre>
+<p>Expected output for an HA cluster:</p>
+<pre class="highlight"><code>Cluster Information:
+  Topology: ha
+  OpenShift Version: 4.22
+  Platform: AWS
+  ODF Channel: stable-4.22</code></pre>
+<hr />
+<h2 id="storage-configuration">Storage Configuration<a class="headerlink" href="#storage-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="storage-architecture">Storage Architecture<a class="headerlink" href="#storage-architecture" title="Permanent link">&para;</a></h3>
+<p>The platform uses different storage backends based on the cluster topology:</p>
+<table>
+<thead>
+<tr>
+<th>Storage Type</th>
+<th>HA Cluster</th>
+<th>SNO Cluster</th>
+<th>ROSA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Block (RWO)</td>
+<td>gp3-csi</td>
+<td>gp3-csi</td>
+<td>gp3-csi</td>
+</tr>
+<tr>
+<td>File (RWX)</td>
+<td>ocs-storagecluster-cephfs</td>
+<td>Not available</td>
+<td>Not needed</td>
+</tr>
+<tr>
+<td>Object (S3)</td>
+<td>AWS S3 or NooBaa</td>
+<td>NooBaa (MCG-only)</td>
+<td>AWS S3 (default)</td>
+</tr>
+<tr>
+<td>GPU-compatible</td>
+<td>gp3-csi</td>
+<td>gp3-csi</td>
+<td>gp3-csi</td>
+</tr>
+</tbody>
+</table>
+<h3 id="configure-aws-s3-rosa-default">Configure AWS S3 (ROSA Default)<a class="headerlink" href="#configure-aws-s3-rosa-default" title="Permanent link">&para;</a></h3>
+<p>For ROSA clusters, native AWS S3 is the default object storage backend:</p>
+<ol>
+<li>Create an S3 bucket (if not created by the provisioning script):</li>
+</ol>
+<pre class="highlight"><code class="language-bash">aws s3api create-bucket \
+  --bucket aiops-model-storage-$(date +%s) \
+  --region us-east-1</code></pre>
+<ol>
+<li>Configure the bucket in <code>values-hub.yaml</code>:</li>
+</ol>
+<pre class="highlight"><code class="language-yaml">objectStore:
+  enabled: true
+  backend: "aws-s3"
+  aws:
+    region: "us-east-1"
+    bucketName: "your-bucket-name"</code></pre>
+<ol>
+<li>Create the credentials secret:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">oc create secret generic aws-s3-credentials-source \
+  --from-literal=AWS_ACCESS_KEY_ID=&lt;key&gt; \
+  --from-literal=AWS_SECRET_ACCESS_KEY=&lt;secret&gt; \
+  -n self-healing-platform</code></pre>
+<h3 id="configure-odf-non-rosa-clusters">Configure ODF (Non-ROSA Clusters)<a class="headerlink" href="#configure-odf-non-rosa-clusters" title="Permanent link">&para;</a></h3>
+<p>For non-ROSA HA clusters, OpenShift Data Foundation provides storage:</p>
+<pre class="highlight"><code class="language-bash"># Run the cluster infrastructure configuration script
+make configure-cluster
+
+# This script performs:
+# - Installs ODF operator
+# - Creates StorageCluster
+# - Waits for Ceph daemons (OSD, MON, MGR)
+# - Scales MachineSets if needed</code></pre>
+<p>The process takes 10-15 minutes on HA clusters.</p>
+<p>To skip ODF installation when storage already exists:</p>
+<pre class="highlight"><code class="language-bash">./scripts/configure-cluster-infrastructure.sh --skip-odf</code></pre>
+<h3 id="configure-mcg-only-storage-sno">Configure MCG-Only Storage (SNO)<a class="headerlink" href="#configure-mcg-only-storage-sno" title="Permanent link">&para;</a></h3>
+<p>On SNO clusters, the platform installs MCG-only ODF (NooBaa S3 without Ceph):</p>
+<pre class="highlight"><code class="language-bash">make configure-cluster
+# On SNO, this:
+# - Skips MachineSet scaling
+# - Installs ODF operator in MCG-only mode
+# - Creates MCG-only StorageCluster with gp3-csi backing
+# - Waits for NooBaa to become Ready</code></pre>
+<h3 id="storage-pvc-configuration">Storage PVC Configuration<a class="headerlink" href="#storage-pvc-configuration" title="Permanent link">&para;</a></h3>
+<p>The platform creates three types of persistent storage:</p>
+<table>
+<thead>
+<tr>
+<th>PVC</th>
+<th>Size</th>
+<th>Storage Class</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workbench Data</td>
+<td>20Gi</td>
+<td>gp3-csi (RWO)</td>
+<td>Jupyter notebook persistent storage</td>
+</tr>
+<tr>
+<td>Model Storage</td>
+<td>10Gi</td>
+<td>Auto-detected</td>
+<td>Shared between notebooks and KServe</td>
+</tr>
+<tr>
+<td>GPU Model Storage</td>
+<td>10Gi</td>
+<td>gp3-csi (RWO)</td>
+<td>GPU-compatible training storage (HA only)</td>
+</tr>
+</tbody>
+</table>
+<p>Verify PVC status after deployment:</p>
+<pre class="highlight"><code class="language-bash">oc get pvc -n self-healing-platform</code></pre>
+<p><strong>Reference</strong>: <a href="../../adrs/035-storage-strategy/">ADR-035: Storage Strategy</a>, <a href="../../adrs/041-model-storage-and-versioning-strategy/">ADR-041: Model Storage and Versioning</a></p>
+<hr />
+<h2 id="operator-management">Operator Management<a class="headerlink" href="#operator-management" title="Permanent link">&para;</a></h2>
+<h3 id="required-operators">Required Operators<a class="headerlink" href="#required-operators" title="Permanent link">&para;</a></h3>
+<p>The platform depends on these operators:</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Namespace</th>
+<th>Channel</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Red Hat OpenShift AI</td>
+<td>redhat-ods-operator</td>
+<td>stable</td>
+<td>ML platform</td>
+</tr>
+<tr>
+<td>OpenShift GitOps</td>
+<td>openshift-gitops-operator</td>
+<td>latest</td>
+<td>ArgoCD for GitOps</td>
+</tr>
+<tr>
+<td>OpenShift Pipelines</td>
+<td>openshift-pipelines-operator</td>
+<td>latest</td>
+<td>Tekton CI/CD</td>
+</tr>
+<tr>
+<td>NVIDIA GPU Operator</td>
+<td>nvidia-gpu-operator</td>
+<td>stable</td>
+<td>GPU management</td>
+</tr>
+<tr>
+<td>External Secrets Operator</td>
+<td>openshift-operators</td>
+<td>stable</td>
+<td>Secrets management</td>
+</tr>
+<tr>
+<td>OpenShift Data Foundation</td>
+<td>openshift-storage</td>
+<td>stable-4.x</td>
+<td>Storage (non-ROSA)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="install-the-platform">Install the Platform<a class="headerlink" href="#install-the-platform" title="Permanent link">&para;</a></h3>
+<p>The Validated Patterns Operator manages the full deployment lifecycle:</p>
+<ol>
+<li>Fork the repository on GitHub.</li>
+<li>Clone your fork:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">git clone https://github.com/YOUR-USERNAME/openshift-aiops-platform.git
+cd openshift-aiops-platform</code></pre>
+<ol>
+<li>Create values files:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">cp values-global.yaml.example values-global.yaml
+cp values-hub.yaml.example values-hub.yaml</code></pre>
+<ol>
+<li>
+<p>Update <code>repoURL</code> in both files to point to your fork.</p>
+</li>
+<li>
+<p>Deploy the platform:</p>
+</li>
+</ol>
+<pre class="highlight"><code class="language-bash">./pattern.sh make install</code></pre>
+<ol>
+<li>Wait for ArgoCD to converge:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">oc get applications.argoproj.io -n self-healing-platform-hub
+# Target state: SYNC STATUS=Synced, HEALTH STATUS=Healthy</code></pre>
+<h3 id="validate-the-deployment">Validate the Deployment<a class="headerlink" href="#validate-the-deployment" title="Permanent link">&para;</a></h3>
+<p>Run the ArgoCD health check:</p>
+<pre class="highlight"><code class="language-bash">make argo-healthcheck</code></pre>
+<p>Run the Tekton validation pipeline:</p>
+<pre class="highlight"><code class="language-bash">tkn pipeline start deployment-validation-pipeline --showlog</code></pre>
+<p>This pipeline runs 26 validation checks across:</p>
+<ul>
+<li>Prerequisites (cluster, tools, RBAC, namespace)</li>
+<li>Operators (GitOps, AI, KServe, GPU, ODF)</li>
+<li>Storage (classes, PVCs, ODF, S3)</li>
+<li>Model Serving (InferenceServices, endpoints, pods)</li>
+<li>Coordination Engine (deployment, health, API)</li>
+<li>Monitoring (Prometheus, alerts, Grafana)</li>
+</ul>
+<h3 id="check-operator-status">Check Operator Status<a class="headerlink" href="#check-operator-status" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash"># List all installed operators
+oc get csv -n openshift-operators
+
+# Check a specific operator
+oc get csv -n openshift-operators | grep gpu-operator
+
+# View operator events
+oc get events -n openshift-operators --sort-by='.lastTimestamp' | tail -20</code></pre>
+<h3 id="upgrade-operators">Upgrade Operators<a class="headerlink" href="#upgrade-operators" title="Permanent link">&para;</a></h3>
+<p>ArgoCD manages operator subscriptions through the Helm chart. To upgrade an operator version:</p>
+<ol>
+<li>Update the version in <code>charts/hub/values.yaml</code> or <code>values-hub.yaml</code>.</li>
+<li>Push the change to your fork.</li>
+<li>ArgoCD detects the change and syncs the update.</li>
+</ol>
+<p><strong>Reference</strong>: <a href="../../adrs/019-validated-patterns-framework-adoption/">ADR-019: Validated Patterns Framework Adoption</a></p>
+<hr />
+<h2 id="monitoring-and-observability">Monitoring and Observability<a class="headerlink" href="#monitoring-and-observability" title="Permanent link">&para;</a></h2>
+<h3 id="prometheus-integration">Prometheus Integration<a class="headerlink" href="#prometheus-integration" title="Permanent link">&para;</a></h3>
+<p>The platform integrates with the built-in OpenShift Prometheus stack:</p>
+<ul>
+<li><strong>Prometheus URL</strong>: <code>https://prometheus-k8s.openshift-monitoring.svc:9091</code></li>
+<li><strong>Scrape interval</strong>: 30 seconds (configurable)</li>
+<li><strong>Retention</strong>: 30 days (configurable)</li>
+</ul>
+<p>Verify Prometheus connectivity:</p>
+<pre class="highlight"><code class="language-bash"># Check Prometheus pods
+oc get pods -n openshift-monitoring | grep prometheus
+
+# Test from within the cluster
+oc exec -n self-healing-platform deployment/self-healing-coordination-engine -- \
+  curl -sk https://prometheus-k8s.openshift-monitoring.svc:9091/api/v1/status/config</code></pre>
+<h3 id="service-monitors">Service Monitors<a class="headerlink" href="#service-monitors" title="Permanent link">&para;</a></h3>
+<p>The platform exposes metrics from these components:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Metrics Port</th>
+<th>Endpoint</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coordination Engine</td>
+<td>8080</td>
+<td><code>/metrics</code></td>
+</tr>
+<tr>
+<td>MCP Server</td>
+<td>8080</td>
+<td><code>/metrics</code></td>
+</tr>
+</tbody>
+</table>
+<p>Configure service monitors in <code>values-hub.yaml</code>:</p>
+<pre class="highlight"><code class="language-yaml">monitoring:
+  enabled: true
+  serviceMonitors:
+    - coordination-engine
+    - mcp-server
+    - self-healing-platform</code></pre>
+<h3 id="alerting-rules">Alerting Rules<a class="headerlink" href="#alerting-rules" title="Permanent link">&para;</a></h3>
+<p>The platform includes optional alerting rules:</p>
+<pre class="highlight"><code class="language-yaml">alerts:
+  enabled: true
+  cpuThrottleThreshold: 0.25
+  anomalyScoreThreshold: 0.8</code></pre>
+<p>When enabled, these PrometheusRules alert on:</p>
+<ul>
+<li>High CPU throttling across platform pods</li>
+<li>Elevated anomaly scores from the ML models</li>
+</ul>
+<h3 id="grafana-dashboards">Grafana Dashboards<a class="headerlink" href="#grafana-dashboards" title="Permanent link">&para;</a></h3>
+<p>The Helm chart deploys Grafana dashboards automatically. View them in the OpenShift console under <strong>Observe &gt; Dashboards</strong>.</p>
+<h3 id="check-platform-health">Check Platform Health<a class="headerlink" href="#check-platform-health" title="Permanent link">&para;</a></h3>
+<p>Quick health checks for all components:</p>
+<pre class="highlight"><code class="language-bash"># Coordination Engine health
+oc exec -n self-healing-platform deployment/self-healing-coordination-engine -- \
+  curl -s http://localhost:8080/health
+
+# MCP Server health (if enabled)
+oc exec -n self-healing-platform deployment/mcp-server -- \
+  curl -s http://localhost:8080/health
+
+# Model serving status
+oc get inferenceservices -n self-healing-platform
+
+# All platform pods
+oc get pods -n self-healing-platform</code></pre>
+<hr />
+<h2 id="scaling-and-resource-management">Scaling and Resource Management<a class="headerlink" href="#scaling-and-resource-management" title="Permanent link">&para;</a></h2>
+<h3 id="node-configuration">Node Configuration<a class="headerlink" href="#node-configuration" title="Permanent link">&para;</a></h3>
+<p>The platform supports dedicated node pools for different workloads:</p>
+<table>
+<thead>
+<tr>
+<th>Node Type</th>
+<th>Taint</th>
+<th>Workload</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Worker</td>
+<td>None</td>
+<td>General platform workloads</td>
+</tr>
+<tr>
+<td>GPU</td>
+<td><code>nvidia.com/gpu=True:NoSchedule</code></td>
+<td>ML model training</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td><code>node.ocs.openshift.io/storage=true:NoSchedule</code></td>
+<td>ODF storage daemons</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gpu-node-management">GPU Node Management<a class="headerlink" href="#gpu-node-management" title="Permanent link">&para;</a></h3>
+<p>On ROSA, manage GPU nodes through machine pools:</p>
+<pre class="highlight"><code class="language-bash"># Add GPU nodes
+rosa create machinepool --cluster=aiops-platform \
+  --name=gpu-pool --instance-type=g5.2xlarge --replicas=1
+
+# Scale GPU pool
+rosa edit machinepool --cluster=aiops-platform \
+  --name=gpu-pool --replicas=2
+
+# Remove GPU pool
+rosa delete machinepool --cluster=aiops-platform --name=gpu-pool</code></pre>
+<p>On IPI clusters, manage GPU nodes through MachineSets:</p>
+<pre class="highlight"><code class="language-bash"># Scale MachineSets
+oc scale machineset &lt;gpu-machineset-name&gt; --replicas=2 -n openshift-machine-api</code></pre>
+<h3 id="resource-requests-and-limits">Resource Requests and Limits<a class="headerlink" href="#resource-requests-and-limits" title="Permanent link">&para;</a></h3>
+<p>Default resource allocation for platform components:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>CPU Request</th>
+<th>Memory Request</th>
+<th>CPU Limit</th>
+<th>Memory Limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coordination Engine</td>
+<td>200m</td>
+<td>256Mi</td>
+<td>500m</td>
+<td>512Mi</td>
+</tr>
+<tr>
+<td>MCP Server</td>
+<td>100m</td>
+<td>128Mi</td>
+<td>500m</td>
+<td>256Mi</td>
+</tr>
+<tr>
+<td>Jupyter Workbench</td>
+<td>1</td>
+<td>4Gi</td>
+<td>4</td>
+<td>8Gi</td>
+</tr>
+<tr>
+<td>Anomaly Detector</td>
+<td>1</td>
+<td>1Gi</td>
+<td>4</td>
+<td>8Gi</td>
+</tr>
+<tr>
+<td>Predictive Analytics</td>
+<td>1</td>
+<td>2Gi</td>
+<td>2</td>
+<td>6Gi</td>
+</tr>
+</tbody>
+</table>
+<p>Override these values in <code>values-hub.yaml</code>:</p>
+<pre class="highlight"><code class="language-yaml">coordinationEngine:
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1"</code></pre>
+<h3 id="workbench-scaling">Workbench Scaling<a class="headerlink" href="#workbench-scaling" title="Permanent link">&para;</a></h3>
+<p>The Jupyter workbench is a StatefulSet with one replica. To adjust its resources:</p>
+<pre class="highlight"><code class="language-yaml">workbench:
+  resources:
+    requests:
+      cpu: 2
+      memory: 8Gi
+    limits:
+      cpu: 8
+      memory: 16Gi</code></pre>
+<hr />
+<h2 id="security-and-rbac">Security and RBAC<a class="headerlink" href="#security-and-rbac" title="Permanent link">&para;</a></h2>
+<h3 id="rbac-architecture">RBAC Architecture<a class="headerlink" href="#rbac-architecture" title="Permanent link">&para;</a></h3>
+<p>The platform uses a hybrid RBAC model (<a href="../../adrs/030-hybrid-management-model-namespaced-argocd/">ADR-030</a>):</p>
+<ul>
+<li><strong>Cluster-scoped resources</strong>: Deployed by Ansible prerequisites (not ArgoCD)</li>
+<li><strong>Namespace-scoped resources</strong>: Deployed by ArgoCD through Helm charts</li>
+</ul>
+<p>This approach works because namespaced ArgoCD cannot manage cluster-scoped resources.</p>
+<h3 id="service-accounts">Service Accounts<a class="headerlink" href="#service-accounts" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Service Account</th>
+<th>Namespace</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>self-healing-operator</code></td>
+<td>self-healing-platform</td>
+<td>Platform workloads</td>
+</tr>
+<tr>
+<td><code>pipeline</code></td>
+<td>self-healing-platform</td>
+<td>Tekton pipeline execution</td>
+</tr>
+<tr>
+<td><code>external-secrets-sa</code></td>
+<td>self-healing-platform</td>
+<td>External Secrets Operator</td>
+</tr>
+<tr>
+<td><code>hub-gitops-argocd-application-controller</code></td>
+<td>self-healing-platform-hub</td>
+<td>ArgoCD controller</td>
+</tr>
+</tbody>
+</table>
+<h3 id="deploy-prerequisites-rbac">Deploy Prerequisites (RBAC)<a class="headerlink" href="#deploy-prerequisites-rbac" title="Permanent link">&para;</a></h3>
+<p>Run the Ansible prerequisites to create cluster-scoped RBAC:</p>
+<pre class="highlight"><code class="language-bash">make operator-deploy-prereqs</code></pre>
+<p>This step creates:</p>
+<ul>
+<li>Namespaces (<code>self-healing-platform</code>, <code>self-healing-platform-hub</code>)</li>
+<li>ServiceAccounts, Roles, and ClusterRoles</li>
+<li>ClusterRoleBinding for ArgoCD controller (cluster-admin)</li>
+<li>Secrets for External Secrets Operator</li>
+</ul>
+<h3 id="network-policies">Network Policies<a class="headerlink" href="#network-policies" title="Permanent link">&para;</a></h3>
+<p>The platform enables network policies by default:</p>
+<pre class="highlight"><code class="language-yaml">security:
+  networkPolicies: true</code></pre>
+<h3 id="pod-security">Pod Security<a class="headerlink" href="#pod-security" title="Permanent link">&para;</a></h3>
+<p>All platform pods run with restricted security contexts:</p>
+<pre class="highlight"><code class="language-yaml">security:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 1000</code></pre>
+<h3 id="secrets-management">Secrets Management<a class="headerlink" href="#secrets-management" title="Permanent link">&para;</a></h3>
+<p>The platform uses the External Secrets Operator for automated secrets management.</p>
+<p><strong>Architecture</strong>:</p>
+<pre class="highlight"><code class="language-mermaid">graph LR
+    ESO[External Secrets Operator] --&gt;|Syncs| K8S[Kubernetes Secrets]
+    SS[SecretStore] --&gt;|Reads from| BACK[Backend]
+    ES[ExternalSecret CR] --&gt;|References| SS
+    ESO --&gt;|Watches| ES
+    subgraph Backends
+        BACK --&gt; K8S_BACK[Kubernetes Secrets]
+        BACK --&gt; VAULT[HashiCorp Vault]
+        BACK --&gt; AWS_SM[AWS Secrets Manager]
+    end</code></pre>
+<p>Configure the secrets backend in <code>values-hub.yaml</code>:</p>
+<pre class="highlight"><code class="language-yaml">secrets:
+  backend: external-secrets
+  externalSecrets:
+    enabled: true
+    secretStore:
+      name: kubernetes-secret-store
+      kind: SecretStore
+    refreshInterval: 1h</code></pre>
+<p>For details on creating source secrets for optional features, see the <a href="../../README.md">README Installation section</a>.</p>
+<p><strong>Reference</strong>: <a href="../../adrs/026-secrets-management-automation/">ADR-026: Secrets Management Automation</a></p>
+<hr />
+<h2 id="backup-and-disaster-recovery">Backup and Disaster Recovery<a class="headerlink" href="#backup-and-disaster-recovery" title="Permanent link">&para;</a></h2>
+<h3 id="what-to-back-up">What to Back Up<a class="headerlink" href="#what-to-back-up" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Location</th>
+<th>Backup Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Platform configuration</td>
+<td>Git repository (your fork)</td>
+<td>Git version control</td>
+</tr>
+<tr>
+<td>ML model artifacts</td>
+<td>S3 bucket</td>
+<td>AWS S3 versioning or bucket replication</td>
+</tr>
+<tr>
+<td>Cluster state</td>
+<td>etcd</td>
+<td>OpenShift etcd backup</td>
+</tr>
+<tr>
+<td>Persistent volumes</td>
+<td>PVCs</td>
+<td>CSI snapshot or Velero</td>
+</tr>
+<tr>
+<td>Secrets</td>
+<td>External Secrets backend</td>
+<td>Backend-native backup</td>
+</tr>
+</tbody>
+</table>
+<h3 id="git-based-recovery">Git-Based Recovery<a class="headerlink" href="#git-based-recovery" title="Permanent link">&para;</a></h3>
+<p>Because the platform uses GitOps, the Git repository is the source of truth for all configuration. To recover a deployment:</p>
+<ol>
+<li>Provision a new cluster (see <a href="#cluster-provisioning">Cluster Provisioning</a>).</li>
+<li>Clone your fork with the existing configuration.</li>
+<li>Run the standard deployment workflow:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">oc login &lt;new-cluster-api-url&gt;
+./pattern.sh make install</code></pre>
+<p>ArgoCD reconciles the cluster state to match the Git repository.</p>
+<h3 id="model-artifact-recovery">Model Artifact Recovery<a class="headerlink" href="#model-artifact-recovery" title="Permanent link">&para;</a></h3>
+<p>Model artifacts are stored in S3. Enable S3 versioning for recovery:</p>
+<pre class="highlight"><code class="language-bash">aws s3api put-bucket-versioning \
+  --bucket your-model-storage-bucket \
+  --versioning-configuration Status=Enabled</code></pre>
+<p>To restore a previous model version:</p>
+<pre class="highlight"><code class="language-bash">aws s3api list-object-versions --bucket your-bucket --prefix anomaly-detector/
+aws s3api get-object --bucket your-bucket --key anomaly-detector/model.pkl \
+  --version-id &lt;version-id&gt; /tmp/model.pkl</code></pre>
+<h3 id="etcd-backup">etcd Backup<a class="headerlink" href="#etcd-backup" title="Permanent link">&para;</a></h3>
+<p>Follow the standard OpenShift etcd backup procedure:</p>
+<pre class="highlight"><code class="language-bash"># SSH to a control plane node (IPI clusters)
+oc debug node/&lt;control-plane-node&gt;
+chroot /host
+/usr/local/bin/cluster-backup.sh /home/core/assets/backup</code></pre>
+<p>On ROSA, etcd backups are managed by AWS. Contact Red Hat support for recovery.</p>
+<h3 id="pvc-snapshots">PVC Snapshots<a class="headerlink" href="#pvc-snapshots" title="Permanent link">&para;</a></h3>
+<p>Use CSI volume snapshots for PVC-level backup:</p>
+<pre class="highlight"><code class="language-bash"># Create a VolumeSnapshot
+cat &lt;&lt;EOF | oc apply -f -
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: workbench-data-snapshot
+  namespace: self-healing-platform
+spec:
+  volumeSnapshotClassName: csi-aws-vsc
+  source:
+    persistentVolumeClaimName: self-healing-workbench-data
+EOF
+
+# Verify snapshot
+oc get volumesnapshot -n self-healing-platform</code></pre>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="operators-failing-with-toomanyoperatorgroups">Operators Failing with "TooManyOperatorGroups"<a class="headerlink" href="#operators-failing-with-toomanyoperatorgroups" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: Multiple operators fail in the <code>openshift-operators</code> namespace.</p>
+<p><strong>Fix</strong>:</p>
+<pre class="highlight"><code class="language-bash">oc delete operatorgroup jupyter-validator-operatorgroup -n openshift-operators
+# Wait 30-60 seconds for operators to reconcile
+oc get csv -n openshift-operators --watch</code></pre>
+<h3 id="argocd-application-not-syncing">ArgoCD Application Not Syncing<a class="headerlink" href="#argocd-application-not-syncing" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: Application shows <code>syncStatus: Unknown</code> or <code>ComparisonError</code>.</p>
+<p><strong>Fix</strong>:</p>
+<pre class="highlight"><code class="language-bash"># Verify ArgoCD controller has cluster-admin
+oc get clusterrolebinding | grep hub-gitops-argocd-application-controller
+
+# If missing, re-run prerequisites
+make operator-deploy-prereqs
+
+# Force refresh
+oc annotate application self-healing-platform -n self-healing-platform-hub \
+  argocd.argoproj.io/refresh=hard --overwrite</code></pre>
+<h3 id="rosa-machineset-scaling-fails">ROSA MachineSet Scaling Fails<a class="headerlink" href="#rosa-machineset-scaling-fails" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: <code>make configure-cluster</code> reports "No worker MachineSets found" on ROSA.</p>
+<p><strong>Cause</strong>: ROSA uses Machine Pools, not MachineSets.</p>
+<p><strong>Fix</strong>:</p>
+<pre class="highlight"><code class="language-bash"># The platform auto-detects ROSA and skips MachineSet scaling
+# If auto-detection fails, use rosa CLI directly:
+rosa create machinepool --cluster=&lt;name&gt; \
+  --name=workers --instance-type=m5.2xlarge --replicas=3</code></pre>
+<h3 id="storage-classes-not-found">Storage Classes Not Found<a class="headerlink" href="#storage-classes-not-found" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: PVCs remain in Pending state.</p>
+<p><strong>Fix</strong>:</p>
+<pre class="highlight"><code class="language-bash"># List available storage classes
+oc get storageclass
+
+# For SNO, verify gp3-csi exists
+oc get storageclass gp3-csi
+
+# For HA, verify CephFS is available
+oc get storageclass ocs-storagecluster-cephfs</code></pre>
+<p>For the full troubleshooting guide, see <a href="../../guides/TROUBLESHOOTING-GUIDE/">Troubleshooting Guide</a>.</p>
+<hr />
+<h2 id="glossary">Glossary<a class="headerlink" href="#glossary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ArgoCD</td>
+<td>GitOps continuous delivery tool for Kubernetes</td>
+</tr>
+<tr>
+<td>CSI</td>
+<td>Container Storage Interface, a standard for storage plugins</td>
+</tr>
+<tr>
+<td>ESO</td>
+<td>External Secrets Operator, syncs secrets from external backends</td>
+</tr>
+<tr>
+<td>HA</td>
+<td>HighlyAvailable cluster topology with 3+ nodes</td>
+</tr>
+<tr>
+<td>InferenceService</td>
+<td>KServe custom resource for deploying ML models</td>
+</tr>
+<tr>
+<td>KServe</td>
+<td>Kubernetes-native model serving framework</td>
+</tr>
+<tr>
+<td>MCG</td>
+<td>Multi-Cloud Gateway (NooBaa), provides S3-compatible object storage</td>
+</tr>
+<tr>
+<td>MCP</td>
+<td>Model Context Protocol for OpenShift Lightspeed integration</td>
+</tr>
+<tr>
+<td>ODF</td>
+<td>OpenShift Data Foundation, enterprise storage solution</td>
+</tr>
+<tr>
+<td>ROSA</td>
+<td>Red Hat OpenShift Service on AWS</td>
+</tr>
+<tr>
+<td>RHOAI</td>
+<td>Red Hat OpenShift AI, the ML platform</td>
+</tr>
+<tr>
+<td>SNO</td>
+<td>Single Node OpenShift, all roles on one node</td>
+</tr>
+<tr>
+<td>VP</td>
+<td>Validated Patterns, Red Hat framework for GitOps deployments</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2954 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Production-ready AIOps platform for OpenShift with ML-powered anomaly detection">
+      
+      
+        <meta name="author" content="KubeHeal Team">
+      
+      
+        <link rel="canonical" href="https://kubeheal.github.io/openshift-aiops-platform/runbooks/upgrade-and-maintenance/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/branding/png/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Runbook: Platform Upgrade and Maintenance - OpenShift AIOps Self-Healing Platform</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#runbook-platform-upgrade-and-maintenance" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-header__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  <img src="../../assets/branding/svg/kubeheal-icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenShift AIOps Self-Healing Platform
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Runbook: Platform Upgrade and Maintenance
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../quick-start.md" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../how-to/" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../explanation/" class="md-tabs__link">
+          
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../adrs/" class="md-tabs__link">
+          
+  
+  ADRs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CONTRIBUTING.md" class="md-tabs__link">
+          
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenShift AIOps Self-Healing Platform" class="md-nav__button md-logo" aria-label="OpenShift AIOps Self-Healing Platform" data-md-component="logo">
+      
+  <img src="../../assets/branding/svg/kubeheal-icon.svg" alt="logo">
+
+    </a>
+    OpenShift AIOps Self-Healing Platform
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/KubeHeal/openshift-aiops-platform" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openshift-aiops-platform
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quick-start.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/complete-deployment-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/quick-deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fresh Cluster Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/deploy-first-ml-model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy Your First ML Model
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/build-first-self-healing-automation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build Self-Healing Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/workbench-development-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workbench Development
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/complete-deployment-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/quick-deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/configure-values-files/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configure Values Files
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-on-sno/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy on SNO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/access-workbench/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Workbench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-mcp-server-lightspeed/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy MCP Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api-documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/troubleshooting-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/operator-versions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operator Versions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/architecture-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/ai-agent-development-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Agent Development Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    ADRs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            ADRs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Index
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADR-CROSS-REFERENCE-MATRIX.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cross-Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adrs/IMPLEMENTATION-TRACKER/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Implementation Tracker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/FRESH-CLUSTER-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fresh Cluster Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/TROUBLESHOOTING-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/VALIDATED-PATTERNS-SUBMISSION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Validated Patterns Submission
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/JUNIOR-DEVELOPER-DEPLOYMENT-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Junior Developer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/CI-CD-GITHUB-ACTIONS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Reference
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope-and-use-case" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scope and Use Case
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scope and Use Case">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-this-runbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      When to Use This Runbook
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expected-outcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      Expected Outcome
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-does-not-cover" class="md-nav__link">
+    <span class="md-ellipsis">
+      What This Does NOT Cover
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-access-and-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required Access and Permissions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required Tools
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#communication-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Communication Requirements
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procedure-1-openshift-version-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      Procedure 1: OpenShift Version Upgrade
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Procedure 1: OpenShift Version Upgrade">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-upgrade-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-Upgrade Assessment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pre-Upgrade Assessment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-check-current-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Check Current Version
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-review-available-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Review Available Updates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-run-automated-upgrade-script-dry-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Run Automated Upgrade Script (Dry Run)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-verify-pre-flight-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Verify Pre-Flight Checks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execute-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      Execute Upgrade
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Execute Upgrade">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-5-run-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 5: Run Upgrade
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-wait-for-completion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 6: Wait for Completion
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-upgrade-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Post-Upgrade Validation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Post-Upgrade Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-7-verify-cluster-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 7: Verify Cluster Health
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-verify-platform-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 8: Verify Platform Health
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-9-update-repository-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 9: Update Repository Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procedure-2-operator-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      Procedure 2: Operator Upgrade
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Procedure 2: Operator Upgrade">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported Operators
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-check-current-operator-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Check Current Operator Versions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-check-available-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Check Available Updates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-upgrade-rhoai-automated" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Upgrade RHOAI (Automated)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-approve-installplan-if-manual-approval" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Approve InstallPlan (if manual approval)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-wait-for-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 5: Wait for Upgrade
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-verify-operator-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 6: Verify Operator Health
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procedure-3-helm-chart-update-and-argocd-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      Procedure 3: Helm Chart Update and ArgoCD Sync
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Procedure 3: Helm Chart Update and ArgoCD Sync">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-review-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Review Changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-validate-helm-template-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Validate Helm Template Locally
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-commit-and-push-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Commit and Push Changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-trigger-argocd-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Trigger ArgoCD Sync
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-monitor-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 5: Monitor Sync
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procedure-4-certificate-renewal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Procedure 4: Certificate Renewal
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Procedure 4: Certificate Renewal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-check-certificate-expiration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Check Certificate Expiration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-check-api-server-certificate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Check API Server Certificate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-renew-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Renew Certificates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-verify-renewal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Verify Renewal
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procedure-5-backup-and-restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      Procedure 5: Backup and Restore
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Procedure 5: Backup and Restore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-to-back-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      What to Back Up
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backup-model-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backup Model Artifacts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backup Model Artifacts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-pvc" class="md-nav__link">
+    <span class="md-ellipsis">
+      From PVC
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-s3-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      From S3 (AWS)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backup-workbench-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backup Workbench Data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-model-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Restore Model Artifacts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-from-full-platform-redeployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Restore from Full Platform Redeployment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procedure-6-periodic-maintenance-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Procedure 6: Periodic Maintenance Tasks
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Procedure 6: Periodic Maintenance Tasks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#weekly-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Weekly Tasks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monthly-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monthly Tasks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quarterly-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quarterly Tasks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rollback-procedure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rollback Procedure
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rollback Procedure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#operator-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operator Rollback
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helm-chart-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helm Chart Rollback
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-version-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cluster Version Rollback
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-1-upgrade-stuck-in-progressing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 1: Upgrade Stuck in Progressing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-2-operator-upgrade-breaks-inferenceservices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue 2: Operator Upgrade Breaks InferenceServices
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#escalation-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      Escalation Path
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Appendix
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#related-runbooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Runbooks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reference Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version History
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform/edit/main/docs/runbooks/upgrade-and-maintenance.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="runbook-platform-upgrade-and-maintenance">Runbook: Platform Upgrade and Maintenance<a class="headerlink" href="#runbook-platform-upgrade-and-maintenance" title="Permanent link">&para;</a></h1>
+<p><strong>Owner</strong>: Platform Engineering Team
+<strong>Risk Level</strong>: High
+<strong>Last Updated</strong>: 2026-09-29
+<strong>Last Tested</strong>: 2026-09-29
+<strong>Approved By</strong>: Platform Architect
+<strong>Version</strong>: 1.0.0</p>
+<hr />
+<h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Execution Time</strong></td>
+<td>30-120 minutes (varies by upgrade scope)</td>
+</tr>
+<tr>
+<td><strong>Impact Window</strong></td>
+<td>Rolling upgrades: minimal downtime. Major versions: 5-15 min window.</td>
+</tr>
+<tr>
+<td><strong>Rollback Time</strong></td>
+<td>~30 minutes for operator rollback. Cluster rollback is not supported.</td>
+</tr>
+<tr>
+<td><strong>Prerequisites</strong></td>
+<td>Cluster-admin access, tested upgrade path, current backups</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="scope-and-use-case">Scope and Use Case<a class="headerlink" href="#scope-and-use-case" title="Permanent link">&para;</a></h2>
+<h3 id="when-to-use-this-runbook">When to Use This Runbook<a class="headerlink" href="#when-to-use-this-runbook" title="Permanent link">&para;</a></h3>
+<p>Use this runbook for planned maintenance activities: OpenShift version upgrades, operator version upgrades, Helm chart updates, certificate renewal, and backup/restore operations.</p>
+<p><strong>Triggers</strong>:
+- Scheduled maintenance window
+- New OpenShift minor or patch version available
+- Operator update required (security fix, feature addition)
+- Certificate expiration approaching</p>
+<h3 id="expected-outcome">Expected Outcome<a class="headerlink" href="#expected-outcome" title="Permanent link">&para;</a></h3>
+<p>Platform components upgraded to target versions with all functionality validated and zero or minimal downtime.</p>
+<h3 id="what-this-does-not-cover">What This Does NOT Cover<a class="headerlink" href="#what-this-does-not-cover" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Emergency incident response (see <a href="../incident-response/">incident-response.md</a>)</li>
+<li>Initial platform deployment (see <a href="../platform-deployment/">platform-deployment.md</a>)</li>
+<li>Model retraining procedures (see <a href="../model-training-operations/">model-training-operations.md</a>)</li>
+</ul>
+<hr />
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<h3 id="required-access-and-permissions">Required Access and Permissions<a class="headerlink" href="#required-access-and-permissions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] <code>oc</code> CLI logged in with cluster-admin</li>
+<li>[ ] For ROSA: <code>rosa</code> CLI logged in</li>
+<li>[ ] Repository write access to push updated configurations</li>
+<li>[ ] Maintenance window approved</li>
+</ul>
+<h3 id="required-tools">Required Tools<a class="headerlink" href="#required-tools" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] <code>oc</code> 4.18+ (OpenShift CLI)</li>
+<li>[ ] <code>helm</code> 3.16.4+</li>
+<li>[ ] <code>yq</code> 4.44.6+</li>
+<li>[ ] <code>jq</code> 1.6+</li>
+<li>[ ] <code>git</code> 2.40+</li>
+</ul>
+<h3 id="communication-requirements">Communication Requirements<a class="headerlink" href="#communication-requirements" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Notify stakeholders of the maintenance window</li>
+<li>[ ] Post in #aiops-platform Slack channel</li>
+<li>[ ] Create a change management ticket</li>
+</ul>
+<hr />
+<h2 id="procedure-1-openshift-version-upgrade">Procedure 1: OpenShift Version Upgrade<a class="headerlink" href="#procedure-1-openshift-version-upgrade" title="Permanent link">&para;</a></h2>
+<p><strong>Estimated Time</strong>: 30-90 minutes per minor version hop</p>
+<h3 id="pre-upgrade-assessment">Pre-Upgrade Assessment<a class="headerlink" href="#pre-upgrade-assessment" title="Permanent link">&para;</a></h3>
+<h4 id="step-1-check-current-version">Step 1: Check Current Version<a class="headerlink" href="#step-1-check-current-version" title="Permanent link">&para;</a></h4>
+<pre class="highlight"><code class="language-bash">oc get clusterversion
+oc version</code></pre>
+<h4 id="step-2-review-available-updates">Step 2: Review Available Updates<a class="headerlink" href="#step-2-review-available-updates" title="Permanent link">&para;</a></h4>
+<pre class="highlight"><code class="language-bash">oc adm upgrade</code></pre>
+<h4 id="step-3-run-automated-upgrade-script-dry-run">Step 3: Run Automated Upgrade Script (Dry Run)<a class="headerlink" href="#step-3-run-automated-upgrade-script-dry-run" title="Permanent link">&para;</a></h4>
+<p>The platform includes an automated upgrade script with safety checks and multi-hop support:</p>
+<pre class="highlight"><code class="language-bash">./scripts/upgrade-cluster.sh --target-ocp 4.22 --dry-run</code></pre>
+<p>Review the output. The script will display:
+- Current version and target version
+- Required upgrade hops (if multi-hop)
+- Pre-flight health check results
+- Commands that would be executed</p>
+<h4 id="step-4-verify-pre-flight-checks">Step 4: Verify Pre-Flight Checks<a class="headerlink" href="#step-4-verify-pre-flight-checks" title="Permanent link">&para;</a></h4>
+<pre class="highlight"><code class="language-bash">oc get clusteroperators | grep -v "True.*False.*False"
+oc get nodes
+oc adm top nodes</code></pre>
+<p>All cluster operators should show <code>Available=True</code>, <code>Progressing=False</code>, <code>Degraded=False</code>. All nodes should be <code>Ready</code>.</p>
+<h3 id="execute-upgrade">Execute Upgrade<a class="headerlink" href="#execute-upgrade" title="Permanent link">&para;</a></h3>
+<h4 id="step-5-run-upgrade">Step 5: Run Upgrade<a class="headerlink" href="#step-5-run-upgrade" title="Permanent link">&para;</a></h4>
+<pre class="highlight"><code class="language-bash">./scripts/upgrade-cluster.sh --target-ocp 4.22 --execute</code></pre>
+<p>The script handles:
+- Multi-hop upgrades (4.20 to 4.21 to 4.22)
+- Health gates between hops
+- SNO-specific retry logic for API unavailability during node reboot
+- Repository configuration file updates</p>
+<p>For manual control, upgrade one hop at a time:</p>
+<pre class="highlight"><code class="language-bash">oc adm upgrade --to=4.21.latest</code></pre>
+<p>Monitor progress:</p>
+<pre class="highlight"><code class="language-bash">oc get clusterversion --watch</code></pre>
+<h4 id="step-6-wait-for-completion">Step 6: Wait for Completion<a class="headerlink" href="#step-6-wait-for-completion" title="Permanent link">&para;</a></h4>
+<pre class="highlight"><code class="language-bash">oc wait --for=condition=Available clusterversion/version --timeout=90m</code></pre>
+<p>For SNO clusters, the node will reboot. The API may be unavailable for 5-15 minutes.</p>
+<h3 id="post-upgrade-validation">Post-Upgrade Validation<a class="headerlink" href="#post-upgrade-validation" title="Permanent link">&para;</a></h3>
+<h4 id="step-7-verify-cluster-health">Step 7: Verify Cluster Health<a class="headerlink" href="#step-7-verify-cluster-health" title="Permanent link">&para;</a></h4>
+<pre class="highlight"><code class="language-bash">oc get clusterversion
+oc get clusteroperators
+oc get nodes</code></pre>
+<p>All operators should return to <code>Available=True</code>.</p>
+<h4 id="step-8-verify-platform-health">Step 8: Verify Platform Health<a class="headerlink" href="#step-8-verify-platform-health" title="Permanent link">&para;</a></h4>
+<pre class="highlight"><code class="language-bash">make argo-healthcheck
+oc get pods -n self-healing-platform
+oc get inferenceservices -n self-healing-platform</code></pre>
+<h4 id="step-9-update-repository-configuration">Step 9: Update Repository Configuration<a class="headerlink" href="#step-9-update-repository-configuration" title="Permanent link">&para;</a></h4>
+<p>If not using <code>--execute</code> with the upgrade script, update repository files manually:</p>
+<pre class="highlight"><code class="language-bash">yq -i '.cluster.version = "4.22"' charts/hub/values.yaml
+git add charts/hub/values.yaml
+git commit -s -m "chore: update cluster version to 4.22"
+git push origin main</code></pre>
+<hr />
+<h2 id="procedure-2-operator-upgrade">Procedure 2: Operator Upgrade<a class="headerlink" href="#procedure-2-operator-upgrade" title="Permanent link">&para;</a></h2>
+<p><strong>Estimated Time</strong>: 10-30 minutes per operator</p>
+<h3 id="supported-operators">Supported Operators<a class="headerlink" href="#supported-operators" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Current Channel</th>
+<th>Update Strategy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Red Hat OpenShift AI</td>
+<td>stable-2.22</td>
+<td>Automatic (OLM)</td>
+</tr>
+<tr>
+<td>GPU Operator</td>
+<td>v24.9</td>
+<td>Automatic (OLM)</td>
+</tr>
+<tr>
+<td>OpenShift Pipelines</td>
+<td>latest</td>
+<td>Automatic (OLM)</td>
+</tr>
+<tr>
+<td>OpenShift GitOps</td>
+<td>latest</td>
+<td>Automatic (OLM)</td>
+</tr>
+<tr>
+<td>External Secrets Operator</td>
+<td>stable</td>
+<td>Automatic (OLM)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-1-check-current-operator-versions">Step 1: Check Current Operator Versions<a class="headerlink" href="#step-1-check-current-operator-versions" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc get csv -n openshift-operators -o custom-columns=NAME:.metadata.name,VERSION:.spec.version,PHASE:.status.phase</code></pre>
+<h3 id="step-2-check-available-updates">Step 2: Check Available Updates<a class="headerlink" href="#step-2-check-available-updates" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc get subscriptions -n openshift-operators -o custom-columns=NAME:.metadata.name,CHANNEL:.spec.channel,APPROVAL:.spec.installPlanApproval</code></pre>
+<h3 id="step-3-upgrade-rhoai-automated">Step 3: Upgrade RHOAI (Automated)<a class="headerlink" href="#step-3-upgrade-rhoai-automated" title="Permanent link">&para;</a></h3>
+<p>The upgrade script supports RHOAI upgrades:</p>
+<pre class="highlight"><code class="language-bash">./scripts/upgrade-cluster.sh --skip-ocp --target-rhoai stable-2.23 --execute</code></pre>
+<p>Or manually update the subscription channel:</p>
+<pre class="highlight"><code class="language-bash">oc patch subscription rhods-operator -n openshift-operators \
+  --type merge -p '{"spec":{"channel":"stable-2.23"}}'</code></pre>
+<h3 id="step-4-approve-installplan-if-manual-approval">Step 4: Approve InstallPlan (if manual approval)<a class="headerlink" href="#step-4-approve-installplan-if-manual-approval" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc get installplan -n openshift-operators
+oc patch installplan &lt;NAME&gt; -n openshift-operators \
+  --type merge -p '{"spec":{"approved":true}}'</code></pre>
+<h3 id="step-5-wait-for-upgrade">Step 5: Wait for Upgrade<a class="headerlink" href="#step-5-wait-for-upgrade" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc get csv -n openshift-operators --watch</code></pre>
+<p>Wait for the new CSV to reach <code>Succeeded</code> phase.</p>
+<h3 id="step-6-verify-operator-health">Step 6: Verify Operator Health<a class="headerlink" href="#step-6-verify-operator-health" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc get csv -n openshift-operators -o custom-columns=NAME:.metadata.name,PHASE:.status.phase | grep -v Succeeded</code></pre>
+<p>This command should return no results (all operators in <code>Succeeded</code> phase).</p>
+<blockquote>
+<p><strong>WARNING</strong>: After upgrading OpenShift AI, KServe InferenceServices may need to be restarted. Monitor model serving pods for 10 minutes after upgrade.</p>
+</blockquote>
+<hr />
+<h2 id="procedure-3-helm-chart-update-and-argocd-sync">Procedure 3: Helm Chart Update and ArgoCD Sync<a class="headerlink" href="#procedure-3-helm-chart-update-and-argocd-sync" title="Permanent link">&para;</a></h2>
+<p><strong>Estimated Time</strong>: 10-15 minutes</p>
+<h3 id="step-1-review-changes">Step 1: Review Changes<a class="headerlink" href="#step-1-review-changes" title="Permanent link">&para;</a></h3>
+<p>Before updating chart values, review the diff:</p>
+<pre class="highlight"><code class="language-bash">git diff charts/hub/values.yaml
+git diff charts/hub/templates/</code></pre>
+<h3 id="step-2-validate-helm-template-locally">Step 2: Validate Helm Template Locally<a class="headerlink" href="#step-2-validate-helm-template-locally" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">helm template test charts/hub -f values-global.yaml -f values-hub.yaml &gt; /dev/null</code></pre>
+<p>If this command fails, fix template errors before proceeding.</p>
+<h3 id="step-3-commit-and-push-changes">Step 3: Commit and Push Changes<a class="headerlink" href="#step-3-commit-and-push-changes" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">git add charts/hub/
+git commit -s -m "chore(helm): update chart values for &lt;reason&gt;"
+git push origin main</code></pre>
+<h3 id="step-4-trigger-argocd-sync">Step 4: Trigger ArgoCD Sync<a class="headerlink" href="#step-4-trigger-argocd-sync" title="Permanent link">&para;</a></h3>
+<p>ArgoCD will auto-sync if configured. To force an immediate sync:</p>
+<pre class="highlight"><code class="language-bash">oc annotate application self-healing-platform -n self-healing-platform-hub \
+  argocd.argoproj.io/refresh=hard --overwrite</code></pre>
+<h3 id="step-5-monitor-sync">Step 5: Monitor Sync<a class="headerlink" href="#step-5-monitor-sync" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">watch -n 5 'oc get application self-healing-platform -n self-healing-platform-hub \
+  -o jsonpath="{.status.sync.status} - {.status.health.status}"'</code></pre>
+<p><strong>Success criteria</strong>: <code>Synced - Healthy</code>.</p>
+<hr />
+<h2 id="procedure-4-certificate-renewal">Procedure 4: Certificate Renewal<a class="headerlink" href="#procedure-4-certificate-renewal" title="Permanent link">&para;</a></h2>
+<p><strong>Estimated Time</strong>: 10-20 minutes</p>
+<h3 id="step-1-check-certificate-expiration">Step 1: Check Certificate Expiration<a class="headerlink" href="#step-1-check-certificate-expiration" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc get secrets -n openshift-ingress -o json | \
+  jq -r '.items[] | select(.type=="kubernetes.io/tls") | .metadata.name'</code></pre>
+<p>For each TLS secret:</p>
+<pre class="highlight"><code class="language-bash">oc get secret &lt;SECRET_NAME&gt; -n openshift-ingress -o jsonpath='{.data.tls\.crt}' | \
+  base64 -d | openssl x509 -noout -dates</code></pre>
+<h3 id="step-2-check-api-server-certificate">Step 2: Check API Server Certificate<a class="headerlink" href="#step-2-check-api-server-certificate" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">echo | openssl s_client -connect api.$(oc get dns cluster -o jsonpath='{.spec.baseDomain}'):6443 2&gt;/dev/null | \
+  openssl x509 -noout -dates</code></pre>
+<h3 id="step-3-renew-certificates">Step 3: Renew Certificates<a class="headerlink" href="#step-3-renew-certificates" title="Permanent link">&para;</a></h3>
+<p>OpenShift manages most certificates automatically. For custom certificates:</p>
+<pre class="highlight"><code class="language-bash">oc create secret tls &lt;SECRET_NAME&gt; \
+  --cert=new-cert.pem \
+  --key=new-key.pem \
+  -n &lt;NAMESPACE&gt; \
+  --dry-run=client -o yaml | oc apply -f -</code></pre>
+<h3 id="step-4-verify-renewal">Step 4: Verify Renewal<a class="headerlink" href="#step-4-verify-renewal" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc get secret &lt;SECRET_NAME&gt; -n &lt;NAMESPACE&gt; -o jsonpath='{.data.tls\.crt}' | \
+  base64 -d | openssl x509 -noout -dates</code></pre>
+<hr />
+<h2 id="procedure-5-backup-and-restore">Procedure 5: Backup and Restore<a class="headerlink" href="#procedure-5-backup-and-restore" title="Permanent link">&para;</a></h2>
+<p><strong>Estimated Time</strong>: 15-45 minutes</p>
+<h3 id="what-to-back-up">What to Back Up<a class="headerlink" href="#what-to-back-up" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Location</th>
+<th>Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Platform configuration</td>
+<td>Git repository</td>
+<td>Git push (already backed up)</td>
+</tr>
+<tr>
+<td>Values files</td>
+<td>Local filesystem</td>
+<td><code>cp values-*.yaml backup/</code></td>
+</tr>
+<tr>
+<td>Model artifacts</td>
+<td>S3/NooBaa bucket</td>
+<td>S3 copy or PVC snapshot</td>
+</tr>
+<tr>
+<td>Jupyter notebooks</td>
+<td>PVC: workbench-data</td>
+<td>PVC snapshot</td>
+</tr>
+<tr>
+<td>Secrets</td>
+<td>Kubernetes secrets</td>
+<td>ExternalSecret backend</td>
+</tr>
+</tbody>
+</table>
+<h3 id="backup-model-artifacts">Backup Model Artifacts<a class="headerlink" href="#backup-model-artifacts" title="Permanent link">&para;</a></h3>
+<h4 id="from-pvc">From PVC<a class="headerlink" href="#from-pvc" title="Permanent link">&para;</a></h4>
+<pre class="highlight"><code class="language-bash">oc exec -it self-healing-workbench-0 -n self-healing-platform -- \
+  tar czf /tmp/models-backup.tar.gz /opt/app-root/src/models/
+
+oc cp self-healing-platform/self-healing-workbench-0:/tmp/models-backup.tar.gz \
+  ./models-backup-$(date +%Y%m%d).tar.gz</code></pre>
+<h4 id="from-s3-aws">From S3 (AWS)<a class="headerlink" href="#from-s3-aws" title="Permanent link">&para;</a></h4>
+<pre class="highlight"><code class="language-bash">aws s3 sync s3://&lt;BUCKET_NAME&gt;/models/ ./backup/models/ --region us-east-1</code></pre>
+<h3 id="backup-workbench-data">Backup Workbench Data<a class="headerlink" href="#backup-workbench-data" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc exec -it self-healing-workbench-0 -n self-healing-platform -- \
+  tar czf /tmp/workbench-backup.tar.gz /opt/app-root/src/data/
+
+oc cp self-healing-platform/self-healing-workbench-0:/tmp/workbench-backup.tar.gz \
+  ./workbench-backup-$(date +%Y%m%d).tar.gz</code></pre>
+<h3 id="restore-model-artifacts">Restore Model Artifacts<a class="headerlink" href="#restore-model-artifacts" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">oc cp ./models-backup-YYYYMMDD.tar.gz \
+  self-healing-platform/self-healing-workbench-0:/tmp/models-backup.tar.gz
+
+oc exec -it self-healing-workbench-0 -n self-healing-platform -- \
+  tar xzf /tmp/models-backup.tar.gz -C /</code></pre>
+<p>Restart InferenceServices to pick up restored models:</p>
+<pre class="highlight"><code class="language-bash">oc rollout restart deployment -n self-healing-platform \
+  -l serving.kserve.io/inferenceservice</code></pre>
+<h3 id="restore-from-full-platform-redeployment">Restore from Full Platform Redeployment<a class="headerlink" href="#restore-from-full-platform-redeployment" title="Permanent link">&para;</a></h3>
+<p>If the platform must be rebuilt from scratch:</p>
+<ol>
+<li>Follow the <a href="../platform-deployment/">Platform Deployment</a> runbook.</li>
+<li>Restore model artifacts using the procedure above.</li>
+<li>Retrain models if no backup is available:</li>
+</ol>
+<pre class="highlight"><code class="language-bash">./scripts/trigger-model-training.sh anomaly-detector 168 prometheus
+./scripts/trigger-model-training.sh predictive-analytics 720 prometheus</code></pre>
+<hr />
+<h2 id="procedure-6-periodic-maintenance-tasks">Procedure 6: Periodic Maintenance Tasks<a class="headerlink" href="#procedure-6-periodic-maintenance-tasks" title="Permanent link">&para;</a></h2>
+<h3 id="weekly-tasks">Weekly Tasks<a class="headerlink" href="#weekly-tasks" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Review model training pipeline results:</li>
+</ul>
+<pre class="highlight"><code class="language-bash">./scripts/check-training-status.sh</code></pre>
+<ul>
+<li>[ ] Check for failed CronJobs:</li>
+</ul>
+<pre class="highlight"><code class="language-bash">oc get cronjobs -n self-healing-platform -o custom-columns=NAME:.metadata.name,LAST:.status.lastScheduleTime,ACTIVE:.status.active</code></pre>
+<h3 id="monthly-tasks">Monthly Tasks<a class="headerlink" href="#monthly-tasks" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Review Prometheus storage utilization:</li>
+</ul>
+<pre class="highlight"><code class="language-bash">oc exec -n openshift-monitoring prometheus-k8s-0 -- \
+  df -h /prometheus</code></pre>
+<ul>
+<li>[ ] Check PVC utilization:</li>
+</ul>
+<pre class="highlight"><code class="language-bash">oc get pvc -n self-healing-platform -o custom-columns=NAME:.metadata.name,CAPACITY:.status.capacity.storage</code></pre>
+<ul>
+<li>[ ] Review and clean up completed PipelineRuns:</li>
+</ul>
+<pre class="highlight"><code class="language-bash">tkn pipelinerun list -n self-healing-platform --limit 50
+tkn pipelinerun delete -n self-healing-platform --keep 10</code></pre>
+<h3 id="quarterly-tasks">Quarterly Tasks<a class="headerlink" href="#quarterly-tasks" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Run the full Tekton validation pipeline:</li>
+</ul>
+<pre class="highlight"><code class="language-bash">tkn pipeline start deployment-validation-pipeline --showlog -n self-healing-platform</code></pre>
+<ul>
+<li>[ ] Review and update operator channels for new versions</li>
+<li>[ ] Test backup and restore procedures</li>
+<li>[ ] Review and update this runbook</li>
+</ul>
+<hr />
+<h2 id="rollback-procedure">Rollback Procedure<a class="headerlink" href="#rollback-procedure" title="Permanent link">&para;</a></h2>
+<h3 id="operator-rollback">Operator Rollback<a class="headerlink" href="#operator-rollback" title="Permanent link">&para;</a></h3>
+<p>OpenShift operators can be rolled back by switching to a previous channel or version:</p>
+<pre class="highlight"><code class="language-bash">oc patch subscription rhods-operator -n openshift-operators \
+  --type merge -p '{"spec":{"channel":"stable-2.22"}}'</code></pre>
+<blockquote>
+<p><strong>WARNING</strong>: Operator rollbacks may leave CRDs in an inconsistent state. Test in a non-production environment first.</p>
+</blockquote>
+<h3 id="helm-chart-rollback">Helm Chart Rollback<a class="headerlink" href="#helm-chart-rollback" title="Permanent link">&para;</a></h3>
+<p>Revert the Git commit and trigger ArgoCD sync:</p>
+<pre class="highlight"><code class="language-bash">git revert HEAD
+git push origin main
+oc annotate application self-healing-platform -n self-healing-platform-hub \
+  argocd.argoproj.io/refresh=hard --overwrite</code></pre>
+<h3 id="cluster-version-rollback">Cluster Version Rollback<a class="headerlink" href="#cluster-version-rollback" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>WARNING</strong>: OpenShift cluster version rollbacks are NOT supported. Plan upgrades carefully and test in staging first.</p>
+</blockquote>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="issue-1-upgrade-stuck-in-progressing">Issue 1: Upgrade Stuck in Progressing<a class="headerlink" href="#issue-1-upgrade-stuck-in-progressing" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: <code>oc get clusterversion</code> shows <code>Progressing=True</code> for more than 60 minutes.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre class="highlight"><code class="language-bash">oc get clusterversion -o jsonpath='{.items[0].status.conditions}' | jq
+oc get clusteroperators | grep -v "True.*False.*False"</code></pre>
+<p><strong>Solution</strong>: Identify the degraded operator and check its logs. For SNO, the API may be unreachable during node reboot. Wait up to 30 minutes.</p>
+<h3 id="issue-2-operator-upgrade-breaks-inferenceservices">Issue 2: Operator Upgrade Breaks InferenceServices<a class="headerlink" href="#issue-2-operator-upgrade-breaks-inferenceservices" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: InferenceServices become <code>NotReady</code> after KServe/RHOAI upgrade.</p>
+<p><strong>Solution</strong>:</p>
+<pre class="highlight"><code class="language-bash">oc rollout restart deployment -n self-healing-platform \
+  -l serving.kserve.io/inferenceservice</code></pre>
+<p>If predictor pods fail to start with new runtime version, check runtime compatibility:</p>
+<pre class="highlight"><code class="language-bash">oc get servingruntime -n self-healing-platform -o yaml</code></pre>
+<hr />
+<h2 id="escalation-path">Escalation Path<a class="headerlink" href="#escalation-path" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>First Contact</th>
+<th>Response Time</th>
+<th>Next Escalation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P1 (Critical)</strong></td>
+<td>On-call engineer</td>
+<td>Immediate</td>
+<td>Engineering Manager (15 min)</td>
+</tr>
+<tr>
+<td><strong>P2 (High)</strong></td>
+<td>Team Slack #aiops-platform</td>
+<td>30 minutes</td>
+<td>Team Lead (1 hour)</td>
+</tr>
+<tr>
+<td><strong>P3 (Medium)</strong></td>
+<td>Team Slack #aiops-platform</td>
+<td>2 hours</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix">Appendix<a class="headerlink" href="#appendix" title="Permanent link">&para;</a></h2>
+<h3 id="related-runbooks">Related Runbooks<a class="headerlink" href="#related-runbooks" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../platform-deployment/">Platform Deployment</a></li>
+<li><a href="../incident-response/">Incident Response</a></li>
+<li><a href="../model-training-operations/">Model Training Operations</a></li>
+<li><a href="../monitoring-and-alerting/">Monitoring and Alerting</a></li>
+</ul>
+<h3 id="reference-documentation">Reference Documentation<a class="headerlink" href="#reference-documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Upgrade script: <code>scripts/upgrade-cluster.sh</code></li>
+<li>Cluster configuration script: <code>scripts/configure-cluster-infrastructure.sh</code></li>
+<li><a href="../../adrs/055-openshift-420-multi-cluster-topology-support/">ADR-055: Multi-Cluster Topology Support</a></li>
+<li><a href="../../adrs/062-rosa-primary-deployment-target/">ADR-062: ROSA as Primary Deployment Target</a></li>
+</ul>
+<h3 id="version-history">Version History<a class="headerlink" href="#version-history" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Author</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.0.0</td>
+<td>2026-09-29</td>
+<td>Platform Engineering</td>
+<td>Initial version</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Last Reviewed</strong>: 2026-09-29
+<strong>Next Review</strong>: 2026-12-29
+<strong>Feedback</strong>: Report issues at https://github.com/KubeHeal/openshift-aiops-platform/issues</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/KubeHeal/openshift-aiops-platform" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>
