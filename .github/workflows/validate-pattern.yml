@@ -262,6 +262,10 @@ jobs:
           sed -i "s|https://github.com/KubeHeal/openshift-aiops-platform.git|${REPO_URL}|g" values-global.yaml
           sed -i "s|https://gitea-with-admin-gitea.*|${REPO_URL}\"|g" values-hub.yaml
 
+          # Skip VP framework's Vault post-install check — this pattern uses ESO with
+          # Kubernetes backend, not the VP secrets pipeline
+          yq -i '.global.secretStore.backend = "none"' values-global.yaml
+
           echo "repoURL set to: ${REPO_URL}"
           echo "Installing pattern..."
           ./pattern.sh make install
@@ -269,6 +273,13 @@ jobs:
       - name: Wait for ArgoCD convergence
         timeout-minutes: 30
         run: |
+          # On push events where install was skipped, check if there's a pattern to validate
+          if ! oc get pattern self-healing-platform -n patterns-operator &>/dev/null && \
+             ! oc get pattern self-healing-platform -n openshift-operators &>/dev/null; then
+            echo "No Pattern CR found — nothing to validate. Skipping convergence wait."
+            exit 0
+          fi
+
           echo "Waiting for ArgoCD applications to converge in ${{ env.HUB_NS }}..."
           for i in $(seq 1 60); do
             APPS=$(oc get applications.argoproj.io -n "${{ env.HUB_NS }}" -o name 2>/dev/null | wc -l)
