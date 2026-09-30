@@ -8,6 +8,8 @@ name: Validate Pattern
 # Trigger modes:
 #   - push/PR to main or release-*: auto-triggered (PR requires 'e2e-test' label)
 #   - workflow_dispatch: manual trigger with cluster credentials
+#     - skip_install=true: validate existing deployment only
+#     - uninstall_first=true: full lifecycle test (uninstall -> install -> validate)
 #
 # Cluster credentials (two ways):
 #   1. Manual trigger: provide ocp_api_url and ocp_token as inputs
@@ -33,6 +35,11 @@ on:
         type: string
       skip_install:
         description: 'Skip pattern installation (validate existing deployment only)'
+        required: false
+        type: boolean
+        default: false
+      uninstall_first:
+        description: 'Uninstall pattern before reinstalling (full lifecycle test)'
         required: false
         type: boolean
         default: false
@@ -142,6 +149,30 @@ jobs:
           echo "Logged in as: $(oc whoami)"
           echo "Server: $(oc whoami --show-server)"
           echo "Cluster version: $(oc get clusterversion version -o jsonpath='{.status.desired.version}' 2>/dev/null || echo 'unknown')"
+
+      - name: Uninstall pattern
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.uninstall_first == 'true'
+        timeout-minutes: 15
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y podman
+          echo "Uninstalling pattern (experimental)..."
+          ./pattern.sh make uninstall || true
+
+          echo "Waiting for resources to terminate..."
+          oc delete namespace ${{ env.PLATFORM_NS }} --wait=false --ignore-not-found=true 2>/dev/null || true
+          oc delete namespace ${{ env.HUB_NS }} --wait=false --ignore-not-found=true 2>/dev/null || true
+
+          for i in $(seq 1 60); do
+            NS_COUNT=$(oc get namespace ${{ env.PLATFORM_NS }} ${{ env.HUB_NS }} --no-headers 2>/dev/null | wc -l)
+            if [ "$NS_COUNT" -eq 0 ]; then
+              echo "Namespaces terminated after ${i}x5s"
+              break
+            fi
+            echo "Waiting for namespace cleanup... ($NS_COUNT remaining)"
+            sleep 5
+          done
+          echo "Uninstall complete"
 
       - name: Install pattern
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.skip_install != 'true'
