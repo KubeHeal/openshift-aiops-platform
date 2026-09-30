@@ -6,7 +6,7 @@ This guide explains how to integrate and test your own custom applications with 
 
 ## Prerequisites
 
-- OpenShift 4.18+ cluster with MCP server deployed
+- OpenShift 4.20+ cluster with MCP server deployed
 - Basic understanding of Kubernetes/OpenShift
 - Familiarity with Python or TypeScript (depending on your integration approach)
 - Access to self-healing-platform namespace

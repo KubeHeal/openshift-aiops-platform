@@ -147,8 +147,8 @@ source ~/.bashrc
 
 | Tool | Version | Purpose |
 |------|---------|---------|
-| **oc** | 4.18 | OpenShift CLI |
-| **kubectl** | 4.18 | Kubernetes CLI |
+| **oc** | 4.22 | OpenShift CLI |
+| **kubectl** | 4.22 | Kubernetes CLI |
 | **helm** | v3.16.4 | Kubernetes package manager |
 | **yq** | v4.44.6 | YAML processor |
 | **tkn** | 0.38.1 | Tekton CLI (pipeline management) |
@@ -286,7 +286,7 @@ For other platforms (IPI, baremetal, SNO), see [docs/how-to/deploy-on-other-plat
 - **ODF**: MCG-only (NooBaa S3 without Ceph)
 - **Use Case**: Edge, development, testing
 
-**Supported OpenShift Versions**: 4.19, 4.20, 4.21, 4.22 (auto-detected during deployment)
+**Supported OpenShift Versions**: 4.20, 4.21, 4.22 (auto-detected during deployment)
 
 ### 18-Step Fork-and-Deploy Workflow
 
@@ -1628,7 +1628,7 @@ make build-ee
 
 | Component | Supported Versions | Notes |
 |-----------|-------------------|-------|
-| **OpenShift** | 4.18, 4.19, 4.20 | Auto-detected during deployment |
+| **OpenShift** | 4.20, 4.21, 4.22 | Auto-detected during deployment |
 | **Red Hat OpenShift AI** | 2.22.2 | Deployed by platform |
 | **KServe** | 1.36.1 | Part of OpenShift AI |
 | **GPU Operator** | 24.9.2 | For GPU workloads |

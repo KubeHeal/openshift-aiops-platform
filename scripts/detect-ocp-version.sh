@@ -74,7 +74,7 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # Extract version information
-FULL_VERSION=$(echo "$VERSION_JSON" | jq -r '.openshiftVersion // "4.18.0"')
+FULL_VERSION=$(echo "$VERSION_JSON" | jq -r '.openshiftVersion // "4.20.0"')
 MAJOR_MINOR=$(echo "$FULL_VERSION" | cut -d. -f1-2)
 
 # Map to overlay directory name

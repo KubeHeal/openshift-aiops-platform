@@ -234,7 +234,7 @@ make build-ee
 make check-prerequisites
 
 # Expected output:
-# ✅ OpenShift version: 4.18+
+# ✅ OpenShift version: 4.20+
 # ✅ Cluster admin access: confirmed
 # ✅ ODF deployed: yes
 # ✅ Storage classes: available

@@ -55,10 +55,10 @@ fi
 
 # Auto-detect ODF channel based on OpenShift version
 if [[ -z "${ODF_CHANNEL:-}" ]]; then
-    OCP_VERSION=$(oc version -o json 2>/dev/null | jq -r '.openshiftVersion // "4.18.0"' | cut -d. -f1-2)
+    OCP_VERSION=$(oc version -o json 2>/dev/null | jq -r '.openshiftVersion // "4.20.0"' | cut -d. -f1-2)
     ODF_CHANNEL="stable-${OCP_VERSION}"
 else
-    ODF_CHANNEL="${ODF_CHANNEL:-stable-4.18}"
+    ODF_CHANNEL="${ODF_CHANNEL:-stable-4.20}"
 fi
 
 # Auto-detect ROSA if not explicitly set

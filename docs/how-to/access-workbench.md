@@ -6,7 +6,7 @@ This guide provides comprehensive step-by-step instructions for accessing and us
 
 ## Prerequisites
 
-- **OpenShift Cluster Access**: Access to an OpenShift 4.18+ cluster with RHODS installed
+- **OpenShift Cluster Access**: Access to an OpenShift 4.20+ cluster with RHODS installed
 - **CLI Tools**: `oc` CLI tool installed and configured on your local machine
 - **Namespace Access**: User permissions for the `self-healing-platform` namespace
 - **Browser**: Modern web browser for RHODS dashboard access (optional for terminal method)

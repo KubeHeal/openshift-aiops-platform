@@ -26,7 +26,7 @@ This guide explains how to deploy the AI Ops Self-Healing Platform on Single Nod
 
 ### Software Requirements
 
-- OpenShift 4.18, 4.19, or 4.20
+- OpenShift 4.20, 4.21, or 4.22
 - SingleReplica topology (controlPlaneTopology=SingleReplica, infrastructureTopology=SingleReplica)
 - CSI storage classes available (gp2-csi, gp3-csi for AWS)
 

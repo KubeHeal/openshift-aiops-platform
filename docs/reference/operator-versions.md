@@ -2,7 +2,7 @@
 
 This document tracks the required versions of all operators for the OpenShift AI Ops Self-Healing Platform. Use this as a reference for deployments and updates.
 
-**Last Updated**: 2026-09-24
+**Last Updated**: 2026-09-30
 
 ---
 
@@ -10,14 +10,14 @@ This document tracks the required versions of all operators for the OpenShift AI
 
 ### Jupyter Notebook Validator Operator
 
-**Required Version**: v1.0.8
+**Required Version**: v1.0.9
 **Channel**: stable
 **Source**: community-operators
 **Install Mode**: AllNamespaces (targetNamespaces: [])
 
 **Why v1.0.8?**
 - ADR-029 requires v1.0.6+ for GPU toleration support
-- v1.0.8 is latest stable as of 2026-05-18
+- v1.0.9 is latest stable as of 2026-09-30
 - v1.0.2 (alpha channel) lacks critical features:
   - GPU node scheduling with native tolerations
   - Advanced scheduling (nodeSelector, affinity)
@@ -151,7 +151,7 @@ openshift-pipelines:
 ### Red Hat OpenShift GitOps
 
 **Required Version**: v1.20.3+
-**Channel**: gitops-1.20
+**Channel**: gitops-1.21
 **Source**: redhat-operators
 **Install Mode**: AllNamespaces
 
@@ -168,7 +168,7 @@ openshift-pipelines:
 
 ### Validated Patterns Operator
 
-**Required Version**: v0.0.72+
+**Required Version**: v0.0.81+
 **Channel**: fast
 **Source**: community-operators
 **Install Mode**: AllNamespaces
@@ -232,11 +232,9 @@ openshift-pipelines:
 
 | OpenShift | Jupyter Validator | External Secrets | OpenShift AI | Pipelines | GitOps | GPU Operator | ODF |
 |-----------|-------------------|------------------|--------------|-----------|--------|--------------|-----|
-| 4.18 | v1.0.8 (stable) | v1.1.0+ | v2.22.2+ | v1.17.2+ | v1.15.4+ | v24.9.2+ | 4.18 |
-| 4.19 | v1.0.8 (stable) | v1.1.0+ | v2.22.2+ | v1.19.0+ | v1.17.1+ | v24.9.2+ | 4.19 |
-| 4.20 | v1.0.8 (stable) | v1.1.0+ | v2.22.2+ | v1.22.0+ | v1.20.3+ | v24.9.2+ | 4.20 |
-| 4.21 | v1.0.8 (stable) | v1.1.0+ | v3.5+ | v1.23.0+ | v1.21.0+ | v24.9.2+ | 4.21 |
-| 4.22 | v1.0.8 (stable) | v1.1.0+ | v3.5+ | v1.24.0+ | v1.22.0+ | v24.9.2+ | 4.22 |
+| 4.20 | v1.0.9 (stable) | v1.1.0+ | v2.22.2+ | v1.22.0+ | v1.20.3+ | v24.9.2+ | stable-4.20 |
+| 4.21 | v1.0.9 (stable) | v1.2.1+ | v3.5+ | v1.24.0+ | v1.21.4+ | v24.9.2+ | stable-4.21 |
+| 4.22 | v1.0.9 (stable) | v1.2.1+ | v3.5+ | v1.24.0+ | v1.22.0+ | v24.9.2+ | stable-4.22 |
 
 ---
 

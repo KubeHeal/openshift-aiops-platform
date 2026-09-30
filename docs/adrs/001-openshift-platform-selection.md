@@ -2,11 +2,12 @@
 
 **Status:** ACCEPTED
 
-> **📌 VERSION UPDATE** (2026-05-19): While this ADR originally targeted OpenShift 4.18+, current deployments should use:
-> - **Recommended**: OpenShift **4.19+** (4.21 preferred for latest features)
-> - **Maintenance-only**: OpenShift 4.18 (supported but not recommended for new deployments)
+> **📌 VERSION UPDATE** (2026-09-30): While this ADR originally targeted OpenShift 4.18+, the supported window is now:
+> - **Supported**: OpenShift **4.20, 4.21, 4.22** (rolling 3-version window)
+> - **Recommended**: OpenShift **4.22** (current release, ROSA primary target)
+> - **Dropped**: OpenShift 4.18, 4.19 (no longer in support window)
 >
-> See [OPERATOR_VERSIONS.md](../OPERATOR_VERSIONS.md) for current version requirements.
+> See [operator-versions.md](../reference/operator-versions.md) for current version requirements.
 
 ## Status
 

@@ -9,7 +9,7 @@
 # OpenShift AI Ops Self-Healing Platform (KubeHeal)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![OpenShift](https://img.shields.io/badge/OpenShift-4.19+-red.svg)](https://www.openshift.com/)
+[![OpenShift](https://img.shields.io/badge/OpenShift-4.20+-red.svg)](https://www.openshift.com/)
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
 [![CI/CD Pipeline](https://github.com/KubeHeal/openshift-aiops-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/KubeHeal/openshift-aiops-platform/actions/workflows/ci.yml)
 [![Helm Chart Validation](https://github.com/KubeHeal/openshift-aiops-platform/actions/workflows/helm-validation.yml/badge.svg)](https://github.com/KubeHeal/openshift-aiops-platform/actions/workflows/helm-validation.yml)
@@ -67,7 +67,7 @@ See the **[User Model Deployment Guide](docs/guides/USER-MODEL-DEPLOYMENT-GUIDE.
 | **Other clouds** | HA | ODF/NooBaa | Community-supported |
 
 **Supported OpenShift Versions:**
-- OpenShift 4.19, 4.20, 4.21, 4.22 (active support window)
+- OpenShift 4.20, 4.21, 4.22 (active support window)
 - Auto-detected during deployment
 - Version-specific operator overlays
 
@@ -109,14 +109,14 @@ rosa create cluster --cluster-name=aiops-platform --sts --mode=auto --region=us-
 **Catalog Item:** [RHOAI on OCP on AWS with NVIDIA GPUs](https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.ocp4-demo-rhods-nvidia-gpu-aws.prod&utm_source=webapp&utm_medium=share-link)
 
 **What's Included:**
-- OpenShift Container Platform 4.18 (HA cluster)
+- OpenShift Container Platform 4.20+ (HA cluster)
 - Red Hat OpenShift AI 2.25
 - NVIDIA L4 Tensor Core GPUs
 - Full HA deployment with multiple nodes
 
 **Deployment Time:** ~1 hour, 40 minutes
 **Topology:** HA (HighlyAvailable)
-**Note:** OCP 4.21 is the current recommended version. Upgrade from 4.18 to 4.19+ recommended — 4.18 is maintenance-only.
+**Note:** OCP 4.22 is the current recommended version. The supported window is 4.20/4.21/4.22.
 
 **Auto-Stop:** 6 hours | **Auto-Destroy:** 48 hours
 
@@ -129,12 +129,12 @@ rosa create cluster --cluster-name=aiops-platform --sts --mode=auto --region=us-
 ### Prerequisites
 
 **HA Cluster Requirements:**
-- OpenShift 4.19+ cluster recommended (4.21 current; admin access)
+- OpenShift 4.20+ cluster recommended (4.22 current; admin access)
 - 6+ nodes (3 control-plane, 3+ workers, 1 GPU-enabled recommended)
 - 24+ CPU cores, 96+ GB RAM, 500+ GB storage
 
 **SNO Cluster Requirements:**
-- OpenShift 4.19+ cluster recommended (4.21 current; admin access)
+- OpenShift 4.20+ cluster recommended (4.22 current; admin access)
 - 1 node (all roles: control-plane, master, worker)
 - 8+ CPU cores (16+ recommended), 32+ GB RAM (64+ recommended), 120+ GB storage
 
@@ -625,7 +625,7 @@ curl http://coordination-engine.self-healing-platform.svc.cluster.local:8080/hea
 ### Current Release
 
 - **Version**: 1.0.0
-- **OpenShift**: 4.19+ (tested through 4.21)
+- **OpenShift**: 4.20+ (tested through 4.22)
 - **Red Hat OpenShift AI**: 2.22.2
 - **Status**: Production-ready
 
@@ -672,7 +672,7 @@ This project is licensed under the **GNU General Public License v3.0** - see the
 
 ### References
 
-- [ADR-001: OpenShift 4.18+ as Foundation Platform](docs/adrs/001-openshift-platform-selection.md)
+- [ADR-001: OpenShift 4.20+ as Foundation Platform](docs/adrs/001-openshift-platform-selection.md)
 - [ADR-002: Hybrid Deterministic-AI Self-Healing Approach](docs/adrs/002-hybrid-self-healing-approach.md)
 - [ADR-003: Red Hat OpenShift AI for ML Platform](docs/adrs/003-openshift-ai-ml-platform.md)
 - [ADR-019: Validated Patterns Framework Adoption](docs/adrs/019-validated-patterns-framework-adoption.md)

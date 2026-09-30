@@ -6,7 +6,7 @@ This guide provides quick deployment instructions for the Cluster Health MCP Ser
 
 ## Prerequisites
 
-- OpenShift 4.18+ cluster with admin access
+- OpenShift 4.20+ cluster with admin access
 - Self-healing platform deployed (`self-healing-platform` namespace exists)
 - OpenShift Lightspeed operator installed
 - MCP server image built (via BuildConfig)
