@@ -1,9 +1,9 @@
 # ADR-060: Validated Patterns Sandbox Tier Submission
 
-**Status:** Accepted
+**Status:** Accepted (submission pending VP team approval)
 
 ## Status
-accepted - 2026-09-24
+accepted - 2026-09-24 (decision to submit; upstream PR not yet submitted)
 
 ## Context
 
@@ -353,4 +353,4 @@ tkn pipeline start deployment-validation-pipeline --showlog
 
 ---
 
-**Note**: This ADR will be updated to `accepted` status once the VP Sandbox submission PR is merged.
+**Note**: This ADR's decision (to submit) is accepted. The status will be updated to `Implemented` once the VP Sandbox submission PR is merged into `validatedpatterns/patterns-catalog` by the VP team.
