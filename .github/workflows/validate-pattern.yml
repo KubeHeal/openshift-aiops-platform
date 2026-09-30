@@ -191,9 +191,9 @@ jobs:
           cp values-hub.yaml.example values-hub.yaml
           cp values-secret.yaml.example values-secret.yaml
 
-          # VP framework requires a secrets file in ~/.config even if empty
+          # VP framework requires a secrets file in ~/.config with valid YAML
           mkdir -p ~/.config/validated-patterns
-          touch ~/.config/validated-patterns/values-secret-self-healing-platform.yaml
+          printf -- '---\nversion: "2.0"\nsecrets: []\n' > ~/.config/validated-patterns/values-secret-self-healing-platform.yaml
 
           sed -i "s|https://github.com/YOUR-USERNAME/openshift-aiops-platform.git|${REPO_URL}|g" values-global.yaml
           sed -i "s|https://github.com/KubeHeal/openshift-aiops-platform.git|${REPO_URL}|g" values-global.yaml
