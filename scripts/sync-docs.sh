@@ -12,20 +12,21 @@ cd "$PROJECT_ROOT"
 echo "🔄 Syncing root markdown files to docs/..."
 
 # List of files to sync
+# NOTE: CONTRIBUTING.md, CODE_OF_CONDUCT.md, and AGENTS.md are NOT synced here.
+# They now live in docs/reference/ and docs/explanation/ respectively.
+# README.md is also not synced; docs/README.md is a short pointer to index.md.
 FILES=(
-  "README.md"
-  "DEPLOYMENT.md"
-  "CONTRIBUTING.md"
-  "CODE_OF_CONDUCT.md"
-  "AGENTS.md"
+  "DEPLOYMENT.md:docs/how-to/DEPLOYMENT.md"
 )
 
-for file in "${FILES[@]}"; do
-  if [[ -f "$file" ]]; then
-    cp "$file" "docs/$file"
-    echo "  ✅ $file → docs/$file"
+for entry in "${FILES[@]}"; do
+  src="${entry%%:*}"
+  dest="${entry##*:}"
+  if [[ -f "$src" ]]; then
+    cp "$src" "$dest"
+    echo "  ✅ $src → $dest"
   else
-    echo "  ⚠️  $file not found in root"
+    echo "  ⚠️  $src not found in root"
   fi
 done
 

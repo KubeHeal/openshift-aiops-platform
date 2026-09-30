@@ -329,7 +329,7 @@ make argo-healthcheck
 tkn pipeline start deployment-validation-pipeline --showlog
 ```
 
-> **📖 More info**: See [Gitea Integration Guide](docs/GITEA-INTEGRATION-GUIDE.md) for detailed setup
+> **📖 More info**: See [Gitea Integration Guide](docs/guides/GITEA-INTEGRATION-GUIDE.md) for detailed setup
 
 > **🖥️ SNO Deployment**: If step 5 (`make show-cluster-info`) shows topology `sno`, edit `values-hub.yaml` before step 14: set `cluster.topology: "sno"` and change `storage.modelStorage.storageClass` to `"gp3-csi"`. Object storage (NooBaa) is automatically provided by MCG-only ODF. See [SNO Deployment Guide](docs/how-to/deploy-on-sno.md) for details.
 

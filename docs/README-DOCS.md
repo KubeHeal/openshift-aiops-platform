@@ -2,195 +2,139 @@
 
 This directory contains all documentation served by MkDocs at https://kubeheal.github.io/openshift-aiops-platform/
 
-## Duplicated Root Files
+## Homepage
 
-The following files are **copies** of root-level files, duplicated here because MkDocs only serves files from the `docs/` directory:
+The MkDocs homepage is **`index.md`** (not `README.md`). The index page provides persona-based onboarding for platform engineers, developers, and data scientists, with links to all documentation sections.
 
-- `README.md` → Copy of `../README.md`
-- `DEPLOYMENT.md` → Copy of `../DEPLOYMENT.md`
-- `CONTRIBUTING.md` → Copy of `../CONTRIBUTING.md`
-- `CODE_OF_CONDUCT.md` → Copy of `../CODE_OF_CONDUCT.md`
-- `AGENTS.md` → Copy of `../AGENTS.md`
+## Synced Root Files
 
-**IMPORTANT**: The **root files are the source of truth**. When you update these files, they are **automatically synced** to docs/ by a GitHub Actions workflow.
+The following root-level files are copied into `docs/` because MkDocs only serves files from the `docs/` directory:
 
-### Automatic Sync (Recommended)
+| Root File | Synced To | Purpose |
+|-----------|-----------|---------|
+| `../DEPLOYMENT.md` | `docs/how-to/DEPLOYMENT.md` | Deployment instructions |
 
-Just edit the root file and commit - the sync happens automatically:
+**Files that are NOT synced** (they live only in their subdirectories):
+- `CONTRIBUTING.md` lives at `docs/reference/CONTRIBUTING.md`
+- `CODE_OF_CONDUCT.md` lives at `docs/reference/CODE_OF_CONDUCT.md`
+- `AGENTS.md` lives at `docs/explanation/AGENTS.md`
+
+The root `README.md` is the authoritative project overview. The `docs/README.md` file is a short pointer to `index.md` and is not synced from root.
+
+### Automatic Sync
+
+Edit the root file and commit. GitHub Actions handles the rest:
 
 ```bash
 # 1. Edit the root file
-vi ../README.md
+vi ../DEPLOYMENT.md
 
 # 2. Commit (sync happens automatically via GitHub Actions)
-git add ../README.md
-git commit -s -m "docs: Update README"
+git add ../DEPLOYMENT.md
+git commit -s -m "docs: update deployment guide"
 git push origin main
 
 # 3. GitHub Actions automatically:
-#    - Copies ../README.md to docs/README.md
+#    - Copies DEPLOYMENT.md to docs/how-to/DEPLOYMENT.md
 #    - Commits the synced file
 #    - Triggers documentation deployment
 ```
 
 **Workflow**: `.github/workflows/sync-docs.yml`
 
-### Manual Sync (Alternative)
-
-If you prefer to sync manually or need immediate local testing:
+### Manual Sync
 
 ```bash
-# 1. Edit the root file
-vi ../README.md
-
-# 2. Run sync script
+# Run sync script
 ../scripts/sync-docs.sh
 
-# 3. Commit both files
-git add ../README.md docs/README.md
-git commit -s -m "docs: Update README"
+# Commit
+git add docs/
+git commit -s -m "docs: sync root files to docs/"
 git push origin main
 ```
 
-**Why this duplication?** MkDocs design requires all documentation to be within the `docs_dir` (which is `docs/` in our case). We cannot use the repository root as `docs_dir` because it would include all non-documentation files and cause build errors.
-
-## How Automatic Sync Works
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ Developer Updates Root File                                      │
-│                                                                   │
-│  $ vim README.md                                                 │
-│  $ git add README.md                                             │
-│  $ git commit -m "docs: Update README"                           │
-│  $ git push origin main                                          │
-└──────────────────────┬────────────────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────────┐
-│ GitHub Actions: sync-docs.yml (Automatic)                        │
-│                                                                   │
-│  Triggered by: Changes to README.md, DEPLOYMENT.md, etc.        │
-│                                                                   │
-│  Actions:                                                        │
-│   1. cp README.md docs/README.md                                │
-│   2. git commit -m "docs: Auto-sync root files to docs/"        │
-│   3. git push origin main                                        │
-└──────────────────────┬────────────────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────────┐
-│ GitHub Actions: deploy-docs.yml (Automatic)                      │
-│                                                                   │
-│  Triggered by: Changes to docs/**                               │
-│                                                                   │
-│  Actions:                                                        │
-│   1. pip install -r requirements-docs.txt                        │
-│   2. mkdocs build                                                │
-│   3. mkdocs gh-deploy --force (pushes to gh-pages branch)       │
-└──────────────────────┬────────────────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────────┐
-│ GitHub Pages: Site Updated                                       │
-│                                                                   │
-│  https://kubeheal.github.io/openshift-aiops-platform/           │
-│                                                                   │
-│  Updated files visible within 1-2 minutes                        │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-**Timeline**: Root file update → Auto-sync (30s) → Deploy (2 min) → Live (1 min) = **~3-4 minutes total**
-
 ## Directory Structure
+
+The documentation follows the [Diataxis](https://diataxis.fr/) framework:
 
 ```
 docs/
-├── index.md                    # Documentation homepage
-├── README.md                   # Copy of root README
-├── DEPLOYMENT.md               # Copy of root DEPLOYMENT
-├── CONTRIBUTING.md             # Copy of root CONTRIBUTING
-├── CODE_OF_CONDUCT.md          # Copy of root CODE_OF_CONDUCT
-├── AGENTS.md                   # Copy of root AGENTS guide
-├── tutorials/                  # Diataxis: Learning-oriented guides
-├── how-to/                     # Diataxis: Problem-solving guides
-├── reference/                  # Diataxis: Information-oriented docs
-├── explanation/                # Diataxis: Understanding-oriented docs
-├── adrs/                       # Architectural Decision Records
-├── guides/                     # Comprehensive deployment/troubleshooting guides
-└── blog/                       # Blog posts and announcements
+├── index.md                    # Documentation homepage (MkDocs home)
+├── README.md                   # Pointer to index.md (for GitHub browsing)
+├── README-DOCS.md              # This file (meta-documentation)
+├── mkdocs.yml                  # (STALE - use root mkdocs.yml instead)
+├── requirements.txt            # MkDocs Python dependencies
+│
+├── user-guide/                 # Role-based guides (engineers, devs, data scientists)
+├── tutorials/                  # Diataxis: Learning-oriented step-by-step guides
+├── how-to/                     # Diataxis: Task-oriented deployment guides
+├── guides/                     # Procedural guides (migrations, integrations)
+├── reference/                  # Diataxis: Configuration, checklists, community docs
+├── explanation/                # Diataxis: Architecture explanations, design rationale
+├── troubleshooting/            # Problem/solution diagnostics
+├── runbooks/                   # Operational procedures for day-2 management
+├── diagrams/                   # Mermaid architecture and workflow diagrams
+├── adrs/                       # Architectural Decision Records (58+ ADRs)
+├── research/                   # Roadmaps, enhancement proposals, plans
+├── github-issues/              # Bug reports and feature request tracking
+├── issues/                     # Known issues and workarounds
+├── blog/                       # Blog posts and announcements
+└── assets/                     # Branding, images
 ```
 
 ## Updating Documentation
 
 ### For Tutorials, How-To Guides, Reference, Explanation
 
-Edit files directly in their respective directories. No duplication needed.
+Edit files directly in their respective directories. No duplication is needed.
 
-### For Root-Level Files
+### For Root-Level Files (DEPLOYMENT.md)
 
 ```bash
 # 1. Edit the root file
-vi ../README.md
+vi ../DEPLOYMENT.md
 
-# 2. Copy to docs/
-cp ../README.md docs/README.md
+# 2. Run sync script (or let GitHub Actions handle it)
+../scripts/sync-docs.sh
 
 # 3. Test locally
 mkdocs serve
 
-# 4. Commit both
-git add ../README.md docs/README.md
-git commit -s -m "docs: Update README"
+# 4. Commit
+git add ../DEPLOYMENT.md docs/how-to/DEPLOYMENT.md
+git commit -s -m "docs: update deployment guide"
 git push origin main
-```
-
-### Automation Option
-
-Consider adding a pre-commit hook or script to keep these in sync:
-
-```bash
-#!/bin/bash
-# scripts/sync-docs.sh
-cp README.md docs/README.md
-cp DEPLOYMENT.md docs/DEPLOYMENT.md
-cp CONTRIBUTING.md docs/CONTRIBUTING.md
-cp CODE_OF_CONDUCT.md docs/CODE_OF_CONDUCT.md
-cp AGENTS.md docs/AGENTS.md
-echo "✅ Root files synced to docs/"
 ```
 
 ## Building Locally
 
 ```bash
 # Install dependencies
-pip install -r requirements-docs.txt
-
-# Build documentation
-mkdocs build
+pip install -r requirements.txt
 
 # Serve locally (with live reload)
 mkdocs serve
 # Open http://127.0.0.1:8000
 
-# Check for broken links
-find docs -name "*.md" -exec markdown-link-check {} \;
+# Build static site
+mkdocs build
 ```
 
 ## Navigation Configuration
 
-Navigation is defined in `mkdocs.yml`. When adding new pages:
+Navigation is defined in the **root** `mkdocs.yml` (not `docs/mkdocs.yml`). When adding new pages:
 
 1. Create the markdown file in the appropriate directory
-2. Add it to the `nav:` section in `mkdocs.yml`
+2. Add it to the `nav:` section in the root `mkdocs.yml`
 3. Use paths **relative to docs/** (no `docs/` prefix in nav)
 
 Example:
 ```yaml
 nav:
   - Tutorials:
-      - My New Tutorial: tutorials/my-new-tutorial.md  # ✅ Correct
-      # - My New Tutorial: docs/tutorials/my-new-tutorial.md  # ❌ Wrong
+      - My New Tutorial: tutorials/my-new-tutorial.md  # Correct
+      # - My New Tutorial: docs/tutorials/my-new-tutorial.md  # Wrong
 ```
 
 ## Deployment
@@ -203,32 +147,10 @@ Documentation deploys automatically via GitHub Actions when changes are pushed t
 - Deploy: `mkdocs gh-deploy --force` (pushes to `gh-pages` branch)
 - Live site: https://kubeheal.github.io/openshift-aiops-platform/
 
-## Troubleshooting
-
-### Navigation links return 404
-
-**Cause**: File referenced in `mkdocs.yml` nav doesn't exist in docs/ directory.
-
-**Fix**: Ensure the file exists and the path in nav is correct (no `docs/` prefix).
-
-### Build fails with "docs_dir cannot be parent directory"
-
-**Cause**: Attempting to set `docs_dir: .` (repository root).
-
-**Fix**: Keep `docs_dir: docs` (default). Copy root files into docs/ instead.
-
-### Links to notebooks/code don't work
-
-**Cause**: Files outside docs/ are not included in the build.
-
-**Fix**: Link to the GitHub repository instead:
-```markdown
-[View notebook](https://github.com/KubeHeal/openshift-aiops-platform/blob/main/notebooks/...)
-```
-
 ## Related Files
 
-- `mkdocs.yml` - MkDocs configuration
-- `requirements-docs.txt` - Python dependencies for building docs
-- `.github/workflows/deploy-docs.yml` - Automated deployment
-- `.github/workflows/validate-docs.yml` - Link validation on PRs
+- `../mkdocs.yml` - MkDocs configuration (the authoritative config)
+- `requirements.txt` - Python dependencies for building docs
+- `../.github/workflows/deploy-docs.yml` - Automated deployment
+- `../.github/workflows/sync-docs.yml` - Root file sync automation
+- `../scripts/sync-docs.sh` - Manual sync script
