@@ -90,6 +90,7 @@ cd openshift-aiops-platform
 ```bash
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 ```
 
 4. Update `repoURL` in both files to point to your fork.
@@ -794,9 +795,11 @@ cp docs/adrs/template.md docs/adrs/XXX-your-decision.md
 ```bash
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 ```
 
 Update `repoURL` in both files to your fork URL.
+
 
 ### Pre-Commit Hook Failures
 

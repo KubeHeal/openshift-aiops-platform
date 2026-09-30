@@ -14,6 +14,7 @@ Both files must be created from their `.example` templates before deployment:
 ```bash
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 ```
 
 ---
@@ -581,6 +582,7 @@ monitoring:
    ```bash
    cp values-global.yaml.example values-global.yaml
    cp values-hub.yaml.example values-hub.yaml
+   cp values-secret.yaml.example values-secret.yaml
    ```
 
 2. **Update repoURL in BOTH files**:

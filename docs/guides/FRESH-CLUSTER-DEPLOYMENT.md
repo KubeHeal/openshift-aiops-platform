@@ -113,6 +113,7 @@ cd openshift-aiops-platform
 ```bash
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 ```
 
 **⚠️ CRITICAL**: These files are **required before any `make` target**. The Makefile reads `values-global.yaml` on startup.
@@ -505,6 +506,7 @@ grep "objectStore:" values-hub.yaml
 # Create values files from examples
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 
 # Update repoURL in both files (see Step 2 under Values Files Configuration)
 ```

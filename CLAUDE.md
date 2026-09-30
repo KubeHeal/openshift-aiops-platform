@@ -349,6 +349,7 @@ oc login <cluster-api-url>
 ```bash
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 ```
 
 **⚠️ CRITICAL**: These files are **required before any `make` target**. The Makefile reads `values-global.yaml` on startup.
@@ -923,6 +924,7 @@ ls -l values-global.yaml.example values-hub.yaml.example
 # Create values files from examples (Section 3 Step 5)
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 
 # Update repoURL in both files (Section 3 Step 6)
 vi values-global.yaml
@@ -1342,8 +1344,9 @@ if you've completed the prerequisites.
    - If NO: Run `oc login <cluster-url>`
 
 4. Have you created values files?
-   - If NO: Run `cp values-global.yaml.example values-global.yaml` and
-            `cp values-hub.yaml.example values-hub.yaml`
+   - If NO: Run `cp values-global.yaml.example values-global.yaml`,
+            `cp values-hub.yaml.example values-hub.yaml`, and
+            `cp values-secret.yaml.example values-secret.yaml`
 
 5. Have you updated repoURL in both values files to YOUR fork?
    - If NO: Edit both files and change the repoURL
@@ -1557,9 +1560,10 @@ git clone https://github.com/YOUR-USERNAME/openshift-aiops-platform.git
 ```bash
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 ```
 
-**Why**: Makefile reads `values-global.yaml` on startup and will fail if missing.
+**Why**: Makefile reads `values-global.yaml` on startup and the VP framework requires `values-secret.yaml` to exist (even if empty).
 
 #### 3. Updating repoURL
 

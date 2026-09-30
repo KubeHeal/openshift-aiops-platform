@@ -113,6 +113,7 @@ cd openshift-aiops-platform
 # Create values files from examples
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 ```
 
 ### 1.4 Update the Repository URL
@@ -627,6 +628,7 @@ If missing, create them from examples:
 ```bash
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 ```
 
 ### Custom Template Not Rendering

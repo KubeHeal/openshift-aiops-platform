@@ -278,7 +278,7 @@ oc get events -n self-healing-platform --watch
    ```bash
    ls -l values-global.yaml values-hub.yaml
    ```
-   If missing: `cp values-global.yaml.example values-global.yaml` and `cp values-hub.yaml.example values-hub.yaml`
+   If missing: `cp values-global.yaml.example values-global.yaml`, `cp values-hub.yaml.example values-hub.yaml`, and `cp values-secret.yaml.example values-secret.yaml`
 
 2. **Verify repoURL is YOUR fork**:
    ```bash

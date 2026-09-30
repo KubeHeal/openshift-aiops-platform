@@ -133,6 +133,7 @@ git checkout -b production
 # Create production values files
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 
 # Update repoURL to your organization's fork
 vi values-global.yaml

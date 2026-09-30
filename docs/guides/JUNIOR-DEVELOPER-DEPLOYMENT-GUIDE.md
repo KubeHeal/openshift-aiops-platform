@@ -82,6 +82,7 @@ The platform requires you to configure Git repository URLs. The repository inclu
 # Copy template files
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 ```
 
 **Edit `values-global.yaml`** (line 98 - update `git.repoURL`):

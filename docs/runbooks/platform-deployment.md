@@ -171,6 +171,7 @@ Fail action: Create them from examples:
 ```bash
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 ```
 
 ---
@@ -212,6 +213,7 @@ Confirm the origin URL points to YOUR fork.
 ```bash
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 ```
 
 Update `repoURL` in **both** files to point to YOUR fork:
@@ -583,9 +585,11 @@ Both commands should return no results.
 ```bash
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml
 ```
 
 Update `repoURL` in both files to point to YOUR fork.
+
 
 ---
 

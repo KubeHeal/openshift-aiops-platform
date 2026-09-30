@@ -7,7 +7,7 @@
 - `values-global.yaml.template` - Template with detailed comments
 - `values-hub.yaml.example` - Template for hub configuration
 - `values-hub.yaml.template` - Template with detailed comments
-- `values-secret.yaml.template` - Template for secrets (NO real secrets)
+- `values-secret.yaml.example` - Template for secrets (NO real secrets)
 - `values-clustergroup.yaml` - Cluster topology (usually safe)
 
 ### ❌ NOT Committed (Git-Ignored)
@@ -53,8 +53,8 @@ The Validated Patterns framework uses a **template + override** pattern:
 
 **How to create:**
 ```bash
-cp values-secret.yaml.template values-secret.yaml
-# Edit and fill in real credentials
+cp values-secret.yaml.example values-secret.yaml
+# Edit and fill in real credentials (or leave as-is for default config)
 ```
 
 ### `values-hub.yaml` - Git-ignore recommended
@@ -160,7 +160,7 @@ secrets:
    ```bash
    git add values-global.yaml.example
    git add values-hub.yaml.example
-   git add values-secret.yaml.template
+   git add values-secret.yaml.example
    git commit -m "docs: Update pattern templates"
    ```
 
@@ -177,7 +177,7 @@ secrets:
    ```bash
    cp values-global.yaml.example values-global.yaml
    cp values-hub.yaml.example values-hub.yaml
-   cp values-secret.yaml.template values-secret.yaml
+   cp values-secret.yaml.example values-secret.yaml
    ```
 
 2. **Customize your deployment:**
@@ -203,7 +203,7 @@ git status | grep values-
 # Should see:
 #   new file:   values-global.yaml.example  ✅
 #   new file:   values-hub.yaml.example     ✅
-#   new file:   values-secret.yaml.template ✅
+#   new file:   values-secret.yaml.example  ✅
 
 # Should NOT see:
 #   values-secret.yaml  ❌
@@ -243,7 +243,7 @@ git push  # Now secrets are public!
 ### ✅ DO THIS INSTEAD:
 ```bash
 # Commit templates only
-git add values-secret.yaml.template  # Safe placeholder
+git add values-secret.yaml.example  # Safe placeholder
 git commit -m "Add secret template"
 git push  # Safe to push
 ```

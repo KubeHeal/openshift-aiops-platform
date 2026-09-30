@@ -259,7 +259,8 @@ oc login <cluster-api-url>
 
 # 4. Create values files from examples (REQUIRED before any make target)
 cp values-global.yaml.example values-global.yaml
-cp values-hub.yaml.example values-hub.yaml  # if not already present
+cp values-hub.yaml.example values-hub.yaml
+cp values-secret.yaml.example values-secret.yaml  # VP framework requires this file to exist
 
 # 5. Verify cluster topology and version
 make show-cluster-info
