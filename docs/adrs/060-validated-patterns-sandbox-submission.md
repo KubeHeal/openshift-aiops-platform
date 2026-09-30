@@ -1,6 +1,6 @@
 # ADR-060: Validated Patterns Sandbox Tier Submission
 
-**Status:** PROPOSED
+**Status:** Accepted
 
 ## Status
 accepted - 2026-09-24

@@ -1,6 +1,6 @@
 # ADR-059: Patternizer Adoption for Pattern Scaffolding Automation
 
-**Status:** PROPOSED
+**Status:** Accepted
 
 ## Status
 accepted - 2026-09-24
