@@ -162,34 +162,69 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.uninstall_first == 'true'
         timeout-minutes: 15
         run: |
-          echo "Uninstalling pattern (experimental)..."
+          echo "=== Phase 1: VP framework uninstall ==="
           ./pattern.sh make uninstall || true
 
-          echo "Waiting for Pattern CR to be deleted..."
+          echo "=== Phase 2: Explicit Pattern CR deletion ==="
+          # make uninstall does NOT delete the Pattern CR; do it explicitly
+          # VP webhook requires a prune annotation before allowing deletion
+          if oc get pattern self-healing-platform -n openshift-operators &>/dev/null; then
+            echo "Pattern CR still exists, annotating for prune and deleting..."
+            oc annotate pattern self-healing-platform -n openshift-operators \
+              patterns.gitops.hybrid-cloud-patterns.io/prune="true" --overwrite 2>/dev/null || true
+            oc delete pattern self-healing-platform -n openshift-operators --wait=false 2>/dev/null || true
+          fi
+
+          echo "=== Phase 3: Clean ArgoCD finalizers ==="
+          # ArgoCD apps have finalizers that block namespace deletion
+          for app in $(oc get applications -n ${{ env.HUB_NS }} -o name 2>/dev/null); do
+            echo "Removing finalizers from $app..."
+            oc patch $app -n ${{ env.HUB_NS }} --type=merge \
+              -p '{"metadata":{"finalizers":null}}' 2>/dev/null || true
+          done
+          # Also check vp-gitops namespace for VP-managed ArgoCD apps
+          for app in $(oc get applications -n vp-gitops -o name 2>/dev/null); do
+            echo "Removing finalizers from $app in vp-gitops..."
+            oc patch $app -n vp-gitops --type=merge \
+              -p '{"metadata":{"finalizers":null}}' 2>/dev/null || true
+          done
+
+          echo "=== Phase 4: Wait for Pattern CR deletion ==="
           for i in $(seq 1 60); do
             if ! oc get pattern self-healing-platform -n openshift-operators &>/dev/null; then
               echo "Pattern CR deleted after ${i}x5s"
               break
             fi
-            # Remove finalizers if stuck
+            # Remove finalizer if stuck after 30 iterations (150s)
             if [ "$i" -eq 30 ]; then
-              echo "Pattern still exists after 150s, removing finalizers..."
+              echo "Pattern CR stuck after 150s, removing finalizers..."
               oc patch pattern self-healing-platform -n openshift-operators \
-                --type=merge -p '{"metadata":{"finalizers":[]}}' 2>/dev/null || true
+                --type=json -p '[{"op":"remove","path":"/metadata/finalizers"}]' 2>/dev/null || true
             fi
             echo "Waiting for Pattern CR deletion... (attempt $i)"
             sleep 5
           done
 
-          echo "Waiting for resources to terminate..."
+          echo "=== Phase 5: Delete namespaces ==="
           oc delete namespace ${{ env.PLATFORM_NS }} --wait=false --ignore-not-found=true 2>/dev/null || true
           oc delete namespace ${{ env.HUB_NS }} --wait=false --ignore-not-found=true 2>/dev/null || true
+          oc delete namespace vp-gitops --wait=false --ignore-not-found=true 2>/dev/null || true
 
+          echo "=== Phase 6: Wait for namespace cleanup ==="
           for i in $(seq 1 60); do
-            NS_COUNT=$(oc get namespace ${{ env.PLATFORM_NS }} ${{ env.HUB_NS }} --no-headers 2>/dev/null | wc -l)
+            NS_COUNT=$(oc get namespace ${{ env.PLATFORM_NS }} ${{ env.HUB_NS }} vp-gitops --no-headers 2>/dev/null | wc -l)
             if [ "$NS_COUNT" -eq 0 ]; then
               echo "Namespaces terminated after ${i}x5s"
               break
+            fi
+            # Force-remove finalizers on stuck namespaces after 60 iterations (300s)
+            if [ "$i" -eq 60 ]; then
+              echo "Namespaces stuck, force-removing finalizers..."
+              for ns in ${{ env.PLATFORM_NS }} ${{ env.HUB_NS }} vp-gitops; do
+                oc get namespace "$ns" -o json 2>/dev/null | \
+                  python3 -c "import sys,json; d=json.load(sys.stdin); d['spec']['finalizers']=[]; print(json.dumps(d))" | \
+                  oc replace --raw "/api/v1/namespaces/$ns/finalize" -f - 2>/dev/null || true
+              done
             fi
             echo "Waiting for namespace cleanup... ($NS_COUNT remaining)"
             sleep 5
@@ -200,18 +235,16 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.skip_install != 'true'
         timeout-minutes: 15
         run: |
-          # If uninstall ran, verify Pattern CR is gone before attempting install
-          if [ "${{ github.event.inputs.uninstall_first }}" = "true" ]; then
-            echo "Verifying no Pattern CR exists before install..."
-            if oc get pattern self-healing-platform -n openshift-operators &>/dev/null; then
-              echo "ERROR: Pattern CR still exists after uninstall. Forcing deletion..."
-              oc delete pattern self-healing-platform -n openshift-operators --wait=true --timeout=60s 2>/dev/null || true
-              oc patch pattern self-healing-platform -n openshift-operators \
-                --type=merge -p '{"metadata":{"finalizers":[]}}' 2>/dev/null || true
-              sleep 10
-            fi
-            echo "Giving VP webhook time to reconcile..."
-            sleep 15
+          # Final safety check: verify Pattern CR is gone before install
+          if oc get pattern self-healing-platform -n openshift-operators &>/dev/null; then
+            echo "WARNING: Pattern CR still exists. Forcing removal..."
+            oc annotate pattern self-healing-platform -n openshift-operators \
+              patterns.gitops.hybrid-cloud-patterns.io/prune="true" --overwrite 2>/dev/null || true
+            oc patch pattern self-healing-platform -n openshift-operators \
+              --type=json -p '[{"op":"remove","path":"/metadata/finalizers"}]' 2>/dev/null || true
+            oc delete pattern self-healing-platform -n openshift-operators --wait=true --timeout=60s 2>/dev/null || true
+            echo "Waiting for VP webhook to reconcile..."
+            sleep 20
           fi
 
           REPO_URL="https://github.com/${{ github.repository }}.git"
