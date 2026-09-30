@@ -235,7 +235,7 @@ oc create secret generic github-pat-credentials-source \
   -n self-healing-platform
 ```
 
-See `values-secret.yaml.template` at the repository root for the full decision matrix.
+See `values-secret.yaml.example` at the repository root for the full decision matrix.
 
 > **SNO / Single-Worker Deployment**: Set `cluster.topology: "sno"` and `storage.modelStorage.storageClass: "gp3-csi"` in `values-hub.yaml` before running `./pattern.sh make install`. For ROSA single-worker nodes, use `objectStore.backend: "aws-s3"` (default). For non-ROSA SNO, object storage (NooBaa) is automatically provided by MCG-only ODF with `objectStore.backend: "noobaa"`. See [ROSA Guide](docs/how-to/deploy-on-rosa.md) or [SNO Guide](docs/how-to/deploy-on-sno.md) for details.
 
