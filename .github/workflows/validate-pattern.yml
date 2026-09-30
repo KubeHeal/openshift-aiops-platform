@@ -165,6 +165,22 @@ jobs:
           echo "Uninstalling pattern (experimental)..."
           ./pattern.sh make uninstall || true
 
+          echo "Waiting for Pattern CR to be deleted..."
+          for i in $(seq 1 60); do
+            if ! oc get pattern self-healing-platform -n openshift-operators &>/dev/null; then
+              echo "Pattern CR deleted after ${i}x5s"
+              break
+            fi
+            # Remove finalizers if stuck
+            if [ "$i" -eq 30 ]; then
+              echo "Pattern still exists after 150s, removing finalizers..."
+              oc patch pattern self-healing-platform -n openshift-operators \
+                --type=merge -p '{"metadata":{"finalizers":[]}}' 2>/dev/null || true
+            fi
+            echo "Waiting for Pattern CR deletion... (attempt $i)"
+            sleep 5
+          done
+
           echo "Waiting for resources to terminate..."
           oc delete namespace ${{ env.PLATFORM_NS }} --wait=false --ignore-not-found=true 2>/dev/null || true
           oc delete namespace ${{ env.HUB_NS }} --wait=false --ignore-not-found=true 2>/dev/null || true
@@ -184,6 +200,20 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.skip_install != 'true'
         timeout-minutes: 15
         run: |
+          # If uninstall ran, verify Pattern CR is gone before attempting install
+          if [ "${{ github.event.inputs.uninstall_first }}" = "true" ]; then
+            echo "Verifying no Pattern CR exists before install..."
+            if oc get pattern self-healing-platform -n openshift-operators &>/dev/null; then
+              echo "ERROR: Pattern CR still exists after uninstall. Forcing deletion..."
+              oc delete pattern self-healing-platform -n openshift-operators --wait=true --timeout=60s 2>/dev/null || true
+              oc patch pattern self-healing-platform -n openshift-operators \
+                --type=merge -p '{"metadata":{"finalizers":[]}}' 2>/dev/null || true
+              sleep 10
+            fi
+            echo "Giving VP webhook time to reconcile..."
+            sleep 15
+          fi
+
           REPO_URL="https://github.com/${{ github.repository }}.git"
           echo "Generating values files for install..."
 
