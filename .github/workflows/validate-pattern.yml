@@ -144,7 +144,7 @@ jobs:
           echo "Cluster version: $(oc get clusterversion version -o jsonpath='{.status.desired.version}' 2>/dev/null || echo 'unknown')"
 
       - name: Install pattern
-        if: ${{ github.event.inputs.skip_install != 'true' }}
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.skip_install != 'true'
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y podman
