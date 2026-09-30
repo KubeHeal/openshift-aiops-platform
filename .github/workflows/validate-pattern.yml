@@ -150,12 +150,18 @@ jobs:
           echo "Server: $(oc whoami --show-server)"
           echo "Cluster version: $(oc get clusterversion version -o jsonpath='{.status.desired.version}' 2>/dev/null || echo 'unknown')"
 
+      - name: Install podman
+        if: |
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.uninstall_first == 'true')
+          || (github.event_name == 'workflow_dispatch' && github.event.inputs.skip_install != 'true')
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y podman
+
       - name: Uninstall pattern
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.uninstall_first == 'true'
         timeout-minutes: 15
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y podman
           echo "Uninstalling pattern (experimental)..."
           ./pattern.sh make uninstall || true
 
@@ -176,9 +182,20 @@ jobs:
 
       - name: Install pattern
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.skip_install != 'true'
+        timeout-minutes: 15
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y podman
+          REPO_URL="https://github.com/${{ github.repository }}.git"
+          echo "Generating values files for install..."
+
+          cp values-global.yaml.example values-global.yaml
+          cp values-hub.yaml.example values-hub.yaml
+
+          sed -i "s|https://github.com/YOUR-USERNAME/openshift-aiops-platform.git|${REPO_URL}|g" values-global.yaml
+          sed -i "s|https://github.com/KubeHeal/openshift-aiops-platform.git|${REPO_URL}|g" values-global.yaml
+          sed -i "s|https://gitea-with-admin-gitea.*|${REPO_URL}\"|g" values-hub.yaml
+
+          echo "repoURL set to: ${REPO_URL}"
+          echo "Installing pattern..."
           ./pattern.sh make install
 
       - name: Wait for ArgoCD convergence
