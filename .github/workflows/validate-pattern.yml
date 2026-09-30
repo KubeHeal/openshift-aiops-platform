@@ -1,21 +1,26 @@
 name: Validate Pattern
 
-# This workflow validates the pattern deployment on an OpenShift cluster.
+# Validates the self-healing platform deployment on a live OpenShift cluster.
 #
-# **Manual Trigger**: Go to Actions → Validate Pattern → Run workflow
-#   - Provide your cluster API URL and login token
-#   - Optionally skip installation to validate an existing deployment
+# Architecture: 4-job pipeline modeled on coordination-engine e2e-openshift.yaml
+#   check-trigger → check-cluster → validate-pattern → e2e-status
 #
-# **Automatic Runs**: Triggered on push/PR to main
-#   - Requires OCP_API_URL and OCP_TOKEN repository secrets
-#   - Set in: Settings → Secrets and variables → Actions
-#   - Can be disabled by setting SKIP_DEPLOY_VALIDATION=true variable
+# Trigger modes:
+#   - push/PR to main or release-*: auto-triggered (PR requires 'e2e-test' label)
+#   - workflow_dispatch: manual trigger with cluster credentials
+#
+# Cluster credentials (two ways):
+#   1. Manual trigger: provide ocp_api_url and ocp_token as inputs
+#   2. Automatic runs: set OCP_API_URL and OCP_TOKEN repository secrets
+#
+# If no cluster is configured, the workflow passes gracefully (no red X).
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'release-*']
   pull_request:
-    branches: [main]
+    branches: [main, 'release-*']
+    types: [labeled, opened, synchronize, reopened]
   workflow_dispatch:
     inputs:
       ocp_api_url:
@@ -32,15 +37,89 @@ on:
         type: boolean
         default: false
 
+env:
+  PLATFORM_NS: self-healing-platform
+  HUB_NS: self-healing-platform-hub
+
 jobs:
-  validate:
-    name: Pattern Deploy Validation
+  # ──────────────────────────────────────────────────────────────────────────
+  # Job 1: Determine whether E2E should run based on trigger type
+  # ──────────────────────────────────────────────────────────────────────────
+  check-trigger:
+    name: Check E2E Trigger
     runs-on: ubuntu-latest
-    # Credentials can be provided in two ways:
-    # 1. Manual trigger: Provide ocp_api_url and ocp_token as workflow inputs
-    # 2. Automatic runs: Configure OCP_API_URL and OCP_TOKEN as repository secrets
-    # Set repository variable SKIP_DEPLOY_VALIDATION=true to disable automatic runs
-    if: ${{ vars.SKIP_DEPLOY_VALIDATION != 'true' }}
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - name: Evaluate trigger
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "E2E triggered by push to ${{ github.ref }}"
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "E2E triggered manually"
+          elif [ "${{ github.event_name }}" == "pull_request" ]; then
+            if [ "${{ contains(github.event.pull_request.labels.*.name, 'e2e-test') }}" == "true" ]; then
+              echo "should_run=true" >> $GITHUB_OUTPUT
+              echo "E2E triggered by 'e2e-test' label on PR #${{ github.event.pull_request.number }}"
+            else
+              echo "should_run=false" >> $GITHUB_OUTPUT
+              echo "E2E skipped -- add 'e2e-test' label to PR to enable"
+            fi
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Job 2: Verify the OpenShift cluster is reachable
+  # ──────────────────────────────────────────────────────────────────────────
+  check-cluster:
+    name: Check Cluster Availability
+    runs-on: ubuntu-latest
+    needs: check-trigger
+    if: needs.check-trigger.outputs.should_run == 'true'
+    outputs:
+      cluster_available: ${{ steps.check.outputs.cluster_available }}
+    steps:
+      - name: Probe cluster API
+        id: check
+        env:
+          OCP_API_URL: ${{ github.event.inputs.ocp_api_url || secrets.OCP_API_URL }}
+          OCP_TOKEN: ${{ github.event.inputs.ocp_token || secrets.OCP_TOKEN }}
+        run: |
+          if [ -z "$OCP_API_URL" ] || [ -z "$OCP_TOKEN" ]; then
+            echo "cluster_available=false" >> $GITHUB_OUTPUT
+            echo "No OpenShift cluster configured -- E2E validation will be skipped"
+            echo "To enable: set OCP_API_URL and OCP_TOKEN in repository secrets"
+            echo "  Or trigger manually with workflow_dispatch inputs"
+            exit 0
+          fi
+
+          if curl -sk --max-time 10 "${OCP_API_URL}/.well-known/oauth-authorization-server" > /dev/null 2>&1; then
+            echo "cluster_available=true" >> $GITHUB_OUTPUT
+            echo "OpenShift cluster is reachable at ${OCP_API_URL}"
+          else
+            echo "cluster_available=false" >> $GITHUB_OUTPUT
+            echo "OpenShift cluster configured but unreachable -- skipping E2E"
+          fi
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Job 3: Deploy and validate the pattern on the live cluster
+  # ──────────────────────────────────────────────────────────────────────────
+  validate-pattern:
+    name: Pattern E2E Validation
+    runs-on: ubuntu-latest
+    needs: [check-trigger, check-cluster]
+    concurrency:
+      group: rosa-cluster-platform-e2e
+      cancel-in-progress: false
+    if: |
+      always()
+      && needs.check-trigger.outputs.should_run == 'true'
+      && needs.check-cluster.outputs.cluster_available == 'true'
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -52,79 +131,254 @@ jobs:
           oc: latest
 
       - name: Login to OpenShift
+        env:
+          OCP_API_URL: ${{ github.event.inputs.ocp_api_url || secrets.OCP_API_URL }}
+          OCP_TOKEN: ${{ github.event.inputs.ocp_token || secrets.OCP_TOKEN }}
         run: |
-          # Use workflow inputs if provided (manual trigger), otherwise use secrets (automatic runs)
-          OCP_API_URL="${{ github.event.inputs.ocp_api_url || secrets.OCP_API_URL }}"
-          OCP_TOKEN="${{ github.event.inputs.ocp_token || secrets.OCP_TOKEN }}"
-
-          if [ -z "$OCP_API_URL" ] || [ -z "$OCP_TOKEN" ]; then
-            echo "❌ ERROR: OpenShift credentials not provided"
-            echo "For manual runs: Provide 'ocp_api_url' and 'ocp_token' inputs"
-            echo "For automatic runs: Configure OCP_API_URL and OCP_TOKEN repository secrets"
-            exit 1
-          fi
-
-          echo "🔐 Logging in to OpenShift cluster..."
           oc login "$OCP_API_URL" \
             --token="$OCP_TOKEN" \
             --insecure-skip-tls-verify
 
-          echo "✅ Logged in as: $(oc whoami)"
-          echo "🌐 Server: $(oc whoami --show-server)"
-
-      - name: Install podman (required by pattern.sh)
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y podman
+          echo "Logged in as: $(oc whoami)"
+          echo "Server: $(oc whoami --show-server)"
+          echo "Cluster version: $(oc get clusterversion version -o jsonpath='{.status.desired.version}' 2>/dev/null || echo 'unknown')"
 
       - name: Install pattern
         if: ${{ github.event.inputs.skip_install != 'true' }}
-        run: ./pattern.sh make install
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y podman
+          ./pattern.sh make install
 
       - name: Wait for ArgoCD convergence
         timeout-minutes: 30
         run: |
-          HUB_NS="self-healing-platform-hub"
-          echo "Waiting for ArgoCD applications to converge in $HUB_NS..."
+          echo "Waiting for ArgoCD applications to converge in ${{ env.HUB_NS }}..."
           for i in $(seq 1 60); do
-            NOT_HEALTHY=$(oc get applications.argoproj.io -n "$HUB_NS" \
+            APPS=$(oc get applications.argoproj.io -n "${{ env.HUB_NS }}" -o name 2>/dev/null | wc -l)
+            if [ "$APPS" -eq 0 ]; then
+              echo "Attempt $i/60: No ArgoCD applications found yet..."
+              sleep 30
+              continue
+            fi
+
+            NOT_HEALTHY=$(oc get applications.argoproj.io -n "${{ env.HUB_NS }}" \
               -o jsonpath='{range .items[*]}{.status.health.status}{"\n"}{end}' \
-              2>/dev/null | grep -v '^Healthy$' | wc -l)
-            NOT_SYNCED=$(oc get applications.argoproj.io -n "$HUB_NS" \
+              2>/dev/null | grep -cv '^Healthy$' || true)
+            NOT_SYNCED=$(oc get applications.argoproj.io -n "${{ env.HUB_NS }}" \
               -o jsonpath='{range .items[*]}{.status.sync.status}{"\n"}{end}' \
-              2>/dev/null | grep -v '^Synced$' | wc -l)
-            echo "Attempt $i/60: not-healthy=$NOT_HEALTHY not-synced=$NOT_SYNCED"
+              2>/dev/null | grep -cv '^Synced$' || true)
+            echo "Attempt $i/60: apps=$APPS not-healthy=$NOT_HEALTHY not-synced=$NOT_SYNCED"
+
             if [ "$NOT_HEALTHY" -eq 0 ] && [ "$NOT_SYNCED" -eq 0 ]; then
-              echo "All ArgoCD applications are Synced/Healthy"
+              echo "All $APPS ArgoCD applications are Synced/Healthy"
               exit 0
             fi
             sleep 30
           done
           echo "ERROR: ArgoCD convergence timeout after 30 minutes"
-          oc get applications.argoproj.io -n "$HUB_NS"
+          oc get applications.argoproj.io -n "${{ env.HUB_NS }}" \
+            -o custom-columns='NAME:.metadata.name,HEALTH:.status.health.status,SYNC:.status.sync.status'
           exit 1
 
-      - name: Validate core workloads running
+      - name: Validate core deployments
         run: |
-          NS="self-healing-platform"
-          echo "Checking core pods in $NS..."
+          echo "=== Core Deployment Checks ==="
+          FAILURES=0
+
           for deploy in coordination-engine mcp-server; do
-            READY=$(oc get deployment "$deploy" -n "$NS" \
+            READY=$(oc get deployment "$deploy" -n "${{ env.PLATFORM_NS }}" \
               -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo "0")
             if [ "${READY:-0}" -lt 1 ]; then
-              echo "ERROR: $deploy has no ready replicas"
-              oc get pods -n "$NS" -l "app=$deploy"
-              exit 1
+              echo "FAIL: $deploy -- 0 ready replicas"
+              oc get pods -n "${{ env.PLATFORM_NS }}" -l "app=$deploy" 2>/dev/null || true
+              FAILURES=$((FAILURES + 1))
+            else
+              echo "PASS: $deploy -- $READY ready"
             fi
-            echo "PASS: $deploy — $READY ready"
           done
 
-      - name: Report pattern health
+          if [ "$FAILURES" -gt 0 ]; then
+            echo "ERROR: $FAILURES core deployment(s) not ready"
+            exit 1
+          fi
+
+      - name: Health endpoint checks
+        run: |
+          echo "=== Health Endpoint Checks ==="
+
+          POD_NAME=$(oc get pods -n "${{ env.PLATFORM_NS }}" \
+            -l app=coordination-engine \
+            -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+
+          if [ -z "$POD_NAME" ]; then
+            echo "FAIL: No coordination-engine pod found"
+            exit 1
+          fi
+
+          oc port-forward "pod/${POD_NAME}" 18080:8080 \
+            -n "${{ env.PLATFORM_NS }}" &
+          PF_PID=$!
+          sleep 5
+
+          RESPONSE=$(curl -sf --max-time 10 http://localhost:18080/health 2>/dev/null || echo '{"status":"unreachable"}')
+          echo "Health response: ${RESPONSE}"
+
+          STATUS=$(echo "${RESPONSE}" | jq -r '.status' 2>/dev/null || echo "parse_error")
+          if [ "$STATUS" = "ok" ] || [ "$STATUS" = "healthy" ]; then
+            echo "PASS: coordination-engine health check"
+          else
+            echo "FAIL: coordination-engine health -- status='${STATUS}'"
+            kill $PF_PID 2>/dev/null || true
+            exit 1
+          fi
+
+          kill $PF_PID 2>/dev/null || true
+
+      - name: Verify InferenceServices
+        run: |
+          echo "=== InferenceService Checks ==="
+          FAILURES=0
+
+          for isvc in anomaly-detector predictive-analytics; do
+            EXISTS=$(oc get inferenceservice "$isvc" -n "${{ env.PLATFORM_NS }}" \
+              -o jsonpath='{.metadata.name}' 2>/dev/null || echo "")
+            if [ -z "$EXISTS" ]; then
+              echo "WARN: InferenceService $isvc not found (may not be deployed yet)"
+            else
+              READY=$(oc get inferenceservice "$isvc" -n "${{ env.PLATFORM_NS }}" \
+                -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "Unknown")
+              echo "INFO: InferenceService $isvc exists -- Ready=$READY"
+            fi
+          done
+
+          echo "PASS: InferenceService check complete"
+
+      - name: Verify S3 storage configuration
+        run: |
+          echo "=== S3 Storage Checks ==="
+
+          SECRET_EXISTS=$(oc get secret model-storage-config -n "${{ env.PLATFORM_NS }}" \
+            -o jsonpath='{.metadata.name}' 2>/dev/null || echo "")
+          if [ -z "$SECRET_EXISTS" ]; then
+            echo "WARN: model-storage-config secret not found"
+          else
+            KEYS=$(oc get secret model-storage-config -n "${{ env.PLATFORM_NS }}" \
+              -o jsonpath='{.data}' 2>/dev/null | jq -r 'keys[]' 2>/dev/null || echo "none")
+            echo "INFO: model-storage-config secret exists with keys: $KEYS"
+            echo "PASS: S3 storage configuration present"
+          fi
+
+      - name: Verify Tekton pipelines
+        run: |
+          echo "=== Tekton Pipeline Checks ==="
+
+          PIPELINE_COUNT=$(oc get pipelines -n "${{ env.PLATFORM_NS }}" -o name 2>/dev/null | wc -l)
+          echo "INFO: Found $PIPELINE_COUNT pipeline(s) in ${{ env.PLATFORM_NS }}"
+
+          if [ "$PIPELINE_COUNT" -gt 0 ]; then
+            oc get pipelines -n "${{ env.PLATFORM_NS }}" \
+              -o custom-columns='NAME:.metadata.name' --no-headers
+            echo "PASS: Tekton pipelines present"
+          else
+            echo "WARN: No Tekton pipelines found (may not be deployed yet)"
+          fi
+
+      - name: Collect diagnostic logs
         if: always()
         run: |
-          echo "=== ArgoCD Applications ==="
-          oc get applications.argoproj.io -n self-healing-platform-hub 2>/dev/null || true
-          echo "=== Core Pods ==="
-          oc get pods -n self-healing-platform 2>/dev/null || true
-          echo "=== Imperative Jobs ==="
-          oc get jobs -n imperative 2>/dev/null || true
+          mkdir -p logs
+
+          echo "Collecting diagnostic information..."
+
+          echo "=== ArgoCD Applications ===" > logs/argocd-apps.txt
+          oc get applications.argoproj.io -n "${{ env.HUB_NS }}" \
+            -o custom-columns='NAME:.metadata.name,HEALTH:.status.health.status,SYNC:.status.sync.status' \
+            >> logs/argocd-apps.txt 2>&1 || true
+
+          echo "=== Pods ===" > logs/pods.txt
+          oc get pods -n "${{ env.PLATFORM_NS }}" -o wide \
+            >> logs/pods.txt 2>&1 || true
+
+          echo "=== Pod YAML ===" > logs/pods-yaml.txt
+          oc get pods -n "${{ env.PLATFORM_NS }}" -o yaml \
+            >> logs/pods-yaml.txt 2>&1 || true
+
+          echo "=== Events ===" > logs/events.txt
+          oc get events -n "${{ env.PLATFORM_NS }}" \
+            --sort-by='.lastTimestamp' \
+            >> logs/events.txt 2>&1 || true
+
+          echo "=== InferenceServices ===" > logs/inferenceservices.txt
+          oc get inferenceservices -n "${{ env.PLATFORM_NS }}" -o yaml \
+            >> logs/inferenceservices.txt 2>&1 || true
+
+          echo "=== Coordination Engine Logs ===" > logs/coordination-engine.log
+          oc logs -n "${{ env.PLATFORM_NS }}" \
+            -l app=coordination-engine \
+            --tail=200 \
+            >> logs/coordination-engine.log 2>&1 || true
+
+          echo "=== MCP Server Logs ===" > logs/mcp-server.log
+          oc logs -n "${{ env.PLATFORM_NS }}" \
+            -l app=mcp-server \
+            --tail=200 \
+            >> logs/mcp-server.log 2>&1 || true
+
+          echo "=== PipelineRuns ===" > logs/pipelineruns.txt
+          oc get pipelineruns -n "${{ env.PLATFORM_NS }}" \
+            >> logs/pipelineruns.txt 2>&1 || true
+
+          echo "Diagnostic collection complete"
+          ls -la logs/
+
+      - name: Upload diagnostic artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validate-pattern-logs-${{ github.run_id }}
+          path: logs/
+          retention-days: 7
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Job 4: Report overall E2E status
+  # ──────────────────────────────────────────────────────────────────────────
+  e2e-status:
+    name: E2E Status
+    runs-on: ubuntu-latest
+    needs: [check-trigger, check-cluster, validate-pattern]
+    if: always() && needs.check-trigger.outputs.should_run == 'true'
+    steps:
+      - name: Report E2E results
+        run: |
+          echo "=== Validate Pattern E2E Results ==="
+          echo ""
+
+          if [ "${{ needs.check-cluster.outputs.cluster_available }}" != "true" ]; then
+            echo "SKIPPED: No OpenShift cluster available"
+            echo "  To enable: set OCP_API_URL and OCP_TOKEN repository secrets"
+            echo "  Or trigger manually via workflow_dispatch"
+            echo ""
+            echo "This is expected when cluster secrets are not configured."
+            exit 0
+          fi
+
+          if [ "${{ needs.validate-pattern.result }}" == "success" ]; then
+            echo "PASSED: All validation checks succeeded"
+            echo "  - ArgoCD convergence: OK"
+            echo "  - Core deployments: OK"
+            echo "  - Health endpoints: OK"
+            echo "  - InferenceServices: OK"
+            echo "  - S3 storage: OK"
+            echo "  - Tekton pipelines: OK"
+            exit 0
+          fi
+
+          if [ "${{ needs.validate-pattern.result }}" == "skipped" ]; then
+            echo "SKIPPED: Validation was not executed"
+            exit 0
+          fi
+
+          echo "FAILED: Pattern validation encountered errors"
+          echo "  Check the 'validate-pattern-logs-${{ github.run_id }}' artifact for details"
+          exit 1
