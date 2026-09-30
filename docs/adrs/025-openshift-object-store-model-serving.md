@@ -1,6 +1,6 @@
 # ADR-025: OpenShift Object Store for Model Serving
 
-**Status**: PROPOSED
+**Status**: Accepted
 **Date**: 2025-10-19
 **Renumbered From**: Originally ADR-020 (renumbered 2025-11-19 to resolve duplicate)
 **Deciders**: Architecture Team

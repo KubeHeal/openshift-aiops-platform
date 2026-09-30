@@ -301,9 +301,9 @@ workbench:
       memory: 8Gi
 
   # GPU configuration
-  # Disabled by default to allow scheduling on ODF storage nodes (with CephFS CSI driver)
-  # GPU nodes may not have CephFS driver required for RWX model storage
-  # For GPU workloads, use dedicated training Jobs scheduled on GPU nodes
+  # Disabled by default to avoid GPU contention on SNO (single GPU node) and to allow
+  # scheduling on ODF storage nodes (with CephFS CSI driver) where GPU may not be present.
+  # For GPU workloads, use dedicated training Jobs/NVJs scheduled on GPU nodes (Issue #74).
   gpu:
     enabled: false
     nodeSelector:
@@ -922,15 +922,21 @@ notebooks:
               level: "production"
               strictMode: true
               detectSilentFailures: true
+
+      # Wave 4: Ensemble Model + Predictive Analytics GPU (staggered from wave3)
+      wave4:
+        enabled: true
+        notebooks:
+          - name: "ensemble-anomaly-methods"
+            path: "notebooks/02-anomaly-detection/04-ensemble-anomaly-methods.ipynb"
+            tier: "tier3"
           - name: "predictive-analytics-kserve"
             path: "notebooks/02-anomaly-detection/05-predictive-analytics-kserve.ipynb"
             tier: "tier3"
-            gpuRequired: true  # Enable GPU for faster training (5 models need training)
+            gpuRequired: true  # Staggered to wave4 to avoid GPU contention with lstm-based-prediction in wave3 (Issue #74)
             # Trains predictive analytics model with KServe-compatible format (Issue #13 fix, ADR-051, ADR-053)
             # Model training now handled by Tekton Pipelines (ADR-053)
             # ArgoCD sync no longer blocks on training - Tekton handles scheduling/health checks
-            # blockNextWave: false  # ADR-053: Removed - Tekton handles training
-            # inferenceServiceTrigger removed - Tekton pipeline handles restart with health checks
             validationConfig:
               level: "production"
               strictMode: true
@@ -939,14 +945,6 @@ notebooks:
               strategy: "normalized"
               floatingPointTolerance: "0.01"
               ignoreTimestamps: true
-
-      # Wave 4: Ensemble Model
-      wave4:
-        enabled: true
-        notebooks:
-          - name: "ensemble-anomaly-methods"
-            path: "notebooks/02-anomaly-detection/04-ensemble-anomaly-methods.ipynb"
-            tier: "tier3"
 
       # Wave 5: Self-Healing Logic
       wave5:
