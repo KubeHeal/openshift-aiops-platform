@@ -170,13 +170,20 @@ jobs:
               2>/dev/null | grep -cv '^Synced$' || true)
             echo "Attempt $i/60: apps=$APPS not-healthy=$NOT_HEALTHY not-synced=$NOT_SYNCED"
 
-            if [ "$NOT_HEALTHY" -eq 0 ] && [ "$NOT_SYNCED" -eq 0 ]; then
-              echo "All $APPS ArgoCD applications are Synced/Healthy"
+            # Primary gate: all apps must be Healthy
+            # OutOfSync is acceptable -- completed Jobs and mutated resources
+            # will always show OutOfSync after first run
+            if [ "$NOT_HEALTHY" -eq 0 ]; then
+              if [ "$NOT_SYNCED" -eq 0 ]; then
+                echo "All $APPS ArgoCD applications are Synced/Healthy"
+              else
+                echo "All $APPS ArgoCD applications are Healthy (OutOfSync on $NOT_SYNCED -- expected for completed Jobs)"
+              fi
               exit 0
             fi
             sleep 30
           done
-          echo "ERROR: ArgoCD convergence timeout after 30 minutes"
+          echo "ERROR: ArgoCD convergence timeout -- applications not Healthy after 30 minutes"
           oc get applications.argoproj.io -n "${{ env.HUB_NS }}" \
             -o custom-columns='NAME:.metadata.name,HEALTH:.status.health.status,SYNC:.status.sync.status'
           exit 1
