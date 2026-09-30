@@ -58,6 +58,9 @@ This directory contains Architecture Decision Records for the Self-Healing Platf
 || [ADR-059](059-patternizer-adoption.md) | Patternizer Adoption for Pattern Scaffolding Automation | Accepted | 2026-09-24 | Automated pattern scaffolding generation |
 || [ADR-060](060-validated-patterns-sandbox-submission.md) | Validated Patterns Sandbox Tier Submission | Accepted | 2026-09-24 | Submit to VP Sandbox catalog for visibility |
 || [ADR-061](061-ocp-422-rhoai-35-upgrade-strategy.md) | OCP 4.22 and OpenShift AI 3.5 Upgrade Strategy | Proposed | 2026-09-24 | Multi-hop cluster upgrade and RHOAI 3.5 migration |
+|| [ADR-062](062-rosa-primary-deployment-target.md) | ROSA as Primary Deployment Target | Accepted | 2026-09-25 | ROSA Classic primary; aws-s3 default backend |
+|| [ADR-063](063-ebs-rwo-scheduling-and-rosa-gpu-integration.md) | EBS RWO Scheduling and ROSA GPU Integration | Accepted | 2026-09-25 | GPU machine pool + EBS topology-aware scheduling |
+|| [ADR-064](064-distribution-strategy-three-tier.md) | Three-Tier Distribution Strategy | Accepted | 2026-09-30 | OperatorHub / Validated Patterns / Direct Helm |
 
 ### Meta-Documents
 
@@ -98,6 +101,9 @@ Coordination engine architecture, KServe integration, and model registry.
 
 ### Deployment & Lessons (042-043, 053-054)
 ArgoCD deployment patterns, health checks, Tekton pipelines, and race condition fixes.
+
+### Distribution & Ecosystem (059-060, 064)
+Pattern scaffolding, VP Sandbox submission, and three-tier distribution strategy.
 
 ### Advanced Features (031)
 Custom image building strategies and Docker configuration.
@@ -251,6 +257,6 @@ This README is maintained by the Architecture Team and should be updated wheneve
 - ADRs are superseded or deprecated
 - Major platform versions change
 
-**Last Updated**: 2026-09-24
+**Last Updated**: 2026-09-30
 **Maintained By**: Architecture Team
 **Review Frequency**: Monthly or when ADRs change

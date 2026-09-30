@@ -22,4 +22,9 @@ show-cluster-info: ## Show cluster topology, version, and platform info
 check-prerequisites: ## Validate cluster prerequisites for deployment
 	@bash scripts/configure-cluster-infrastructure.sh --dry-run
 
+##@ Distribution Tasks
+.PHONY: sync-operator-chart
+sync-operator-chart: ## Sync charts/hub/ to kubeheal-operator repo
+	@bash scripts/sync-operator-chart.sh $(SYNC_ARGS)
+
 include Makefile-common
