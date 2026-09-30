@@ -198,7 +198,8 @@ jobs:
               -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo "0")
             if [ "${READY:-0}" -lt 1 ]; then
               echo "FAIL: $deploy -- 0 ready replicas"
-              oc get pods -n "${{ env.PLATFORM_NS }}" -l "app=$deploy" 2>/dev/null || true
+              oc get pods -n "${{ env.PLATFORM_NS }}" \
+                -l "app.kubernetes.io/component=$deploy" 2>/dev/null || true
               FAILURES=$((FAILURES + 1))
             else
               echo "PASS: $deploy -- $READY ready"
@@ -215,7 +216,7 @@ jobs:
           echo "=== Health Endpoint Checks ==="
 
           POD_NAME=$(oc get pods -n "${{ env.PLATFORM_NS }}" \
-            -l app=coordination-engine \
+            -l app.kubernetes.io/component=coordination-engine \
             -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
 
           if [ -z "$POD_NAME" ]; then
@@ -322,13 +323,13 @@ jobs:
 
           echo "=== Coordination Engine Logs ===" > logs/coordination-engine.log
           oc logs -n "${{ env.PLATFORM_NS }}" \
-            -l app=coordination-engine \
+            -l app.kubernetes.io/component=coordination-engine \
             --tail=200 \
             >> logs/coordination-engine.log 2>&1 || true
 
           echo "=== MCP Server Logs ===" > logs/mcp-server.log
           oc logs -n "${{ env.PLATFORM_NS }}" \
-            -l app=mcp-server \
+            -l app.kubernetes.io/component=mcp-server \
             --tail=200 \
             >> logs/mcp-server.log 2>&1 || true
 
