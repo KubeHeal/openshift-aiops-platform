@@ -21,6 +21,7 @@
 #   --min-workers N        Minimum number of worker nodes (default: 3)
 #   --enable-odf           Install and configure ODF (default: true)
 #   --skip-odf             Skip ODF installation (recommended for ROSA with native S3)
+#   --skip-gpu             Skip NFD + GPU Operator installation
 #   --odf-storage-size     Size per OSD in Gi (default: 512Gi)
 #   --rosa                 Force ROSA mode (skip MachineSet scaling)
 #   --dry-run              Show what would be done without making changes
@@ -45,6 +46,7 @@ MCG_ONLY="${MCG_ONLY:-false}"
 ODF_STORAGE_SIZE="${ODF_STORAGE_SIZE:-512Gi}"
 DRY_RUN="${DRY_RUN:-false}"
 IS_ROSA="${IS_ROSA:-false}"
+SKIP_GPU="${SKIP_GPU:-false}"
 
 # Auto-detect cluster topology if not specified
 # Use ${VAR:-} to avoid 'unbound variable' error with set -u
@@ -136,6 +138,10 @@ parse_args() {
                 ;;
             --skip-odf)
                 ENABLE_ODF="false"
+                shift
+                ;;
+            --skip-gpu)
+                SKIP_GPU="true"
                 shift
                 ;;
             --odf-storage-size)
@@ -781,6 +787,147 @@ validate_storage() {
 }
 
 # =============================================================================
+# GPU Operators (NFD + NVIDIA GPU Operator)
+# =============================================================================
+
+install_gpu_operators() {
+    log_info "Checking for GPU nodes..."
+
+    local gpu_nodes
+    gpu_nodes=$(oc get nodes -l nvidia.com/gpu.present=true --no-headers 2>/dev/null | wc -l || echo 0)
+
+    if [[ "$gpu_nodes" -eq 0 ]]; then
+        # Also check for instance types that suggest GPU (g4dn, g5, p3, p4, p5)
+        gpu_nodes=$(oc get nodes -o json 2>/dev/null | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+count = 0
+for node in data.get('items', []):
+    itype = node.get('metadata', {}).get('labels', {}).get('node.kubernetes.io/instance-type', '')
+    if any(itype.startswith(p) for p in ['g4dn', 'g5', 'p3', 'p4', 'p5']):
+        count += 1
+print(count)
+" 2>/dev/null || echo 0)
+    fi
+
+    if [[ "$gpu_nodes" -eq 0 ]]; then
+        log_info "No GPU nodes detected — skipping NFD and GPU Operator installation"
+        return 0
+    fi
+
+    log_info "Detected $gpu_nodes GPU node(s)"
+
+    # Check if GPU Operator is already installed
+    if oc get csv -n openshift-operators 2>/dev/null | grep -q gpu-operator; then
+        log_success "GPU Operator already installed — skipping"
+        return 0
+    fi
+
+    # Step 1: Install NFD Operator (prerequisite for GPU Operator)
+    log_info "Installing Node Feature Discovery (NFD) Operator..."
+
+    if oc get csv -n openshift-nfd 2>/dev/null | grep -q nfd; then
+        log_info "NFD Operator already installed"
+    else
+        if [[ "$DRY_RUN" == "true" ]]; then
+            log_info "[DRY RUN] Would install NFD Operator"
+        else
+            oc create namespace openshift-nfd --dry-run=client -o yaml | oc apply -f -
+
+            cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: openshift-nfd
+  namespace: openshift-nfd
+spec:
+  targetNamespaces:
+    - openshift-nfd
+EOF
+
+            cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: nfd
+  namespace: openshift-nfd
+spec:
+  channel: stable
+  name: nfd
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
+EOF
+
+            log_info "Waiting for NFD Operator to be ready (up to 120s)..."
+            local elapsed=0
+            while [[ $elapsed -lt 120 ]]; do
+                if oc get csv -n openshift-nfd 2>/dev/null | grep -q Succeeded; then
+                    log_success "NFD Operator is ready"
+                    break
+                fi
+                sleep 10
+                elapsed=$((elapsed + 10))
+                log_info "  Waiting... ${elapsed}s"
+            done
+
+            if [[ $elapsed -ge 120 ]]; then
+                log_warn "NFD Operator did not reach Succeeded state in 120s — continuing anyway"
+            fi
+        fi
+    fi
+
+    # Step 2: Install NVIDIA GPU Operator
+    log_info "Installing NVIDIA GPU Operator..."
+
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_info "[DRY RUN] Would install NVIDIA GPU Operator"
+        return 0
+    fi
+
+    oc create namespace nvidia-gpu-operator --dry-run=client -o yaml | oc apply -f -
+
+    cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: nvidia-gpu-operator
+  namespace: nvidia-gpu-operator
+spec:
+  targetNamespaces:
+    - nvidia-gpu-operator
+EOF
+
+    cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: gpu-operator-certified
+  namespace: nvidia-gpu-operator
+spec:
+  channel: v26.7
+  name: gpu-operator-certified
+  source: certified-operators
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
+EOF
+
+    log_info "Waiting for GPU Operator to be ready (up to 180s)..."
+    local elapsed=0
+    while [[ $elapsed -lt 180 ]]; do
+        if oc get csv -n nvidia-gpu-operator 2>/dev/null | grep -q Succeeded; then
+            log_success "NVIDIA GPU Operator is ready"
+            return 0
+        fi
+        sleep 10
+        elapsed=$((elapsed + 10))
+        log_info "  Waiting... ${elapsed}s"
+    done
+
+    log_warn "GPU Operator did not reach Succeeded state in 180s — check manually"
+}
+
+# =============================================================================
 # Summary
 # =============================================================================
 
@@ -887,6 +1034,13 @@ main() {
         validate_storage
     else
         log_info "Skipping ODF installation (--skip-odf specified)"
+    fi
+
+    # Install GPU operators if GPU nodes detected
+    if [[ "$SKIP_GPU" == "true" ]]; then
+        log_info "Skipping GPU Operator installation (--skip-gpu specified)"
+    else
+        install_gpu_operators
     fi
 
     # Print summary

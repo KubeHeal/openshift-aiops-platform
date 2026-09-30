@@ -14,7 +14,7 @@
 #   - System packages: podman, git, make, jq, python3-pip, development headers
 #   - Python packages: ansible-navigator, ansible-builder, kubernetes, openshift-client
 #   - Ansible collections: kubernetes.core, community.general, ansible.posix
-#   - CLI tools: oc, kubectl, helm, yq, tkn
+#   - CLI tools: oc, kubectl, helm, yq, tkn, rosa
 #
 # Requirements:
 #   - RHEL 9.x or RHEL 10.x
@@ -401,6 +401,41 @@ install_tkn() {
     tkn version
 }
 
+install_rosa() {
+    log_info "Installing ROSA CLI..."
+
+    if check_command rosa; then
+        local current_version
+        current_version=$(rosa version 2>/dev/null | head -1 || echo "unknown")
+        log_info "rosa already installed (version: $current_version)"
+        read -p "Reinstall/upgrade? [y/N] " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            log_success "Keeping existing rosa installation"
+            return 0
+        fi
+    fi
+
+    local tmp_dir
+    tmp_dir=$(mktemp -d)
+    cd "$tmp_dir"
+
+    local url="https://mirror.openshift.com/pub/openshift-v4/clients/rosa/latest/rosa-linux.tar.gz"
+    log_info "Downloading from: $url"
+
+    curl -sSL "$url" -o rosa.tar.gz
+    tar -xzf rosa.tar.gz
+
+    sudo mv rosa /usr/local/bin/
+    sudo chmod 0755 /usr/local/bin/rosa
+
+    cd - > /dev/null
+    rm -rf "$tmp_dir"
+
+    log_success "rosa installed to /usr/local/bin/"
+    rosa version
+}
+
 # =============================================================================
 # Shell Configuration
 # =============================================================================
@@ -451,7 +486,7 @@ validate_installation() {
     echo
 
     local all_ok=true
-    local tools=("podman" "git" "make" "jq" "oc" "kubectl" "helm" "yq" "tkn")
+    local tools=("podman" "git" "make" "jq" "oc" "kubectl" "helm" "yq" "tkn" "rosa")
 
     printf "%-20s %-15s %-30s\n" "Tool" "Status" "Version"
     printf "%-20s %-15s %-30s\n" "----" "------" "-------"
@@ -469,6 +504,7 @@ validate_installation() {
                 helm)     version=$(helm version --short 2>/dev/null) ;;
                 yq)       version=$(yq --version 2>/dev/null) ;;
                 tkn)      version=$(tkn version 2>/dev/null | grep "Client" | head -1) ;;
+                rosa)     version=$(rosa version 2>/dev/null | head -1) ;;
                 *)        version="installed" ;;
             esac
             printf "%-20s ${GREEN}%-15s${NC} %-30s\n" "$tool" "✓ OK" "${version:0:40}"
@@ -562,6 +598,7 @@ main() {
     install_helm
     install_yq
     install_tkn
+    install_rosa
 
     # Shell configuration
     configure_shell

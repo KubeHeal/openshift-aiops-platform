@@ -471,20 +471,54 @@ spec:
 
         echo "=== Checking S3 Endpoint Connectivity ==="
 
-        if oc get service s3 -n openshift-storage &>/dev/null; then
-          S3_ENDPOINT=$(oc get service s3 -n openshift-storage -o jsonpath='{.spec.clusterIP}')
-          S3_PORT=$(oc get service s3 -n openshift-storage -o jsonpath='{.spec.ports[0].port}')
+        BACKEND="{{ .Values.objectStore.backend | default "aws-s3" }}"
+        echo "Object store backend: $BACKEND"
 
-          echo "S3 endpoint: $S3_ENDPOINT:$S3_PORT"
-          echo "PASS: S3 endpoint is available"
+        if [[ "$BACKEND" == "aws-s3" ]]; then
+          # Native AWS S3 backend — check model-storage-config secret for credentials
+          echo "Checking AWS S3 connectivity..."
 
-          if timeout 5 bash -c "echo > /dev/tcp/$S3_ENDPOINT/$S3_PORT" 2>/dev/null; then
-            echo "PASS: S3 endpoint is reachable"
+          if oc get secret model-storage-config -n {{ .Values.main.namespace }} &>/dev/null; then
+            AWS_KEY=$(oc get secret model-storage-config -n {{ .Values.main.namespace }} -o jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 -d 2>/dev/null)
+            AWS_BUCKET=$(oc get secret model-storage-config -n {{ .Values.main.namespace }} -o jsonpath='{.data.AWS_S3_BUCKET}' | base64 -d 2>/dev/null)
+            AWS_REGION=$(oc get secret model-storage-config -n {{ .Values.main.namespace }} -o jsonpath='{.data.AWS_DEFAULT_REGION}' | base64 -d 2>/dev/null)
+
+            if [[ -n "$AWS_KEY" && "$AWS_KEY" != "" ]]; then
+              echo "PASS: model-storage-config secret has AWS credentials"
+              echo "  Bucket: ${AWS_BUCKET:-unknown}"
+              echo "  Region: ${AWS_REGION:-us-east-1}"
+            else
+              echo "WARNING: model-storage-config secret exists but AWS_ACCESS_KEY_ID is empty"
+              echo "  This may be expected if using IRSA (IAM Roles for Service Accounts)"
+            fi
           else
-            echo "WARNING: S3 endpoint may not be reachable"
+            echo "FAIL: model-storage-config secret not found in {{ .Values.main.namespace }}"
+            echo "  Run 'make operator-deploy-prereqs' to create secrets"
           fi
+
+        elif [[ "$BACKEND" == "noobaa" ]]; then
+          # NooBaa backend — check openshift-storage S3 service
+          echo "Checking NooBaa S3 connectivity..."
+
+          if oc get service s3 -n openshift-storage &>/dev/null; then
+            S3_ENDPOINT=$(oc get service s3 -n openshift-storage -o jsonpath='{.spec.clusterIP}')
+            S3_PORT=$(oc get service s3 -n openshift-storage -o jsonpath='{.spec.ports[0].port}')
+
+            echo "S3 endpoint: $S3_ENDPOINT:$S3_PORT"
+            echo "PASS: NooBaa S3 endpoint is available"
+
+            if timeout 5 bash -c "echo > /dev/tcp/$S3_ENDPOINT/$S3_PORT" 2>/dev/null; then
+              echo "PASS: NooBaa S3 endpoint is reachable"
+            else
+              echo "WARNING: NooBaa S3 endpoint may not be reachable"
+            fi
+          else
+            echo "FAIL: NooBaa S3 service not found in openshift-storage"
+            echo "  Run 'make configure-cluster' to install ODF/MCG"
+          fi
+
         else
-          echo "WARNING: S3 endpoint not found"
+          echo "WARNING: Unknown objectStore backend '$BACKEND'"
         fi
 
     - name: check-storage-performance
