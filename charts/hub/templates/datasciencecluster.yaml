@@ -1,0 +1,55 @@
+{{- if and .Values.modelServing.enabled ((.Values.dataScienceCluster).enabled | default true) }}
+---
+# DataScienceCluster CR for Red Hat OpenShift AI (RHOAI)
+#
+# RHOAI requires a DataScienceCluster to enable KServe, workbenches,
+# and other managed components.  Without this CR, the RHOAI operator
+# installs but KServe InferenceService CRDs are never reconciled.
+#
+# In the Validated-Patterns path the Ansible prerequisites playbook
+# creates this CR; adding it to the chart ensures the operator path
+# also provisions it automatically.
+#
+# Reference: ansible/playbooks/create-datasciencecluster.yaml
+apiVersion: datasciencecluster.opendatahub.io/v1
+kind: DataScienceCluster
+metadata:
+  name: {{ (.Values.dataScienceCluster).name | default "default-dsc" }}
+  labels:
+    app.kubernetes.io/name: datasciencecluster
+    app.kubernetes.io/component: rhoai
+    app.kubernetes.io/part-of: self-healing-platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  components:
+    codeflare:
+      managementState: Removed
+    dashboard:
+      managementState: Managed
+    datasciencepipelines:
+      managementState: Managed
+    kserve:
+      managementState: Managed
+      serving:
+        ingressGateway:
+          certificate:
+            type: SelfSigned
+        managementState: Managed
+        name: knative-serving
+    kueue:
+      managementState: Removed
+    modelmeshserving:
+      managementState: Removed
+    modelregistry:
+      managementState: Removed
+    ray:
+      managementState: Removed
+    trainingoperator:
+      managementState: Removed
+    trustyai:
+      managementState: Removed
+    workbenches:
+      managementState: Managed
+{{- end }}
