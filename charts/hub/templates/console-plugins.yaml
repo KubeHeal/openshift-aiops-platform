@@ -11,7 +11,13 @@
 
   Uses ServerSideApply to merge the plugins list without clobbering
   other Console spec fields (customization, brand, capabilities, etc.).
+
+  NOTE: This template ONLY works with ArgoCD (ServerSideApply).
+  When deployed via Helm operator, the Console "cluster" resource already exists
+  and Helm cannot adopt it. Gate on consolePlugins.enabled (default: true for ArgoCD,
+  should be set to false for operator-based installs).
 */ -}}
+{{- if ne ((.Values.consolePlugins).enabled) false }}
 apiVersion: operator.openshift.io/v1
 kind: Console
 metadata:
@@ -26,3 +32,4 @@ spec:
     - networking-console-plugin
     - patterns-operator-console-plugin
     - gitops-plugin
+{{- end }}

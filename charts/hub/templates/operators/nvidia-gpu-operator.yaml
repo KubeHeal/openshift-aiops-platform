@@ -11,6 +11,10 @@
   Reference: ADR-006 (NVIDIA GPU Management), ADR-057 (Topology-Aware GPU Scheduling)
 */ -}}
 {{- if and .Values.nodeConfig .Values.nodeConfig.gpu .Values.nodeConfig.gpu.enabled }}
+{{- /* Gate CRs on CRD existence for Helm operator compatibility (ADR: chicken-and-egg).
+       On first reconcile, operator Subscriptions are created but CRDs don't exist yet.
+       The Helm operator retries, and on subsequent reconciles the CRDs will be present. */ -}}
+{{- if lookup "apiextensions.k8s.io/v1" "CustomResourceDefinition" "" "nodefeaturediscoveries.nfd.openshift.io" }}
 ---
 # NodeFeatureDiscovery CR - tells the NFD operator to discover hardware features
 # This enables automatic labeling of GPU nodes with nvidia.com/gpu.present=true
@@ -42,6 +46,8 @@ spec:
             - "12"
           deviceLabelFields:
             - "vendor"
+{{- end }}
+{{- if lookup "apiextensions.k8s.io/v1" "CustomResourceDefinition" "" "clusterpolicies.nvidia.com" }}
 ---
 # ClusterPolicy CR - tells the GPU Operator to deploy NVIDIA drivers,
 # device plugin, container toolkit, DCGM exporter, and GPU feature discovery
@@ -84,4 +90,5 @@ spec:
       env:
       - name: WITH_WORKLOAD
         value: "false"
+{{- end }}
 {{- end }}
