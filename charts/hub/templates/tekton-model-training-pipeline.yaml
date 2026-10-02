@@ -1,4 +1,5 @@
 {{- if and .Values.tekton .Values.tekton.enabled }}
+{{- if lookup "apiextensions.k8s.io/v1" "CustomResourceDefinition" "" "pipelines.tekton.dev" }}
 ---
 # Tekton Pipeline for Model Training
 # Implements ADR-053: Separation of model training from ArgoCD sync waves
@@ -1082,4 +1083,6 @@ spec:
         - name: model-name
           value: $(params.model-name)
 
+
+{{- end }}{{/* end CRD lookup */}}
 {{- end }}

@@ -88,6 +88,7 @@ subjects:
 
 ---
 # cert-manager Issuer for webhook certificates
+{{- if lookup "apiextensions.k8s.io/v1" "CustomResourceDefinition" "" "issuers.cert-manager.io" }}
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
@@ -100,9 +101,11 @@ metadata:
     argocd.argoproj.io/sync-wave: "-4"
 spec:
   selfSigned: {}
+{{- end }}
 
 ---
 # Certificate for webhook server
+{{- if lookup "apiextensions.k8s.io/v1" "CustomResourceDefinition" "" "certificates.cert-manager.io" }}
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -137,6 +140,7 @@ spec:
     name: selfsigned-issuer
     kind: Issuer
     group: cert-manager.io
+{{- end }}
 
 ---
 # Operator Deployment

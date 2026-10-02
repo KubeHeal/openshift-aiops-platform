@@ -1,4 +1,5 @@
 {{- if and .Values.tekton .Values.tekton.enabled .Values.tekton.modelTraining .Values.tekton.modelTraining.enabled }}
+{{- if lookup "apiextensions.k8s.io/v1" "CustomResourceDefinition" "" "pipelines.tekton.dev" }}
 ---
 # CronJob: Weekly Anomaly Detector Training
 # Implements ADR-053: Scheduled model retraining via Tekton
@@ -267,4 +268,5 @@ subjects:
     namespace: {{ .Values.main.namespace }}
 {{- end }}
 
+{{- end }}{{/* end CRD lookup */}}
 {{- end }}

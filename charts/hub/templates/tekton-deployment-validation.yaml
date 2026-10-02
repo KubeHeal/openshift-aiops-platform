@@ -1,4 +1,5 @@
 {{- if and .Values.tekton .Values.tekton.enabled }}
+{{- if lookup "apiextensions.k8s.io/v1" "CustomResourceDefinition" "" "pipelines.tekton.dev" }}
 ---
 # Tekton Deployment Validation Pipeline and Tasks
 # Orchestrates full platform validation after deployment
@@ -1481,4 +1482,6 @@ spec:
         - name: namespace
           value: $(params.namespace)
 
+
+{{- end }}{{/* end CRD lookup */}}
 {{- end }}
