@@ -101,7 +101,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: self-healing-operator
-  namespace: self-healing-platform
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: self-healing-operator
@@ -144,7 +144,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: self-healing-workbench
-  namespace: self-healing-platform
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: rbac
     app.kubernetes.io/name: self-healing-platform
@@ -187,14 +187,14 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: self-healing-workbench
-  namespace: self-healing-platform
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: rbac
     app.kubernetes.io/name: self-healing-platform
 subjects:
 - kind: ServiceAccount
   name: self-healing-workbench
-  namespace: self-healing-platform
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: self-healing-workbench
@@ -245,7 +245,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: self-healing-workbench
-  namespace: self-healing-platform
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: self-healing-workbench-monitoring
@@ -282,7 +282,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: self-healing-workbench
-  namespace: self-healing-platform
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: self-healing-workbench-default
@@ -323,7 +323,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: self-healing-workbench
-  namespace: self-healing-platform
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: self-healing-workbench-cluster
@@ -340,7 +340,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: self-healing-workbench
-  namespace: self-healing-platform
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: cluster-monitoring-view
@@ -359,7 +359,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: self-healing-operator
-  namespace: self-healing-platform
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: cluster-monitoring-view
