@@ -128,15 +128,16 @@ rosa create cluster --cluster-name=aiops-platform --sts --mode=auto --region=us-
 
 ### Prerequisites
 
-**HA Cluster Requirements:**
+**HA Cluster Requirements (ROSA or IPI):**
 - OpenShift 4.20+ cluster recommended (4.22 current; admin access)
-- 6+ nodes (3 control-plane, 3+ workers, 1 GPU-enabled recommended)
-- 24+ CPU cores, 96+ GB RAM, 500+ GB storage
+- Workers: 2x `m5.2xlarge` (8 CPU / 32 GB each) **minimum** — `m5.xlarge` is too small
+- GPU (optional): 1x `g5.2xlarge` for model training
+- Total: 24+ CPU cores, 96+ GB RAM across workers
 
 **SNO Cluster Requirements:**
 - OpenShift 4.20+ cluster recommended (4.22 current; admin access)
 - 1 node (all roles: control-plane, master, worker)
-- 8+ CPU cores (16+ recommended), 32+ GB RAM (64+ recommended), 120+ GB storage
+- 16+ CPU cores, 64+ GB RAM, 120+ GB storage
 
 **Local Workstation Tools:**
 - `rosa` - ROSA CLI for cluster and machine pool management (primary)

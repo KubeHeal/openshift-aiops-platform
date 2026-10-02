@@ -11,6 +11,20 @@ ROSA is the **primary deployment target** for the OpenShift AI Ops Self-Healing 
 - `dedicated-admin` or `cluster-admin` access
 - AWS account with appropriate IAM permissions
 
+### Cluster Sizing
+
+> **⚠️ IMPORTANT: `m5.xlarge` (4 CPU) workers are too small.**
+> The platform deploys RHOAI (~18 pods), Tekton (~18 pods), GPU Operator,
+> cert-manager, and KubeHeal components. On 2x `m5.xlarge` workers, CPU requests
+> reached 93-97%, leaving no capacity for user workloads or the RHOAI webhook
+> controller.
+
+| Configuration | Workers | Instance Type | Total Worker CPU | Use Case |
+|--------------|:-------:|---------------|:----------------:|----------|
+| **HA + GPU (Recommended)** | 2x workers + 1x GPU | `m5.2xlarge` + `g5.2xlarge` | 24 cores | Production, full features |
+| **HA (no GPU)** | 2x workers | `m5.2xlarge` | 16 cores | Testing without GPU training |
+| **Single-Worker** | 1x worker | `m5.2xlarge` | 8 cores | Development, demos |
+
 ### CLI Tools
 
 | Tool | Purpose |
