@@ -61,6 +61,7 @@ This directory contains Architecture Decision Records for the Self-Healing Platf
 || [ADR-062](062-rosa-primary-deployment-target.md) | ROSA as Primary Deployment Target | Accepted | 2026-09-25 | ROSA Classic primary; aws-s3 default backend |
 || [ADR-063](063-ebs-rwo-scheduling-and-rosa-gpu-integration.md) | EBS RWO Scheduling and ROSA GPU Integration | Accepted | 2026-09-25 | GPU machine pool + EBS topology-aware scheduling |
 || [ADR-064](064-distribution-strategy-three-tier.md) | Three-Tier Distribution Strategy | Accepted | 2026-09-30 | OperatorHub / Validated Patterns / Direct Helm |
+|| [ADR-065](065-baremetal-agent-based-install-compatibility.md) | Baremetal and Agent-Based Install Compatibility | Accepted | 2026-10-02 | Zero code changes needed for baremetal / ABI |
 
 ### Meta-Documents
 

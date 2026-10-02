@@ -178,9 +178,23 @@ objectStore:
   # Enable object store integration
   enabled: true
 
-  # Storage backend: "aws-s3" (native AWS S3, default for ROSA) or "noobaa" (ODF/NooBaa, for baremetal/air-gapped)
-  # aws-s3: Uses native AWS S3 buckets with IRSA or static IAM credentials (no ODF dependency)
-  # noobaa: Uses OpenShift Data Foundation NooBaa S3 (requires ODF operator)
+  # Storage backend: "aws-s3" or "noobaa"
+  #
+  # "aws-s3" (default) — Uses native AWS S3 buckets. Best for ROSA, AWS IPI, or any
+  #   cluster with network access to AWS. Requires either IRSA role (production) or
+  #   static IAM credentials (development). No ODF dependency.
+  #
+  # "noobaa" — Uses OpenShift Data Foundation NooBaa S3. Best for baremetal, air-gapped,
+  #   VMware, Azure, GCP, or environments without native cloud object storage.
+  #   Requires ODF operator. On SNO clusters, MCG-only ODF is used (no Ceph).
+  #
+  # External / third-party S3 — If you have MinIO, Ceph RADOS Gateway, or another
+  #   S3-compatible service, use "aws-s3" and set objectStore.aws.endpoint to the
+  #   external endpoint URL. Example:
+  #     objectStore.backend: "aws-s3"
+  #     objectStore.aws.endpoint: "https://minio.example.com:9000"
+  #     objectStore.aws.bucketName: "my-model-bucket"
+  #   Then supply credentials via values-secret.yaml or ExternalSecret.
   backend: "aws-s3"
 
   # AWS S3 native configuration (only used when backend: "aws-s3")
