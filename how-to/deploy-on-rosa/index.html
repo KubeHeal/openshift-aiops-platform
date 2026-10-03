@@ -1339,6 +1339,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#cluster-sizing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cluster Sizing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#cli-tools" class="md-nav__link">
     <span class="md-ellipsis">
       CLI Tools
@@ -3232,6 +3241,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#cluster-sizing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cluster Sizing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#cli-tools" class="md-nav__link">
     <span class="md-ellipsis">
       CLI Tools
@@ -3500,6 +3518,48 @@
 <li><code>dedicated-admin</code> or <code>cluster-admin</code> access</li>
 <li>AWS account with appropriate IAM permissions</li>
 </ul>
+<h3 id="cluster-sizing">Cluster Sizing<a class="headerlink" href="#cluster-sizing" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>⚠️ IMPORTANT: <code>m5.xlarge</code> (4 CPU) workers are too small.</strong>
+The platform deploys RHOAI (~18 pods), Tekton (~18 pods), GPU Operator,
+cert-manager, and KubeHeal components. On 2x <code>m5.xlarge</code> workers, CPU requests
+reached 93-97%, leaving no capacity for user workloads or the RHOAI webhook
+controller.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th style="text-align: center;">Workers</th>
+<th>Instance Type</th>
+<th style="text-align: center;">Total Worker CPU</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>HA + GPU (Recommended)</strong></td>
+<td style="text-align: center;">2x workers + 1x GPU</td>
+<td><code>m5.2xlarge</code> + <code>g5.2xlarge</code></td>
+<td style="text-align: center;">24 cores</td>
+<td>Production, full features</td>
+</tr>
+<tr>
+<td><strong>HA (no GPU)</strong></td>
+<td style="text-align: center;">2x workers</td>
+<td><code>m5.2xlarge</code></td>
+<td style="text-align: center;">16 cores</td>
+<td>Testing without GPU training</td>
+</tr>
+<tr>
+<td><strong>Single-Worker</strong></td>
+<td style="text-align: center;">1x worker</td>
+<td><code>m5.2xlarge</code></td>
+<td style="text-align: center;">8 cores</td>
+<td>Development, demos</td>
+</tr>
+</tbody>
+</table>
 <h3 id="cli-tools">CLI Tools<a class="headerlink" href="#cli-tools" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3847,7 +3907,7 @@ oc get clusterrolebinding hub-gitops-argocd-application-controller-cluster-admin
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2026</span>
   </span>
 
     
