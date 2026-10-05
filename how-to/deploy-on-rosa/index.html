@@ -1356,6 +1356,24 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#mandatory-ocm-role-since-october-1-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      MANDATORY: OCM Role (Since October 1, 2026)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-iam-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS IAM Permissions
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3258,6 +3276,24 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#mandatory-ocm-role-since-october-1-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      MANDATORY: OCM Role (Since October 1, 2026)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-iam-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS IAM Permissions
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3582,6 +3618,10 @@ controller.</p>
 <td>AWS CLI for S3 bucket creation</td>
 </tr>
 <tr>
+<td><code>ocm</code></td>
+<td>OCM CLI (recommended for account management and debugging)</td>
+</tr>
+<tr>
 <td><code>helm</code></td>
 <td>Kubernetes package manager (3.12+)</td>
 </tr>
@@ -3599,7 +3639,37 @@ source ~/.bashrc
 # Install rosa CLI (if not included)
 curl -o rosa https://mirror.openshift.com/pub/openshift-v4/clients/rosa/latest/rosa-linux.tar.gz
 tar xzf rosa-linux.tar.gz &amp;&amp; sudo mv rosa /usr/local/bin/
-rosa login --token=&lt;your-ocm-token&gt;</code></pre>
+rosa login --token=&lt;your-ocm-token&gt;
+
+# Install ocm CLI (recommended)
+curl -Lo ocm https://github.com/openshift-online/ocm-cli/releases/latest/download/ocm-linux-amd64
+chmod +x ocm &amp;&amp; sudo mv ocm /usr/local/bin/
+ocm login --token=&lt;your-ocm-token&gt;</code></pre>
+<h3 id="mandatory-ocm-role-since-october-1-2026">MANDATORY: OCM Role (Since October 1, 2026)<a class="headerlink" href="#mandatory-ocm-role-since-october-1-2026" title="Permanent link">&para;</a></h3>
+<p>Red Hat requires an OCM Role linked to your AWS account for all ROSA clusters.
+Without this, cluster creation and management will fail.</p>
+<p>Reference: https://access.redhat.com/articles/7137057</p>
+<pre class="highlight"><code class="language-bash"># Check if OCM role exists and is linked
+rosa whoami
+rosa list ocm-role
+# Must show LINKED = Yes for your AWS account
+
+# If missing, create and link:
+rosa create ocm-role --mode auto
+rosa link ocm-role --role-arn &lt;your_ocm_role_arn&gt;</code></pre>
+<h3 id="aws-iam-permissions">AWS IAM Permissions<a class="headerlink" href="#aws-iam-permissions" title="Permanent link">&para;</a></h3>
+<p>The user provisioning the cluster needs:
+- <strong>ROSA STS permissions</strong> (handled automatically by <code>rosa create cluster --mode=auto</code>)
+- <strong>S3 permissions</strong> for model storage bucket: <code>s3:CreateBucket</code>, <code>s3:PutBucketVersioning</code>,
+  <code>s3:PutPublicAccessBlock</code>, <code>s3:ListBucket</code>, <code>s3:GetObject</code>, <code>s3:PutObject</code>, <code>s3:DeleteObject</code>
+- <strong>IAM permissions</strong> for S3 service account: <code>iam:CreateUser</code>, <code>iam:CreatePolicy</code>,
+  <code>iam:AttachUserPolicy</code>, <code>iam:CreateAccessKey</code>
+- Easiest path: <code>AdministratorAccess</code> for initial setup</p>
+<p><strong>Pre-flight verification:</strong></p>
+<pre class="highlight"><code class="language-bash">aws sts get-caller-identity
+rosa whoami
+rosa list ocm-role           # Must show LINKED = Yes
+rosa verify quota --region us-east-1</code></pre>
 <h2 id="step-1-create-or-access-your-rosa-cluster">Step 1: Create or Access Your ROSA Cluster<a class="headerlink" href="#step-1-create-or-access-your-rosa-cluster" title="Permanent link">&para;</a></h2>
 <h3 id="automated-provisioning-recommended">Automated Provisioning (Recommended)<a class="headerlink" href="#automated-provisioning-recommended" title="Permanent link">&para;</a></h3>
 <p>Use the provisioning script to create a complete ROSA cluster with GPU machine pool and S3 bucket in one command:</p>
@@ -3907,7 +3977,7 @@ oc get clusterrolebinding hub-gitops-argocd-application-controller-cluster-admin
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 5, 2026</span>
   </span>
 
     
