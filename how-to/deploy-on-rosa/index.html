@@ -3639,12 +3639,24 @@ source ~/.bashrc
 # Install rosa CLI (if not included)
 curl -o rosa https://mirror.openshift.com/pub/openshift-v4/clients/rosa/latest/rosa-linux.tar.gz
 tar xzf rosa-linux.tar.gz &amp;&amp; sudo mv rosa /usr/local/bin/
-rosa login --token=&lt;your-ocm-token&gt;
 
 # Install ocm CLI (recommended)
 curl -Lo ocm https://github.com/openshift-online/ocm-cli/releases/latest/download/ocm-linux-amd64
-chmod +x ocm &amp;&amp; sudo mv ocm /usr/local/bin/
-ocm login --token=&lt;your-ocm-token&gt;</code></pre>
+chmod +x ocm &amp;&amp; sudo mv ocm /usr/local/bin/</code></pre>
+<p><strong>Authenticate <code>rosa</code> and <code>ocm</code> CLIs</strong> (SSO-based login):</p>
+<p>Red Hat uses SSO for CLI authentication. Choose the method that fits your environment:</p>
+<pre class="highlight"><code class="language-bash"># Option 1: Browser-based SSO (recommended -- opens a browser window)
+rosa login
+ocm login --use-auth-code
+
+# Option 2: Device code flow (for headless / SSH environments)
+ocm login --use-device-code
+# Then open the URL shown and enter the code on any device with a browser</code></pre>
+<blockquote>
+<p><strong>Note:</strong> The legacy <code>--token=&lt;offline-token&gt;</code> flag still works but Red Hat
+recommends SSO login. If you must use a token, get one from
+https://console.redhat.com/openshift/token.</p>
+</blockquote>
 <h3 id="mandatory-ocm-role-since-october-1-2026">MANDATORY: OCM Role (Since October 1, 2026)<a class="headerlink" href="#mandatory-ocm-role-since-october-1-2026" title="Permanent link">&para;</a></h3>
 <p>Red Hat requires an OCM Role linked to your AWS account for all ROSA clusters.
 Without this, cluster creation and management will fail.</p>
