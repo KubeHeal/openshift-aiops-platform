@@ -1669,13 +1669,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-by-step-procedure" class="md-nav__link">
+  <a href="#alternative-kubeheal-operator-install-tier-1" class="md-nav__link">
     <span class="md-ellipsis">
-      Step-by-Step Procedure
+      Alternative: KubeHeal Operator Install (Tier 1)
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Step-by-Step Procedure">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step-procedure-validated-patterns-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step-by-Step Procedure (Validated Patterns Path)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step-by-Step Procedure (Validated Patterns Path)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3738,13 +3747,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-by-step-procedure" class="md-nav__link">
+  <a href="#alternative-kubeheal-operator-install-tier-1" class="md-nav__link">
     <span class="md-ellipsis">
-      Step-by-Step Procedure
+      Alternative: KubeHeal Operator Install (Tier 1)
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Step-by-Step Procedure">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step-procedure-validated-patterns-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step-by-Step Procedure (Validated Patterns Path)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step-by-Step Procedure (Validated Patterns Path)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4295,7 +4313,7 @@
 </ul>
 <h3 id="required-tools">Required Tools<a class="headerlink" href="#required-tools" title="Permanent link">&para;</a></h3>
 <ul>
-<li>[ ] <code>oc</code> CLI 4.18+ (OpenShift CLI)</li>
+<li>[ ] <code>oc</code> CLI 4.20+ (OpenShift CLI)</li>
 <li>[ ] <code>kubectl</code> 1.31+ (installed with <code>oc</code>)</li>
 <li>[ ] <code>helm</code> 3.16.4+ (Kubernetes package manager)</li>
 <li>[ ] <code>yq</code> 4.44.6+ (YAML processor)</li>
@@ -4327,15 +4345,15 @@ source ~/.bashrc</code></pre>
 <tbody>
 <tr>
 <td><strong>ROSA HA</strong></td>
-<td>3+ workers (managed)</td>
-<td>Per instance type</td>
+<td>2+ workers (m5.2xlarge minimum)</td>
+<td>16+ cores</td>
 <td>Per instance type</td>
 <td>AWS S3 (default)</td>
 </tr>
 <tr>
 <td><strong>ROSA Single-Worker</strong></td>
-<td>1 worker (managed)</td>
-<td>m5.2xlarge+</td>
+<td>1 worker (m5.2xlarge minimum)</td>
+<td>8+ cores</td>
 <td>Per instance type</td>
 <td>AWS S3 (default)</td>
 </tr>
@@ -4394,14 +4412,35 @@ oc get namespace self-healing-platform-hub --ignore-not-found</code></pre>
 <pre class="highlight"><code class="language-bash">oc delete namespace self-healing-platform self-healing-platform-hub --ignore-not-found</code></pre>
 <hr />
 <h3 id="check-4-verify-values-files-exist">Check 4: Verify Values Files Exist<a class="headerlink" href="#check-4-verify-values-files-exist" title="Permanent link">&para;</a></h3>
-<pre class="highlight"><code class="language-bash">ls -l values-global.yaml values-hub.yaml</code></pre>
-<p>Pass criteria: Both files exist.</p>
+<pre class="highlight"><code class="language-bash">ls -l values-global.yaml values-hub.yaml values-secret.yaml</code></pre>
+<p>Pass criteria: All three files exist.</p>
 <p>Fail action: Create them from examples:</p>
 <pre class="highlight"><code class="language-bash">cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
 cp values-secret.yaml.example values-secret.yaml</code></pre>
+<p>The VP framework requires <code>values-secret.yaml</code> to exist, even if the file is empty. For public GitHub deployments the example file contents are sufficient.</p>
 <hr />
-<h2 id="step-by-step-procedure">Step-by-Step Procedure<a class="headerlink" href="#step-by-step-procedure" title="Permanent link">&para;</a></h2>
+<h2 id="alternative-kubeheal-operator-install-tier-1">Alternative: KubeHeal Operator Install (Tier 1)<a class="headerlink" href="#alternative-kubeheal-operator-install-tier-1" title="Permanent link">&para;</a></h2>
+<p>For a managed install without GitOps, install the kubeheal-operator from OperatorHub and create a single CR:</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: aiops.kubeheal.io/v1alpha1
+kind: SelfHealingPlatform
+metadata:
+  name: kubeheal
+  namespace: self-healing-platform
+spec:
+  cluster:
+    topology: "ha"
+  coordinationEngine:
+    enabled: true
+  modelServing:
+    enabled: true
+  objectStore:
+    enabled: true
+    backend: "aws-s3"</code></pre>
+<p>The operator reconciles the Helm chart and manages the full lifecycle. Skip to the <a href="#verification-and-success-criteria">Verification and Success Criteria</a> section after applying the CR.</p>
+<p>See <a href="../../adrs/064-distribution-strategy-three-tier/">ADR-064</a> for sample CRs for SNO and baremetal.</p>
+<hr />
+<h2 id="step-by-step-procedure-validated-patterns-path">Step-by-Step Procedure (Validated Patterns Path)<a class="headerlink" href="#step-by-step-procedure-validated-patterns-path" title="Permanent link">&para;</a></h2>
 <h3 id="step-1-fork-and-clone-repository">Step 1: Fork and Clone Repository<a class="headerlink" href="#step-1-fork-and-clone-repository" title="Permanent link">&para;</a></h3>
 <p><strong>What this does</strong>: Creates your own copy of the platform repository for customization.</p>
 <p><strong>Commands</strong>:</p>
@@ -4483,6 +4522,9 @@ make build-ee</code></pre>
 [OK] Storage classes available</code></pre>
 <p><strong>Skip ODF</strong> (for ROSA with native S3):</p>
 <pre class="highlight"><code class="language-bash">./scripts/configure-cluster-infrastructure.sh --skip-odf</code></pre>
+<p><strong>Skip GPU operators</strong> (clusters without GPU nodes):</p>
+<pre class="highlight"><code class="language-bash">./scripts/configure-cluster-infrastructure.sh --skip-gpu</code></pre>
+<p>The script auto-detects GPU nodes by checking labels and instance types (g4dn, g5, p3, p4, p5). If no GPU nodes exist, GPU operator installation is skipped automatically.</p>
 <p><strong>Verification</strong>:</p>
 <pre class="highlight"><code class="language-bash">oc get storageclass
 oc get csv -n openshift-storage | grep odf</code></pre>
@@ -4778,7 +4820,7 @@ oc delete operatorgroup jupyter-validator-operatorgroup -n openshift-operators</
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 5, 2026</span>
   </span>
 
     

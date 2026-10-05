@@ -614,6 +614,48 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#installation-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation Options
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-kubeheal-operator-simplest" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 1: KubeHeal Operator (Simplest)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-validated-patterns-full-gitops" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 2: Validated Patterns (Full GitOps)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-direct-helm-install" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 3: Direct Helm Install
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#documentation-structure" class="md-nav__link">
     <span class="md-ellipsis">
       Documentation Structure
@@ -3217,6 +3259,48 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#installation-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation Options
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-kubeheal-operator-simplest" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 1: KubeHeal Operator (Simplest)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-validated-patterns-full-gitops" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 2: Validated Patterns (Full GitOps)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-direct-helm-install" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 3: Direct Helm Install
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#documentation-structure" class="md-nav__link">
     <span class="md-ellipsis">
       Documentation Structure
@@ -3455,6 +3539,67 @@
     HOWTO --&gt; DEPLOY[Deploy &amp; Configure]
     DIAG --&gt; UNDERSTAND[Understand Architecture]</code></pre>
 <hr />
+<h2 id="installation-options">Installation Options<a class="headerlink" href="#installation-options" title="Permanent link">&para;</a></h2>
+<p>The platform supports three installation methods. Choose the one that fits your workflow.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th style="text-align: center;">Steps</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>KubeHeal Operator</strong> (OperatorHub)</td>
+<td style="text-align: center;">2</td>
+<td>Cluster admins who want a managed install</td>
+</tr>
+<tr>
+<td><strong>Validated Patterns</strong> (GitOps)</td>
+<td style="text-align: center;">18</td>
+<td>Platform architects who need full GitOps control</td>
+</tr>
+<tr>
+<td><strong>Direct Helm Install</strong></td>
+<td style="text-align: center;">3-4</td>
+<td>Power users, CI pipelines, quick evaluation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="option-1-kubeheal-operator-simplest">Option 1: KubeHeal Operator (Simplest)<a class="headerlink" href="#option-1-kubeheal-operator-simplest" title="Permanent link">&para;</a></h3>
+<p>Install the operator from OperatorHub, then create a single CR:</p>
+<pre class="highlight"><code class="language-yaml">apiVersion: aiops.kubeheal.io/v1alpha1
+kind: SelfHealingPlatform
+metadata:
+  name: kubeheal
+  namespace: self-healing-platform
+spec:
+  cluster:
+    topology: "ha"
+  coordinationEngine:
+    enabled: true
+  modelServing:
+    enabled: true
+  objectStore:
+    enabled: true
+    backend: "aws-s3"</code></pre>
+<p>See <a href="adrs/064-distribution-strategy-three-tier/">ADR-064</a> for full details and sample CRs for SNO and baremetal.</p>
+<h3 id="option-2-validated-patterns-full-gitops">Option 2: Validated Patterns (Full GitOps)<a class="headerlink" href="#option-2-validated-patterns-full-gitops" title="Permanent link">&para;</a></h3>
+<p>Fork the repository, customize values files, and deploy with the VP Operator and ArgoCD:</p>
+<ol>
+<li>Fork and clone the repository.</li>
+<li>Create values files (<code>values-global.yaml</code>, <code>values-hub.yaml</code>, <code>values-secret.yaml</code>).</li>
+<li>Run <code>make operator-deploy</code>.</li>
+</ol>
+<p>See the <a href="runbooks/platform-deployment/">Platform Deployment Runbook</a> for the complete procedure.</p>
+<h3 id="option-3-direct-helm-install">Option 3: Direct Helm Install<a class="headerlink" href="#option-3-direct-helm-install" title="Permanent link">&para;</a></h3>
+<pre class="highlight"><code class="language-bash">helm install self-healing-platform charts/hub/ \
+  --namespace self-healing-platform \
+  --create-namespace \
+  -f values-hub.yaml</code></pre>
+<p>This method is ideal for quick evaluation and CI pipelines.</p>
+<hr />
 <h2 id="documentation-structure">Documentation Structure<a class="headerlink" href="#documentation-structure" title="Permanent link">&para;</a></h2>
 <p>This documentation follows the <a href="https://diataxis.fr/">Diataxis</a> framework: tutorials for learning, how-to guides for tasks, reference for facts, and explanation for understanding.</p>
 <h3 id="tutorials">📚 <a href="./tutorials/">Tutorials</a><a class="headerlink" href="#tutorials" title="Permanent link">&para;</a></h3>
@@ -3554,7 +3699,7 @@
 <h3 id="adrs">🏛️ <a href="./adrs/">ADRs</a><a class="headerlink" href="#adrs" title="Permanent link">&para;</a></h3>
 <p>Architectural Decision Records documenting key design choices.</p>
 <ul>
-<li><a href="adrs/">ADR Index</a> — Complete index of 58+ ADRs</li>
+<li><a href="adrs/">ADR Index</a> — Complete index of 65+ ADRs</li>
 <li><a href="adrs/ADR-CROSS-REFERENCE-MATRIX/">ADR Cross-Reference Matrix</a> — ADR dependency map</li>
 <li><a href="adrs/ADR-TO-AUTOMATION-MAPPING/">ADR to Automation Mapping</a> — ADR-to-Ansible mapping</li>
 <li><a href="adrs/ADR-VALIDATION-SYSTEM/">ADR Validation System</a> — Automated ADR validation</li>
@@ -3658,7 +3803,7 @@
 </tbody>
 </table>
 <h2 id="contributing">🤝 Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
-<p>This platform is documented through Architectural Decision Records (ADRs). See the <a href="adrs/">ADR Index</a> for all 58+ architectural decisions and their rationale. Refer to <a href="reference/CONTRIBUTING/">Contributing</a> for contribution guidelines.</p>
+<p>This platform is documented through Architectural Decision Records (ADRs). See the <a href="adrs/">ADR Index</a> for all 65+ architectural decisions and their rationale. Refer to <a href="reference/CONTRIBUTING/">Contributing</a> for contribution guidelines.</p>
 
 
 
@@ -3681,7 +3826,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 5, 2026</span>
   </span>
 
     

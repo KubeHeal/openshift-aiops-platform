@@ -1784,6 +1784,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#three-tier-distribution-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Three-Tier Distribution Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#gitops-deployment-flow" class="md-nav__link">
     <span class="md-ellipsis">
       GitOps Deployment Flow
@@ -3021,6 +3030,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#three-tier-distribution-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Three-Tier Distribution Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#gitops-deployment-flow" class="md-nav__link">
     <span class="md-ellipsis">
       GitOps Deployment Flow
@@ -3092,6 +3110,26 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>This diagram shows how code changes flow from a developer's commit through the GitOps pipeline to a running cluster. It covers the Validated Patterns Operator, ArgoCD sync waves, and the Tekton validation pipeline.</p>
 <p><strong>Audience</strong>: Platform engineers, developers, and DevOps teams who deploy or maintain the platform.</p>
+<h2 id="three-tier-distribution-overview">Three-Tier Distribution Overview<a class="headerlink" href="#three-tier-distribution-overview" title="Permanent link">&para;</a></h2>
+<p>The platform supports three installation methods. All three converge on the same Helm chart.</p>
+<pre class="mermaid"><code>graph LR
+    subgraph tier1 [Tier 1: Operator]
+        OH[OperatorHub] --&gt; OP[kubeheal-operator]
+        OP --&gt; CR[SelfHealingPlatform CR]
+        CR --&gt; HELM1[Helm Reconcile]
+    end
+    subgraph tier2 [Tier 2: Validated Patterns]
+        FORK[Fork Repo] --&gt; VP[VP Operator]
+        VP --&gt; ARGO[ArgoCD]
+        ARGO --&gt; HELM2[Helm Render]
+    end
+    subgraph tier3 [Tier 3: Direct Helm]
+        CLI[helm install] --&gt; HELM3[Helm Render]
+    end
+    HELM1 --&gt; CLUSTER[OpenShift Cluster]
+    HELM2 --&gt; CLUSTER
+    HELM3 --&gt; CLUSTER</code></pre>
+<p>The diagram below covers the Tier 2 (Validated Patterns) flow in detail.</p>
 <h2 id="gitops-deployment-flow">GitOps Deployment Flow<a class="headerlink" href="#gitops-deployment-flow" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>flowchart TD
     subgraph dev["Developer Workflow"]
@@ -3409,7 +3447,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 5, 2026</span>
   </span>
 
     
