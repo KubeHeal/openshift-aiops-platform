@@ -240,9 +240,59 @@ See `values-secret.yaml.example` at the repository root for the full decision ma
 
 > **SNO / Single-Worker Deployment**: Set `cluster.topology: "sno"` and `storage.modelStorage.storageClass: "gp3-csi"` in `values-hub.yaml` before running `./pattern.sh make install`. For ROSA single-worker nodes, use `objectStore.backend: "aws-s3"` (default). For non-ROSA SNO, object storage (NooBaa) is automatically provided by MCG-only ODF with `objectStore.backend: "noobaa"`. See [ROSA Guide](docs/how-to/deploy-on-rosa.md) or [SNO Guide](docs/how-to/deploy-on-sno.md) for details.
 
-#### Option 2: Fork and Deploy with Local Gitea (Air-Gapped/Development)
+#### Option 2: KubeHeal Operator via OLM (OperatorHub)
 
-#### Option 3: Deploy with Local Gitea (Air-Gapped/Development)
+Install the **kubeheal-operator** directly from OperatorHub for a streamlined operator-managed deployment. No Ansible execution environment, Validated Patterns Operator, or `make` targets are required.
+
+```bash
+# 1. Install the kubeheal-operator from OperatorHub (CLI)
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: kubeheal-operator
+  namespace: kubeheal-system
+spec:
+  channel: alpha
+  name: kubeheal-operator
+  source: community-operators
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
+EOF
+
+# 2. Wait for the operator to install
+oc wait --for=jsonpath='{.status.phase}'=Succeeded \
+  csv -l operators.coreos.com/kubeheal-operator.kubeheal-system \
+  -n kubeheal-system --timeout=120s
+
+# 3. Create a SelfHealingPlatform CR
+cat <<EOF | oc apply -f -
+apiVersion: aiops.kubeheal.io/v1alpha1
+kind: SelfHealingPlatform
+metadata:
+  name: kubeheal
+  namespace: kubeheal-system
+spec:
+  cluster:
+    topology: "ha"        # or "sno" for single-node
+    version: "4.22"       # match your OCP version
+  global:
+    namespace: "self-healing-platform"
+    git:
+      repoURL: "https://github.com/KubeHeal/openshift-aiops-platform.git"
+      revision: "main"
+  objectStore:
+    enabled: true
+    backend: "aws-s3"     # or "noobaa" for non-AWS
+EOF
+
+# 4. Monitor deployment
+oc get selfhealingplatform kubeheal -n kubeheal-system -w
+```
+
+> **Prerequisites**: The kubeheal-operator expects RHOAI, OpenShift Pipelines, and the Jupyter Notebook Validator Operator to be installed. See the [kubeheal-operator install runbook](https://github.com/KubeHeal/kubeheal-operator/blob/main/docs/runbooks/install-operator.md) for full details.
+
+#### Option 3: Fork and Deploy with Local Gitea (Air-Gapped/Development)
 
 For air-gapped environments or local development, you can deploy Gitea on your OpenShift cluster and fork the repository there. Set `gitea.enabled: true` in `values-hub.yaml` and create the `gitea-credentials-source` secret as described above.
 
