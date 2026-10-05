@@ -40,7 +40,7 @@
 #   --help                     Show this help message
 #
 # Prerequisites:
-#   - rosa CLI installed and logged in (rosa login --token=...)
+#   - rosa CLI installed and logged in (rosa login or rosa login --token=...)
 #   - aws CLI installed and configured (aws configure)
 #   - oc CLI installed
 #
@@ -248,8 +248,9 @@ if [[ "$DRY_RUN" == "false" ]]; then
         ROSA_USER=$(rosa whoami 2>/dev/null | grep "OCM Account" | awk '{print $NF}' || echo "authenticated")
         log_success "rosa logged in: ${ROSA_USER}"
     else
-        log_error "Not logged into ROSA. Run: rosa login --token=<your-ocm-token>"
-        log_info "  Get your token from: https://console.redhat.com/openshift/token"
+        log_error "Not logged into ROSA. Run: rosa login (SSO browser login)"
+        log_info "  Or for headless environments: ocm login --use-device-code"
+        log_info "  Legacy token login: rosa login --token=<token> (https://console.redhat.com/openshift/token)"
         PREREQ_FAILED=true
     fi
 
