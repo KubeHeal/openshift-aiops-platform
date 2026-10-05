@@ -5,6 +5,8 @@ description: "Fork the repository, understand ArgoCD application structure, modi
 
 # Customize the Platform via GitOps
 
+> **Note**: This tutorial covers the **Validated Patterns** installation path (Tier 2). If you prefer a simpler managed install, see the [KubeHeal Operator path (Tier 1)](../how-to/OPERATORHUB-INSTALLATION-GUIDE.md) or use `helm install` for direct Helm deployment (Tier 3).
+
 **Learning Objective**: Customize the Self-Healing Platform deployment by forking the repository, modifying Helm chart values, adding custom components, managing secrets with External Secrets Operator, and promoting changes through ArgoCD.
 
 **Level**: Intermediate
@@ -110,11 +112,12 @@ cd openshift-aiops-platform
 ### 1.3 Create Values Files
 
 ```bash
-# Create values files from examples
 cp values-global.yaml.example values-global.yaml
 cp values-hub.yaml.example values-hub.yaml
 cp values-secret.yaml.example values-secret.yaml
 ```
+
+The VP framework requires `values-secret.yaml` to exist, even if the file is empty. For public GitHub deployments the example file contents are sufficient.
 
 ### 1.4 Update the Repository URL
 

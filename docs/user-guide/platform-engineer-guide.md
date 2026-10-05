@@ -128,10 +128,20 @@ graph TB
 
 | Topology | Nodes | Storage | Use Case |
 |----------|-------|---------|----------|
-| ROSA Classic HA | 3+ workers (managed) | AWS S3 (default) | Production |
-| ROSA Single-Worker | 1 worker (managed) | AWS S3 (default) | Development, testing |
+| ROSA Classic HA | 2+ workers (m5.2xlarge minimum) | AWS S3 (default) | Production |
+| ROSA Single-Worker | 1 worker (m5.2xlarge minimum) | AWS S3 (default) | Development, testing |
 | IPI HA | 3+ workers (self-managed) | ODF or AWS S3 | Production |
 | SNO | 1 node (all roles) | MCG-only ODF | Edge, development |
+
+### ROSA Cluster Sizing
+
+The m5.xlarge instance type (4 CPU) is too small for this platform. Use m5.2xlarge (8 CPU) as the minimum.
+
+| Configuration | Instance Types | Total Cores |
+|---------------|----------------|:-----------:|
+| HA with GPU | 2x m5.2xlarge + 1x g5.2xlarge | 24 |
+| HA without GPU | 2x m5.2xlarge | 16 |
+| Single-worker | 1x m5.2xlarge | 8 |
 
 **Reference**: [ADR-055: Multi-Cluster Topology Support](../adrs/055-openshift-420-multi-cluster-topology-support.md)
 
@@ -165,6 +175,23 @@ This script installs all required tools. It is idempotent and safe to run multip
 ### Provision a ROSA Cluster
 
 ROSA (Red Hat OpenShift Service on AWS) is the primary deployment target.
+
+#### Authenticate with ROSA and OCM
+
+Use browser-based SSO (recommended):
+
+```bash
+rosa login
+ocm login --use-auth-code
+```
+
+For headless or SSH environments:
+
+```bash
+ocm login --use-device-code
+```
+
+The legacy `--token` flag still works but SSO is the recommended method.
 
 #### Automated Provisioning (Recommended)
 
@@ -345,6 +372,14 @@ To skip ODF installation when storage already exists:
 ./scripts/configure-cluster-infrastructure.sh --skip-odf
 ```
 
+To skip GPU operator installation:
+
+```bash
+./scripts/configure-cluster-infrastructure.sh --skip-gpu
+```
+
+The script auto-detects GPU nodes by checking labels and instance types (g4dn, g5, p3, p4, p5). If no GPU nodes exist, the script skips GPU operator installation automatically.
+
 ### Configure MCG-Only Storage (SNO)
 
 On SNO clusters, the platform installs MCG-only ODF (NooBaa S3 without Ceph):
@@ -393,7 +428,69 @@ The platform depends on these operators:
 | External Secrets Operator | openshift-operators | stable | Secrets management |
 | OpenShift Data Foundation | openshift-storage | stable-4.x | Storage (non-ROSA) |
 
-### Install the Platform
+### DataScienceCluster CR
+
+The chart includes a DataScienceCluster CR template at `charts/hub/templates/datasciencecluster.yaml`. This resource enables KServe, workbenches, and other RHOAI managed components.
+
+Control it in `values.yaml`:
+
+```yaml
+dataScienceCluster:
+  enabled: true
+```
+
+Set `enabled: false` if you manage the DataScienceCluster outside of this chart.
+
+### Installation Options
+
+The platform supports three installation methods:
+
+| Method | Steps | Best For |
+|--------|:-----:|----------|
+| **KubeHeal Operator** (OperatorHub) | 2 | Cluster admins who want a managed install |
+| **Validated Patterns** (GitOps) | 18 | Platform architects who need full GitOps control |
+| **Direct Helm Install** | 3-4 | Power users, CI pipelines, quick evaluation |
+
+#### Option 1: KubeHeal Operator (Simplest)
+
+Install the kubeheal-operator from OperatorHub. Then create a single CR:
+
+```yaml
+apiVersion: aiops.kubeheal.io/v1alpha1
+kind: SelfHealingPlatform
+metadata:
+  name: kubeheal
+  namespace: self-healing-platform
+spec:
+  cluster:
+    topology: "ha"
+  coordinationEngine:
+    enabled: true
+  modelServing:
+    enabled: true
+  objectStore:
+    enabled: true
+    backend: "aws-s3"
+```
+
+The operator reconciles the Helm chart and manages the full lifecycle. See [ADR-064](../adrs/064-distribution-strategy-three-tier.md) for sample CRs for SNO and baremetal.
+
+#### Option 2: Validated Patterns (Full GitOps)
+
+This method uses the VP Operator and ArgoCD. Follow the steps below.
+
+#### Option 3: Direct Helm Install
+
+```bash
+helm install self-healing-platform charts/hub/ \
+  --namespace self-healing-platform \
+  --create-namespace \
+  -f values-hub.yaml
+```
+
+This method is ideal for quick evaluation and CI pipelines.
+
+### Install via Validated Patterns (Option 2)
 
 The Validated Patterns Operator manages the full deployment lifecycle:
 

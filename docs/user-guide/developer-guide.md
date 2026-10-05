@@ -57,7 +57,7 @@ Install these tools on your workstation:
 
 | Tool | Version | Purpose |
 |------|---------|---------|
-| `oc` | 4.18+ | OpenShift CLI |
+| `oc` | 4.20+ | OpenShift CLI |
 | `kubectl` | 1.31+ | Kubernetes CLI |
 | `helm` | 3.16+ | Kubernetes package manager |
 | `git` | 2.x | Version control |
@@ -65,6 +65,7 @@ Install these tools on your workstation:
 | `podman` | 4.x | Container runtime |
 | `tkn` | 0.38+ | Tekton CLI |
 | `yq` | 4.44+ | YAML processor |
+| `rosa` | Latest | ROSA cluster management (installed by prerequisites script) |
 | `python3` | 3.11+ | Python runtime |
 | `go` | 1.21+ | Go runtime (for coordination engine) |
 
@@ -107,11 +108,26 @@ pre-commit install --hook-type pre-push
 
 Active hooks include:
 
-- `detect-secrets` -- Scans for hardcoded secrets and API keys
-- `check-added-large-files` -- Prevents committing files larger than 500KB
-- `check-merge-conflict` -- Detects unresolved merge conflicts
-- `trailing-whitespace` -- Removes trailing whitespace
-- `end-of-file-fixer` -- Ensures files end with a newline
+- `detect-secrets`: Scans for hardcoded secrets and API keys
+- `check-added-large-files`: Prevents committing files larger than 500KB
+- `check-merge-conflict`: Detects unresolved merge conflicts
+- `trailing-whitespace`: Removes trailing whitespace
+- `end-of-file-fixer`: Ensures files end with a newline
+
+### Quick Setup: Direct Helm Install (Tier 3)
+
+For fast local development, skip the VP Operator and install the chart directly:
+
+```bash
+helm install self-healing-platform charts/hub/ \
+  --namespace self-healing-platform \
+  --create-namespace \
+  -f values-hub.yaml
+```
+
+This path deploys all chart resources without ArgoCD. It is ideal for iterating on Helm templates and testing changes quickly.
+
+For the full GitOps workflow (Tier 2), continue with the Execution Environment setup below.
 
 ### Get the Execution Environment
 
@@ -551,6 +567,24 @@ objectStore:
   backend: "noobaa"   # or "aws-s3"
 ```
 
+### CRD Lookup Gates
+
+All Helm templates now use CRD lookup gates. Each template checks whether its CRD exists before creating resources:
+
+```yaml
+{{ if lookup "apiextensions.k8s.io/v1" "CustomResourceDefinition" "" "..." }}
+  # Create the resource only when the CRD is present
+{{ end }}
+```
+
+Templates skip resource creation when their CRD is absent. This enables graceful degradation across installation paths. The chart works with both the VP Operator path and the standalone kubeheal-operator where not all CRDs may be present.
+
+The following 11 templates have CRD gates: monitoring, NooBaa, notebook-validation, Tekton, and Prometheus templates.
+
+### RBAC Namespace Portability
+
+RBAC templates now use `{{ .Release.Namespace }}` instead of a hardcoded namespace. This allows deploying the chart to custom namespaces without modification.
+
 ### Validate Chart Changes
 
 ```bash
@@ -630,6 +664,10 @@ oc annotate application self-healing-platform -n self-healing-platform-hub \
 # Check sync status
 oc get applications -n self-healing-platform-hub
 ```
+
+### Sync Chart to Operator Repository
+
+Use `scripts/sync-operator-chart.sh` to copy `charts/hub/` to the kubeheal-operator repository. Run this script after chart changes to keep both repositories in sync.
 
 **Reference**: [ADR-042: ArgoCD Deployment Lessons Learned](../adrs/042-argocd-deployment-lessons-learned.md)
 

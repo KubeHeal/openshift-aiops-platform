@@ -46,6 +46,8 @@ You are responsible for:
 
 The platform provides the coordination engine and infrastructure. You maintain full control over your models.
 
+The platform auto-creates the DataScienceCluster CR, which enables KServe, workbenches, and other RHOAI managed components. No manual DSC configuration is required.
+
 ### Document Scope
 
 This guide covers:

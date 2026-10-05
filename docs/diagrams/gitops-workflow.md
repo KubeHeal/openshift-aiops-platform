@@ -6,6 +6,32 @@ This diagram shows how code changes flow from a developer's commit through the G
 
 **Audience**: Platform engineers, developers, and DevOps teams who deploy or maintain the platform.
 
+## Three-Tier Distribution Overview
+
+The platform supports three installation methods. All three converge on the same Helm chart.
+
+```mermaid
+graph LR
+    subgraph tier1 [Tier 1: Operator]
+        OH[OperatorHub] --> OP[kubeheal-operator]
+        OP --> CR[SelfHealingPlatform CR]
+        CR --> HELM1[Helm Reconcile]
+    end
+    subgraph tier2 [Tier 2: Validated Patterns]
+        FORK[Fork Repo] --> VP[VP Operator]
+        VP --> ARGO[ArgoCD]
+        ARGO --> HELM2[Helm Render]
+    end
+    subgraph tier3 [Tier 3: Direct Helm]
+        CLI[helm install] --> HELM3[Helm Render]
+    end
+    HELM1 --> CLUSTER[OpenShift Cluster]
+    HELM2 --> CLUSTER
+    HELM3 --> CLUSTER
+```
+
+The diagram below covers the Tier 2 (Validated Patterns) flow in detail.
+
 ## GitOps Deployment Flow
 
 ```mermaid

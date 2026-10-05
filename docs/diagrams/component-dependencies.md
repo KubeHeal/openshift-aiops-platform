@@ -11,7 +11,7 @@ This diagram shows the dependency relationships between all operators, component
 ```mermaid
 flowchart TD
     subgraph tier0["Tier 0: OpenShift Platform (Pre-installed)"]
-        OCP["OpenShift 4.19-4.22
+        OCP["OpenShift 4.20-4.22
         Kubernetes API, etcd,
         controllers, scheduler"]
 

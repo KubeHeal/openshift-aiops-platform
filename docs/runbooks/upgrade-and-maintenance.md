@@ -55,7 +55,7 @@ Platform components upgraded to target versions with all functionality validated
 
 ### Required Tools
 
-- [ ] `oc` 4.18+ (OpenShift CLI)
+- [ ] `oc` 4.20+ (OpenShift CLI)
 - [ ] `helm` 3.16.4+
 - [ ] `yq` 4.44.6+
 - [ ] `jq` 1.6+

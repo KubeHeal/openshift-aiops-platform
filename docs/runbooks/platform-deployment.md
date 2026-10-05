@@ -53,7 +53,7 @@ A fully operational self-healing platform with ArgoCD, coordination engine, mode
 
 ### Required Tools
 
-- [ ] `oc` CLI 4.18+ (OpenShift CLI)
+- [ ] `oc` CLI 4.20+ (OpenShift CLI)
 - [ ] `kubectl` 1.31+ (installed with `oc`)
 - [ ] `helm` 3.16.4+ (Kubernetes package manager)
 - [ ] `yq` 4.44.6+ (YAML processor)
@@ -83,8 +83,8 @@ source ~/.bashrc
 
 | Topology | Nodes | CPU | RAM | Storage |
 |----------|-------|-----|-----|---------|
-| **ROSA HA** | 3+ workers (managed) | Per instance type | Per instance type | AWS S3 (default) |
-| **ROSA Single-Worker** | 1 worker (managed) | m5.2xlarge+ | Per instance type | AWS S3 (default) |
+| **ROSA HA** | 2+ workers (m5.2xlarge minimum) | 16+ cores | Per instance type | AWS S3 (default) |
+| **ROSA Single-Worker** | 1 worker (m5.2xlarge minimum) | 8+ cores | Per instance type | AWS S3 (default) |
 | **IPI HA** | 6+ (3 control-plane, 3+ workers) | 24+ cores | 96+ GB | 500+ GB |
 | **SNO** | 1 (all roles) | 8+ cores (16+ recommended) | 32+ GB (64+ recommended) | 120+ GB |
 
@@ -161,10 +161,10 @@ oc delete namespace self-healing-platform self-healing-platform-hub --ignore-not
 ### Check 4: Verify Values Files Exist
 
 ```bash
-ls -l values-global.yaml values-hub.yaml
+ls -l values-global.yaml values-hub.yaml values-secret.yaml
 ```
 
-Pass criteria: Both files exist.
+Pass criteria: All three files exist.
 
 Fail action: Create them from examples:
 
@@ -174,9 +174,39 @@ cp values-hub.yaml.example values-hub.yaml
 cp values-secret.yaml.example values-secret.yaml
 ```
 
+The VP framework requires `values-secret.yaml` to exist, even if the file is empty. For public GitHub deployments the example file contents are sufficient.
+
 ---
 
-## Step-by-Step Procedure
+## Alternative: KubeHeal Operator Install (Tier 1)
+
+For a managed install without GitOps, install the kubeheal-operator from OperatorHub and create a single CR:
+
+```yaml
+apiVersion: aiops.kubeheal.io/v1alpha1
+kind: SelfHealingPlatform
+metadata:
+  name: kubeheal
+  namespace: self-healing-platform
+spec:
+  cluster:
+    topology: "ha"
+  coordinationEngine:
+    enabled: true
+  modelServing:
+    enabled: true
+  objectStore:
+    enabled: true
+    backend: "aws-s3"
+```
+
+The operator reconciles the Helm chart and manages the full lifecycle. Skip to the [Verification and Success Criteria](#verification-and-success-criteria) section after applying the CR.
+
+See [ADR-064](../adrs/064-distribution-strategy-three-tier.md) for sample CRs for SNO and baremetal.
+
+---
+
+## Step-by-Step Procedure (Validated Patterns Path)
 
 ### Step 1: Fork and Clone Repository
 
@@ -331,6 +361,14 @@ make configure-cluster
 ```bash
 ./scripts/configure-cluster-infrastructure.sh --skip-odf
 ```
+
+**Skip GPU operators** (clusters without GPU nodes):
+
+```bash
+./scripts/configure-cluster-infrastructure.sh --skip-gpu
+```
+
+The script auto-detects GPU nodes by checking labels and instance types (g4dn, g5, p3, p4, p5). If no GPU nodes exist, GPU operator installation is skipped automatically.
 
 **Verification**:
 

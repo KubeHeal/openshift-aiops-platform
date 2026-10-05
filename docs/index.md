@@ -79,6 +79,63 @@ graph TB
 
 ---
 
+## Installation Options
+
+The platform supports three installation methods. Choose the one that fits your workflow.
+
+| Method | Steps | Best For |
+|--------|:-----:|----------|
+| **KubeHeal Operator** (OperatorHub) | 2 | Cluster admins who want a managed install |
+| **Validated Patterns** (GitOps) | 18 | Platform architects who need full GitOps control |
+| **Direct Helm Install** | 3-4 | Power users, CI pipelines, quick evaluation |
+
+### Option 1: KubeHeal Operator (Simplest)
+
+Install the operator from OperatorHub, then create a single CR:
+
+```yaml
+apiVersion: aiops.kubeheal.io/v1alpha1
+kind: SelfHealingPlatform
+metadata:
+  name: kubeheal
+  namespace: self-healing-platform
+spec:
+  cluster:
+    topology: "ha"
+  coordinationEngine:
+    enabled: true
+  modelServing:
+    enabled: true
+  objectStore:
+    enabled: true
+    backend: "aws-s3"
+```
+
+See [ADR-064](adrs/064-distribution-strategy-three-tier.md) for full details and sample CRs for SNO and baremetal.
+
+### Option 2: Validated Patterns (Full GitOps)
+
+Fork the repository, customize values files, and deploy with the VP Operator and ArgoCD:
+
+1. Fork and clone the repository.
+2. Create values files (`values-global.yaml`, `values-hub.yaml`, `values-secret.yaml`).
+3. Run `make operator-deploy`.
+
+See the [Platform Deployment Runbook](runbooks/platform-deployment.md) for the complete procedure.
+
+### Option 3: Direct Helm Install
+
+```bash
+helm install self-healing-platform charts/hub/ \
+  --namespace self-healing-platform \
+  --create-namespace \
+  -f values-hub.yaml
+```
+
+This method is ideal for quick evaluation and CI pipelines.
+
+---
+
 ## Documentation Structure
 
 This documentation follows the [Diataxis](https://diataxis.fr/) framework: tutorials for learning, how-to guides for tasks, reference for facts, and explanation for understanding.
@@ -190,7 +247,7 @@ Role-based guides for different personas.
 
 Architectural Decision Records documenting key design choices.
 
-- [ADR Index](adrs/README.md) — Complete index of 58+ ADRs
+- [ADR Index](adrs/README.md) — Complete index of 65+ ADRs
 - [ADR Cross-Reference Matrix](adrs/ADR-CROSS-REFERENCE-MATRIX.md) — ADR dependency map
 - [ADR to Automation Mapping](adrs/ADR-TO-AUTOMATION-MAPPING.md) — ADR-to-Ansible mapping
 - [ADR Validation System](adrs/ADR-VALIDATION-SYSTEM.md) — Automated ADR validation
@@ -247,4 +304,4 @@ New to the platform? Pick your path:
 
 ## 🤝 Contributing
 
-This platform is documented through Architectural Decision Records (ADRs). See the [ADR Index](adrs/README.md) for all 58+ architectural decisions and their rationale. Refer to [Contributing](reference/CONTRIBUTING.md) for contribution guidelines.
+This platform is documented through Architectural Decision Records (ADRs). See the [ADR Index](adrs/README.md) for all 65+ architectural decisions and their rationale. Refer to [Contributing](reference/CONTRIBUTING.md) for contribution guidelines.
