@@ -32,6 +32,7 @@ ROSA is the **primary deployment target** for the OpenShift AI Ops Self-Healing 
 | `rosa` | ROSA cluster and machine pool management |
 | `oc` | OpenShift CLI |
 | `aws` | AWS CLI for S3 bucket creation |
+| `ocm` | OCM CLI (recommended for account management and debugging) |
 | `helm` | Kubernetes package manager (3.12+) |
 | `git` | Version control |
 
@@ -46,6 +47,48 @@ source ~/.bashrc
 curl -o rosa https://mirror.openshift.com/pub/openshift-v4/clients/rosa/latest/rosa-linux.tar.gz
 tar xzf rosa-linux.tar.gz && sudo mv rosa /usr/local/bin/
 rosa login --token=<your-ocm-token>
+
+# Install ocm CLI (recommended)
+curl -Lo ocm https://github.com/openshift-online/ocm-cli/releases/latest/download/ocm-linux-amd64
+chmod +x ocm && sudo mv ocm /usr/local/bin/
+ocm login --token=<your-ocm-token>
+```
+
+### MANDATORY: OCM Role (Since October 1, 2026)
+
+Red Hat requires an OCM Role linked to your AWS account for all ROSA clusters.
+Without this, cluster creation and management will fail.
+
+Reference: https://access.redhat.com/articles/7137057
+
+```bash
+# Check if OCM role exists and is linked
+rosa whoami
+rosa list ocm-role
+# Must show LINKED = Yes for your AWS account
+
+# If missing, create and link:
+rosa create ocm-role --mode auto
+rosa link ocm-role --role-arn <your_ocm_role_arn>
+```
+
+### AWS IAM Permissions
+
+The user provisioning the cluster needs:
+- **ROSA STS permissions** (handled automatically by `rosa create cluster --mode=auto`)
+- **S3 permissions** for model storage bucket: `s3:CreateBucket`, `s3:PutBucketVersioning`,
+  `s3:PutPublicAccessBlock`, `s3:ListBucket`, `s3:GetObject`, `s3:PutObject`, `s3:DeleteObject`
+- **IAM permissions** for S3 service account: `iam:CreateUser`, `iam:CreatePolicy`,
+  `iam:AttachUserPolicy`, `iam:CreateAccessKey`
+- Easiest path: `AdministratorAccess` for initial setup
+
+**Pre-flight verification:**
+
+```bash
+aws sts get-caller-identity
+rosa whoami
+rosa list ocm-role           # Must show LINKED = Yes
+rosa verify quota --region us-east-1
 ```
 
 ## Step 1: Create or Access Your ROSA Cluster
